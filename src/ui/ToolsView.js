@@ -350,6 +350,141 @@ export class ToolsView extends Component {
     });
   }
 
+  async toggleLiveTuning() {
+    if (this.isLiveTuning) {
+      this.stopLiveTuning();
+    } else {
+      await this.startLiveTuning();
+    }
+  }
+
+  async startLiveTuning() {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      this.mediaStream = stream;
+      const ctx = this.getAudioContext();
+      this.audioInputSource = ctx.createMediaStreamSource(stream);
+      this.analyserNode = ctx.createAnalyser();
+      this.analyserNode.fftSize = 2048;
+      this.audioInputSource.connect(this.analyserNode);
+
+      this.isLiveTuning = true;
+      const btn = this.container?.querySelector('#btnToggleLiveTuner');
+      if (btn) {
+        btn.textContent = '⏹ Detener Micrófono';
+        btn.style.background = '#ff1744';
+      }
+      toast.show('🎤 Escuchando tu instrumento...', 'info', 1000);
+      this.updateLiveTuning();
+    } catch (err) {
+      console.warn('Error accediendo al micrófono:', err);
+      toast.show('No se pudo acceder al micrófono (permiso denegado)', 'warning', 2000);
+    }
+  }
+
+  stopLiveTuning() {
+    this.isLiveTuning = false;
+    if (this.rafId) {
+      cancelAnimationFrame(this.rafId);
+      this.rafId = null;
+    }
+    if (this.mediaStream) {
+      this.mediaStream.getTracks().forEach(t => t.stop());
+      this.mediaStream = null;
+    }
+    if (this.audioInputSource) {
+      this.audioInputSource.disconnect();
+      this.audioInputSource = null;
+    }
+    const btn = this.container?.querySelector('#btnToggleLiveTuner');
+    if (btn) {
+      btn.textContent = '🎤 Activar Escucha';
+      btn.style.background = 'var(--accent-primary)';
+    }
+    toast.show('Micrófono detenido', 'info', 700);
+  }
+
+  updateLiveTuning() {
+    if (!this.isLiveTuning || !this.analyserNode) return;
+
+    const buffer = new Float32Array(this.analyserNode.fftSize);
+    this.analyserNode.getFloatTimeDomainData(buffer);
+    const sampleRate = this.getAudioContext().sampleRate;
+    const pitch = this.autoCorrelate(buffer, sampleRate);
+
+    if (pitch !== -1 && pitch > 40 && pitch < 1200) {
+      const noteStrings = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+      const noteNum = 12 * (Math.log(pitch / this.tunerFrequency) / Math.log(2));
+      const roundedNote = Math.round(noteNum) + 69;
+      const noteIndex = ((roundedNote % 12) + 12) % 12;
+      const octave = Math.floor(roundedNote / 12) - 1;
+      const noteName = `${noteStrings[noteIndex]}${octave >= 0 ? octave : ''}`;
+
+      // Calculate cents deviation
+      const expectedFreq = this.tunerFrequency * Math.pow(2, (roundedNote - 69) / 12);
+      const cents = Math.floor(1200 * Math.log2(pitch / expectedFreq));
+
+      const noteEl = this.container?.querySelector('#tunerCurrentNoteReadout');
+      const centsEl = this.container?.querySelector('#tunerCentsDisplay');
+      const needleEl = this.container?.querySelector('#tunerNeedleBar');
+
+      if (noteEl) noteEl.textContent = noteName;
+      if (centsEl) {
+        const sign = cents > 0 ? '+' : '';
+        centsEl.textContent = `${sign}${cents} cents (${pitch.toFixed(1)} Hz)`;
+        centsEl.style.color = Math.abs(cents) <= 5 ? '#00e676' : (Math.abs(cents) <= 15 ? '#ffd600' : '#ff5252');
+      }
+      if (needleEl) {
+        const clampedCents = Math.max(-50, Math.min(50, cents));
+        const pct = 50 + clampedCents;
+        needleEl.style.left = `${pct}%`;
+        needleEl.style.background = Math.abs(cents) <= 5 ? '#00e676' : (Math.abs(cents) <= 15 ? '#ffd600' : '#ff5252');
+      }
+    }
+
+    this.rafId = requestAnimationFrame(() => this.updateLiveTuning());
+  }
+
+  autoCorrelate(buf, sampleRate) {
+    const SIZE = buf.length;
+    let rms = 0;
+    for (let i = 0; i < SIZE; i++) {
+      const val = buf[i];
+      rms += val * val;
+    }
+    rms = Math.sqrt(rms / SIZE);
+    if (rms < 0.015) return -1;
+
+    let r1 = 0, r2 = SIZE - 1, thres = 0.2;
+    for (let i = 0; i < SIZE / 2; i++) {
+      if (Math.abs(buf[i]) < thres) { r1 = i; break; }
+    }
+    for (let i = 1; i < SIZE / 2; i++) {
+      if (Math.abs(buf[SIZE - i]) < thres) { r2 = SIZE - i; break; }
+    }
+
+    buf = buf.slice(r1, r2);
+    const c = new Array(buf.length).fill(0);
+    for (let i = 0; i < buf.length; i++) {
+      for (let j = 0; j < buf.length - i; j++) {
+        c[i] = c[i] + buf[j] * buf[j + i];
+      }
+    }
+
+    let d = 0;
+    while (c[d] > c[d + 1]) d++;
+    let maxval = -1, maxpos = -1;
+    for (let i = d; i < buf.length; i++) {
+      if (c[i] > maxval) {
+        maxval = c[i];
+        maxpos = i;
+      }
+    }
+    let T0 = maxpos;
+    if (T0 === 0) return -1;
+    return sampleRate / T0;
+  }
+
   // =========================================================================
   // 3. DICCIONARIO DE ACORDES & VOICINGS
   // =========================================================================
@@ -582,6 +717,9 @@ export class ToolsView extends Component {
   }
 
   closeToolModal() {
+    if (this.isLiveTuning) {
+      this.stopLiveTuning();
+    }
     this.activeToolModal = null;
     const modals = this.container.querySelectorAll('.tool-modal-overlay');
     modals.forEach(m => m.classList.remove('active'));
@@ -757,14 +895,34 @@ export class ToolsView extends Component {
           </div>
           <div class="tool-modal-body">
             
-            <div style="text-align: center; margin-bottom: 24px;">
-              <div id="tunerCurrentNoteReadout" style="font-size: 4rem; font-weight: 900; color: var(--accent-primary); line-height: 1;">A4</div>
-              <p style="font-size: 0.9rem; color: var(--text-secondary); margin-top: 6px;">Toca una cuerda para escuchar su frecuencia exacta de referencia</p>
+            <!-- Medidor de Micrófono en Vivo -->
+            <div class="tuner-meter-container" style="background: var(--bg-surface-solid); border: 1px solid var(--border-subtle); border-radius: 16px; padding: 20px; text-align: center; margin-bottom: 20px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <span style="font-weight: 700; font-size: 0.9rem;">Detección Automática por Micrófono</span>
+                <button id="btnToggleLiveTuner" style="background: var(--accent-primary); color: #ffffff; border: none; padding: 8px 16px; border-radius: 20px; font-weight: 700; cursor: pointer; transition: all 0.15s ease;">
+                  🎤 Activar Escucha
+                </button>
+              </div>
+              
+              <div id="tunerCurrentNoteReadout" style="font-size: 4.5rem; font-weight: 900; color: var(--accent-primary); line-height: 1; margin: 10px 0;">--</div>
+              
+              <!-- Aguja Analógica de Afinación -->
+              <div class="tuner-gauge-wrapper" style="position: relative; height: 50px; margin: 12px 0; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                <div style="display: flex; justify-content: space-between; width: 85%; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 6px;">
+                  <span>-50 ♭ (Grave)</span>
+                  <span style="color: #00e676; font-weight: 800;">AFINADO</span>
+                  <span>+50 ♯ (Agudo)</span>
+                </div>
+                <div style="width: 85%; height: 8px; background: var(--border-subtle); border-radius: 4px; position: relative; overflow: hidden;">
+                  <div id="tunerNeedleBar" style="position: absolute; top: 0; left: 50%; width: 8px; height: 100%; background: #00e676; transform: translateX(-50%); border-radius: 4px; transition: all 0.08s ease;"></div>
+                </div>
+                <div id="tunerCentsDisplay" style="font-size: 0.84rem; font-weight: 700; color: var(--text-secondary); margin-top: 8px;">Toca una cuerda en tu instrumento...</div>
+              </div>
             </div>
 
             <div class="pro-options-card" style="margin-top: 0; margin-bottom: 20px;">
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                <h3 style="margin: 0;">Preset de Instrumento</h3>
+                <h3 style="margin: 0;">Presets de Diapasón Acústico</h3>
                 <select id="selTuningPreset" style="background: var(--bg-surface); color: var(--text-primary); border: 1px solid var(--border-subtle); padding: 6px 12px; border-radius: 8px; font-weight: 600;">
                   <option value="standard" selected>Guitarra Estándar (E A D G B E)</option>
                   <option value="drop_d">Drop D (D A D G B E)</option>
@@ -788,8 +946,8 @@ export class ToolsView extends Component {
             </div>
 
             <div class="tool-info-box">
-              <h4>💡 Cómo Afinar de Oído</h4>
-              <p>Pulsa la cuerda que deseas afinar en la pantalla para escuchar el tono puro generado por Web Audio. Toca la misma cuerda en tu instrumento y ajusta la clavija hasta que la ondulación sonora ("batimento") desaparezca por completo.</p>
+              <h4>💡 Cómo Afinar de Oído y con Micrófono</h4>
+              <p>Activa la <strong>Escucha por Micrófono</strong> para que la aplicación detecte la nota automáticamente en tiempo real con la aguja de precisión. O bien, pulsa cualquiera de las cuerdas para escuchar el tono puro de referencia y afinar de oído.</p>
             </div>
 
           </div>
@@ -1033,6 +1191,10 @@ export class ToolsView extends Component {
     });
 
     // 4. Afinador
+    this.container.querySelector('#btnToggleLiveTuner')?.addEventListener('click', () => {
+      this.toggleLiveTuning();
+    });
+
     this.container.querySelector('#selTuningPreset')?.addEventListener('change', (e) => {
       this.selectedTuning = e.target.value;
       this.renderTunerStrings();
