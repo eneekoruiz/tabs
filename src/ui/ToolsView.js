@@ -642,8 +642,8 @@ export class ToolsView extends Component {
         </div>
       </div>
     `;
-
-    this.bindEvents();\n      if (!this.earCurrentQuestion) { this.startEarTest(); }
+    this.bindEvents();
+    if (!this.earCurrentQuestion) { this.startEarTest(); }
   }
 
   bindEvents() {
