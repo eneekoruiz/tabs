@@ -472,3 +472,5 @@ body.theme-ivory .explore-search-input {
 .tool-glass-card:fullscreen .fullscreen-only-options {
   display: block !important;
 }
+@import url('./components/command-palette.css');
+@import url('./components/tools-premium.css');

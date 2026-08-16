@@ -10,6 +10,7 @@ import { db } from './data/Database.js';
 import { metadataParser } from './data/MetadataParser.js';
 import { TransportBar } from './ui/TransportBar.js';
 import { LibraryExplorerV2 } from './ui/LibraryExplorerV2.js';
+import { CommandPalette } from './ui/CommandPalette.js';
 import { Mixer } from './ui/Mixer.js';
 import { Fretboard } from './ui/Fretboard.js';
 import { SpeedTrainer } from './ui/SpeedTrainer.js';
