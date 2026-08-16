@@ -32,7 +32,7 @@
   background: rgba(14, 14, 20, 0.94);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.16);
+  border: 1px solid var(--border-strong);
   border-radius: 30px;
   padding: 6px 12px;
   box-shadow: 0 16px 48px rgba(0, 0, 0, 0.85);
@@ -61,7 +61,7 @@
 
 .btn-stage-exit:hover {
   background: #ff5252;
-  color: #ffffff;
+  color: var(--text-primary);
   transform: scale(1.03);
 }
 
@@ -69,9 +69,9 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  color: #ffffff;
+  background: var(--border-subtle);
+  border: 1px solid var(--border-strong);
+  color: var(--text-primary);
   font-size: 0.78rem;
   font-weight: 800;
   padding: 6px 12px;
@@ -81,7 +81,7 @@
 }
 
 .btn-stage-record:hover {
-  background: rgba(255, 255, 255, 0.15);
+  background: var(--border-strong);
 }
 
 .btn-stage-record.recording-active {
@@ -93,7 +93,7 @@
 .btn-stage-autoscroll {
   background: var(--accent-primary);
   border: none;
-  color: #ffffff;
+  color: var(--text-primary);
   font-size: 0.78rem;
   font-weight: 800;
   padding: 6px 14px;
@@ -104,13 +104,13 @@
 
 .btn-stage-autoscroll.active {
   background: #00e676;
-  color: #000000;
+  color: var(--text-inverse);
 }
 
 .stage-zoom-stepper {
   display: flex;
   align-items: center;
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--border-subtle);
   border-radius: 20px;
   overflow: hidden;
 }
@@ -118,7 +118,7 @@
 .btn-stage-zoom-btn {
   background: transparent;
   border: none;
-  color: #ffffff;
+  color: var(--text-primary);
   font-size: 0.9rem;
   font-weight: 800;
   padding: 5px 10px;
@@ -126,7 +126,7 @@
 }
 
 .btn-stage-zoom-btn:hover {
-  background: rgba(255, 255, 255, 0.15);
+  background: var(--border-strong);
 }
 
 .stage-hud-font-badge {
@@ -143,7 +143,7 @@
    ========================================================================== */
 .song-chords-visual-gallery {
   background: #09090f;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--border-subtle);
   border-radius: 12px;
   padding: 14px;
   margin-bottom: 20px;
@@ -154,7 +154,7 @@
   justify-content: space-between;
   align-items: flex-end;
   margin-bottom: 12px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid var(--border-subtle);
   padding-bottom: 8px;
   flex-wrap: wrap;
   gap: 6px;
@@ -176,7 +176,7 @@
 .gallery-heading {
   font-size: 0.95rem;
   font-weight: 800;
-  color: #ffffff;
+  color: var(--text-primary);
   margin: 0;
 }
 
@@ -230,7 +230,7 @@
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 1px solid var(--border-subtle);
   padding-top: 6px;
 }
 
@@ -258,9 +258,9 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--border-subtle);
   border: 1px solid var(--border-strong);
-  color: #ffffff;
+  color: var(--text-primary);
   font-size: 0.8rem;
   font-weight: 700;
   padding: 6px 11px;
@@ -270,7 +270,7 @@
 }
 
 .btn-quick-record-action:hover {
-  background: rgba(255, 255, 255, 0.12);
+  background: var(--border-strong);
   border-color: #ff1744;
 }
 
@@ -313,7 +313,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  color: #ffffff;
+  color: var(--text-primary);
   font-size: 0.85rem;
 }
 
@@ -327,7 +327,7 @@
 
 .btn-rec-stop-bar {
   background: #ff1744;
-  color: #ffffff;
+  color: var(--text-primary);
   border: none;
   font-weight: 800;
   font-size: 0.78rem;
@@ -379,7 +379,7 @@
 
 .btn-rec-download {
   background: #00e676;
-  color: #000000;
+  color: var(--text-inverse);
   border: none;
   font-weight: 800;
   font-size: 0.78rem;
@@ -395,7 +395,7 @@
 
 .btn-rec-dismiss {
   background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  border: 1px solid var(--border-strong);
   color: var(--text-muted);
   font-size: 0.78rem;
   padding: 6px 10px;
@@ -404,7 +404,7 @@
 }
 
 .btn-rec-dismiss:hover {
-  color: #ffffff;
+  color: var(--text-primary);
   border-color: #ff5252;
 }
 
@@ -430,9 +430,9 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--border-subtle);
   border: 1px solid var(--border-strong);
-  color: #ffffff;
+  color: var(--text-primary);
   font-size: 0.8rem;
   font-weight: 700;
   padding: 6px 12px;
@@ -458,7 +458,7 @@
   font-size: 1.35rem;
   font-weight: 800;
   margin: 0;
-  color: #ffffff;
+  color: var(--text-primary);
 }
 
 .lyrics-song-artist {
@@ -534,7 +534,7 @@
 
 .lyrics-chords-container.theme-paper .chord-badge {
   background: #ff5722;
-  color: #ffffff;
+  color: var(--text-primary);
   border-color: #e64a19;
   font-weight: 800;
 }
@@ -560,9 +560,9 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--border-subtle);
   border: 1px solid var(--border-strong);
-  color: #ffffff;
+  color: var(--text-primary);
   font-size: 0.8rem;
   font-weight: 700;
   padding: 6px 12px;
@@ -573,7 +573,7 @@
 
 .btn-instrument-select:hover,
 .btn-more-options:hover {
-  background: rgba(255, 255, 255, 0.15);
+  background: var(--border-strong);
   border-color: var(--accent-primary);
 }
 
@@ -589,7 +589,7 @@
   left: 0;
   z-index: 100;
   background: #141420;
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  border: 1px solid var(--border-strong);
   border-radius: 12px;
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.85);
   padding: 6px;
@@ -606,7 +606,7 @@
   right: 0;
   z-index: 100;
   background: #141420;
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  border: 1px solid var(--border-strong);
   border-radius: 12px;
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.85);
   padding: 10px;
@@ -641,9 +641,9 @@
 }
 
 .sel-options-input {
-  background: #1c1c2b;
+  background: var(--bg-surface-raised);
   border: 1px solid var(--border-strong);
-  color: #ffffff;
+  color: var(--text-primary);
   padding: 4px 8px;
   border-radius: 6px;
   font-size: 0.78rem;
@@ -655,11 +655,11 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--border-subtle);
+  border: 1px solid var(--border-subtle);
   border-radius: 6px;
   padding: 7px 10px;
-  color: #ffffff;
+  color: var(--text-primary);
   font-size: 0.78rem;
   font-weight: 700;
   cursor: pointer;
@@ -674,7 +674,7 @@
 
 .btn-menu-action.active {
   background: #00e676;
-  color: #000000;
+  color: var(--text-inverse);
 }
 
 .options-viewmode-row {
@@ -699,7 +699,7 @@
 
 .btn-viewmode-choice.active {
   background: var(--accent-primary);
-  color: #ffffff;
+  color: var(--text-primary);
 }
 
 .inst-option-card {
@@ -710,7 +710,7 @@
   border: 1px solid transparent;
   border-radius: 8px;
   padding: 8px 10px;
-  color: #ffffff;
+  color: var(--text-primary);
   cursor: pointer;
   text-align: left;
   transition: all var(--transition-fast);
@@ -718,7 +718,7 @@
 }
 
 .inst-option-card:hover {
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--border-subtle);
 }
 
 .inst-option-card.active {
@@ -746,7 +746,7 @@
 .transpose-box {
   display: flex;
   align-items: center;
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--border-subtle);
   border: 1px solid var(--border-strong);
   border-radius: 8px;
   padding: 1px 3px;
@@ -767,7 +767,7 @@
 
 .btn-transpose-step:hover {
   background: var(--accent-primary);
-  color: #fff;
+  color: var(--text-primary);
 }
 
 .transpose-value-display {
@@ -782,7 +782,7 @@
 .font-scaler-group {
   display: flex;
   align-items: center;
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--border-subtle);
   border: 1px solid var(--border-strong);
   border-radius: 8px;
   overflow: hidden;
@@ -791,7 +791,7 @@
 .btn-font-scale-step {
   background: transparent;
   border: none;
-  color: #ffffff;
+  color: var(--text-primary);
   font-size: 0.8rem;
   font-weight: 800;
   padding: 6px 9px;
@@ -830,7 +830,7 @@
   display: flex;
   align-items: center;
   gap: 5px;
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--border-subtle);
   border: 1px solid var(--border-strong);
   border-radius: 8px;
   padding: 3px 6px;
@@ -839,7 +839,7 @@
 .btn-autoscroll-toggle {
   background: var(--accent-primary);
   border: none;
-  color: #ffffff;
+  color: var(--text-primary);
   font-weight: 700;
   font-size: 0.78rem;
   padding: 5px 10px;
@@ -851,11 +851,11 @@
 
 .btn-autoscroll-toggle.active {
   background: #00e676;
-  color: #000;
+  color: var(--text-inverse);
 }
 
 .btn-autoscroll-step-btn {
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--border-subtle);
   border: 1px solid var(--border-strong);
   color: inherit;
   font-weight: 800;
@@ -873,7 +873,7 @@
 
 .btn-autoscroll-step-btn:hover {
   background: var(--accent-primary);
-  color: #fff;
+  color: var(--text-primary);
 }
 
 .autoscroll-speed-slider {
@@ -921,7 +921,7 @@
   margin-top: 20px;
   margin-bottom: 10px;
   padding-bottom: 4px;
-  border-bottom: 1px dashed rgba(255, 255, 255, 0.15);
+  border-bottom: 1px dashed var(--border-strong);
 }
 
 .lyrics-line {
@@ -960,7 +960,7 @@
 
 .chord-badge:hover {
   background: var(--accent-primary);
-  color: #ffffff;
+  color: var(--text-primary);
   box-shadow: 0 0 10px var(--accent-primary-glow);
   transform: translateY(-2px);
 }
@@ -1000,7 +1000,7 @@
 .btn-popover-x-close {
   background: rgba(255, 255, 255, 0.1);
   border: none;
-  color: #ffffff;
+  color: var(--text-primary);
   font-size: 1rem;
   font-weight: 800;
   width: 28px;
@@ -1015,7 +1015,7 @@
 
 .btn-popover-x-close:hover {
   background: #ff5252;
-  color: #ffffff;
+  color: var(--text-primary);
   transform: scale(1.1);
 }
 
@@ -1041,7 +1041,7 @@
 
 .btn-popover-inst.active {
   background: var(--accent-primary);
-  color: #ffffff;
+  color: var(--text-primary);
 }
 
 .chord-popover-diagram {
@@ -1063,7 +1063,7 @@
 
 .btn-audition-chord {
   background: linear-gradient(135deg, #00e5ff 0%, #0088ff 100%);
-  color: #000000;
+  color: var(--text-inverse);
   font-weight: 800;
   border: none;
   font-size: 0.78rem;
@@ -1081,7 +1081,7 @@
 .btn-close-popover {
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid var(--border-strong);
-  color: #ffffff;
+  color: var(--text-primary);
   font-size: 0.78rem;
   font-weight: 700;
   padding: 7px 14px;
@@ -1110,7 +1110,7 @@
   background: rgba(20, 20, 25, 0.75);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255,255,255,0.08);
+  border: 1px solid var(--border-subtle);
   padding: 10px 20px;
   border-radius: 30px;
   z-index: 10000;
@@ -1168,7 +1168,7 @@
 .options-menu-row {
   margin-top: 8px;
   padding-top: 12px;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 1px solid var(--border-subtle);
 }
 @keyframes popoverFadeIn {
   from { opacity: 0; transform: translateY(-10px) scale(0.95); }

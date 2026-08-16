@@ -85,7 +85,7 @@
 }
 
 .btn-root {
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--border-subtle);
   border: 1px solid var(--border-subtle);
   color: var(--text-secondary);
   font-family: var(--font-mono);
@@ -99,12 +99,12 @@
 
 .btn-root:hover {
   background: rgba(255, 255, 255, 0.1);
-  color: #fff;
+  color: var(--text-primary);
 }
 
 .btn-root.active {
   background: var(--accent-primary);
-  color: #fff;
+  color: var(--text-primary);
   border-color: var(--accent-primary);
   box-shadow: 0 0 8px var(--accent-primary-glow);
 }
@@ -132,13 +132,13 @@
 }
 
 .btn-type:hover {
-  background: rgba(255, 255, 255, 0.08);
-  color: #fff;
+  background: var(--border-subtle);
+  color: var(--text-primary);
 }
 
 .btn-type.active {
   background: var(--accent-primary);
-  color: #fff;
+  color: var(--text-primary);
   border-color: var(--accent-primary);
 }
 

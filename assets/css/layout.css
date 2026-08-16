@@ -18,15 +18,7 @@ html, body {
   -webkit-font-smoothing: antialiased;
 }
 
-.app-root {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  width: 100vw;
-  overflow: hidden;
-  background: radial-gradient(circle at 50% 0%, #151520 0%, #08080b 60%);
-  position: relative;
-}
+.app-root { display: flex; flex-direction: column; height: 100vh; width: 100vw; overflow: hidden; position: relative; }
 
 /* ==========================================================================
    Barra Superior de Transporte
@@ -254,10 +246,7 @@ body.stage-mode-active .lyrics-chords-container {
     height: auto !important;
   }
 
-  .app-root {
-    background: #ffffff !important;
-    height: auto !important;
-  }
+  .app-root { display: flex; flex-direction: column; height: 100vh; width: 100vw; overflow: hidden; position: relative; }
 
   #transport-container,
   .song-info-strip,
@@ -415,62 +404,5 @@ h1, h2, .song-card-title, .lyrics-song-title {
   border-radius: 20px !important;
 }
 
-/* Base Theme Switcher Classes */
-body.theme-charcoal {
-  background: var(--bg-app-dark) !important;
-  color: #e2e4e9 !important;
-}
-body.theme-charcoal .bottom-nav-bar, body.theme-charcoal .top-app-bar {
-  background: var(--bg-surface-dark) !important;
-  border-color: rgba(255,255,255,0.05) !important;
-}
-body.theme-charcoal .song-card, body.theme-charcoal .setlist-card, body.theme-charcoal .tool-glass-card {
-  background: var(--bg-surface-solid-dark) !important;
-  border-color: rgba(255,255,255,0.05) !important;
-}
-
-body.theme-ivory {
-  background: var(--bg-app-light) !important;
-  color: #2c2e33 !important;
-}
-body.theme-ivory .bottom-nav-bar, body.theme-ivory .top-app-bar {
-  background: var(--bg-surface-light) !important;
-  border-color: rgba(0,0,0,0.05) !important;
-}
-body.theme-ivory .bottom-nav-btn {
-  color: #555 !important;
-}
-body.theme-ivory .bottom-nav-btn.active {
-  color: var(--accent-primary) !important;
-  text-shadow: none !important;
-}
-body.theme-ivory .song-card, body.theme-ivory .setlist-card, body.theme-ivory .tool-glass-card {
-  background: var(--bg-surface-solid-light) !important;
-  border-color: rgba(0,0,0,0.05) !important;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.05) !important;
-}
-body.theme-ivory .song-card-title, body.theme-ivory .setlist-card-title, body.theme-ivory h2 {
-  color: #1a1a1a !important;
-}
-body.theme-ivory .song-card-artist, body.theme-ivory .setlist-card-count {
-  color: #666 !important;
-}
-body.theme-ivory .explore-search-input {
-  background: #fff;
-  border-color: rgba(0,0,0,0.1);
-  color: #000;
-}
-.song-card-artist, .setlist-card-count {
-  color: inherit !important;
-  font-weight: 700 !important;
-  font-size: 0.95rem !important;
-  opacity: 0.95;
-}
-.fullscreen-only-options {
-  display: none !important;
-}
-.tool-glass-card:fullscreen .fullscreen-only-options {
-  display: block !important;
-}
 @import url('./components/command-palette.css');
 @import url('./components/tools-premium.css');

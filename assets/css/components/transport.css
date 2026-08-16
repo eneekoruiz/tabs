@@ -30,7 +30,7 @@
 
 .logo-badge {
   background: linear-gradient(135deg, #ff5722, #ff9800);
-  color: #fff;
+  color: var(--text-primary);
   font-size: 0.65rem;
   font-weight: 800;
   padding: 2px 6px;
@@ -89,7 +89,7 @@
 
 .btn-primary {
   background-color: var(--accent-primary);
-  color: #fff;
+  color: var(--text-primary);
 }
 
 .btn-primary:hover:not(:disabled) {

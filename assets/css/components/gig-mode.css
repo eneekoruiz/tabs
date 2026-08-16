@@ -59,7 +59,7 @@ body.gig-mode-active #alphatab {
 
 .gig-live-indicator {
   background: #d32f2f;
-  color: #fff;
+  color: var(--text-primary);
   font-size: 0.72rem;
   font-weight: 900;
   padding: 2px 8px;
@@ -76,7 +76,7 @@ body.gig-mode-active #alphatab {
 .gig-song-name {
   font-size: 1.15rem;
   font-weight: 800;
-  color: #fff;
+  color: var(--text-primary);
 }
 
 .gig-song-artist {
@@ -110,7 +110,7 @@ body.gig-mode-active #alphatab {
   display: flex;
   align-items: center;
   gap: 6px;
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--border-subtle);
   border: 1px solid var(--border-subtle);
   padding: 6px 12px;
   border-radius: 8px;
@@ -150,7 +150,7 @@ body.gig-mode-active #alphatab {
   background: rgba(20, 20, 28, 0.85);
   backdrop-filter: var(--glass-blur);
   border: 1px solid var(--glass-border);
-  color: #fff;
+  color: var(--text-primary);
   font-size: 0.92rem;
   font-weight: 700;
   padding: 10px 20px;
@@ -168,7 +168,7 @@ body.gig-mode-active #alphatab {
 .btn-gig-play {
   background: var(--accent-primary);
   border: 1px solid var(--accent-primary);
-  color: #fff;
+  color: var(--text-primary);
   font-size: 1.05rem;
   font-weight: 800;
   padding: 12px 28px;

@@ -15,8 +15,8 @@
 
 .library-header {
   padding: 16px;
-  background: #11111a;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle) !important;
   border-radius: 16px;
   display: flex;
   flex-direction: column;
@@ -34,7 +34,7 @@
 .library-title-row h2 {
   font-size: 1.15rem;
   font-weight: 800;
-  color: #ffffff;
+  color: var(--text-primary);
   flex: 1;
   letter-spacing: -0.3px;
   margin: 0;
@@ -66,9 +66,9 @@
 
 .library-search-box input {
   width: 100%;
-  background-color: #181826;
+  background-color: var(--bg-surface);
   border: 1px solid var(--border-strong);
-  color: #ffffff;
+  color: var(--text-primary);
   padding: 10px 36px 10px 38px;
   border-radius: 10px;
   font-size: 0.88rem;
@@ -106,7 +106,7 @@
 
 .genre-chip {
   background: #181826;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--border-subtle) !important;
   color: var(--text-secondary);
   font-size: 0.75rem;
   font-weight: 700;
@@ -118,13 +118,13 @@
 }
 
 .genre-chip:hover {
-  background: rgba(255, 255, 255, 0.12);
-  color: #ffffff;
+  background: var(--border-strong);
+  color: var(--text-primary);
 }
 
 .genre-chip.active {
   background: var(--accent-primary);
-  color: #ffffff;
+  color: var(--text-primary);
   border-color: var(--accent-primary);
   box-shadow: 0 0 10px var(--accent-primary-glow);
 }
@@ -134,7 +134,7 @@
   display: flex;
   gap: 6px;
   background: #09090e;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--border-subtle) !important;
   border-radius: 8px;
   padding: 3px;
 }
@@ -153,12 +153,12 @@
 }
 
 .lib-tab:hover {
-  color: #ffffff;
+  color: var(--text-primary);
 }
 
 .lib-tab.active {
   background: var(--accent-primary);
-  color: #ffffff;
+  color: var(--text-primary);
   box-shadow: 0 2px 8px rgba(255, 87, 34, 0.4);
 }
 
@@ -171,9 +171,9 @@
 
 .btn-import {
   flex: 1;
-  background-color: #1c1c2b;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  color: #ffffff;
+  background-color: var(--bg-surface-raised);
+  border: 1px solid var(--border-strong);
+  color: var(--text-primary);
   font-size: 0.78rem;
   font-weight: 700;
   padding: 8px 10px;
@@ -199,7 +199,7 @@
 
 .btn-demo-quick:hover {
   background: #00e5ff;
-  color: #000000;
+  color: var(--text-inverse);
 }
 
 /* Lista de Canciones */
@@ -234,8 +234,8 @@
 
 /* Tarjetas de Canción en Biblioteca */
 .song-card {
-  background: #14141e;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--bg-surface-solid);
+  border: 1px solid var(--border-subtle) !important;
   border-radius: 12px;
   padding: 12px 14px;
   display: flex;
@@ -246,7 +246,7 @@
 }
 
 .song-card:hover {
-  background: #1c1c2b;
+  background: var(--bg-surface-raised);
   border-color: var(--accent-primary);
   transform: translateY(-2px);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
@@ -277,7 +277,7 @@
 .song-card-title {
   font-weight: 800;
   font-size: 0.95rem;
-  color: #ffffff;
+  color: var(--text-primary);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -310,8 +310,8 @@
 }
 
 .btn-fav-song, .btn-del-song, .btn-add-setlist {
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--border-subtle);
+  border: 1px solid var(--border-subtle) !important;
   cursor: pointer;
   font-size: 0.85rem;
   padding: 6px 8px;
@@ -321,12 +321,12 @@
 }
 
 .btn-fav-song:hover {
-  background: #ffb300;
-  color: #000000;
+  background: var(--accent-amber);
+  color: var(--text-inverse);
 }
 
 .fav-active {
-  background: rgba(255, 179, 0, 0.2);
+  background: var(--accent-amber); opacity: 0.8;
   border-color: #ffb300;
   color: #ffb300;
 }
@@ -334,12 +334,12 @@
 .btn-del-song:hover {
   background: #ff5252;
   border-color: #ff5252;
-  color: #ffffff;
+  color: var(--text-primary);
 }
 
 .setlist-card {
-  background: #14141e;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--bg-surface-solid);
+  border: 1px solid var(--border-subtle) !important;
   border-radius: 12px;
   padding: 14px;
   display: flex;
@@ -350,7 +350,7 @@
 .setlist-card-title {
   font-size: 0.95rem;
   font-weight: 800;
-  color: #ffffff;
+  color: var(--text-primary);
 }
 
 .setlist-card-count {
@@ -360,7 +360,7 @@
 
 .btn-play-setlist {
   background: var(--accent-primary);
-  color: #ffffff;
+  color: var(--text-primary);
   border: none;
   font-weight: 800;
   padding: 6px 12px;
@@ -372,8 +372,8 @@
 }
 .home-song-card {
   min-width: 0 !important;
-  background: linear-gradient(145deg, #161622 0%, #0d0d14 100%) !important;
-  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+  background: var(--bg-surface-solid) !important;
+  border: 1px solid var(--border-subtle) !important;
   border-radius: 14px !important;
   padding: 14px 16px !important;
 }
@@ -383,8 +383,8 @@
 }
 .song-card, .setlist-card {
   min-width: 0 !important;
-  background: linear-gradient(145deg, #161622 0%, #0d0d14 100%) !important;
-  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+  background: var(--bg-surface-solid) !important;
+  border: 1px solid var(--border-subtle) !important;
   border-radius: 14px !important;
   padding: 14px 16px !important;
   transition: all 0.3s ease;
@@ -394,5 +394,5 @@
   box-shadow: 0 10px 30px rgba(0,0,0,0.6) !important;
 }
 .song-card-artist {
-  color: #a0a0b0 !important;
+  color: var(--text-secondary) !important;
 }

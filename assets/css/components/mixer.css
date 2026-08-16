@@ -108,7 +108,7 @@
 
 .btn-view-track.active {
   background-color: var(--accent-primary);
-  color: #fff;
+  color: var(--text-primary);
   border-color: var(--accent-primary);
   font-weight: 700;
 }
@@ -159,7 +159,7 @@
 
 .btn-solo.active {
   background-color: var(--accent-solo);
-  color: #000;
+  color: var(--text-inverse);
   border-color: var(--accent-solo);
 }
 
@@ -169,7 +169,7 @@
 
 .btn-mute.active {
   background-color: var(--accent-mute);
-  color: #fff;
+  color: var(--text-primary);
   border-color: var(--accent-mute);
 }
 

@@ -78,11 +78,23 @@ test.describe('🎸 Tabs & Chords PRO - Suite E2E Modo Letras & Acordes Multi-In
   });
 
   test('2. Auditoría de Accesibilidad Total en Viewport Móvil (axe-core)', async ({ page }) => {
-    const accessibilityScanResults = await new AxeBuilder({ page })
-      .disableRules(['color-contrast'])
-      .analyze();
+    // Check default theme (should be charcoal/dark)
+    await page.evaluate(() => {
+      document.body.className = 'theme-charcoal';
+      localStorage.setItem('app_visual_theme', 'oled');
+    });
+    const resultsCharcoal = await new AxeBuilder({ page }).analyze();
+    expect(resultsCharcoal.violations).toEqual([]);
 
-    expect(accessibilityScanResults.violations).toEqual([]);
+    // Check ivory theme (light)
+    await page.evaluate(() => {
+      document.body.className = 'theme-ivory';
+      localStorage.setItem('app_visual_theme', 'paper');
+    });
+    // Wait a tick for CSS transition
+    await page.waitForTimeout(500);
+    const resultsIvory = await new AxeBuilder({ page }).analyze();
+    expect(resultsIvory.violations).toEqual([]);
   });
 
   test('3. Blackbird: Verificación de Letra Real y Oficial', async ({ page }) => {

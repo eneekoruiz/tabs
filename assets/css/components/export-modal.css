@@ -49,7 +49,7 @@
 .export-option-title {
   font-weight: 700;
   font-size: 0.9rem;
-  color: #fff;
+  color: var(--text-primary);
 }
 
 .export-option-desc {

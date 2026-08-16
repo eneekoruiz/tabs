@@ -116,7 +116,7 @@
   width: 16px;
   left: 2px;
   bottom: 2px;
-  background-color: #ffffff;
+  background-color: var(--text-primary);
   transition: .25s cubic-bezier(0.4, 0, 0.2, 1);
   border-radius: 50%;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);

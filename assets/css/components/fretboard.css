@@ -142,7 +142,7 @@
   height: 16px;
   border-radius: 50%;
   background: radial-gradient(circle, #ff5722 0%, #d84315 100%);
-  color: #fff;
+  color: var(--text-primary);
   font-size: 0.65rem;
   font-weight: 800;
   font-family: var(--font-mono);

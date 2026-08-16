@@ -90,7 +90,7 @@
 }
 
 .white-key.key-active .piano-note-label {
-  color: #fff;
+  color: var(--text-primary);
 }
 
 .black-key {
