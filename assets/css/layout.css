@@ -298,3 +298,10 @@ body.stage-mode-active .lyrics-chords-container {
     page-break-after: always;
   }
 }
+.top-app-bar {
+  background: rgba(18, 18, 25, 0.85) !important;
+  backdrop-filter: blur(25px) !important;
+  -webkit-backdrop-filter: blur(25px) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.5) !important;
+}

@@ -291,30 +291,48 @@ class OnlineSongProvider {
   async searchOnline(query) {
     if (!query || query.trim().length < 1) return [];
 
-    const q = query.toLowerCase().trim();
-    const results = [];
+    try {
+      // Usar iTunes API (millones de canciones) para un catálogo verdaderamente infinito y real
+      const cleanQuery = encodeURIComponent(query.trim());
+      const res = await fetch(`https://itunes.apple.com/search?term=${cleanQuery}&media=music&entity=song&limit=40`);
+      if (res.ok) {
+        const data = await res.json();
+        const results = [];
+        const seen = new Set();
 
-    for (const item of this.index) {
-      if (item.title.toLowerCase().includes(q) || item.artist.toLowerCase().includes(q)) {
-        results.push(item);
+        data.results.forEach(track => {
+          const key = (track.trackName + track.artistName).toLowerCase();
+          if (!seen.has(key)) {
+            seen.add(key);
+            results.push({
+              id: track.trackId,
+              title: track.trackName,
+              artist: track.artistName,
+              genre: track.primaryGenreName || 'Pop',
+              difficulty: 'Variable',
+              tuning: 'Standard E',
+              tempo: 120, // iTunes no da tempo exacto, pero podemos calcularlo luego si es necesario
+              isOnline: true,
+            });
+          }
+        });
+
+        // Combinar con la base local si hay alguna que coincida exactamente
+        const localResults = [];
+        const q = query.toLowerCase().trim();
+        for (const item of this.index) {
+          if (item.title.toLowerCase().includes(q) || item.artist.toLowerCase().includes(q)) {
+            localResults.push(item);
+          }
+        }
+
+        return [...localResults, ...results].slice(0, 50);
       }
+    } catch (e) {
+      console.warn('Error buscando en iTunes API', e);
     }
 
-    if (results.length === 0) {
-      const formattedTitle = query.charAt(0).toUpperCase() + query.slice(1);
-      results.push({
-        id: `custom_${Date.now()}`,
-        title: formattedTitle,
-        artist: 'Artista Oficial',
-        genre: 'Pop',
-        difficulty: 'Intermedio',
-        tuning: 'Standard E',
-        tempo: 120,
-        isOnline: true,
-      });
-    }
-
-    return results.slice(0, 30);
+    return [];
   }
 
   /**
@@ -330,27 +348,29 @@ class OnlineSongProvider {
       return this.cache.get(cacheKey);
     }
 
-    // 1. Base de datos interna de letras reales oficiales y completas
+    // 1. Base de datos interna de letras reales oficiales y completas (si existe)
     const matchedLyrics = this.getKnownSongLyrics(title, artist);
     if (matchedLyrics) {
       this.cache.set(cacheKey, matchedLyrics);
       return matchedLyrics;
     }
 
-    // 2. Consulta en vivo a LRCLIB API (Base de datos abierta mundial con millones de letras reales)
+    // 2. Consulta en vivo a LRCLIB API (Millones de letras REALES, CERO relleno)
     try {
       const cleanArtist = encodeURIComponent(artist || '');
       const cleanTitle = encodeURIComponent(title || '');
       const resp = await fetch(`https://lrclib.net/api/get?artist_name=${cleanArtist}&track_name=${cleanTitle}`, {
-        signal: AbortSignal.timeout(3500)
+        signal: AbortSignal.timeout(4000)
       });
       if (resp.ok) {
         const data = await resp.json();
         const rawLyrics = data.plainLyrics || data.syncedLyrics;
-        if (rawLyrics && rawLyrics.trim().length > 20) {
-          const chorded = this.convertPlainLyricsToChordPro(rawLyrics);
-          this.cache.set(cacheKey, chorded);
-          return chorded;
+        if (rawLyrics && rawLyrics.trim().length > 10) {
+          // Ya NO intercalamos acordes falsos. Mostramos la letra pura si no hay acordes.
+          const cleaned = rawLyrics.replace(/\[\d{2}:\d{2}\.\d{2,3}\]/g, '');
+          const finalOutput = "Info: Letra 100% original recuperada de LRCLIB (Acordes oficiales no disponibles en API abierta)\n\n" + cleaned;
+          this.cache.set(cacheKey, finalOutput);
+          return finalOutput;
         }
       }
     } catch (e) {}
@@ -360,82 +380,25 @@ class OnlineSongProvider {
       const cleanArtist = encodeURIComponent(artist || '');
       const cleanTitle = encodeURIComponent(title || '');
       const resp2 = await fetch(`https://api.lyrics.ovh/v1/${cleanArtist}/${cleanTitle}`, {
-        signal: AbortSignal.timeout(3500)
+        signal: AbortSignal.timeout(4000)
       });
       if (resp2.ok) {
         const data2 = await resp2.json();
-        if (data2.lyrics && data2.lyrics.trim().length > 20) {
-          const chorded = this.convertPlainLyricsToChordPro(data2.lyrics);
-          this.cache.set(cacheKey, chorded);
-          return chorded;
+        if (data2.lyrics && data2.lyrics.trim().length > 10) {
+          const finalOutput = "Info: Letra 100% original recuperada de Lyrics.ovh\n\n" + data2.lyrics;
+          this.cache.set(cacheKey, finalOutput);
+          return finalOutput;
         }
       }
     } catch (e) {}
 
-    // 4. Armonización real basada en el título y el compás musical sin texto artificial
-    const genericChorded = this.generateAuthenticSongStructure(title);
-    this.cache.set(cacheKey, genericChorded);
-    return genericChorded;
+    // 4. Si no se encuentra, NO devolver relleno.
+    const notFound = `Info: Letra oficial no encontrada para "${title}" de "${artist}".
+Vuelve a intentarlo o importa el archivo de la partitura (.gp) desde tu biblioteca.`;
+    this.cache.set(cacheKey, notFound);
+    return notFound;
   }
-
-  /**
-   * Intercala acordes armónicos reales sobre cada línea de la letra original de forma natural.
-   */
-  convertPlainLyricsToChordPro(plainText) {
-    // Limpiar marcas de tiempo como [00:12.34] si vienen de letras sincronizadas
-    const cleaned = plainText.replace(/\[\d{2}:\d{2}\.\d{2,3}\]/g, '');
-    const lines = cleaned.split('\n');
-    const progressions = [
-      ['[C]', '[G]', '[Am]', '[F]'],
-      ['[G]', '[D]', '[Em]', '[C]'],
-      ['[Am]', '[F]', '[C]', '[G]'],
-      ['[Em]', '[C]', '[G]', '[D]'],
-      ['[D]', '[A]', '[Bm]', '[G]'],
-    ];
-    const selectedProg = progressions[Math.floor(Math.random() * progressions.length)];
-    let chordIdx = 0;
-    const output = [];
-
-    for (let rawLine of lines) {
-      const line = rawLine.trim();
-      if (!line) {
-        output.push('');
-        continue;
-      }
-
-      if (/^(verse|chorus|bridge|intro|outro|pre-chorus|estribillo|verso)/i.test(line)) {
-        output.push(`[${line}]`);
-        continue;
-      }
-
-      const chord = selectedProg[chordIdx % selectedProg.length];
-      chordIdx++;
-
-      // Añadir acorde al principio de la línea de la letra real
-      output.push(`${chord}${line}`);
-    }
-
-    return output.join('\n');
-  }
-
-  generateAuthenticSongStructure(title) {
-    return `[Intro]
-[C] [G] [Am] [F]
-
-[Verse 1]
-[C]Yeah, here we go again
-[G]Looking back at the road we came
-[Am]Every single night and day
-[F]Finding our own way
-
-[Chorus]
-[C]And I'm flying high
-[G]Reaching for the sky
-[Am]Never gonna stop
-[F]Till we reach the top [C]`;
-  }
-
-  /**
+/**
    * Base de datos exhaustiva de letras REALES y acordes EXACTOS oficiales.
    */
   getKnownSongLyrics(title, artist) {
