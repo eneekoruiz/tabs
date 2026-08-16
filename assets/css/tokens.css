@@ -72,9 +72,9 @@ body.theme-ivory {
   --glass-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
 
   /* Acentos Elegantes */
-  --accent-primary: #c92a2a; /* Crimson Red */
-  --accent-primary-hover: #e03131;
-  --accent-secondary: #1864ab; /* Classic Blue */
+  --accent-primary: #a81c1c; /* Deep Crimson - AAA contrast */
+  --accent-primary-hover: #c92a2a;
+  --accent-secondary: #0c4a7e; /* Classic Deep Blue */
   
   /* Texto (Tinta Oscura - Contraste WCAG AAA) */
   --text-primary: #121212;

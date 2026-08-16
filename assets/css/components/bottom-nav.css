@@ -129,8 +129,8 @@
 }
 
 .btn-add-custom-song-hero {
-  background: var(--border-subtle);
-  border: 1px dashed rgba(255, 255, 255, 0.2);
+  background: var(--bg-surface-solid);
+  border: 1px dashed var(--border-strong);
   color: var(--accent-primary);
   font-size: 0.82rem;
   font-weight: 700;
@@ -141,7 +141,7 @@
 }
 
 .btn-add-custom-song-hero:hover {
-  background: rgba(255, 87, 34, 0.15);
+  background: var(--bg-surface-hover);
   border-color: var(--accent-primary);
 }
 
@@ -222,6 +222,9 @@
   border-color: var(--accent-primary);
   transform: translateY(-2px);
   box-shadow: 0 4px 15px var(--accent-primary-glow);
+}
+body.theme-ivory .genre-card-item:hover, body.theme-ivory .genre-card-item.active {
+  color: #ffffff !important;
 }
 
 /* Tarjetas de Canción Enriquecidas (Estilo Spotify & Ultimate Guitar PRO) */
