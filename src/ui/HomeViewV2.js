@@ -168,7 +168,7 @@ export class HomeViewV2 extends Component {
         clearTimeout(debounceTimer);
         debounceTimer = setTimeout(() => {
           this.loadExploreData();
-        }, 200);
+        }, 450);
       });
     }
 

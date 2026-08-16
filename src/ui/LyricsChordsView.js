@@ -1122,6 +1122,15 @@ export class LyricsChordsView extends Component {
 [C]${title}
 [G]${artist}`;
   }
+
+  destroy() {
+    this.stopAutoScroll();
+    if (this.wakeLockSentinel) {
+      this.wakeLockSentinel.release().catch(() => {});
+      this.wakeLockSentinel = null;
+    }
+    super.destroy();
+  }
 }
 
 export default LyricsChordsView;
