@@ -460,3 +460,15 @@ body.theme-ivory .explore-search-input {
   border-color: rgba(0,0,0,0.1);
   color: #000;
 }
+.song-card-artist, .setlist-card-count {
+  color: inherit !important;
+  font-weight: 700 !important;
+  font-size: 0.95rem !important;
+  opacity: 0.95;
+}
+.fullscreen-only-options {
+  display: none !important;
+}
+.tool-glass-card:fullscreen .fullscreen-only-options {
+  display: block !important;
+}

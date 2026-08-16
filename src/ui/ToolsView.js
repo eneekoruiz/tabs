@@ -406,7 +406,7 @@ export class ToolsView extends Component {
           </div>
 
           <!-- 3. CALCULADORA ARMÓNICA DE CEJILLA / CAPOTRASTE -->
-          <div class="tool-glass-card capo-calc-card">
+          <div class="tool-glass-card capo-calc-card collapsed">
             <div class="tool-card-head" style="cursor:pointer;" onclick="this.parentElement.classList.toggle('collapsed')">
     
               <div class="tool-card-title-group">
@@ -453,7 +453,7 @@ export class ToolsView extends Component {
           </div>
 
           <!-- 4. CÍRCULO DE QUINTAS & ACORDES DE LA TONALIDAD -->
-          <div class="tool-glass-card circle-fifths-card">
+          <div class="tool-glass-card circle-fifths-card collapsed">
             <div class="tool-card-head" style="cursor:pointer;" onclick="this.parentElement.classList.toggle('collapsed')">
     
               <div class="tool-card-title-group">
@@ -501,7 +501,7 @@ export class ToolsView extends Component {
           </div>
 
           <!-- 5. ENTRENADOR DE OÍDO (EAR TRAINER) -->
-          <div class="tool-glass-card ear-trainer-card">
+          <div class="tool-glass-card ear-trainer-card collapsed">
             <div class="tool-card-head" style="cursor:pointer;" onclick="this.parentElement.classList.toggle('collapsed')">
     
               <div class="tool-card-title-group">
@@ -534,7 +534,7 @@ export class ToolsView extends Component {
           </div>
 
           <!-- 6. GENERADOR DE ESCALAS -->
-          <div class="tool-glass-card scales-card">
+          <div class="tool-glass-card scales-card collapsed">
             <div class="tool-card-head" style="cursor:pointer;" onclick="this.parentElement.classList.toggle('collapsed')">
     
               <div class="tool-card-title-group">
@@ -575,7 +575,7 @@ export class ToolsView extends Component {
           </div>
 
           <!-- 7. DIAPASÓN ACÚSTICO (PITCH PIPE) -->
-          <div class="tool-glass-card pitch-pipe-card">
+          <div class="tool-glass-card pitch-pipe-card collapsed">
             <div class="tool-card-head" style="cursor:pointer;" onclick="this.parentElement.classList.toggle('collapsed')">
     
               <div class="tool-card-title-group">
@@ -637,6 +637,61 @@ export class ToolsView extends Component {
 
             <div id="quickChordPreviewBox" class="quick-chord-preview-box">
               ${chordEngine.renderChordSVG('Cmaj7', { instrument: 'guitar' })}
+            </div>
+  <div class="fullscreen-only-options" style="margin-top:20px; border-top:1px solid rgba(255,255,255,0.1); padding-top:20px;">
+    <h3 style="margin-bottom:15px; font-size:1.1rem; opacity:0.9;">Explorador Avanzado de Voicings</h3>
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
+      <div>
+        <h4 style="margin-bottom:10px; color:var(--text-secondary); font-size:0.85rem;">Tensión / Extensión</h4>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <span style="padding:4px 10px; background:rgba(255,255,255,0.1); border-radius:12px; cursor:pointer;">7</span>
+          <span style="padding:4px 10px; background:rgba(255,255,255,0.1); border-radius:12px; cursor:pointer;">maj7</span>
+          <span style="padding:4px 10px; background:rgba(255,255,255,0.1); border-radius:12px; cursor:pointer;">9</span>
+          <span style="padding:4px 10px; background:rgba(255,255,255,0.1); border-radius:12px; cursor:pointer;">11</span>
+          <span style="padding:4px 10px; background:rgba(255,255,255,0.1); border-radius:12px; cursor:pointer;">13</span>
+          <span style="padding:4px 10px; background:rgba(255,255,255,0.1); border-radius:12px; cursor:pointer;">sus2</span>
+          <span style="padding:4px 10px; background:rgba(255,255,255,0.1); border-radius:12px; cursor:pointer;">sus4</span>
+          <span style="padding:4px 10px; background:rgba(255,255,255,0.1); border-radius:12px; cursor:pointer;">dim</span>
+          <span style="padding:4px 10px; background:rgba(255,255,255,0.1); border-radius:12px; cursor:pointer;">aug</span>
+        </div>
+      </div>
+      <div>
+        <h4 style="margin-bottom:10px; color:var(--text-secondary); font-size:0.85rem;">Inversiones (Bajo Alterado)</h4>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <span style="padding:4px 10px; background:rgba(255,255,255,0.1); border-radius:12px; cursor:pointer;">Raíz</span>
+          <span style="padding:4px 10px; background:rgba(255,255,255,0.1); border-radius:12px; cursor:pointer;">1ra Inv (/3ra)</span>
+          <span style="padding:4px 10px; background:rgba(255,255,255,0.1); border-radius:12px; cursor:pointer;">2da Inv (/5ta)</span>
+        </div>
+      </div>
+    </div>
+  
+              <div class="fullscreen-only-options" style="margin-top:20px; border-top:1px solid rgba(255,255,255,0.1); padding-top:20px;">
+                <h3 style="margin-bottom:15px; font-size:1.1rem; opacity:0.9;">Explorador Avanzado de Voicings</h3>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
+                  <div>
+                    <h4 style="margin-bottom:10px; color:var(--text-secondary); font-size:0.85rem;">Tensión / Extensión</h4>
+                    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                      <span style="padding:4px 10px; background:rgba(255,255,255,0.1); border-radius:12px; cursor:pointer;">7</span>
+                      <span style="padding:4px 10px; background:rgba(255,255,255,0.1); border-radius:12px; cursor:pointer;">maj7</span>
+                      <span style="padding:4px 10px; background:rgba(255,255,255,0.1); border-radius:12px; cursor:pointer;">9</span>
+                      <span style="padding:4px 10px; background:rgba(255,255,255,0.1); border-radius:12px; cursor:pointer;">11</span>
+                      <span style="padding:4px 10px; background:rgba(255,255,255,0.1); border-radius:12px; cursor:pointer;">13</span>
+                      <span style="padding:4px 10px; background:rgba(255,255,255,0.1); border-radius:12px; cursor:pointer;">sus2</span>
+                      <span style="padding:4px 10px; background:rgba(255,255,255,0.1); border-radius:12px; cursor:pointer;">sus4</span>
+                      <span style="padding:4px 10px; background:rgba(255,255,255,0.1); border-radius:12px; cursor:pointer;">dim</span>
+                      <span style="padding:4px 10px; background:rgba(255,255,255,0.1); border-radius:12px; cursor:pointer;">aug</span>
+                    </div>
+                  </div>
+                  <div>
+                    <h4 style="margin-bottom:10px; color:var(--text-secondary); font-size:0.85rem;">Inversiones (Bajo Alterado)</h4>
+                    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                      <span style="padding:4px 10px; background:rgba(255,255,255,0.1); border-radius:12px; cursor:pointer;">Raíz</span>
+                      <span style="padding:4px 10px; background:rgba(255,255,255,0.1); border-radius:12px; cursor:pointer;">1ra Inv (/3ra)</span>
+                      <span style="padding:4px 10px; background:rgba(255,255,255,0.1); border-radius:12px; cursor:pointer;">2da Inv (/5ta)</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
