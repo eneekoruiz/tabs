@@ -327,15 +327,17 @@ test.describe('🎸 Tabs & Chords PRO - Suite E2E Modo Letras & Acordes Multi-In
     const navTools = page.locator('.nav-tab-btn[data-tab="tools"]');
     await navTools.click();
 
-    const capoCard = page.locator('.capo-calc-card');
+    const capoCard = page.locator('.premium-list-item[data-tool="capo"]');
     await expect(capoCard).toBeVisible();
+    await capoCard.click();
+    await expect(page.locator('#modal-capo')).toBeVisible();
+    await page.locator('#modal-capo .btn-close-modal').click();
 
-    const circleCard = page.locator('.circle-fifths-card');
+    const circleCard = page.locator('.premium-list-item[data-tool="circle"]');
     await expect(circleCard).toBeVisible();
-
-    const harmonyBoxes = circleCard.locator('.harmony-box');
-    await expect(harmonyBoxes).toHaveCount(4);
-    await harmonyBoxes.first().click();
+    await circleCard.click();
+    await expect(page.locator('#modal-circle')).toBeVisible();
+    await page.locator('#modal-circle .btn-close-modal').click();
   });
 
   test('11. Cero Colisiones de Atajos de Teclado al Escribir y Buscar (Texto, Espacio y Letras de Atajos)', async ({ page }) => {
