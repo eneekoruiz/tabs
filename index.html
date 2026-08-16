@@ -118,3 +118,10 @@
   <script type="module" src="src/mainV2.js?t=101"></script>
 </body>
 </html>
+<script>
+  (function() {
+    var theme = localStorage.getItem('app_visual_theme');
+    if (theme === 'paper') document.body.classList.add('theme-ivory');
+    else document.body.classList.add('theme-charcoal');
+  })();
+</script>

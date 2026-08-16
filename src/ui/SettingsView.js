@@ -229,6 +229,12 @@ export class SettingsView extends Component {
       this.visualTheme = e.target.value;
       localStorage.setItem('app_visual_theme', this.visualTheme);
       toast.show('Estilo visual actualizado', 'info', 900);
+      document.body.className = '';
+      if (this.visualTheme === 'paper') {
+        document.body.classList.add('theme-ivory');
+      } else {
+        document.body.classList.add('theme-charcoal');
+      }
     });
 
     // Recuperar Contraseña
