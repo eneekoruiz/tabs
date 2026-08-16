@@ -403,6 +403,3 @@ h1, h2, .song-card-title, .lyrics-song-title {
 .btn-settings-action, .btn-ear-choice, .bottom-nav-btn {
   border-radius: 20px !important;
 }
-
-@import url('./components/command-palette.css');
-@import url('./components/tools-premium.css');
