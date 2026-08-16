@@ -128,30 +128,21 @@ export class LibraryExplorerV2 extends Component {
           <!-- Pestañas de Filtro (Todas, Favoritas, Setlists) -->
           <div class="library-filter-tabs" role="tablist" aria-label="Filtros de biblioteca">
             <button class="lib-tab ${this.activeFilter === 'all' ? 'active' : ''}" data-filter="all" role="tab" aria-selected="${this.activeFilter === 'all'}">Todas</button>
-            <button class="lib-tab ${this.activeFilter === 'favorites' ? 'active' : ''}" data-filter="favorites" role="tab" aria-selected="${this.activeFilter === 'favorites'}">⭐ Favoritas</button>
-            <button class="lib-tab ${this.activeFilter === 'setlists' ? 'active' : ''}" data-filter="setlists" role="tab" aria-selected="${this.activeFilter === 'setlists'}">🎤 Setlists</button>
+            <button class="lib-tab ${this.activeFilter === 'favorites' ? 'active' : ''}" data-filter="favorites" role="tab" aria-selected="${this.activeFilter === 'favorites'}">Favoritas</button>
+            <button class="lib-tab ${this.activeFilter === 'setlists' ? 'active' : ''}" data-filter="setlists" role="tab" aria-selected="${this.activeFilter === 'setlists'}">Setlists</button>
           </div>
 
           <!-- Botones de Importación o Crear Setlist -->
           <div class="library-import-actions">
             ${this.activeFilter === 'setlists' ? `
               <button id="btnCreateSetlist" class="btn btn-import btn-demo-quick" aria-label="Crear nuevo repertorio">
-                <span aria-hidden="true">➕</span> Nuevo Setlist
+                <span aria-hidden="true">+</span> Nuevo Setlist
               </button>
             ` : `
-              <label class="btn btn-import" title="Importar archivos .gp3, .gp4, .gp5, .gpx" aria-label="Importar archivos de tablatura">
-                <span aria-hidden="true">📄</span> + Archivo
+              <label class="btn btn-import" title="Importar archivos (.gp3, .gp4, .gp5, .gpx, .mxl)" aria-label="Importar partitura">
+                <span aria-hidden="true">+</span> Importar Partitura (.gp)
                 <input type="file" id="libFileInput" accept=".gp,.gp3,.gp4,.gp5,.gpx,.xml,.mxl" multiple style="display: none;">
               </label>
-
-              <label class="btn btn-import" title="Importar carpeta con partituras" aria-label="Importar carpeta completa con partituras">
-                <span aria-hidden="true">📁</span> + Carpeta
-                <input type="file" id="libFolderInput" webkitdirectory directory multiple style="display: none;">
-              </label>
-
-              <button id="btnLibDemo" class="btn btn-import btn-demo-quick" title="Cargar Riff Demo" aria-label="Cargar riff de demostración">
-                <span aria-hidden="true">⚡</span> Demo
-              </button>
             `}
           </div>
         </div>

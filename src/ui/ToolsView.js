@@ -277,10 +277,18 @@ export class ToolsView extends Component {
     const capoFret = this.calculateCapoFret(this.capoOriginalKey, this.capoOpenShape);
 
     this.container.innerHTML = `
-      <div class="tools-view-wrapper" role="region" aria-label="Herramientas del Músico">
-        <div class="tools-header-banner">
-          <h1 class="tools-main-title">Herramientas de Estudio</h1>
-          <p class="tools-main-subtitle">Afinador, metrónomo de precisión, círculo de quintas, calculadora de cejilla y escalas.</p>
+      <div class="tools-view-wrapper" id="toolsViewWrapper" role="region" aria-label="Herramientas del Músico">
+        <div class="tools-header-banner" style="display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <h1 class="tools-main-title">Herramientas de Estudio</h1>
+            <p class="tools-main-subtitle">Afinador, metrónomo de precisión, círculo de quintas, calculadora de cejilla y escalas.</p>
+          </div>
+          <button id="btnToolsFullscreen" class="btn-tools-fullscreen" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: bold; display: flex; align-items: center; gap: 8px;">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+              <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>
+            </svg>
+            <span>Pantalla Completa</span>
+          </button>
         </div>
 
         <div class="tools-grid-layout">
@@ -544,6 +552,22 @@ export class ToolsView extends Component {
   }
 
   bindEvents() {
+    // Fullscreen Tools
+    this.container.querySelector('#btnToolsFullscreen')?.addEventListener('click', () => {
+      const wrapper = document.getElementById('toolsViewWrapper');
+      if (!document.fullscreenElement) {
+        wrapper.requestFullscreen().catch(err => console.warn(err));
+        wrapper.style.padding = '30px';
+        wrapper.style.overflowY = 'auto';
+        wrapper.style.background = '#0a0a0f';
+      } else {
+        document.exitFullscreen();
+        wrapper.style.padding = '';
+        wrapper.style.overflowY = '';
+        wrapper.style.background = '';
+      }
+    });
+
     // Metrónomo: Slider
     const bpmSlider = this.container.querySelector('#rngMetronomeBpm');
     if (bpmSlider) {
