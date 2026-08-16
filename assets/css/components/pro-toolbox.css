@@ -1,0 +1,558 @@
+/* ==========================================================================
+   Estilos de Estudio & Herramientas del Músico (ToolsView & Profile)
+   ========================================================================== */
+
+.tools-view-wrapper {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 16px 16px 130px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.tools-header-banner {
+  background: linear-gradient(135deg, rgba(255, 87, 34, 0.12) 0%, rgba(0, 229, 255, 0.08) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 20px;
+}
+
+.tools-main-title {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0 0 6px 0;
+}
+
+.tools-main-subtitle {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.tools-grid-layout {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+  gap: 16px;
+}
+
+.tool-glass-card {
+  background: #11111a;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.6);
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.tool-glass-card:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+.tool-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: 10px;
+}
+
+.tool-card-title-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tool-card-title-group h2 {
+  font-size: 0.98rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0;
+}
+
+.tool-badge-pro {
+  background: rgba(0, 229, 255, 0.15);
+  border: 1px solid rgba(0, 229, 255, 0.4);
+  color: #00e5ff;
+  font-size: 0.68rem;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+
+.tool-card-description {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+  margin: 0;
+}
+
+/* 1. METRÓNOMO DE PRECISIÓN */
+.metronome-display-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  background: #09090f;
+  border-radius: 12px;
+  padding: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.metronome-bpm-readout {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.bpm-large-number {
+  font-family: var(--font-mono);
+  font-size: 3.2rem;
+  font-weight: 900;
+  color: var(--accent-primary);
+}
+
+.bpm-unit-label {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  font-weight: 800;
+}
+
+.metronome-dots-row {
+  display: flex;
+  gap: 10px;
+}
+
+.metronome-beat-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #252536;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.06s ease-out;
+}
+
+.metronome-beat-dot.active {
+  background: #00e5ff;
+  box-shadow: 0 0 14px #00e5ff;
+  transform: scale(1.25);
+}
+
+.metronome-beat-dot.active.accent {
+  background: #ff5722 !important;
+  box-shadow: 0 0 16px #ff5722 !important;
+}
+
+.metronome-controls-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-bpm-step {
+  background: #1c1c2b;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  font-size: 0.8rem;
+  font-weight: 800;
+  padding: 6px 9px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.btn-bpm-step:hover {
+  background: var(--accent-primary);
+}
+
+.bpm-range-slider {
+  flex: 1;
+  accent-color: var(--accent-primary);
+  cursor: pointer;
+}
+
+.metronome-actions-row {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-metronome-play {
+  flex: 2;
+  background: linear-gradient(135deg, var(--accent-primary) 0%, #ff7043 100%);
+  color: #ffffff;
+  font-weight: 800;
+  border: none;
+  border-radius: 8px;
+  padding: 10px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.btn-metronome-play.active {
+  background: #ff5252;
+}
+
+.btn-tap-tempo {
+  flex: 1;
+  background: rgba(0, 229, 255, 0.12);
+  border: 1px solid rgba(0, 229, 255, 0.4);
+  color: #00e5ff;
+  font-weight: 800;
+  font-size: 0.78rem;
+  border-radius: 8px;
+  padding: 10px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.btn-tap-tempo:active {
+  background: #00e5ff;
+  color: #000;
+}
+
+/* 2. AFINADOR CARD */
+.btn-open-full-tuner {
+  background: linear-gradient(135deg, #00e5ff 0%, #0088ff 100%);
+  color: #000000;
+  font-weight: 900;
+  border: none;
+  padding: 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  margin-top: auto;
+}
+
+.btn-open-full-tuner:hover {
+  transform: scale(1.02);
+  box-shadow: 0 0 16px rgba(0, 229, 255, 0.4);
+}
+
+/* 3. BUSCADOR DE ACORDES */
+.quick-chord-search-row {
+  display: flex;
+  gap: 8px;
+}
+
+.input-quick-chord {
+  flex: 1;
+  background: #181826;
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  color: #ffffff;
+  padding: 8px 12px;
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.btn-quick-chord-lookup {
+  background: var(--accent-primary);
+  border: none;
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 0.8rem;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.quick-chord-preview-box {
+  background: #09090e;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 180px;
+}
+
+/* 4. PERFIL & AJUSTES */
+.profile-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.profile-stat-box {
+  background: #09090f;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.stat-number {
+  font-family: var(--font-mono);
+  font-size: 1.1rem;
+  font-weight: 900;
+  color: #00e5ff;
+}
+
+.stat-label {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  text-align: center;
+  line-height: 1.2;
+}
+
+.profile-settings-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 12px;
+}
+
+.profile-setting-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.setting-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.setting-text strong {
+  font-size: 0.8rem;
+  color: #ffffff;
+}
+
+.setting-text span {
+  font-size: 0.68rem;
+  color: var(--text-secondary);
+}
+
+.sel-profile-tuning {
+  background: #181826;
+  border: 1px solid var(--border-strong);
+  color: #ffffff;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+/* 5. GENERADOR DE ESCALAS */
+.scale-selectors-row {
+  display: flex;
+  gap: 8px;
+}
+
+.sel-scale-input {
+  flex: 1;
+  background: #181826;
+  border: 1px solid var(--border-strong);
+  color: #ffffff;
+  padding: 8px 10px;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.scale-notes-display-box {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  background: #09090e;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 12px;
+  justify-content: center;
+}
+
+.scale-note-pill {
+  background: linear-gradient(135deg, rgba(0, 229, 255, 0.15) 0%, rgba(0, 136, 255, 0.2) 100%);
+  border: 1px solid rgba(0, 229, 255, 0.5);
+  color: #00e5ff;
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  font-weight: 900;
+  padding: 6px 14px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 229, 255, 0.2);
+}
+
+/* 6. DIAPASÓN ACÚSTICO (PITCH PIPE) */
+.pitch-pipe-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(65px, 1fr));
+  gap: 6px;
+}
+
+.btn-pitch-pipe-key {
+  background: #181826;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 8px 4px;
+  color: #ffffff;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  transition: all var(--transition-fast);
+}
+
+.btn-pitch-pipe-key:hover {
+  background: var(--accent-primary);
+  border-color: var(--accent-primary);
+}
+
+.btn-pitch-pipe-key:active {
+  transform: scale(0.95);
+  background: #00e5ff;
+  color: #000;
+}
+
+.btn-pitch-pipe-key strong {
+  font-size: 0.9rem;
+  font-weight: 900;
+}
+
+.btn-pitch-pipe-key span {
+  font-size: 0.65rem;
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+}
+
+/* 7. CÍRCULO DE QUINTAS */
+.circle-keys-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.circle-keys-row label {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.harmonized-chords-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.harmony-box {
+  background: #09090e;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.harmony-box:hover {
+  background: rgba(255, 87, 34, 0.15);
+  border-color: var(--accent-primary);
+  transform: translateY(-2px);
+}
+
+.harmony-degree {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  font-weight: 700;
+}
+
+.harmony-box strong {
+  font-size: 1.1rem;
+  color: #00e5ff;
+  font-family: var(--font-mono);
+}
+
+/* 8. ENTRENADOR DE OÍDO */
+.btn-ear-listen-again {
+  background: linear-gradient(135deg, #00e5ff 0%, #0088ff 100%);
+  color: #000000;
+  font-weight: 900;
+  border: none;
+  padding: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.btn-ear-listen-again:hover {
+  transform: scale(1.02);
+  box-shadow: 0 0 14px rgba(0, 229, 255, 0.4);
+}
+
+.ear-answers-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.btn-ear-choice {
+  background: #181826;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  font-size: 0.82rem;
+  font-weight: 700;
+  padding: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.btn-ear-choice:hover {
+  background: var(--accent-primary);
+  border-color: var(--accent-primary);
+}
+
+/* 9. CALCULADORA DE CEJILLA */
+.capo-calc-inputs-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.capo-calc-inputs-row label {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+
+.capo-calc-result-box {
+  background: #09090e;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.capo-result-label {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  font-weight: 700;
+}
+
+.capo-result-fret {
+  font-size: 1.15rem;
+  color: #ff5722;
+  font-family: var(--font-mono);
+  font-weight: 900;
+}

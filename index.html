@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#ff5722">
+  <title>Tabs & Chords PRO - Visor, Acordes & Letras</title>
+  
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎸</text></svg>">
+  <link rel="manifest" href="manifest.json">
+
+  <!-- Script de limpieza inmediata de Service Worker y Caché obsoleto -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then((registrations) => {
+        for (let registration of registrations) {
+          registration.unregister().then(() => {
+            console.log('🧹 [PWA] Service worker antiguo desregistrado.');
+          });
+        }
+      });
+      if ('caches' in window) {
+        caches.keys().then((names) => {
+          for (let name of names) {
+            caches.delete(name);
+          }
+        });
+      }
+    }
+  </script>
+
+  <!-- Estilos Modulares y Design Tokens Studio OLED -->
+  <link rel="stylesheet" href="assets/css/tokens.css?v=20260815">
+  <link rel="stylesheet" href="assets/css/layout.css?v=20260815">
+  <link rel="stylesheet" href="assets/css/components/transport.css?v=20260815">
+  <link rel="stylesheet" href="assets/css/components/library.css?v=20260815">
+  <link rel="stylesheet" href="assets/css/components/mixer.css?v=20260815">
+  <link rel="stylesheet" href="assets/css/components/fretboard.css?v=20260815">
+  <link rel="stylesheet" href="assets/css/components/speedtrainer.css?v=20260815">
+  <link rel="stylesheet" href="assets/css/components/tuner.css?v=20260815">
+  <link rel="stylesheet" href="assets/css/components/pro-toolbox.css?v=20260815">
+  <link rel="stylesheet" href="assets/css/components/chord-diagram.css?v=20260815">
+  <link rel="stylesheet" href="assets/css/components/gig-mode.css?v=20260815">
+  <link rel="stylesheet" href="assets/css/components/audio-sync.css?v=20260815">
+  <link rel="stylesheet" href="assets/css/components/multi-instrument.css?v=20260815">
+  <link rel="stylesheet" href="assets/css/components/export-modal.css?v=20260815">
+  <link rel="stylesheet" href="assets/css/components/lyrics-chords.css?v=20260815">
+  <link rel="stylesheet" href="assets/css/components/song-importer.css?v=20260815">
+  <link rel="stylesheet" href="assets/css/components/settings.css?v=20260815">
+  <link rel="stylesheet" href="assets/css/components/bottom-nav.css?v=20260815">
+  <link rel="stylesheet" href="assets/css/components/toast.css?v=20260815">
+
+  <!-- AlphaTab CDN Oficial (Motor de partituras y síntesis) -->
+  <script src="https://cdn.jsdelivr.net/npm/@coderline/alphatab@latest/dist/alphaTab.js"></script>
+</head>
+<body>
+
+  <div class="app-root">
+    <!-- 1. Barra de Transporte Superior para Reproductor -->
+    <header id="transport-container" style="display: none;"></header>
+
+    <!-- 2. Barra de Metadatos de la Canción Activa -->
+    <section class="song-info-strip" id="songInfoStrip" role="region" aria-label="Información de la partitura activa" style="display: none;">
+      <div class="song-info-meta">
+        <span class="song-info-title" id="songInfoTitle">Tabs & Chords PRO</span>
+        <span class="song-info-artist" id="songInfoArtist">— Selecciona una canción</span>
+      </div>
+      <div class="song-info-details" id="songInfoDetails">
+        <span>♩ 120 BPM</span>
+        <span>Standard E</span>
+      </div>
+    </section>
+
+    <!-- 3. Área de Trabajo Principal Mobile-First (Vistas Alternables) -->
+    <main class="main-workspace">
+      <!-- Vista 1: Explorar / Buscador Gigante -->
+      <div id="explore-view-container" class="view-container active-view"></div>
+
+      <!-- Vista 2: Mis Tablaturas & Repertorios -->
+      <div id="library-container" class="view-container"></div>
+
+      <!-- Vista 3: Herramientas del Músico (Afinador de Oído & Acordes IA) -->
+      <div id="tools-view-container" class="view-container"></div>
+
+      <!-- Vista 4: Ajustes del Músico, Perfil & Cuenta -->
+      <div id="settings-view-container" class="view-container"></div>
+
+      <!-- Vista 5: Reproductor Limpio (Letra con Acordes por Defecto + Lienzo Tablatura) -->
+      <div class="score-viewport view-container" id="score-viewport" role="region" aria-label="Lienzo de letra y acordes musicales">
+        <div id="lyrics-chords-container"></div>
+        <div id="alphatab"></div>
+      </div>
+
+      <!-- Overlays y Modales Secundarios (Desactivados por Defecto) -->
+      <div id="speedtrainer-container" role="region" aria-label="Speed Trainer"></div>
+      <div id="tuner-container" role="region" aria-label="Afinador Cromático"></div>
+      <div id="pro-toolbox-container" role="region" aria-label="Arsenal PRO"></div>
+      <div id="chord-modal-container" role="region" aria-label="Diccionario de acordes"></div>
+      <div id="audio-sync-modal-container" role="region" aria-label="Sincronización de audio"></div>
+      <div id="export-modal-container" role="region" aria-label="Exportar partitura"></div>
+      <div id="gig-mode-container" role="region" aria-label="Modo Directo"></div>
+      <div id="song-importer-container" role="region" aria-label="Importar canción"></div>
+    </main>
+
+    <!-- 4. Deck Inferior Secundario (Oculto por Defecto) -->
+    <footer class="bottom-dock">
+      <div id="piano-container" role="region" aria-label="Teclado de piano"></div>
+      <div id="drums-container" role="region" aria-label="Batería interactiva"></div>
+      <div id="mixer-container" role="region" aria-label="Mezclador multicanal"></div>
+      <div id="fretboard-container" role="region" aria-label="Mástil interactivo"></div>
+    </footer>
+
+    <!-- 5. Barra de Navegación Inferior Fija (Bottom Nav Bar) -->
+    <nav id="bottom-nav-container"></nav>
+  </div>
+
+  <!-- Inicialización del Sistema Modular V2 -->
+  <script type="module" src="src/mainV2.js?t=101"></script>
+</body>
+</html>

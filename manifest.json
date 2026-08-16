@@ -1,0 +1,16 @@
+{
+  "name": "Tabs & Chords PRO",
+  "short_name": "TabsPRO",
+  "description": "Visor y reproductor de tablaturas offline con motor de audio multipista y mástil interactivo.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0f0f12",
+  "theme_color": "#ff5722",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎸</text></svg>",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml"
+    }
+  ]
+}

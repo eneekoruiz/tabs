@@ -1,0 +1,185 @@
+/* ==========================================================================
+   Estilos de Visualizadores Multi-Instrumento (Piano & Drum Kit)
+   ========================================================================== */
+#piano-container, #drums-container {
+  display: none;
+  background-color: rgba(14, 14, 18, 0.95);
+  border-top: 1px solid var(--border-subtle);
+  backdrop-filter: var(--glass-blur);
+}
+
+#piano-container.visualizer-open,
+#drums-container.visualizer-open {
+  display: block;
+}
+
+/* Visualizador de Piano */
+.piano-visualizer-wrapper {
+  display: flex;
+  flex-direction: column;
+  padding: 10px 16px;
+  gap: 8px;
+}
+
+.piano-header, .drum-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.piano-title, .drum-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.btn-close-visualizer {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.btn-close-visualizer:hover {
+  color: var(--text-primary);
+}
+
+.piano-keyboard-scroll {
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.piano-keyboard-track {
+  display: flex;
+  position: relative;
+  height: 110px;
+  user-select: none;
+}
+
+.piano-key {
+  cursor: pointer;
+  position: relative;
+  transition: background-color 0.08s, box-shadow 0.08s;
+  box-sizing: border-box;
+}
+
+.white-key {
+  width: 28px;
+  height: 100%;
+  background: #ffffff;
+  border: 1px solid #222;
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 4px;
+  z-index: 1;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 4px;
+}
+
+.white-key .piano-note-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #555;
+}
+
+.white-key.key-active {
+  background: var(--accent-primary) !important;
+  box-shadow: 0 0 14px var(--accent-primary-glow);
+}
+
+.white-key.key-active .piano-note-label {
+  color: #fff;
+}
+
+.black-key {
+  width: 18px;
+  height: 62%;
+  background: #181820;
+  border: 1px solid #000;
+  border-bottom-left-radius: 3px;
+  border-bottom-right-radius: 3px;
+  margin-left: -9px;
+  margin-right: -9px;
+  z-index: 2;
+}
+
+.black-key.key-active {
+  background: #00e5ff !important;
+  box-shadow: 0 0 14px rgba(0, 229, 255, 0.8);
+}
+
+/* Visualizador de Batería (Drum Kit) */
+.drum-visualizer-wrapper {
+  display: flex;
+  flex-direction: column;
+  padding: 10px 16px;
+  gap: 10px;
+}
+
+.drum-kit-layout {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.drum-cymbals-row, .drum-toms-row, .drum-kick-row {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+.drum-pad {
+  background: rgba(25, 25, 35, 0.85);
+  border: 1px solid var(--border-strong);
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.08s ease-out;
+  user-select: none;
+}
+
+.cymbal-pad {
+  width: 70px;
+  height: 45px;
+  border-radius: 50%;
+  border-color: #ffd54f;
+  background: radial-gradient(circle, rgba(255, 213, 79, 0.2) 0%, rgba(20, 20, 28, 0.8) 80%);
+}
+
+.tom-pad {
+  width: 65px;
+  height: 65px;
+  border-radius: 50%;
+  border-color: #42a5f5;
+  background: radial-gradient(circle, rgba(66, 165, 245, 0.2) 0%, rgba(20, 20, 28, 0.8) 80%);
+}
+
+.snare-pad {
+  width: 75px;
+  height: 75px;
+  border-radius: 50%;
+  border-color: #ef5350;
+  background: radial-gradient(circle, rgba(239, 83, 80, 0.25) 0%, rgba(20, 20, 28, 0.8) 80%);
+}
+
+.kick-pad {
+  width: 120px;
+  height: 60px;
+  border-radius: 12px;
+  border-color: var(--accent-primary);
+  background: radial-gradient(circle, rgba(255, 87, 34, 0.3) 0%, rgba(20, 20, 28, 0.8) 80%);
+}
+
+.drum-pad.pad-hit {
+  transform: scale(1.12);
+  background: #ffffff !important;
+  color: #000 !important;
+  box-shadow: 0 0 20px #ffffff;
+}

@@ -1,0 +1,19 @@
+[package]
+name = "tabs-and-chords-pro"
+version = "1.0.0"
+description = "Visor y reproductor de tablaturas offline PRO"
+authors = ["Antigravity"]
+edition = "2021"
+
+[lib]
+name = "tabs_and_chords_pro_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+tauri-plugin-opener = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"

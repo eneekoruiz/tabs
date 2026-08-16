@@ -1,0 +1,334 @@
+/* ==========================================================================
+   Afinador Cromático Profesional & Clavijero Visual (Estilo Ultimate Guitar)
+   ========================================================================== */
+
+.tuner-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2500;
+  padding: 16px 16px 80px 16px;
+  box-sizing: border-box;
+}
+
+.tuner-modal-card {
+  background: #12121c;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 18px;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.95);
+  width: 100%;
+  max-width: 400px;
+  max-height: calc(100vh - 100px);
+  overflow-y: auto;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-sizing: border-box;
+  animation: tunerFadeIn 0.2s ease-out;
+}
+
+@keyframes tunerFadeIn {
+  from { opacity: 0; transform: scale(0.94); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.tuner-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 10px;
+}
+
+.tuner-title-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tuner-title-group h2 {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0;
+}
+
+.btn-close-tuner {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 800;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+}
+
+.btn-close-tuner:hover {
+  background: #ff5252;
+}
+
+/* Selector de Instrumento y Clavijero */
+.tuner-instrument-select-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+.sel-tuner-preset {
+  background: #1a1a28;
+  border: 1px solid var(--border-strong);
+  color: #ffffff;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 0.86rem;
+  font-weight: 700;
+  cursor: pointer;
+  outline: none;
+}
+
+.sel-tuner-preset:focus {
+  border-color: var(--accent-primary);
+}
+
+/* Selector de Modo Automático vs Manual */
+.tuner-mode-pill-bar {
+  display: flex;
+  background: #09090e;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  overflow: hidden;
+  padding: 2px;
+}
+
+.btn-tuner-mode-tab {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 6px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.btn-tuner-mode-tab.active {
+  background: var(--accent-primary);
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(255, 87, 34, 0.4);
+}
+
+/* Dial del Afinador */
+.tuner-gauge-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  background: #09090e;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 14px;
+}
+
+.tuner-note-display {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 4px;
+}
+
+.tuner-note-letter {
+  font-family: var(--font-mono);
+  font-size: 2.8rem;
+  font-weight: 900;
+  color: #ffffff;
+  transition: color 0.1s ease;
+}
+
+.tuner-note-letter.note-in-tune {
+  color: #00e676;
+  text-shadow: 0 0 20px rgba(0, 230, 118, 0.7);
+}
+
+.tuner-octave-number {
+  font-family: var(--font-mono);
+  font-size: 1.3rem;
+  color: var(--text-muted);
+}
+
+/* Aguja de Afinación */
+.tuner-needle-track {
+  width: 100%;
+  height: 14px;
+  background: #181826;
+  border-radius: 7px;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.needle-center-mark {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 3px;
+  background: #00e676;
+  transform: translateX(-50%);
+  box-shadow: 0 0 6px #00e676;
+}
+
+.needle-indicator {
+  position: absolute;
+  top: 2px;
+  bottom: 2px;
+  width: 10px;
+  background: #ff5722;
+  border-radius: 5px;
+  transform: translateX(-50%);
+  transition: left 0.08s ease-out;
+  box-shadow: 0 0 10px rgba(255, 87, 34, 0.8);
+}
+
+.needle-indicator.needle-in-tune {
+  background: #00e676;
+  box-shadow: 0 0 14px #00e676;
+}
+
+.tuner-cents-readout {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  font-family: var(--font-mono);
+  font-size: 0.76rem;
+  color: var(--text-muted);
+}
+
+.tuner-status-badge {
+  font-weight: 800;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+/* Clavijero Visual Interactivo (Headstock) */
+.tuner-headstock-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #0d0d14;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 12px 14px;
+  min-height: 120px;
+  position: relative;
+}
+
+.headstock-pegs-col {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 2;
+}
+
+.headstock-inline .headstock-pegs-col {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.tuner-peg-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #1c1c2b;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  padding: 6px 10px;
+  color: #ffffff;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.tuner-peg-btn:hover {
+  background: #ff5722;
+  border-color: #ff5722;
+}
+
+.tuner-peg-btn.peg-active {
+  border-color: #00e5ff;
+  box-shadow: 0 0 10px rgba(0, 229, 255, 0.4);
+}
+
+.tuner-peg-btn.peg-in-tune {
+  background: #00e676 !important;
+  color: #000000 !important;
+  border-color: #00e676 !important;
+  font-weight: 900;
+}
+
+.peg-num {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  font-weight: 700;
+}
+
+.peg-note {
+  font-size: 0.95rem;
+  font-weight: 900;
+  color: var(--accent-primary);
+}
+
+.tuner-peg-btn.peg-in-tune .peg-note,
+.tuner-peg-btn.peg-in-tune .peg-num,
+.tuner-peg-btn.peg-in-tune .peg-hz {
+  color: #000000;
+}
+
+.peg-hz {
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  margin-left: auto;
+}
+
+.headstock-neck-visual {
+  width: 40px;
+  height: 90px;
+  background: linear-gradient(180deg, #2b1f14 0%, #1a120c 100%);
+  border-radius: 6px;
+  position: relative;
+  margin: 0 auto;
+}
+
+.headstock-nut {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background: #eae2d6;
+  border-radius: 3px 3px 0 0;
+}
+
+.tuner-actions {
+  display: flex;
+  margin-top: 4px;
+}

@@ -1,0 +1,150 @@
+/* ==========================================================================
+   Estilos de Ajustes & Perfil del Músico (SettingsView Studio PRO)
+   ========================================================================== */
+
+.settings-view-wrapper {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 16px 16px 140px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.settings-header-banner {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: linear-gradient(135deg, rgba(255, 87, 34, 0.15) 0%, rgba(0, 229, 255, 0.1) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+}
+
+.settings-user-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent-primary) 0%, #ff7043 100%);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 16px var(--accent-primary-glow);
+}
+
+.settings-user-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.settings-user-title-line {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.settings-user-name {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0;
+}
+
+.pro-membership-pill {
+  background: linear-gradient(135deg, #00e5ff 0%, #0088ff 100%);
+  color: #000000;
+  font-size: 0.68rem;
+  font-weight: 900;
+  padding: 3px 8px;
+  border-radius: 6px;
+  letter-spacing: 0.5px;
+}
+
+.settings-user-email {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.settings-sections-list {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.settings-card-group {
+  background: #11111a;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.settings-group-title {
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: #00e5ff;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin: 0 0 4px 0;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.settings-row-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  gap: 14px;
+}
+
+.settings-row-info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.settings-row-info strong {
+  font-size: 0.86rem;
+  color: #ffffff;
+}
+
+.settings-row-info span {
+  font-size: 0.74rem;
+  color: var(--text-secondary);
+}
+
+.btn-settings-action {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--border-strong);
+  color: #ffffff;
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 7px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all var(--transition-fast);
+}
+
+.btn-settings-action:hover {
+  background: var(--accent-primary);
+  border-color: var(--accent-primary);
+}
+
+.sel-settings-control {
+  background: #181826;
+  border: 1px solid var(--border-strong);
+  color: #ffffff;
+  padding: 7px 10px;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+}

@@ -1,0 +1,455 @@
+/* ==========================================================================
+   Estilos de Navegación Inferior Mobile-First (Bottom Nav Bar & Vistas)
+   ========================================================================== */
+
+/* Barra de Navegación Inferior Fija */
+.bottom-nav-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100vw;
+  height: 64px;
+  background-color: var(--bg-surface-raised);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border-top: 1px solid var(--glass-border);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  z-index: 400;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.6);
+}
+
+.nav-tab-btn {
+  flex: 1;
+  height: 100%;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.nav-tab-btn .nav-icon {
+  font-size: 1.35rem;
+  transition: transform var(--transition-fast);
+}
+
+.nav-tab-btn.active {
+  color: var(--accent-primary);
+}
+
+.nav-tab-btn.active .nav-icon {
+  transform: translateY(-2px) scale(1.15);
+}
+
+/* Contenedores de Vistas Principales */
+.view-container {
+  display: none;
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  padding-bottom: 75px;
+}
+
+.view-container.active-view {
+  display: block;
+}
+
+.score-viewport.active-view {
+  display: block !important;
+}
+
+/* ==========================================================================
+   Vista Explorar (Home / Search Hero - Ultimate Guitar UX)
+   ========================================================================== */
+.explore-view {
+  padding: 20px 16px 100px 16px;
+  max-width: 860px;
+  margin: 0 auto;
+}
+
+.explore-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-bottom: 28px;
+  gap: 10px;
+}
+
+.explore-badge-chromatic {
+  background: linear-gradient(135deg, rgba(255, 87, 34, 0.2) 0%, rgba(0, 229, 255, 0.2) 100%);
+  border: 1px solid rgba(255, 87, 34, 0.5);
+  color: #ff7043;
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 1px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  box-shadow: 0 0 12px rgba(255, 87, 34, 0.3);
+}
+
+.explore-hero-title {
+  font-size: 1.95rem;
+  font-weight: 900;
+  letter-spacing: -0.5px;
+  background: linear-gradient(135deg, #ffffff 40%, var(--accent-primary) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.explore-hero-subtitle {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  max-width: 520px;
+  line-height: 1.4;
+}
+
+.explore-search-box {
+  width: 100%;
+  position: relative;
+  margin-top: 6px;
+}
+
+.search-svg-icon {
+  position: absolute;
+  left: 18px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+.btn-add-custom-song-hero {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px dashed rgba(255, 255, 255, 0.2);
+  color: var(--accent-primary);
+  font-size: 0.82rem;
+  font-weight: 700;
+  padding: 8px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.btn-add-custom-song-hero:hover {
+  background: rgba(255, 87, 34, 0.15);
+  border-color: var(--accent-primary);
+}
+
+.explore-search-input {
+  width: 100%;
+  padding: 16px 44px 16px 48px;
+  font-size: 1.02rem;
+  border-radius: 30px;
+  background: var(--bg-surface-raised);
+  border: 2px solid var(--border-strong);
+  color: #fff;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  transition: all var(--transition-fast);
+}
+
+.explore-search-input:focus {
+  outline: none;
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 25px var(--accent-primary-glow);
+}
+
+.explore-search-icon {
+  position: absolute;
+  left: 18px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.2rem;
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+.btn-clear-search {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.explore-genres-section {
+  margin-bottom: 24px;
+}
+
+.section-title {
+  font-size: 1.15rem;
+  font-weight: 800;
+  margin-bottom: 12px;
+  color: var(--text-primary);
+}
+
+.genre-grid-mobile {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 10px;
+}
+
+.genre-card-item {
+  background: rgba(22, 22, 30, 0.8);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  padding: 12px 10px;
+  text-align: center;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  transition: all var(--transition-fast);
+}
+
+.genre-card-item:hover, .genre-card-item.active {
+  background: var(--accent-primary);
+  color: #fff;
+  border-color: var(--accent-primary);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px var(--accent-primary-glow);
+}
+
+/* Tarjetas de Canción Enriquecidas (Estilo Spotify & Ultimate Guitar PRO) */
+.explore-songs-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.song-card {
+  background: #14141e;
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: all var(--transition-fast);
+}
+
+.song-card:hover {
+  background: #1c1c2b;
+  border-color: var(--accent-primary);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+}
+
+.song-card-main {
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: inherit;
+  padding: 14px 16px;
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.song-card-header-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.song-card-title {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.song-card-artist {
+  font-size: 0.88rem;
+  color: var(--accent-secondary);
+  font-weight: 600;
+}
+
+.song-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+  flex-wrap: wrap;
+}
+
+.genre-badge {
+  background: rgba(255, 255, 255, 0.08);
+  color: #d0d0dc;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 6px;
+}
+
+.song-badge-diff {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 6px;
+}
+
+.song-badge-diff.diff-easy {
+  background: rgba(0, 230, 118, 0.15);
+  color: #00e676;
+}
+
+.song-badge-diff.diff-med {
+  background: rgba(255, 214, 0, 0.15);
+  color: #ffd600;
+}
+
+.song-badge-diff.diff-hard {
+  background: rgba(255, 82, 82, 0.15);
+  color: #ff5252;
+}
+
+.meta-pill {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+/* ==========================================================================
+   Vista Herramientas (Tools Panel)
+   ========================================================================== */
+.tools-view {
+  padding: 20px 16px;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.tools-header {
+  margin-bottom: 20px;
+}
+
+.tools-grid-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.tool-card-box {
+  background: rgba(18, 18, 26, 0.85);
+  border: 1px solid var(--border-subtle);
+  border-radius: 14px;
+  padding: 16px;
+  box-shadow: var(--shadow-md);
+}
+
+.tool-card-title-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.tool-card-icon {
+  font-size: 1.5rem;
+}
+
+.tool-card-title {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #fff;
+}
+
+.tool-card-desc {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  margin-bottom: 12px;
+  line-height: 1.4;
+}
+
+/* Afinador de Oído (Ear Tuner) */
+.ear-tuner-strings-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.btn-string-pitch {
+  background: var(--bg-surface-raised);
+  border: 1px solid var(--border-strong);
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 800;
+  padding: 12px 4px;
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  transition: all var(--transition-fast);
+}
+
+.btn-string-pitch:hover, .btn-string-pitch:active {
+  background: var(--accent-primary);
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 12px var(--accent-primary-glow);
+  transform: scale(1.05);
+}
+
+.string-pitch-hz {
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.btn-string-pitch:hover .string-pitch-hz {
+  color: #fff;
+}
+
+/* Sección Acordes con IA (YouTube link placeholder UI) */
+.ai-chords-box {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ai-youtube-input {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 8px;
+  background: rgba(10, 10, 14, 0.8);
+  border: 1px solid var(--border-strong);
+  color: #fff;
+  font-size: 0.88rem;
+}
+
+.ai-youtube-input:focus {
+  outline: none;
+  border-color: var(--accent-secondary);
+}
+
+.btn-ai-generate {
+  background: linear-gradient(135deg, #00e5ff 0%, #0088ff 100%);
+  color: #000;
+  font-weight: 800;
+  border: none;
+  padding: 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all var(--transition-fast);
+}
+
+.btn-ai-generate:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 0 15px rgba(0, 229, 255, 0.4);
+}

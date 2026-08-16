@@ -1,0 +1,300 @@
+/* ==========================================================================
+   Estructura Global y Layout Mobile-First - Ultimate Guitar UX
+   ========================================================================== */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  font-family: var(--font-main);
+  background-color: var(--bg-app);
+  color: var(--text-primary);
+  user-select: none;
+  -webkit-font-smoothing: antialiased;
+}
+
+.app-root {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  background: radial-gradient(circle at 50% 0%, #151520 0%, #08080b 60%);
+  position: relative;
+}
+
+/* ==========================================================================
+   Barra Superior de Transporte
+   ========================================================================== */
+#transport-container {
+  height: var(--topbar-height);
+  background-color: var(--bg-surface);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border-bottom: 1px solid var(--glass-border);
+  flex-shrink: 0;
+  z-index: 100;
+  box-shadow: var(--shadow-sm);
+}
+
+/* ==========================================================================
+   Barra de Metadatos de Canción
+   ========================================================================== */
+.song-info-strip {
+  height: var(--songbar-height);
+  background-color: rgba(12, 12, 16, 0.85);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  flex-shrink: 0;
+  font-size: 0.84rem;
+  z-index: 95;
+}
+
+.song-info-meta {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.song-info-title {
+  font-weight: 800;
+  font-size: 0.95rem;
+  color: #ffffff;
+}
+
+.song-info-artist {
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.song-info-details {
+  display: flex;
+  gap: 12px;
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+/* ==========================================================================
+   Cuerpo Central (Vistas Alternables & Viewport 90%)
+   ========================================================================== */
+.main-workspace {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Sidebar de Biblioteca en Móvil / Desktop */
+#library-container {
+  width: 100%;
+  height: 100%;
+  background-color: var(--bg-surface);
+  flex-shrink: 0;
+}
+
+/* Viewport con Scroll de la Partitura / Letra (90% del espacio) */
+.score-viewport {
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background-color: var(--bg-viewport);
+  padding: 12px 12px 100px 12px;
+  display: block;
+  position: relative;
+}
+
+#lyrics-chords-container {
+  width: 100%;
+  display: block;
+}
+
+/* Lienzo de AlphaTab */
+#alphatab {
+  width: 100%;
+  max-width: 1150px;
+  background-color: var(--bg-paper);
+  box-shadow: var(--shadow-sheet);
+  border-radius: 8px;
+  padding: 16px;
+  min-height: 500px;
+}
+
+/* Modo Zurdos para Mástil */
+.fretboard-left-handed {
+  transform: scaleX(-1);
+}
+
+.fretboard-left-handed .fret-marker-label {
+  transform: scaleX(-1);
+}
+
+/* ==========================================================================
+   Deck Inferior Oculto por Defecto (Mástil, Piano, Batería, Mezclador)
+   ========================================================================== */
+.bottom-dock {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  background-color: var(--bg-surface);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border-top: 1px solid var(--glass-border);
+  z-index: 180;
+}
+
+#fretboard-container {
+  display: none;
+  background-color: rgba(14, 14, 18, 0.95);
+  border-top: 1px solid var(--border-subtle);
+}
+
+#mixer-container {
+  display: none;
+  background-color: var(--bg-surface-raised);
+  border-top: 1px solid var(--glass-border);
+}
+
+#mixer-container.mixer-open {
+  display: block;
+}
+
+#speedtrainer-container {
+  position: absolute;
+  top: 70px;
+  right: 20px;
+  z-index: 120;
+  display: none;
+}
+
+#speedtrainer-container.open {
+  display: block;
+}
+
+#tuner-container {
+  position: absolute;
+  top: 70px;
+  left: 20px;
+  z-index: 130;
+  display: none;
+}
+
+#tuner-container.tuner-open {
+  display: block;
+}
+
+#pro-toolbox-container {
+  position: absolute;
+  top: 70px;
+  right: 20px;
+  z-index: 135;
+  display: none;
+}
+
+#pro-toolbox-container.toolbox-open {
+  display: block;
+}
+
+/* Modales Flotantes */
+#chord-modal-container,
+#audio-sync-modal-container,
+#export-modal-container {
+  display: none;
+}
+
+#chord-modal-container.modal-open,
+#audio-sync-modal-container.modal-open,
+#export-modal-container.modal-open {
+  display: block;
+}
+
+/* ==========================================================================
+   Modo Atril / Stage Fullscreen Mode (Oculta absolutamente todo excepto la partitura)
+   ========================================================================== */
+body.stage-mode-active #bottom-nav-container,
+body.stage-mode-active .bottom-nav-bar,
+body.stage-mode-active .bottom-dock,
+body.stage-mode-active #transport-container,
+body.stage-mode-active .song-info-strip {
+  display: none !important;
+}
+
+body.stage-mode-active .main-workspace {
+  padding-bottom: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+body.stage-mode-active .score-viewport {
+  padding: 16px 20px 80px 20px !important;
+  background-color: var(--bg-app) !important;
+}
+
+body.stage-mode-active .lyrics-chords-container {
+  max-width: 1000px !important;
+  border-radius: 0 !important;
+  padding: 16px 20px 120px 20px !important;
+  box-shadow: none !important;
+}
+
+@media print {
+  body, html {
+    background: #ffffff !important;
+    color: #000000 !important;
+    overflow: visible !important;
+    height: auto !important;
+  }
+
+  .app-root {
+    background: #ffffff !important;
+    height: auto !important;
+  }
+
+  #transport-container,
+  .song-info-strip,
+  #library-container,
+  #explore-view-container,
+  #tools-view-container,
+  .bottom-nav-bar,
+  .bottom-dock,
+  #speedtrainer-container,
+  #tuner-container,
+  #pro-toolbox-container,
+  #toast-container,
+  #chord-modal-container,
+  #audio-sync-modal-container,
+  #export-modal-container,
+  #gig-mode-container {
+    display: none !important;
+  }
+
+  .main-workspace {
+    overflow: visible !important;
+    height: auto !important;
+  }
+
+  .score-viewport {
+    background: #ffffff !important;
+    padding: 0 !important;
+    overflow: visible !important;
+    height: auto !important;
+  }
+
+  #alphatab {
+    box-shadow: none !important;
+    padding: 0 !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    background: #ffffff !important;
+    page-break-after: always;
+  }
+}
