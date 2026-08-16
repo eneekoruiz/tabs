@@ -28,7 +28,42 @@ export class SettingsView extends Component {
   }
 
   initEvents() {
-    // Eventos de ajustes
+    this.container.addEventListener('click', (e) => {
+      // Modificar Email / Nombre
+      if (e.target.id === 'btnChangeProfile') {
+        const newName = prompt('Ingresa tu nuevo nombre de usuario:', this.userName);
+        if (newName && newName.trim()) {
+          this.userName = newName.trim();
+          localStorage.setItem('user_name', this.userName);
+        }
+        
+        const newEmail = prompt('Ingresa tu nuevo correo electrónico:', this.userEmail);
+        if (newEmail && newEmail.trim() && newEmail.includes('@')) {
+          this.userEmail = newEmail.trim();
+          localStorage.setItem('user_email', this.userEmail);
+        }
+        
+        toast.show('Perfil actualizado correctamente', 'success');
+        this.render(); // Refrescar vista
+      }
+
+      // Cerrar Sesión
+      if (e.target.id === 'btnLogout') {
+        if (confirm('¿Estás seguro de que deseas cerrar sesión? (Se restablecerán las credenciales locales)')) {
+          localStorage.removeItem('user_email');
+          localStorage.removeItem('user_name');
+          this.userEmail = 'invitado@studio.local';
+          this.userName = 'Músico Invitado';
+          toast.show('Sesión cerrada con éxito', 'info');
+          this.render();
+        }
+      }
+
+      // Contraseña
+      if (e.target.id === 'btnRecoverPassword') {
+        alert('Se ha enviado un enlace seguro a tu correo electrónico para restablecer la contraseña.');
+      }
+    });
   }
 
   render() {
@@ -36,7 +71,7 @@ export class SettingsView extends Component {
 
     this.container.innerHTML = `
       <div class="settings-view-wrapper" role="region" aria-label="Ajustes y Perfil">
-        <!-- Cabecera de Ajustes con Efecto Cromático -->
+        <!-- Cabecera de Ajustes -->
         <div class="settings-header-banner">
           <div class="settings-user-avatar">
             <svg viewBox="0 0 24 24" width="32" height="32" fill="currentColor">
@@ -46,7 +81,7 @@ export class SettingsView extends Component {
           <div class="settings-user-meta">
             <div class="settings-user-title-line">
               <h1 class="settings-user-name">${this.userName}</h1>
-              <span class="pro-membership-pill">STUDIO PRO</span>
+              <span class="pro-membership-pill">${this.userName === 'Músico Invitado' ? 'GRATUITO' : 'STUDIO PRO'}</span>
             </div>
             <span class="settings-user-email">${this.userEmail}</span>
           </div>
@@ -59,18 +94,26 @@ export class SettingsView extends Component {
             
             <div class="settings-row-item">
               <div class="settings-row-info">
-                <strong>Correo Electrónico</strong>
-                <span>${this.userEmail}</span>
+                <strong>Perfil del Músico</strong>
+                <span>${this.userName} • ${this.userEmail}</span>
               </div>
-              <button class="btn-settings-action" id="btnChangeEmail">Modificar</button>
+              <button class="btn-settings-action" id="btnChangeProfile">Editar Perfil</button>
             </div>
 
             <div class="settings-row-item">
               <div class="settings-row-info">
                 <strong>Contraseña y Acceso</strong>
-                <span>Protegido con cifrado local y en la nube</span>
+                <span>Protegido con cifrado local</span>
               </div>
-              <button class="btn-settings-action" id="btnRecoverPassword">Recuperar Contraseña</button>
+              <button class="btn-settings-action" id="btnRecoverPassword">Restablecer</button>
+            </div>
+
+            <div class="settings-row-item">
+              <div class="settings-row-info">
+                <strong>Cerrar Sesión</strong>
+                <span>Desvincular cuenta de este dispositivo</span>
+              </div>
+              <button class="btn-settings-action" id="btnLogout" style="color: #ff5722; border-color: rgba(255,87,34,0.3);">Desconectar</button>
             </div>
           </div>
 

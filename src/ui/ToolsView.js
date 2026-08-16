@@ -238,17 +238,50 @@ export class ToolsView extends Component {
     return fret;
   }
 
-  startEarTest() {
-    const options = [
-      { name: 'Mayor (C)', chord: 'C' },
-      { name: 'Menor (Am)', chord: 'Am' },
-      { name: 'Séptima (G7)', chord: 'G7' },
-      { name: 'Menor 7 (Dm7)', chord: 'Dm7' },
-      { name: 'Mayor 7 (Fmaj7)', chord: 'Fmaj7' },
+  
+  generateRandomChords(correctChord) {
+    const pool = [
+      { name: 'C Mayor', chord: 'C' }, { name: 'A menor', chord: 'Am' },
+      { name: 'G7 Dominante', chord: 'G7' }, { name: 'Fmaj7', chord: 'Fmaj7' },
+      { name: 'D menor', chord: 'Dm' }, { name: 'E Mayor', chord: 'E' },
+      { name: 'B semidisminuido', chord: 'Bm7b5' }, { name: 'A Mayor', chord: 'A' }
     ];
-    this.earCurrentQuestion = options[Math.floor(Math.random() * options.length)];
+    let choices = [correctChord];
+    while(choices.length < 4) {
+      const rnd = pool[Math.floor(Math.random() * pool.length)];
+      if (!choices.some(c => c.chord === rnd.chord)) {
+        choices.push(rnd);
+      }
+    }
+    return choices.sort(() => Math.random() - 0.5);
+  }
+
+  startEarTest() {
+    const pool = [
+      { name: 'C Mayor', chord: 'C' }, { name: 'A menor', chord: 'Am' },
+      { name: 'G7 Dominante', chord: 'G7' }, { name: 'Fmaj7', chord: 'Fmaj7' },
+      { name: 'D menor', chord: 'Dm' }, { name: 'E Mayor', chord: 'E' }
+    ];
+    this.earCurrentQuestion = pool[Math.floor(Math.random() * pool.length)];
+    this.earCurrentOptions = this.generateRandomChords(this.earCurrentQuestion);
+    
     chordEngine.auditionChord(this.earCurrentQuestion.chord, 'guitar');
     toast.show('Escucha atentamente y elige el acorde...', 'info', 1000);
+    this.updateEarTrainerUI();
+  }
+
+  updateEarTrainerUI() {
+    const grid = this.container?.querySelector('#earAnswersGrid');
+    if (!grid || !this.earCurrentOptions) return;
+    grid.innerHTML = this.earCurrentOptions.map(opt => 
+      `<button class="btn-ear-choice" data-chord="${opt.chord}">${opt.name}</button>`
+    ).join('');
+    
+    grid.querySelectorAll('.btn-ear-choice').forEach(btn => {
+      btn.addEventListener('click', () => {
+        this.checkEarAnswer(btn.dataset.chord);
+      });
+    });
   }
 
   checkEarAnswer(userChoice) {
@@ -270,6 +303,7 @@ export class ToolsView extends Component {
   }
 
   render() {
+
     if (!this.container) return;
 
     const scaleNotes = this.getScaleNotes(this.selectedScaleKey, this.selectedScaleType);
@@ -294,13 +328,21 @@ export class ToolsView extends Component {
         <div class="tools-grid-layout">
           <!-- 1. METRÓNOMO DE ALTA PRECISIÓN (Cero Drift) -->
           <div class="tool-glass-card metronome-card">
-            <div class="tool-card-head">
+            <div class="tool-card-head" style="cursor:pointer;" onclick="this.parentElement.classList.toggle('collapsed')">
+    
               <div class="tool-card-title-group">
                 <svg class="tool-svg-icon" viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
                   <path d="M12 2c5.52 0 10 4.48 10 10s-4.48 10-10 10S2 17.52 2 12 6.48 2 12 2zm1 5h-2v6h6v-2h-4V7z"/>
                 </svg>
                 <h2>Metrónomo de Estudio</h2>
-              </div>
+              
+    <div style="display:flex; gap:8px;">
+      <button class="btn-card-fullscreen" title="Pantalla Completa" onclick="event.stopPropagation(); this.closest('.tool-glass-card').requestFullscreen()">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
+      </button>
+      <span class="collapse-icon">▼</span>
+    </div>
+  </div>
             </div>
 
             <div class="metronome-display-section">
@@ -337,13 +379,21 @@ export class ToolsView extends Component {
 
           <!-- 2. AFINADOR CROMÁTICO CON CLAVIJERO REAL -->
           <div class="tool-glass-card tuner-card">
-            <div class="tool-card-head">
+            <div class="tool-card-head" style="cursor:pointer;" onclick="this.parentElement.classList.toggle('collapsed')">
+    
               <div class="tool-card-title-group">
                 <svg class="tool-svg-icon" viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
                   <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zM17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
                 </svg>
                 <h2>Afinador Cromático</h2>
-              </div>
+              
+    <div style="display:flex; gap:8px;">
+      <button class="btn-card-fullscreen" title="Pantalla Completa" onclick="event.stopPropagation(); this.closest('.tool-glass-card').requestFullscreen()">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
+      </button>
+      <span class="collapse-icon">▼</span>
+    </div>
+  </div>
             </div>
 
             <p class="tool-card-description">
@@ -357,13 +407,21 @@ export class ToolsView extends Component {
 
           <!-- 3. CALCULADORA ARMÓNICA DE CEJILLA / CAPOTRASTE -->
           <div class="tool-glass-card capo-calc-card">
-            <div class="tool-card-head">
+            <div class="tool-card-head" style="cursor:pointer;" onclick="this.parentElement.classList.toggle('collapsed')">
+    
               <div class="tool-card-title-group">
                 <svg class="tool-svg-icon" viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
                   <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/>
                 </svg>
                 <h2>Calculadora de Cejilla (Capo)</h2>
-              </div>
+              
+    <div style="display:flex; gap:8px;">
+      <button class="btn-card-fullscreen" title="Pantalla Completa" onclick="event.stopPropagation(); this.closest('.tool-glass-card').requestFullscreen()">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
+      </button>
+      <span class="collapse-icon">▼</span>
+    </div>
+  </div>
             </div>
 
             <p class="tool-card-description">Toca canciones en cualquier tono utilizando posiciones de acordes abiertos sencillos:</p>
@@ -396,13 +454,21 @@ export class ToolsView extends Component {
 
           <!-- 4. CÍRCULO DE QUINTAS & ACORDES DE LA TONALIDAD -->
           <div class="tool-glass-card circle-fifths-card">
-            <div class="tool-card-head">
+            <div class="tool-card-head" style="cursor:pointer;" onclick="this.parentElement.classList.toggle('collapsed')">
+    
               <div class="tool-card-title-group">
                 <svg class="tool-svg-icon" viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
                   <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>
                 </svg>
                 <h2>Círculo de Quintas & Armonía</h2>
-              </div>
+              
+    <div style="display:flex; gap:8px;">
+      <button class="btn-card-fullscreen" title="Pantalla Completa" onclick="event.stopPropagation(); this.closest('.tool-glass-card').requestFullscreen()">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
+      </button>
+      <span class="collapse-icon">▼</span>
+    </div>
+  </div>
             </div>
 
             <div class="circle-keys-row">
@@ -436,13 +502,21 @@ export class ToolsView extends Component {
 
           <!-- 5. ENTRENADOR DE OÍDO (EAR TRAINER) -->
           <div class="tool-glass-card ear-trainer-card">
-            <div class="tool-card-head">
+            <div class="tool-card-head" style="cursor:pointer;" onclick="this.parentElement.classList.toggle('collapsed')">
+    
               <div class="tool-card-title-group">
                 <svg class="tool-svg-icon" viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
                   <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
                 </svg>
                 <h2>Entrenador de Oído</h2>
-              </div>
+              
+    <div style="display:flex; gap:8px;">
+      <button class="btn-card-fullscreen" title="Pantalla Completa" onclick="event.stopPropagation(); this.closest('.tool-glass-card').requestFullscreen()">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
+      </button>
+      <span class="collapse-icon">▼</span>
+    </div>
+  </div>
               <span class="tool-badge-score" id="lblEarScore">${this.earScore} pts</span>
             </div>
 
@@ -454,23 +528,28 @@ export class ToolsView extends Component {
               Reproducir Acorde
             </button>
 
-            <div class="ear-answers-grid">
-              <button class="btn-ear-choice" data-chord="C">C Mayor</button>
-              <button class="btn-ear-choice" data-chord="Am">A menor</button>
-              <button class="btn-ear-choice" data-chord="G7">G7 Dominante</button>
-              <button class="btn-ear-choice" data-chord="Fmaj7">Fmaj7</button>
+            <div class="ear-answers-grid" id="earAnswersGrid">
+              <!-- Renderizado dinámicamente -->
             </div>
           </div>
 
           <!-- 6. GENERADOR DE ESCALAS -->
           <div class="tool-glass-card scales-card">
-            <div class="tool-card-head">
+            <div class="tool-card-head" style="cursor:pointer;" onclick="this.parentElement.classList.toggle('collapsed')">
+    
               <div class="tool-card-title-group">
                 <svg class="tool-svg-icon" viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
                   <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
                 </svg>
                 <h2>Generador de Escalas</h2>
-              </div>
+              
+    <div style="display:flex; gap:8px;">
+      <button class="btn-card-fullscreen" title="Pantalla Completa" onclick="event.stopPropagation(); this.closest('.tool-glass-card').requestFullscreen()">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
+      </button>
+      <span class="collapse-icon">▼</span>
+    </div>
+  </div>
             </div>
 
             <div class="scale-selectors-row">
@@ -497,13 +576,21 @@ export class ToolsView extends Component {
 
           <!-- 7. DIAPASÓN ACÚSTICO (PITCH PIPE) -->
           <div class="tool-glass-card pitch-pipe-card">
-            <div class="tool-card-head">
+            <div class="tool-card-head" style="cursor:pointer;" onclick="this.parentElement.classList.toggle('collapsed')">
+    
               <div class="tool-card-title-group">
                 <svg class="tool-svg-icon" viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
                   <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/>
                 </svg>
                 <h2>Diapasón Acústico</h2>
-              </div>
+              
+    <div style="display:flex; gap:8px;">
+      <button class="btn-card-fullscreen" title="Pantalla Completa" onclick="event.stopPropagation(); this.closest('.tool-glass-card').requestFullscreen()">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
+      </button>
+      <span class="collapse-icon">▼</span>
+    </div>
+  </div>
             </div>
 
             <div class="pitch-pipe-grid">
@@ -526,13 +613,21 @@ export class ToolsView extends Component {
 
           <!-- 8. DICCIONARIO DE ACORDES -->
           <div class="tool-glass-card chord-finder-card">
-            <div class="tool-card-head">
+            <div class="tool-card-head" style="cursor:pointer;" onclick="this.parentElement.classList.toggle('collapsed')">
+    
               <div class="tool-card-title-group">
                 <svg class="tool-svg-icon" viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
                   <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
                 </svg>
                 <h2>Diccionario de Acordes</h2>
-              </div>
+              
+    <div style="display:flex; gap:8px;">
+      <button class="btn-card-fullscreen" title="Pantalla Completa" onclick="event.stopPropagation(); this.closest('.tool-glass-card').requestFullscreen()">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
+      </button>
+      <span class="collapse-icon">▼</span>
+    </div>
+  </div>
             </div>
 
             <div class="quick-chord-search-row">
@@ -548,7 +643,7 @@ export class ToolsView extends Component {
       </div>
     `;
 
-    this.bindEvents();
+    this.bindEvents();\n      if (!this.earCurrentQuestion) { this.startEarTest(); }
   }
 
   bindEvents() {

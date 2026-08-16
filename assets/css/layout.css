@@ -325,3 +325,47 @@ body.stage-mode-active .lyrics-chords-container {
   box-shadow: 0 12px 30px rgba(0, 229, 255, 0.2) !important;
   border-color: rgba(0, 229, 255, 0.5) !important;
 }
+.tool-glass-card.collapsed > *:not(.tool-card-head) {
+  display: none !important;
+}
+.tool-glass-card .collapse-icon {
+  transition: transform 0.3s ease;
+  font-size: 12px;
+  opacity: 0.7;
+}
+.tool-glass-card.collapsed .collapse-icon {
+  transform: rotate(-90deg);
+}
+.btn-card-fullscreen {
+  background: rgba(255,255,255,0.1);
+  border: none;
+  color: white;
+  border-radius: 4px;
+  padding: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+.btn-card-fullscreen:hover {
+  background: rgba(255,255,255,0.25);
+}
+.tool-glass-card:fullscreen {
+  background: #0d0d14 !important;
+  padding: 40px !important;
+  border-radius: 0 !important;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.tool-glass-card:fullscreen > *:not(.tool-card-head) {
+  display: flex !important; /* Force expand in fullscreen */
+}
+.tool-glass-card:fullscreen .tool-card-head {
+  margin-bottom: 40px;
+}
+.tool-glass-card:fullscreen .collapse-icon {
+  display: none;
+}

@@ -286,7 +286,7 @@
 
 .song-card-artist {
   font-size: 0.82rem;
-  color: var(--accent-secondary);
+  color: var(--text-secondary);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -380,4 +380,19 @@
 .home-song-card:hover {
   border-color: rgba(255, 87, 34, 0.5) !important;
   box-shadow: 0 10px 30px rgba(0,0,0,0.6) !important;
+}
+.song-card, .setlist-card {
+  min-width: 0 !important;
+  background: linear-gradient(145deg, #161622 0%, #0d0d14 100%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+  border-radius: 14px !important;
+  padding: 14px 16px !important;
+  transition: all 0.3s ease;
+}
+.song-card:hover, .setlist-card:hover {
+  border-color: rgba(255, 87, 34, 0.5) !important;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.6) !important;
+}
+.song-card-artist {
+  color: #a0a0b0 !important;
 }
