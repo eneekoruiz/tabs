@@ -254,23 +254,8 @@ export class LyricsChordsView extends Component {
     const scale = this.fontSizeScale / 100;
     if (container) {
       container.style.setProperty('--lyrics-font-scale', String(scale));
-      container.style.setProperty('--lyrics-font-size', `${1.15 * scale}rem`);
-      container.style.setProperty('--chord-font-size', `${0.96 * scale}rem`);
-      container.style.setProperty('--lyrics-line-height', `${1.9 * scale}`);
-    }
-
-    const words = this.container?.querySelectorAll('.lyrics-word');
-    if (words) {
-      words.forEach(w => {
-        w.style.fontSize = `${1.15 * scale}rem`;
-      });
-    }
-
-    const chords = this.container?.querySelectorAll('.chord-badge');
-    if (chords) {
-      chords.forEach(c => {
-        c.style.fontSize = `${0.96 * scale}rem`;
-      });
+      container.style.setProperty('--lyrics-font-size', `${1.12 * scale}rem`);
+      container.style.setProperty('--chord-font-size', `${0.95 * scale}rem`);
     }
   }
 
@@ -691,6 +676,14 @@ export class LyricsChordsView extends Component {
                   <strong>Modo Atril (Pantalla Completa Limpia)</strong>
                 </button>
 
+                <!-- Exportar PDF / Imprimir -->
+                <button class="btn-menu-action" id="btnPrintSong">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                    <path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/>
+                  </svg>
+                  <span>Imprimir / PDF</span>
+                </button>
+
                 <!-- Cejilla / Capo -->
                 <div class="options-menu-row">
                   <span class="options-menu-label">Cejilla / Capo:</span>
@@ -754,19 +747,19 @@ export class LyricsChordsView extends Component {
               <strong>Grabando Ensayo en Directo...</strong>
             </div>
             <span class="lbl-recording-time font-mono">${gigRecorder.formatTime(this.recordingDuration)}</span>
-            <button class="btn-rec-stop-bar" id="btnStopActiveRecord">■ Detener y Guardar</button>
+            <button class="btn-rec-stop-bar" id="btnStopActiveRecord">Detener y Guardar</button>
           </div>
         ` : ''}
 
         ${this.recordingAudioUrl && !this.isRecording ? `
           <div class="recording-playback-card">
             <div class="rec-card-meta">
-              <strong>🎙️ Toma de Ensayo Grabada</strong>
+              <strong>Toma de Ensayo Grabada</strong>
               <audio controls src="${this.recordingAudioUrl}" class="rec-audio-element"></audio>
             </div>
             <div class="rec-card-actions">
-              <button class="btn-rec-download" id="btnDownloadRecording">📥 Descargar Audio (.webm)</button>
-              <button class="btn-rec-dismiss" id="btnDismissRecording">✕ Descartar</button>
+              <button class="btn-rec-download" id="btnDownloadRecording">Descargar Audio (.webm)</button>
+              <button class="btn-rec-dismiss" id="btnDismissRecording">Descartar</button>
             </div>
           </div>
         ` : ''}
@@ -885,6 +878,12 @@ export class LyricsChordsView extends Component {
     this.container.querySelector('#btnEnterStageMode')?.addEventListener('click', () => {
       this.isOptionsMenuOpen = false;
       this.enterStageMode();
+    });
+
+    this.container.querySelector('#btnPrintSong')?.addEventListener('click', () => {
+      this.isOptionsMenuOpen = false;
+      this.render(); // Close menu visually before printing
+      setTimeout(() => window.print(), 100);
     });
 
     this.container.querySelector('#btnExitStageMode')?.addEventListener('click', () => {

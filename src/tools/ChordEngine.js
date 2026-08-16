@@ -447,151 +447,54 @@ class ChordEngine {
     try {
       const ctx = this.getAudioContext();
 
+      // Advanced Acoustic/Piano Synthesis
+      const chord = this.getChord(chordName, instrument === 'ukulele' ? 'ukulele' : 'guitar');
+      if (!chord && instrument !== 'piano') return;
+
+      const baseFreqs = instrument === 'ukulele' ? [392.00, 261.63, 329.63, 440.00] : [82.41, 110.00, 146.83, 196.00, 246.94, 329.63];
+
+      let notes = [];
       if (instrument === 'piano') {
-        // Síntesis de Piano de Cola con armónicos complejos y resonancia de caja
         const cleanName = this.simplifyChord(chordName);
-        const voicing = PIANO_VOICINGS[chordName] || PIANO_VOICINGS[cleanName] || [
-          { key: 'C', oct: 4 }, { key: 'E', oct: 4 }, { key: 'G', oct: 4 }
-        ];
-
-        const noteFreqMap = {
-          'C': 261.63, 'C#': 277.18, 'Db': 277.18,
-          'D': 293.66, 'D#': 311.13, 'Eb': 311.13,
-          'E': 329.63,
-          'F': 349.23, 'F#': 369.99, 'Gb': 369.99,
-          'G': 392.00, 'G#': 415.30, 'Ab': 415.30,
-          'A': 440.00, 'A#': 466.16, 'Bb': 466.16,
-          'B': 493.88
-        };
-
-        voicing.forEach((v, idx) => {
-          let baseFreq = noteFreqMap[v.key] || 261.63;
-          if (v.oct === 5) baseFreq *= 2;
-
-          const startTime = ctx.currentTime + idx * 0.018;
-
-          // Filtro cálido de resonancia de madera
-          const filter = ctx.createBiquadFilter();
-          filter.type = 'lowpass';
-          filter.frequency.setValueAtTime(3200, startTime);
-          filter.frequency.exponentialRampToValueAtTime(600, startTime + 1.8);
-
-          // Armónicos del piano (1x, 2x, 3x, 4x)
-          [
-            { mult: 1.0, gain: 0.28, type: 'triangle' },
-            { mult: 2.0, gain: 0.12, type: 'sine' },
-            { mult: 3.0, gain: 0.05, type: 'sine' },
-            { mult: 4.0, gain: 0.02, type: 'sine' },
-          ].forEach(h => {
-            const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
-
-            osc.type = h.type;
-            osc.frequency.setValueAtTime(baseFreq * h.mult, startTime);
-
-            gain.gain.setValueAtTime(0.0001, startTime);
-            gain.gain.linearRampToValueAtTime(h.gain, startTime + 0.008);
-            gain.gain.exponentialRampToValueAtTime(0.00001, startTime + 2.2);
-
-            osc.connect(gain);
-            gain.connect(filter);
-
-            osc.start(startTime);
-            osc.stop(startTime + 2.3);
-          });
-
-          filter.connect(ctx.destination);
-        });
-      } else if (instrument === 'ukulele') {
-        // Síntesis de Ukelele de Cuerdas de Nylon (G4 C4 E4 A4)
-        const chord = this.getChord(chordName, 'ukulele');
-        if (!chord) return;
-        const ukeBaseFreqs = [392.00, 261.63, 329.63, 440.00];
-
-        chord.frets.forEach((fret, stringIdx) => {
-          if (fret === -1) return;
-          const noteFreq = ukeBaseFreqs[stringIdx] * Math.pow(2, fret / 12);
-          const startTime = ctx.currentTime + stringIdx * 0.03;
-
-          // Filtro para brillo de nylon y ataque percusivo
-          const filter = ctx.createBiquadFilter();
-          filter.type = 'bandpass';
-          filter.frequency.setValueAtTime(noteFreq * 2.2, startTime);
-          filter.Q.setValueAtTime(1.8, startTime);
-
-          const osc1 = ctx.createOscillator();
-          const osc2 = ctx.createOscillator();
-          const gain = ctx.createGain();
-
-          osc1.type = 'triangle';
-          osc1.frequency.setValueAtTime(noteFreq, startTime);
-
-          osc2.type = 'sine';
-          osc2.frequency.setValueAtTime(noteFreq * 2, startTime);
-
-          gain.gain.setValueAtTime(0.001, startTime);
-          gain.gain.linearRampToValueAtTime(0.24, startTime + 0.006);
-          gain.gain.exponentialRampToValueAtTime(0.0001, startTime + 1.3);
-
-          osc1.connect(gain);
-          osc2.connect(gain);
-          gain.connect(ctx.destination);
-
-          osc1.start(startTime);
-          osc2.start(startTime);
-          osc1.stop(startTime + 1.4);
-          osc2.stop(startTime + 1.4);
-        });
+        const voicing = PIANO_VOICINGS[chordName] || PIANO_VOICINGS[cleanName] || [{ key: 'C', oct: 4 }, { key: 'E', oct: 4 }, { key: 'G', oct: 4 }];
+        const noteFreqMap = {'C':261.63,'C#':277.18,'Db':277.18,'D':293.66,'D#':311.13,'Eb':311.13,'E':329.63,'F':349.23,'F#':369.99,'Gb':369.99,'G':392.00,'G#':415.30,'Ab':415.30,'A':440.00,'A#':466.16,'Bb':466.16,'B':493.88};
+        notes = voicing.map((v, i) => ({ freq: (noteFreqMap[v.key]||261.63) * (v.oct===5?2:1), delay: i * 0.012 }));
       } else {
-        // Síntesis de Guitarra Acústica de 6 Cuerdas con resonancia orgánica
-        const chord = this.getChord(chordName, 'guitar');
-        if (!chord) return;
-        const baseFreqs = [82.41, 110.00, 146.83, 196.00, 246.94, 329.63];
-
         chord.frets.forEach((fret, stringIdx) => {
-          if (fret === -1) return;
-          const noteFreq = baseFreqs[stringIdx] * Math.pow(2, fret / 12);
-          const startTime = ctx.currentTime + stringIdx * 0.035;
-
-          // Cuerpo de guitarra acústica (Filtro con resonancia cálida)
-          const bodyFilter = ctx.createBiquadFilter();
-          bodyFilter.type = 'lowpass';
-          bodyFilter.frequency.setValueAtTime(2800, startTime);
-          bodyFilter.frequency.exponentialRampToValueAtTime(450, startTime + 1.5);
-
-          // Oscilador 1: Fundamental acústica
-          const osc1 = ctx.createOscillator();
-          const gain1 = ctx.createGain();
-          osc1.type = 'triangle';
-          osc1.frequency.setValueAtTime(noteFreq, startTime);
-
-          gain1.gain.setValueAtTime(0.0001, startTime);
-          gain1.gain.linearRampToValueAtTime(0.22, startTime + 0.008);
-          gain1.gain.exponentialRampToValueAtTime(0.00001, startTime + 2.0);
-
-          // Oscilador 2: Armónico de cuerda entorchada
-          const osc2 = ctx.createOscillator();
-          const gain2 = ctx.createGain();
-          osc2.type = 'sine';
-          osc2.frequency.setValueAtTime(noteFreq * 2.01, startTime);
-
-          gain2.gain.setValueAtTime(0.0001, startTime);
-          gain2.gain.linearRampToValueAtTime(0.08, startTime + 0.005);
-          gain2.gain.exponentialRampToValueAtTime(0.00001, startTime + 1.2);
-
-          osc1.connect(gain1);
-          osc2.connect(gain2);
-
-          gain1.connect(bodyFilter);
-          gain2.connect(bodyFilter);
-          bodyFilter.connect(ctx.destination);
-
-          osc1.start(startTime);
-          osc2.start(startTime);
-          osc1.stop(startTime + 2.1);
-          osc2.stop(startTime + 2.1);
+          if (fret !== -1) notes.push({ freq: baseFreqs[stringIdx] * Math.pow(2, fret / 12), delay: stringIdx * (instrument==='ukulele'?0.015:0.025) });
         });
       }
+
+      notes.forEach((note) => {
+        const startTime = ctx.currentTime + note.delay;
+        
+        // Better string pluck synthesis
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        const filter = ctx.createBiquadFilter();
+
+        osc.type = instrument === 'piano' ? 'sine' : 'sawtooth';
+        osc.frequency.setValueAtTime(note.freq, startTime);
+
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(instrument === 'piano' ? 3000 : 4000, startTime);
+        filter.frequency.exponentialRampToValueAtTime(300, startTime + 1.5);
+        filter.Q.value = 1.2;
+
+        gain.gain.setValueAtTime(0.0001, startTime);
+        gain.gain.exponentialRampToValueAtTime(0.3, startTime + 0.01);
+        gain.gain.exponentialRampToValueAtTime(0.0001, startTime + 2.5);
+
+        // Subtle detune for realism
+        osc.detune.value = (Math.random() - 0.5) * 6;
+
+        osc.connect(filter);
+        filter.connect(gain);
+        gain.connect(ctx.destination);
+
+        osc.start(startTime);
+        osc.stop(startTime + 3.0);
+      });
     } catch (err) {
       console.warn('[ChordEngine] Error reproduciendo audio:', err);
     }

@@ -1093,3 +1093,61 @@
   background: #ff5252;
   border-color: #ff5252;
 }
+.stage-mode-view {
+  background: #050505 !important;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  z-index: 9999;
+  overflow-y: auto;
+  padding: 40px 20px 100px 20px;
+}
+.stage-mode-view .stage-floating-hud {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  display: flex;
+  gap: 15px;
+  background: rgba(20, 20, 25, 0.75);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.08);
+  padding: 10px 20px;
+  border-radius: 30px;
+  z-index: 10000;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.6);
+  align-items: center;
+}
+:root:has(.stage-mode-view) .bottom-nav-bar,
+:root:has(.stage-mode-view) .top-app-bar {
+  display: none !important;
+}
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .lyrics-chords-container, .lyrics-chords-container * {
+    visibility: visible;
+  }
+  .lyrics-chords-container {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    background: #fff !important;
+    color: #000 !important;
+  }
+  .lyrics-word, .lyrics-song-title, .lyrics-song-artist {
+    color: #000 !important;
+  }
+  .chord-badge {
+    color: #000 !important;
+    background: #eee !important;
+    border: 1px solid #ccc !important;
+  }
+  .lyrics-essential-toolbar, .song-chords-visual-gallery, .active-recording-bar, .recording-playback-card {
+    display: none !important;
+  }
+  .stage-floating-hud {
+    display: none !important;
+  }
+}
