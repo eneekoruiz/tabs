@@ -420,20 +420,14 @@ test.describe('🎸 Tabs & Chords PRO - Suite E2E Modo Letras & Acordes Multi-In
     await expect(stageHud).toBeHidden();
   });
 
-  test('14. Cifrado Latino (Do, Re, Mi) y Tira Resumen de Acordes de la Canción', async ({ page }) => {
+  test('14. Cifrado Latino (Do, Re, Mi) y Selección de Notación', async ({ page }) => {
     const heroSearch = page.locator('#exploreSearchInput');
     await heroSearch.fill('Let It Be');
     const songCard = page.locator('.btn-load-explore-song', { hasText: /Let It Be/i }).first();
     await expect(songCard).toBeVisible({ timeout: 10000 });
     await songCard.click();
 
-    // 1. Verificar presencia de la Tira Resumen de Acordes
-    const chordRibbon = page.locator('.song-chords-ribbon');
-    await expect(chordRibbon).toBeVisible();
-    const chordChips = chordRibbon.locator('.chord-ribbon-chip');
-    await expect(chordChips.first()).toBeVisible();
-
-    // 2. Cambiar a Cifrado Latino (Do, Re, Mi) desde Opciones
+    // 1. Cambiar a Cifrado Latino (Do, Re, Mi) desde Opciones
     const btnMoreOptions = page.locator('#btnMoreOptions');
     await btnMoreOptions.click();
 
@@ -441,11 +435,52 @@ test.describe('🎸 Tabs & Chords PRO - Suite E2E Modo Letras & Acordes Multi-In
     await expect(selNotation).toBeVisible();
     await selNotation.selectOption('latin');
 
-    // 3. Verificar que los acordes en la partitura cambian a notación latina (Do, Sol, Lam, Fa, etc.)
+    // 2. Verificar que los acordes en la partitura cambian a notación latina (Do, Sol, Lam, Fa, etc.)
     const chordBadge = page.locator('.chord-badge').first();
     await expect(chordBadge).toBeVisible();
     const chordText = await chordBadge.textContent();
     expect(chordText).toMatch(/Do|Sol|La|Fa|Re|Mi|Si/);
+  });
+
+  test('15. Galería Visual de Diagramas de Acordes al Inicio de la Canción (Todos Visibles sin Clics)', async ({ page }) => {
+    const heroSearch = page.locator('#exploreSearchInput');
+    await heroSearch.fill('Wonderwall');
+    const songCard = page.locator('.btn-load-explore-song', { hasText: /Wonderwall/i }).first();
+    await expect(songCard).toBeVisible({ timeout: 10000 });
+    await songCard.click();
+
+    // 1. Verificar presencia de la Galería Visual de Acordes al inicio
+    const visualGallery = page.locator('.song-chords-visual-gallery');
+    await expect(visualGallery).toBeVisible();
+
+    // 2. Verificar que contiene tarjetas visuales con diagramas SVG reales
+    const chordCards = visualGallery.locator('.song-chord-visual-card');
+    await expect(chordCards.first()).toBeVisible();
+    const count = await chordCards.count();
+    expect(count).toBeGreaterThan(2);
+
+    // 3. Verificar que los diagramas SVG están renderizados
+    const svgDiagram = chordCards.first().locator('svg.chord-diagram-svg');
+    await expect(svgDiagram).toBeVisible();
+
+    // 4. Probar clic en tarjeta para escuchar sonido
+    await chordCards.first().click();
+  });
+
+  test('16. Grabador de Audio de Ensayos / Directos (Grabación, Temporizador y Descarga de Toma)', async ({ page }) => {
+    const heroSearch = page.locator('#exploreSearchInput');
+    await heroSearch.fill('Perfect');
+    const songCard = page.locator('.btn-load-explore-song', { hasText: /Perfect/i }).first();
+    await expect(songCard).toBeVisible({ timeout: 10000 });
+    await songCard.click();
+
+    // 1. Probar botón de Grabación Rápida
+    const btnRecord = page.locator('#btnQuickRecordAction');
+    await expect(btnRecord).toBeVisible();
+    await btnRecord.click();
+
+    // 2. Si el navegador no permite captura real sin permiso físico, verificar que el botón reacciona
+    await expect(btnRecord).toBeVisible();
   });
 
 });

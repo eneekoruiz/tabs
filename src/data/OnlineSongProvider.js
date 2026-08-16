@@ -843,9 +843,184 @@ Any [Em]time of year, you can [F#7]find it here`;
 [Bm]Y por no callar a tiempo me he que[G]dado sin tu nombre`;
     }
 
+    // ==========================================
+    // ED SHEERAN
+    // ==========================================
+    if (t.includes('perfect')) {
+      return `[Intro]
+[G]
+
+[Verse 1]
+I found a [G]love for [Em]me
+Darling, just [C]dive right in and follow my [D]lead
+Well, I found a [G]girl, beautiful and [Em]sweet
+Oh, I never [C]knew you were the someone waiting for [D]me
+
+[Chorus]
+Baby, I'm [G]dancing in the [Em]dark with you between my [C]arms
+Barefoot on the [G]grass, [D]listening to our [Em]favorite song
+When you [C]said you looked a [G]mess, I whispered [D]underneath my [Em]breath
+But you [C]heard it, darling, [G]you look [D]perfect to[G]night`;
+    }
+
+    // ==========================================
+    // TAYLOR SWIFT
+    // ==========================================
+    if (t.includes('all too well')) {
+      return `[Intro]
+[C] [G] [Am] [F]
+
+[Verse 1]
+I [C]walked through the door with you, the [G]air was cold
+But [Am]something about it felt like [F]home somehow
+And I [C]left my scarf there at your [G]sister's house
+And you've [Am]still got it in your [F]drawer even now
+
+[Chorus]
+'Cause there we [C]are again in the [G]middle of the night
+We're [Am]dancing 'round the kitchen in the [F]refrigerator light
+[C]Down the stairs, I was [G]there, I re[Am]member it all too [F]well`;
+    }
+
+    // ==========================================
+    // NIRVANA
+    // ==========================================
+    if (t.includes('smells like teen spirit')) {
+      return `[Intro]
+[F5] [Bb5] [Ab5] [Db5]
+[F5] [Bb5] [Ab5] [Db5]
+
+[Verse 1]
+[F5]Load up on [Bb5]guns, bring [Ab5]your [Db5]friends
+[F5]It's fun to [Bb5]lose and [Ab5]to pre[Db5]tend
+[F5]She's over-[Bb5]bored and [Ab5]self-as[Db5]sured
+[F5]Oh no, I [Bb5]know a [Ab5]dirty [Db5]word
+
+[Chorus]
+[F5]With the lights [Bb5]out, [Ab5]it's less [Db5]dangerous
+[F5]Here we are [Bb5]now, [Ab5]enter[Db5]tain us
+[F5]I feel stu[Bb5]pid [Ab5]and con[Db5]tagious
+[F5]Here we are [Bb5]now, [Ab5]enter[Db5]tain us`;
+    }
+
+    // ==========================================
+    // ADELE
+    // ==========================================
+    if (t.includes('someone like you')) {
+      return `[Intro]
+[A] [A/G#] [F#m] [D]
+
+[Verse 1]
+[A]I heard that you're [A/G#]settled down
+That you [F#m]found a girl and you're [D]married now
+[A]I heard that your [A/G#]dreams came true
+Guess she [F#m]gave you things I didn't [D]give to you
+
+[Chorus]
+Never [A]mind, I'll find [E]someone like [F#m]you [D]
+I wish [A]nothing but the [E]best for [F#m]you, [D]too
+"Don't [A]forget me, I [E]beg," I remember [F#m]you [D]said
+"Sometimes it [A]lasts in love, but [E]sometimes it hurts in[F#m]stead" [D]`;
+    }
+
+    // ==========================================
+    // MANÁ
+    // ==========================================
+    if (t.includes('clavado en un bar')) {
+      return `[Intro]
+[Bm] [A] [G] [F#7]
+
+[Verse 1]
+[Bm]Aquí me tiene bien clavado, soltando las penas en un bar
+[A]Brindando por su amor
+[G]Aquí me tiene abandonado, bebiendo tequila pa' olvidar
+[F#7]Y sintiendo este dolor
+
+[Chorus]
+[Bm]Estoy clavado, [A]estoy herido
+[G]Estoy ahogado en un [F#7]bar
+[Bm]Desesperado, [A]en el olvido
+[G]Estoy tan solo en el [F#7]mar`;
+    }
+
+    // ==========================================
+    // SHAKIRA
+    // ==========================================
+    if (t.includes('antologia')) {
+      return `[Intro]
+[C] [G] [Am] [F]
+
+[Verse 1]
+Para a[C]marte necesito una ra[G]zón
+Y es di[Am]fícil descubrirla que no sea [F]otra que tu gran amor
+Y a[C]prendí a quitarle al tiempo los se[G]gundos
+Tú me hi[Am]ciste ver el cielo aún más pro[F]fundo
+
+[Chorus]
+Y fue por [C]ti que aprendí a que[G]rer los gatos
+Desves[Am]tiste la piel de mis [F]zapatos
+Y me hi[C]ciste escribir más de cien can[G]ciones
+Y hasta per[Am]donar tus equivoca[F]ciones`;
+    }
+
+    // ==========================================
+    // EXTREMODURO
+    // ==========================================
+    if (t.includes('standby')) {
+      return `[Intro]
+[Em] [C] [G] [D]
+
+[Verse 1]
+[Em]Sintió calor en su mirada, le dijo: "[C]Ven, no temas nada"
+[G]Y se marcharon a la [D]orilla del río
+[Em]Pasó la noche en un instante, se despertó [C]muy sonriente
+[G]Y se miraron con los [D]ojos prendidos
+
+[Chorus]
+Y es que la [C]pena que [D]siento en el [Em]alma
+No la [C]cura nin[D]guna can[Em]ción`;
+    }
+
+    // ==========================================
+    // LOS SECRETOS
+    // ==========================================
+    if (t.includes('dejame') || t.includes('déjame')) {
+      return `[Intro]
+[D] [G] [A] [D]
+
+[Verse 1]
+[D]Déjame, no juegues [G]más conmigo
+[A]Esta vez en serio [D]te lo digo
+[D]Tuviste una oportunidad y la [G]dejaste escapar
+[A]Ya no hay nada que decir, déjame en [D]paz
+
+[Chorus]
+[G]Déjame, [A]ya no tiene [D]sentido
+[G]Déjame, [A]todo se ha con[D]cluido`;
+    }
+
+    // ==========================================
+    // JARABE DE PALO
+    // ==========================================
+    if (t.includes('la flaca')) {
+      return `[Intro]
+[Am] [G] [F] [E7]
+
+[Verse 1]
+En la [Am]Habana casi no oscurece, la [G]noche se confunde con el día
+La [F]Flaca duerme de día y de [E7]noche camina
+En su [Am]cuerpo un vestido de seda, que se [G]pega a su piel de canela
+La [F]Flaca no tiene dueño, pero a [E7]todos entrega
+
+[Chorus]
+Por un [Am]beso de la Flaca daría lo [G]que fuera
+Por un [F]beso de ella, aunque sólo uno [E7]fuera`;
+    }
+
     return null;
   }
 }
 
 export const onlineSongProvider = new OnlineSongProvider();
 export default onlineSongProvider;
+

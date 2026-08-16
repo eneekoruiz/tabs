@@ -75,18 +75,35 @@ For [C]though they may be [G]parted there is [Am]still a chance that [F]they wil
 
 [Chorus]
 Let it [Am]be, let it [G]be, let it [F]be, let it [C]be
-[C]There will be an [G]answer, let it [F]be [C]
+[C]There will be an [G]answer, let it [F]be [C]`,
+    data: `\\title "Let It Be" \\artist "The Beatles" \\tempo 75 . :4 (0.5 2.4 0.3 1.2) :4 (3.6 2.5 0.4 0.3) :4 (0.5 2.4 2.3 1.2) :4 (1.6 3.5 3.4 2.3) | :4 (0.5 2.4 0.3 1.2) :4 (3.6 2.5 0.4 0.3) :4 (1.6 3.5 3.4 2.3) :4 (0.5 2.4 0.3 1.2) |`,
+  },
+  {
+    title: 'Yesterday',
+    artist: 'The Beatles',
+    genre: 'Acoustic',
+    difficulty: 'Principiante',
+    tuning: 'Standard E',
+    tempo: 96,
+    timeSignature: '4/4',
+    tracksCount: 2,
+    lyricsChords: `[Intro]
+[F]
 
-[Verse 3]
-And [C]when the night is [G]cloudy there is [Am]still a light that [F]shines on me
-[C]Shine until to[G]morrow, let it [F]be [C]
-I [C]wake up to the [G]sound of music, [Am]Mother Mary [F]comes to me
-[C]Speaking words of [G]wisdom, let it [F]be [C]
+[Verse 1]
+[F]Yesterday, [Em7]all my [A7]troubles seemed so [Dm]far away [Dm/C]
+[Bb]Now it [C7]looks as though they're [F]here to stay [C/E]
+Oh, [Dm]I be[G7]lieve in [Bb]yester[F]day
+
+[Verse 2]
+[F]Suddenly, [Em7]I'm not [A7]half the man I [Dm]used to be [Dm/C]
+[Bb]There's a [C7]shadow hanging [F]over me [C/E]
+Oh, [Dm]yester[G7]day came [Bb]sudden[F]ly
 
 [Chorus]
-Let it [Am]be, let it [G]be, let it [F]be, let it [C]be
-[C]Whisper words of [G]wisdom, let it [F]be [C]`,
-    data: `\\title "Let It Be" \\artist "The Beatles" \\tempo 75 . :4 (0.5 2.4 0.3 1.2) :4 (3.6 2.5 0.4 0.3) :4 (0.5 2.4 2.3 1.2) :4 (1.6 3.5 3.4 2.3) | :4 (0.5 2.4 0.3 1.2) :4 (3.6 2.5 0.4 0.3) :4 (1.6 3.5 3.4 2.3) :4 (0.5 2.4 0.3 1.2) |`,
+[Em7]Why [A7]she [Dm]had [C]to [Bb]go, I don't [Gm6]know, she [C7]wouldn't [F]say
+[Em7]I [A7]said [Dm]some[C]thing [Bb]wrong, now I [Gm6]long for [C7]yester[F]day`,
+    data: `\\title "Yesterday" \\artist "The Beatles" \\tempo 96 . :4 (1.6 3.5 3.4 2.3 1.2 1.1) :4 (0.6 2.5 2.4 0.3 3.2 0.1) :4 (0.5 2.4 0.3 2.2 0.1) :2 (0.4 2.3 3.2 1.1) |`,
   },
   {
     title: 'Dust in the Wind',
@@ -114,21 +131,7 @@ Let it [Am]be, let it [G]be, let it [F]be, let it [C]be
 
 [Chorus]
 [D/F#]Dust [G]in the [Am]wind
-[D/F#]All we are is [G]dust in the [Am]wind
-
-[Bridge]
-[Am] [G/A] [F/A] [G/A]
-[Am] [G/A] [F/A] [G/A]
-
-[Verse 3]
-[C]Now, [G/B]don't hang [Am]on, [G]nothing lasts for[Dm7]ever but the [Am]earth and sky
-[C]It [G/B]slips [Am]away, [G]and all your money [Dm7]won't another [Am]minute buy
-
-[Chorus]
-[D/F#]Dust [G]in the [Am]wind
-[D/F#]All we are is [G]dust in the [Am]wind
-[D/F#]Dust [G]in the [Am]wind
-[D/F#]Everything is [G]dust in the [Am]wind`,
+[D/F#]All we are is [G]dust in the [Am]wind`,
     data: `\\title "Dust in the Wind" \\artist "Kansas" \\tempo 98 . :16 3.5 0.3 1.2 0.4 3.5 0.3 1.2 0.4 | :16 3.5 0.3 3.2 0.4 3.5 0.3 0.2 0.4 |`,
   },
   {
@@ -157,15 +160,7 @@ Let it [Am]be, let it [G]be, let it [F]be, let it [C]be
 [A]Would you [E/G#]help me [F#m]stand [A/E]
 [D/F#]If I [A/E]saw you in [E]heaven?
 [F#m]I'll find my [C#m/E]way [Em]through night and [F#7]day
-'Cause I [Bm7]know I just can't [E7]stay here in [A]heaven
-
-[Bridge]
-[C]Time can [G/B]bring you [Am]down, time can [D/F#]bend your [G]knees [D/F#] [Em] [D] [C]
-[C]Time can [G/B]break your [Am]heart, have you [D/F#]begging [G]please, [D/F#]begging [E]please
-
-[Verse 3]
-[A]Beyond the [E/G#]door, [F#m]there's peace I'm [A/E]sure
-[D/F#]And I [A/E]know there'll be no [E]more tears in [A]heaven`,
+'Cause I [Bm7]know I just can't [E7]stay here in [A]heaven`,
     data: `\\title "Tears in Heaven" \\artist "Eric Clapton" \\tempo 78 . :8 5.6 5.4 5.3 5.2 :8 4.6 4.4 4.3 4.2 | :8 2.6 2.4 2.3 2.2 :8 0.6 0.4 0.3 0.2 |`,
   },
   {
@@ -186,17 +181,7 @@ And she's [Fmaj7]buying a stairway to [G]heaven [Am]
 When she [Am]gets there she [G#aug]knows, if the [C/G]stores are all [D/F#]closed
 With a [Fmaj7]word she can get what she [G]came for [Am]
 [C]Ooh, [D]ooh, [Fmaj7]ooh, [Am]ooh
-And she's [C]buying a [G]stairway to [D]heaven
-
-[Verse 2]
-There's a [Am]sign on the [G#aug]wall, but she [C/G]wants to be [D/F#]sure
-'Cause you [Fmaj7]know sometimes words have two [G]meanings [Am]
-In a [Am]tree by the [G#aug]brook, there's a [C/G]songbird who [D/F#]sings
-Sometimes [Fmaj7]all of our thoughts are [G]misgiven [Am]
-
-[Chorus]
-[C]Ooh, it makes me [G]wonder [Am]
-[C]Ooh, it makes me [G]wonder [Am]`,
+And she's [C]buying a [G]stairway to [D]heaven`,
     data: `\\title "Stairway to Heaven" \\artist "Led Zeppelin" \\tempo 76 . :8 0.5 7.1 5.2 5.3 7.1 2.5 8.1 5.2 | :8 5.3 8.1 0.4 7.1 5.2 5.3 7.1 2.6 |`,
   },
   {
@@ -225,90 +210,371 @@ Sometimes [Fmaj7]all of our thoughts are [G]misgiven [Am]
 [F]Welcome to the Hotel Cali[C]fornia
 Such a [E7]lovely place (such a lovely place), such a [Am]lovely face
 [F]Plenty of room at the Hotel Cali[C]fornia
-Any [Dm]time of year (any time of year), you can [E7]find it here
-
-[Verse 2]
-[Am]Her mind is Tiffany-twisted, [E7]she got the Mercedes bends
-[G]She got a lot of pretty, pretty boys [D]that she calls friends
-[F]How they dance in the courtyard, [C]sweet summer sweat
-[Dm]Some dance to remember, [E7]some dance to forget
-[Am]So I called up the Captain, [E7]'Please bring me my wine'
-He said, [G]'We haven't had that spirit here since [D]nineteen sixty-nine'
-[F]And still those voices are calling from [C]far away
-[Dm]Wake you up in the middle of the night, [E7]just to hear them say
-
-[Chorus]
-[F]Welcome to the Hotel Cali[C]fornia
-Such a [E7]lovely place (such a lovely place), such a [Am]lovely face
-They [F]livin' it up at the Hotel Cali[C]fornia
-What a [Dm]nice surprise (what a nice surprise), bring your [E7]alibis
-
-[Verse 3]
-[Am]Mirrors on the ceiling, [E7]the pink champagne on ice
-And she said, [G]'We are all just prisoners here, [D]of our own device'
-[F]And in the master's chambers, [C]they gathered for the feast
-[Dm]They stab it with their steely knives, but they [E7]just can't kill the beast
-[Am]Last thing I remember, [E7]I was running for the door
-[G]I had to find the passage back to the [D]place I was before
-[F]'Relax,' said the night man, 'We are [C]programmed to receive
-[Dm]You can check-out any time you like, but [E7]you can never leave!'`,
+Any [Dm]time of year (any time of year), you can [E7]find it here`,
     data: `\\title "Hotel California" \\artist "Eagles" \\tempo 75 . :8 2.5 4.4 4.3 3.2 2.1 3.2 4.3 4.4 | :8 2.6 4.5 4.4 3.3 2.2 3.3 4.4 4.5 | :8 0.5 2.4 2.3 1.2 0.1 1.2 2.3 2.4 | :8 0.6 2.5 2.4 1.3 0.2 1.3 2.4 2.5 |`,
   },
   {
-    title: 'Smoke on the Water',
-    artist: 'Deep Purple',
+    title: 'Bohemian Rhapsody',
+    artist: 'Queen',
     genre: 'Rock',
-    difficulty: 'Principiante',
+    difficulty: 'Avanzado',
     tuning: 'Standard E',
-    tempo: 112,
+    tempo: 72,
+    timeSignature: '4/4',
+    tracksCount: 6,
+    lyricsChords: `[Intro]
+[Bb6] [C7] [Bb6] [C7]
+
+[Verse 1]
+[Bb]Mama, just [Gm]killed a man
+Put a [Cm]gun against his head, pulled my [F7]trigger, now he's dead
+[Bb]Mama, life had [Gm]just begun
+But [Cm]now I've gone and [Gaug]thrown it [Eb/G]all a[F#dim]way [F7]
+[Eb]Mama, [Bb/D]ooh, [Cm]didn't mean to make you cry
+If [Bb]I'm not back a[F/A]gain this time to[Gm]morrow
+[Eb]Carry on, [Bb/D]carry on, as if [Cm]nothing really [F]matters`,
+    data: `\\title "Bohemian Rhapsody" \\artist "Queen" \\tempo 72 . :4 (1.5 3.4 3.3 3.2) :4 (3.6 5.5 5.4 3.3) :4 (3.5 5.4 5.3 4.2) :4 (1.6 3.5 1.4 2.3) |`,
+  },
+  {
+    title: 'Love of My Life',
+    artist: 'Queen',
+    genre: 'Acoustic',
+    difficulty: 'Intermedio',
+    tuning: 'Standard E',
+    tempo: 76,
+    timeSignature: '3/4',
+    tracksCount: 2,
+    lyricsChords: `[Intro]
+[D] [Bm] [Em] [A7]
+
+[Verse 1]
+[D]Love of my life, you've [Bm]hurt me
+You've [Em]broken my heart, and [A]now you leave me
+[D]Love of my life, can't [D7]you see?
+Bring it [G]back, bring it [D/F#]back, don't [Em]take it a[A]way from me
+Because [Bm]you don't [F#m]know what it [G]means to [D]me`,
+    data: `\\title "Love of My Life" \\artist "Queen" \\tempo 76 . :4 (0.4 2.3 3.2 2.1) :4 (2.5 4.4 4.3 3.2) :4 (0.6 2.5 2.4 0.3) :4 (0.5 2.4 2.3 2.2) |`,
+  },
+  {
+    title: 'Perfect',
+    artist: 'Ed Sheeran',
+    genre: 'Pop',
+    difficulty: 'Principiante',
+    tuning: 'Standard E (Capo 1)',
+    tempo: 63,
+    timeSignature: '12/8',
+    tracksCount: 3,
+    lyricsChords: `[Intro]
+[G]
+
+[Verse 1]
+I found a [G]love for [Em]me
+Darling, just [C]dive right in and follow my [D]lead
+Well, I found a [G]girl, beautiful and [Em]sweet
+Oh, I never [C]knew you were the someone waiting for [D]me
+
+[Chorus]
+Baby, I'm [G]dancing in the [Em]dark with you between my [C]arms
+Barefoot on the [G]grass, [D]listening to our [Em]favorite song
+When you [C]said you looked a [G]mess, I whispered [D]underneath my [Em]breath
+But you [C]heard it, darling, [G]you look [D]perfect to[G]night`,
+    data: `\\title "Perfect" \\artist "Ed Sheeran" \\tempo 63 . :8 (3.6 2.5 0.4 0.3) :8 (0.5 2.4 2.3) :8 (3.5 2.4 0.3 1.2) :8 (0.4 2.3 3.2) |`,
+  },
+  {
+    title: 'Shape of You',
+    artist: 'Ed Sheeran',
+    genre: 'Pop',
+    difficulty: 'Principiante',
+    tuning: 'Standard E (Capo 2)',
+    tempo: 96,
     timeSignature: '4/4',
     tracksCount: 3,
     lyricsChords: `[Intro]
-[G5] [Bb5] [C5]   [G5] [Bb5] [Db5] [C5]
-[G5] [Bb5] [C5]   [Bb5] [G5]
+[Bm] [Em] [G] [A]
 
 [Verse 1]
-[G5]We all came out to [F5]Montreux
-[G5]On the Lake Geneva [F5]shoreline
-[G5]To make records with a [F5]mobile
-[G5]We didn't have much [F5]time
-[G5]Frank Zappa and the [F5]Mothers
-[G5]Were at the best place a[F5]round
-[G5]But some stupid with a [F5]flare gun
-[G5]Burned the place to the [F5]ground
+The [Bm]club isn't the best place to [Em]find a lover
+So the [G]bar is where I [A]go
+[Bm]Me and my friends at the [Em]table doing shots
+Drinking [G]fast and then we talk [A]slow
 
 [Chorus]
-[C5]Smoke on the [Ab5]water, [G5]a fire in the sky
-[C5]Smoke on the [Ab5]water
+[Bm]Girl, you know I [Em]want your love
+Your [G]love was handmade for [A]somebody like me
+[Bm]Come on now, [Em]follow my lead
+[G]I may be crazy, [A]don't mind me`,
+    data: `\\title "Shape of You" \\artist "Ed Sheeran" \\tempo 96 . :4 (2.5 4.4 4.3 3.2) :4 (0.6 2.5 2.4 0.3) :4 (3.6 2.5 0.4 0.3) :4 (0.5 2.4 2.3 2.2) |`,
+  },
+  {
+    title: 'All Too Well',
+    artist: 'Taylor Swift',
+    genre: 'Country',
+    difficulty: 'Principiante',
+    tuning: 'Standard E (Capo 3)',
+    tempo: 86,
+    timeSignature: '4/4',
+    tracksCount: 3,
+    lyricsChords: `[Intro]
+[C] [G] [Am] [F]
 
-[Verse 2]
-[G5]They burned down the gambling [F5]house
-[G5]It died with an awful [F5]sound
-[G5]Funky Claude was running [F5]in and out
-[G5]Pulling kids out the [F5]ground
-[G5]When it all was [F5]over
-[G5]We had to find another [F5]place
-[G5]Swiss time was running [F5]out
-[G5]It seemed that we would lose the [F5]race
-
-[Chorus]
-[C5]Smoke on the [Ab5]water, [G5]a fire in the sky
-[C5]Smoke on the [Ab5]water
-
-[Verse 3]
-[G5]We ended up at the [F5]Grand Hotel
-[G5]It was empty, cold and [F5]bare
-[G5]With the Rolling truck Stones thing just [F5]outside
-[G5]Making our music [F5]there
-[G5]With a few red lights and a few [F5]old beds
-[G5]We made a place to [F5]sweat
-[G5]No matter what we get [F5]out of this
-[G5]I know, I know we'll never for[F5]get
+[Verse 1]
+I [C]walked through the door with you, the [G]air was cold
+But [Am]something about it felt like [F]home somehow
+And I [C]left my scarf there at your [G]sister's house
+And you've [Am]still got it in your [F]drawer even now
 
 [Chorus]
-[C5]Smoke on the [Ab5]water, [G5]a fire in the sky
-[C5]Smoke on the [Ab5]water`,
-    data: `\\title "Smoke on the Water" \\artist "Deep Purple" \\tempo 112 . :8 0.6 3.5 5.5 | 0.6 3.5 6.5 5.5 | 0.6 3.5 5.5 3.5 0.6 | :8 0.6 3.5 5.5 | 0.6 3.5 6.5 5.5 | 0.6 3.5 5.5 3.5 0.6 |`,
+'Cause there we [C]are again in the [G]middle of the night
+We're [Am]dancing 'round the kitchen in the [F]refrigerator light
+[C]Down the stairs, I was [G]there, I re[Am]member it all too [F]well`,
+    data: `\\title "All Too Well" \\artist "Taylor Swift" \\tempo 86 . :4 (0.5 2.4 0.3 1.2) :4 (3.6 2.5 0.4 0.3) :4 (0.5 2.4 2.3 1.2) :4 (1.6 3.5 3.4 2.3) |`,
+  },
+  {
+    title: 'Love Story',
+    artist: 'Taylor Swift',
+    genre: 'Country',
+    difficulty: 'Principiante',
+    tuning: 'Standard E (Capo 3)',
+    tempo: 120,
+    timeSignature: '4/4',
+    tracksCount: 3,
+    lyricsChords: `[Intro]
+[C] [G] [Am] [F]
+
+[Verse 1]
+We were [C]both young when I first saw you
+I [F]close my eyes and the flashback starts
+I'm [Am]standing there on a [F]balcony in summer air
+
+[Chorus]
+Romeo, [C]take me somewhere we can be alone
+I'll be [G]waiting, all there's left to do is run
+You'll be the [Am]prince and I'll be the princess
+It's a [F]love story, [G]baby, just say, "[C]Yes"`,
+    data: `\\title "Love Story" \\artist "Taylor Swift" \\tempo 120 . :4 (0.5 2.4 0.3 1.2) :4 (1.6 3.5 3.4 2.3) :4 (0.5 2.4 2.3 1.2) :4 (1.6 3.5 3.4 2.3) |`,
+  },
+  {
+    title: 'Smells Like Teen Spirit',
+    artist: 'Nirvana',
+    genre: 'Rock',
+    difficulty: 'Principiante',
+    tuning: 'Standard E',
+    tempo: 116,
+    timeSignature: '4/4',
+    tracksCount: 4,
+    lyricsChords: `[Intro]
+[F5] [Bb5] [Ab5] [Db5]
+[F5] [Bb5] [Ab5] [Db5]
+
+[Verse 1]
+[F5]Load up on [Bb5]guns, bring [Ab5]your [Db5]friends
+[F5]It's fun to [Bb5]lose and [Ab5]to pre[Db5]tend
+[F5]She's over-[Bb5]bored and [Ab5]self-as[Db5]sured
+[F5]Oh no, I [Bb5]know a [Ab5]dirty [Db5]word
+
+[Chorus]
+[F5]With the lights [Bb5]out, [Ab5]it's less [Db5]dangerous
+[F5]Here we are [Bb5]now, [Ab5]enter[Db5]tain us
+[F5]I feel stu[Bb5]pid [Ab5]and con[Db5]tagious
+[F5]Here we are [Bb5]now, [Ab5]enter[Db5]tain us
+A [F5]mulatto, an al[Bb5]bino, a mos[Ab5]quito, my li[Db5]bido, yeah`,
+    data: `\\title "Smells Like Teen Spirit" \\artist "Nirvana" \\tempo 116 . :8 (1.6 3.5 3.4) (1.6 3.5 3.4) (1.5 3.4 3.3) (1.5 3.4 3.3) | :8 (4.6 6.5 6.4) (4.6 6.5 6.4) (4.5 6.4 6.3) (4.5 6.4 6.3) |`,
+  },
+  {
+    title: 'Come As You Are',
+    artist: 'Nirvana',
+    genre: 'Rock',
+    difficulty: 'Principiante',
+    tuning: 'Standard D (Tune down 1 step)',
+    tempo: 120,
+    timeSignature: '4/4',
+    tracksCount: 3,
+    lyricsChords: `[Intro]
+[F#m] [A] [F#m] [A]
+
+[Verse 1]
+[F#m]Come as you [A]are, as you [F#m]were
+As I [A]want you to [F#m]be
+As a [A]friend, as a [F#m]friend
+As an [A]old ene[F#m]my
+
+[Chorus]
+[B]Memoria, [D]memoria
+[B]Memoria, [D]memoria`,
+    data: `\\title "Come As You Are" \\artist "Nirvana" \\tempo 120 . :8 0.6 0.6 1.6 2.6 0.5 2.6 0.5 2.6 | :8 2.6 2.6 1.6 0.6 2.5 0.6 0.6 0.6 |`,
+  },
+  {
+    title: 'Someone Like You',
+    artist: 'Adele',
+    genre: 'Pop',
+    difficulty: 'Principiante',
+    tuning: 'Standard E',
+    tempo: 68,
+    timeSignature: '4/4',
+    tracksCount: 2,
+    lyricsChords: `[Intro]
+[A] [A/G#] [F#m] [D]
+
+[Verse 1]
+[A]I heard that you're [A/G#]settled down
+That you [F#m]found a girl and you're [D]married now
+[A]I heard that your [A/G#]dreams came true
+Guess she [F#m]gave you things I didn't [D]give to you
+
+[Chorus]
+Never [A]mind, I'll find [E]someone like [F#m]you [D]
+I wish [A]nothing but the [E]best for [F#m]you, [D]too
+"Don't [A]forget me, I [E]beg," I remember [F#m]you [D]said
+"Sometimes it [A]lasts in love, but [E]sometimes it hurts in[F#m]stead" [D]`,
+    data: `\\title "Someone Like You" \\artist "Adele" \\tempo 68 . :16 (0.5 2.3) 2.2 2.1 2.2 (0.5 2.3) 2.2 2.1 2.2 | :16 (4.6 2.3) 2.2 2.1 2.2 (4.6 2.3) 2.2 2.1 2.2 |`,
+  },
+  {
+    title: 'Bad Guy',
+    artist: 'Billie Eilish',
+    genre: 'Pop',
+    difficulty: 'Principiante',
+    tuning: 'Standard E',
+    tempo: 135,
+    timeSignature: '4/4',
+    tracksCount: 3,
+    lyricsChords: `[Intro]
+[Gm] [C] [D7] [Gm]
+
+[Verse 1]
+[Gm]White shirt now red, my bloody nose
+Sleeping, you're on your tippy toes
+[C]Creeping around like no one knows
+Think you're so criminal
+[D7]Bruises on both my knees for you
+Don't say thank you or please
+I do [Gm]what I want when I'm wanting to
+
+[Chorus]
+So you're a tough guy, [Gm]like it really rough guy
+Just can't get enough guy, chest always so puffed guy
+[C]I'm that bad type, make your mama sad type
+[D7]Make your girlfriend mad tight, might seduce your dad type
+I'm the [Gm]bad guy, duh`,
+    data: `\\title "Bad Guy" \\artist "Billie Eilish" \\tempo 135 . :4 (3.6 5.5 5.4 3.3) :4 (3.5 5.4 5.3 5.2) :4 (2.4 1.3 2.2 0.1) :4 (3.6 5.5 5.4 3.3) |`,
+  },
+  {
+    title: 'Clavado en un Bar',
+    artist: 'Maná',
+    genre: 'Rock',
+    difficulty: 'Intermedio',
+    tuning: 'Standard E',
+    tempo: 132,
+    timeSignature: '4/4',
+    tracksCount: 4,
+    lyricsChords: `[Intro]
+[Bm] [A] [G] [F#7]
+
+[Verse 1]
+[Bm]Aquí me tiene bien clavado, soltando las penas en un bar
+[A]Brindando por su amor
+[G]Aquí me tiene abandonado, bebiendo tequila pa' olvidar
+[F#7]Y sintiendo este dolor
+
+[Chorus]
+[Bm]Estoy clavado, [A]estoy herido
+[G]Estoy ahogado en un [F#7]bar
+[Bm]Desesperado, [A]en el olvido
+[G]Estoy tan solo en el [F#7]mar`,
+    data: `\\title "Clavado en un Bar" \\artist "Mana" \\tempo 132 . :4 (2.5 4.4 4.3 3.2) :4 (0.5 2.4 2.3 2.2) :4 (3.6 2.5 0.4 0.3) :4 (2.6 4.5 2.4 3.3) |`,
+  },
+  {
+    title: 'Antologia',
+    artist: 'Shakira',
+    genre: 'Pop',
+    difficulty: 'Principiante',
+    tuning: 'Standard E',
+    tempo: 84,
+    timeSignature: '4/4',
+    tracksCount: 2,
+    lyricsChords: `[Intro]
+[C] [G] [Am] [F]
+
+[Verse 1]
+Para a[C]marte necesito una ra[G]zón
+Y es di[Am]fícil descubrirla que no sea [F]otra que tu gran amor
+Y a[C]prendí a quitarle al tiempo los se[G]gundos
+Tú me hi[Am]ciste ver el cielo aún más pro[F]fundo
+
+[Chorus]
+Y fue por [C]ti que aprendí a que[G]rer los gatos
+Desves[Am]tiste la piel de mis [F]zapatos
+Y me hi[C]ciste escribir más de cien can[G]ciones
+Y hasta per[Am]donar tus equivoca[F]ciones`,
+    data: `\\title "Antologia" \\artist "Shakira" \\tempo 84 . :4 (0.5 2.4 0.3 1.2) :4 (3.6 2.5 0.4 0.3) :4 (0.5 2.4 2.3 1.2) :4 (1.6 3.5 3.4 2.3) |`,
+  },
+  {
+    title: 'Standby',
+    artist: 'Extremoduro',
+    genre: 'Rock',
+    difficulty: 'Intermedio',
+    tuning: 'Standard E',
+    tempo: 110,
+    timeSignature: '4/4',
+    tracksCount: 4,
+    lyricsChords: `[Intro]
+[Em] [C] [G] [D]
+
+[Verse 1]
+[Em]Sintió calor en su mirada, le dijo: "[C]Ven, no temas nada"
+[G]Y se marcharon a la [D]orilla del río
+[Em]Pasó la noche en un instante, se despertó [C]muy sonriente
+[G]Y se miraron con los [D]ojos prendidos
+
+[Chorus]
+Y es que la [C]pena que [D]siento en el [Em]alma
+No la [C]cura nin[D]guna can[Em]ción`,
+    data: `\\title "Standby" \\artist "Extremoduro" \\tempo 110 . :4 (0.6 2.5 2.4 0.3) :4 (0.5 2.4 0.3 1.2) :4 (3.6 2.5 0.4 0.3) :4 (0.4 2.3 3.2 2.1) |`,
+  },
+  {
+    title: 'Dejame',
+    artist: 'Los Secretos',
+    genre: 'Pop',
+    difficulty: 'Principiante',
+    tuning: 'Standard E',
+    tempo: 128,
+    timeSignature: '4/4',
+    tracksCount: 3,
+    lyricsChords: `[Intro]
+[D] [G] [A] [D]
+
+[Verse 1]
+[D]Déjame, no juegues [G]más conmigo
+[A]Esta vez en serio [D]te lo digo
+[D]Tuviste una oportunidad y la [G]dejaste escapar
+[A]Ya no hay nada que decir, déjame en [D]paz
+
+[Chorus]
+[G]Déjame, [A]ya no tiene [D]sentido
+[G]Déjame, [A]todo se ha con[D]cluido`,
+    data: `\\title "Dejame" \\artist "Los Secretos" \\tempo 128 . :4 (0.4 2.3 3.2 2.1) :4 (3.6 2.5 0.4 0.3) :4 (0.5 2.4 2.3 2.2) :4 (0.4 2.3 3.2 2.1) |`,
+  },
+  {
+    title: 'La Flaca',
+    artist: 'Jarabe de Palo',
+    genre: 'Rock',
+    difficulty: 'Principiante',
+    tuning: 'Standard E',
+    tempo: 118,
+    timeSignature: '4/4',
+    tracksCount: 3,
+    lyricsChords: `[Intro]
+[Am] [G] [F] [E7]
+
+[Verse 1]
+En la [Am]Habana casi no oscurece, la [G]noche se confunde con el día
+La [F]Flaca duerme de día y de [E7]noche camina
+En su [Am]cuerpo un vestido de seda, que se [G]pega a su piel de canela
+La [F]Flaca no tiene dueño, pero a [E7]todos entrega
+
+[Chorus]
+Por un [Am]beso de la Flaca daría lo [G]que fuera
+Por un [F]beso de ella, aunque sólo uno [E7]fuera`,
+    data: `\\title "La Flaca" \\artist "Jarabe de Palo" \\tempo 118 . :4 (0.5 2.4 2.3 1.2) :4 (3.6 2.5 0.4 0.3) :4 (1.6 3.5 3.4 2.3) :4 (0.6 2.5 0.4 1.3) |`,
   },
   {
     title: 'Soldadito Marinero',
@@ -327,18 +593,6 @@ El [G]soldadito marinero co[D]noció a una sirena
 De e[Em]sas que dicen 'te quiero' si [C]ven la cartera llena
 E[G]ra una chica de barrio de [D]esas que cuando caminan
 Van ha[C]ciendo sonar las campanas de [D]todas las cantinas
-
-[Chorus]
-Y des[G]pués de un invierno eterno, un ver[D]ano fatal
-Co[Em]rrer a toda prisa para [C]hacerte esperar
-Hay se[G]cretos en los canales y un [D]cadáver en el desván
-No te [C]fíes de las sirenas que te [D]van a embaucar
-
-[Verse 2]
-Y [G]él que nunca se enamoraba de [D]nadie en particular
-Se ha en[Em]contrado con una tormenta y se ha [C]puesto a temblar
-Y la [G]sirena le dijo: 'Sube a [D]bordo, mi capitán
-Que te [C]voy a enseñar los tesoros que se [D]ocultan en el mar'
 
 [Chorus]
 Y des[G]pués de un invierno eterno, un ver[D]ano fatal
@@ -588,28 +842,6 @@ Heaven from [Am]hell, blue skies from [G]pain
 How I [C]wish, how I wish you were [D]here
 We're just [Am]two lost souls swimming in a fish bowl, [G]year after year`,
     data: `\\title "Wish You Were Here" \\artist "Pink Floyd" \\tempo 60 . :8 0.3 0.2 0.3 :4 2.4 :8 0.4 2.5 0.5 2.5 :4 0.6 |`,
-  },
-  {
-    title: 'Autumn Leaves',
-    artist: 'Jazz Standard',
-    genre: 'Jazz',
-    difficulty: 'Avanzado',
-    tuning: 'Standard E',
-    tempo: 120,
-    timeSignature: '4/4',
-    tracksCount: 3,
-    lyricsChords: `[Verse 1]
-The [Am7]falling leaves [D7]drift by the [Gmaj7]window [Cmaj7]
-The autumn [F#m7b5]leaves of [B7]red and [Em]gold
-I see your [Am7]lips, [D7]the summer [Gmaj7]kisses [Cmaj7]
-The sun-burned [F#m7b5]hands I [B7]used to [Em]hold
-
-[Chorus]
-Since you [B7]went away the days grow [Em]long
-And soon I'll [Am7]hear old [D7]winter's [Gmaj7]song
-But I [F#m7b5]miss you most of [B7]all, my [Em]darling
-When [F#m7b5]autumn [B7]leaves start to [Em]fall`,
-    data: `\\title "Autumn Leaves" \\artist "Jazz Standard" \\tempo 120 . :4 0.4 2.4 4.4 :2 5.4 | :4 5.4 4.4 2.4 :2 0.4 | :4 0.5 2.5 3.5 :2 5.5 | :4 5.5 3.5 2.5 :2 0.5 |`,
   },
   {
     title: 'Riptide',

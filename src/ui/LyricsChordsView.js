@@ -1,14 +1,13 @@
 /**
  * @file LyricsChordsView.js
  * @description Vista principal de Letra con Acordes interactivos Multi-Instrumento (Guitarra, Piano, Ukelele).
- * - Barra de herramientas simplificada y despejada: solo lo esencial afuera (Instrumento, Tono, Zoom con % animado y Auto-Scroll).
- * - Modo Atril / Pantalla Completa de Escenario (Oculta el 100% de menús y barras inferiores).
- * - Zoom Reactivo con Micro-Animación del porcentaje en tiempo real ([A-] 100% [A+]).
+ * - Barra de herramientas simplificada y despejada.
+ * - Modo Atril / Pantalla Completa de Escenario con Grabador de Ensayos en Directo.
+ * - Galería Visual de Diagramas de Acordes Reales al inicio de la canción (Todos visibles sin tener que pinchar).
+ * - Grabador de Tomas de Estudio (.webm / .wav descargable).
+ * - Zoom Reactivo con Micro-Animación del porcentaje ([A-] 100% [A+]).
  * - Sistema de Cifrado Dual: Anglo (C, D, E) vs Latino (Do, Re, Mi).
- * - Modo Fácil: Simplificador de acordes para principiantes.
- * - Modo Solo Letra (Vocalista / Ocultar acordes).
- * - Tira resumen de acordes de la canción con reproducción acústica.
- * - Desplegable "Opciones" para Cejilla, Micrófono, Afinador, Modo Fácil y Notación.
+ * - Modo Fácil y Modo Solo Letra.
  */
 
 import { Component } from './Component.js';
@@ -16,6 +15,7 @@ import { events } from '../core/EventBus.js';
 import { state } from '../core/State.js';
 import { chordEngine } from '../tools/ChordEngine.js';
 import { pitchDetector } from '../audio/PitchDetector.js';
+import { gigRecorder } from '../audio/GigRecorder.js';
 import { onlineSongProvider } from '../data/OnlineSongProvider.js';
 import { toast } from './Toast.js';
 
@@ -38,14 +38,20 @@ export class LyricsChordsView extends Component {
     this.currentSong = null;
     this.transposeSemitones = 0;
     this.capoFret = 0; // 0 a 7
-    this.fontSizeScale = parseInt(localStorage.getItem('lyrics_font_scale'), 10) || 100; // 80% a 180%
-    this.viewMode = 'lyrics'; // 'lyrics' | 'tab'
-    this.currentInstrument = localStorage.getItem('app_instrument') || 'guitar'; // 'guitar' | 'piano' | 'ukulele'
+    this.fontSizeScale = parseInt(localStorage.getItem('lyrics_font_scale'), 10) || 100;
+    this.viewMode = 'lyrics';
+    this.currentInstrument = localStorage.getItem('app_instrument') || 'guitar';
     this.visualTheme = localStorage.getItem('app_visual_theme') || 'oled';
-    this.notationSystem = localStorage.getItem('app_notation') || 'anglo'; // 'anglo' | 'latin'
+    this.notationSystem = localStorage.getItem('app_notation') || 'anglo';
     this.isSimplified = localStorage.getItem('app_simplified_chords') === 'true';
     this.hideChordsMode = false;
     this.isStageMode = false;
+    this.showChordGallery = true;
+
+    // Grabación
+    this.isRecording = false;
+    this.recordingDuration = 0;
+    this.recordingAudioUrl = null;
 
     this.isAutoScrolling = false;
     this.autoScrollPercent = 25;
@@ -88,6 +94,7 @@ export class LyricsChordsView extends Component {
         this.transposeSemitones = 0;
         this.capoFret = 0;
         this.visualTheme = localStorage.getItem('app_visual_theme') || 'oled';
+        this.recordingAudioUrl = null;
 
         if (this.currentSong && (!this.currentSong.lyricsChords || this.currentSong.lyricsChords.trim().length === 0)) {
           this.currentSong.lyricsChords = await onlineSongProvider.fetchLyricsAndChords(this.currentSong.title, this.currentSong.artist);
@@ -102,6 +109,7 @@ export class LyricsChordsView extends Component {
         this.transposeSemitones = 0;
         this.capoFret = 0;
         this.visualTheme = localStorage.getItem('app_visual_theme') || 'oled';
+        this.recordingAudioUrl = null;
 
         if (this.currentSong && (!this.currentSong.lyricsChords || this.currentSong.lyricsChords.trim().length === 0)) {
           this.currentSong.lyricsChords = await onlineSongProvider.fetchLyricsAndChords(this.currentSong.title, this.currentSong.artist);
@@ -117,6 +125,51 @@ export class LyricsChordsView extends Component {
         }
       })
     );
+
+    // Eventos del grabador
+    this.registerUnsub(
+      events.on('recorder:started', () => {
+        this.isRecording = true;
+        this.recordingDuration = 0;
+        this.updateRecorderUI();
+      })
+    );
+
+    this.registerUnsub(
+      events.on('recorder:tick', ({ duration, formatted }) => {
+        this.recordingDuration = duration;
+        const labels = this.container?.querySelectorAll('.lbl-recording-time');
+        labels?.forEach(l => l.textContent = formatted);
+      })
+    );
+
+    this.registerUnsub(
+      events.on('recorder:finished', ({ url }) => {
+        this.isRecording = false;
+        this.recordingAudioUrl = url;
+        this.render();
+      })
+    );
+  }
+
+  toggleRecording() {
+    if (this.isRecording) {
+      gigRecorder.stopRecording();
+    } else {
+      gigRecorder.startRecording({
+        title: this.currentSong?.title || 'Ensayo',
+        artist: this.currentSong?.artist || 'Tabs & Chords PRO'
+      });
+    }
+  }
+
+  updateRecorderUI() {
+    const banner = this.container?.querySelector('#activeRecordingBanner');
+    const recBtns = this.container?.querySelectorAll('.btn-record-toggle, .btn-stage-record');
+    if (banner) banner.style.display = this.isRecording ? 'flex' : 'none';
+    if (recBtns) {
+      recBtns.forEach(b => b.classList.toggle('recording-active', this.isRecording));
+    }
   }
 
   toggleLiveListening() {
@@ -188,7 +241,7 @@ export class LyricsChordsView extends Component {
       badges.forEach(badge => {
         badge.textContent = `${this.fontSizeScale}%`;
         badge.classList.remove('zoom-pulse-anim');
-        void badge.offsetWidth; // Trigger reflow for CSS animation
+        void badge.offsetWidth;
         badge.classList.add('zoom-pulse-anim');
       });
     }
@@ -233,7 +286,7 @@ export class LyricsChordsView extends Component {
     if (!document.fullscreenElement) {
       document.documentElement.requestFullscreen().catch(() => {});
     }
-    toast.show('Modo Atril de Escenario Activo (Controles flotantes)', 'info', 1200);
+    toast.show('Modo Atril de Escenario Activo', 'info', 1200);
     this.render();
   }
 
@@ -525,6 +578,13 @@ export class LyricsChordsView extends Component {
               <span>Salir de Atril</span>
             </button>
 
+            <!-- Grabador en Modo Atril -->
+            <button class="btn-stage-record ${this.isRecording ? 'recording-active' : ''}" id="btnStageRecord">
+              <span class="record-red-dot"></span>
+              <span>${this.isRecording ? 'Detener Toma' : 'Grabar Ensayo'}</span>
+              ${this.isRecording ? `<span class="lbl-recording-time font-mono">${gigRecorder.formatTime(this.recordingDuration)}</span>` : ''}
+            </button>
+
             <button class="btn-stage-autoscroll ${this.isAutoScrolling ? 'active' : ''}" id="btnStageToggleAutoScroll">
               ${this.isAutoScrolling ? 'Pausa' : 'Auto-Scroll'} (<span id="lblStageAutoScrollPercent">${this.autoScrollPercent}%</span>)
             </button>
@@ -609,7 +669,13 @@ export class LyricsChordsView extends Component {
               <span class="autoscroll-percent-badge" id="lblAutoScrollPercent">${this.autoScrollPercent}%</span>
             </div>
 
-            <!-- 5. Desplegable Unificado "Opciones" -->
+            <!-- 5. Botón de Grabación de Ensayo Rápido -->
+            <button class="btn-quick-record-action ${this.isRecording ? 'recording-active' : ''}" id="btnQuickRecordAction">
+              <span class="record-red-dot"></span>
+              <span>${this.isRecording ? 'Detener' : 'Grabar'}</span>
+            </button>
+
+            <!-- 6. Desplegable Unificado "Opciones" -->
             <div class="dropdown-container">
               <button class="btn-more-options" id="btnMoreOptions" aria-label="Más opciones de interpretación">
                 <span>Opciones</span>
@@ -680,16 +746,58 @@ export class LyricsChordsView extends Component {
           </div>
         </div>
 
-        <!-- TIRA COMPACTA DE ACORDES USADOS EN LA CANCIÓN -->
+        <!-- BANNER DE GRABACIÓN ACTIVA O TOMA RECIENTE -->
+        ${this.isRecording ? `
+          <div class="active-recording-bar" id="activeRecordingBanner">
+            <div class="rec-live-indicator">
+              <span class="rec-dot-pulsing"></span>
+              <strong>Grabando Ensayo en Directo...</strong>
+            </div>
+            <span class="lbl-recording-time font-mono">${gigRecorder.formatTime(this.recordingDuration)}</span>
+            <button class="btn-rec-stop-bar" id="btnStopActiveRecord">■ Detener y Guardar</button>
+          </div>
+        ` : ''}
+
+        ${this.recordingAudioUrl && !this.isRecording ? `
+          <div class="recording-playback-card">
+            <div class="rec-card-meta">
+              <strong>🎙️ Toma de Ensayo Grabada</strong>
+              <audio controls src="${this.recordingAudioUrl}" class="rec-audio-element"></audio>
+            </div>
+            <div class="rec-card-actions">
+              <button class="btn-rec-download" id="btnDownloadRecording">📥 Descargar Audio (.webm)</button>
+              <button class="btn-rec-dismiss" id="btnDismissRecording">✕ Descartar</button>
+            </div>
+          </div>
+        ` : ''}
+
+        <!-- GALERÍA VISUAL DE DIAGRAMAS DE ACORDES REALES AL INICIO DE LA CANCIÓN -->
         ${uniqueChords.length > 0 && !this.hideChordsMode ? `
-          <div class="song-chords-ribbon" role="region" aria-label="Acordes usados en la canción">
-            <span class="chords-ribbon-label">Acordes:</span>
-            <div class="chords-ribbon-list">
-              ${uniqueChords.map(c => `
-                <button class="chord-ribbon-chip btn-chord-popover" data-chord="${c}" data-original-chord="${c}">
-                  ${this.formatChordDisplay(c)}
-                </button>
-              `).join('')}
+          <div class="song-chords-visual-gallery" role="region" aria-label="Diagramas de acordes de la canción">
+            <div class="gallery-header-row">
+              <div class="gallery-title-group">
+                <span class="gallery-badge-studio">DIAGRAMAS DE LA CANCIÓN</span>
+                <h2 class="gallery-heading">Acordes Utilizados (${this.getInstrumentDisplayName(this.currentInstrument)})</h2>
+              </div>
+              <span class="gallery-tip">Toca cualquier diagrama para escuchar su sonido acústico</span>
+            </div>
+
+            <div class="chords-visual-cards-grid">
+              ${uniqueChords.map(chordName => {
+                const formattedName = this.formatChordDisplay(chordName);
+                const svgDiagram = chordEngine.renderChordSVG(chordName, { instrument: this.currentInstrument });
+                return `
+                  <div class="song-chord-visual-card" data-chord="${chordName}" data-original-chord="${chordName}" role="button" aria-label="Escuchar y ver acorde ${formattedName}">
+                    <div class="chord-card-diagram-box">
+                      ${svgDiagram}
+                    </div>
+                    <div class="chord-card-footer">
+                      <span class="chord-card-name">${formattedName}</span>
+                      <span class="chord-card-action-label">🔊 Tocar</span>
+                    </div>
+                  </div>
+                `;
+              }).join('')}
             </div>
           </div>
         ` : ''}
@@ -700,7 +808,7 @@ export class LyricsChordsView extends Component {
         </div>
       </div>
 
-      <!-- Popover Dinámico de Acorde al hacer Clic -->
+      <!-- Popover Dinámico de Acorde al hacer Clic en la Letra -->
       <div id="chordPopoverCard" class="chord-popover-card" style="display: none;"></div>
     `;
 
@@ -716,6 +824,38 @@ export class LyricsChordsView extends Component {
   bindEvents() {
     this.container.querySelector('#btnBackToExplore')?.addEventListener('click', () => {
       events.emit('ui:switchTab', 'explore');
+    });
+
+    // Grabador
+    this.container.querySelector('#btnQuickRecordAction')?.addEventListener('click', () => {
+      this.toggleRecording();
+    });
+
+    this.container.querySelector('#btnStageRecord')?.addEventListener('click', () => {
+      this.toggleRecording();
+    });
+
+    this.container.querySelector('#btnStopActiveRecord')?.addEventListener('click', () => {
+      gigRecorder.stopRecording();
+    });
+
+    this.container.querySelector('#btnDownloadRecording')?.addEventListener('click', () => {
+      gigRecorder.downloadRecording(this.currentSong?.title || 'Ensayo');
+    });
+
+    this.container.querySelector('#btnDismissRecording')?.addEventListener('click', () => {
+      this.recordingAudioUrl = null;
+      this.render();
+    });
+
+    // Galería de acordes interactiva (Sonido al tocar)
+    this.container.querySelectorAll('.song-chord-visual-card').forEach(card => {
+      card.addEventListener('click', (e) => {
+        const chordName = card.dataset.originalChord || card.dataset.chord;
+        chordEngine.auditionChord(chordName, this.currentInstrument);
+        const displayName = this.formatChordDisplay(chordName);
+        toast.show(`Sonando ${displayName}`, 'info', 600);
+      });
     });
 
     // Dropdown de Instrumento

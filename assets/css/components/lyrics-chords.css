@@ -8,7 +8,7 @@
   --chord-font-size: 0.95rem;
   --lyrics-line-height: 1.85;
   width: 100%;
-  max-width: 900px;
+  max-width: 920px;
   margin: 0 auto;
   padding: 16px 16px 140px 16px;
   border-radius: 14px;
@@ -29,7 +29,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  background: rgba(14, 14, 20, 0.92);
+  background: rgba(14, 14, 20, 0.94);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(255, 255, 255, 0.16);
@@ -63,6 +63,31 @@
   background: #ff5252;
   color: #ffffff;
   transform: scale(1.03);
+}
+
+.btn-stage-record {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  font-size: 0.78rem;
+  font-weight: 800;
+  padding: 6px 12px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.btn-stage-record:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.btn-stage-record.recording-active {
+  background: rgba(255, 23, 68, 0.25);
+  border-color: #ff1744;
+  color: #ff5252;
 }
 
 .btn-stage-autoscroll {
@@ -114,51 +139,273 @@
 }
 
 /* ==========================================================================
-   Tira Resumen de Acordes de la Canción (Song Chords Ribbon)
+   GALERÍA VISUAL DE DIAGRAMAS DE ACORDES AL INICIO DE LA CANCIÓN
    ========================================================================== */
-.song-chords-ribbon {
+.song-chords-visual-gallery {
+  background: #09090f;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 14px;
+  margin-bottom: 20px;
+}
+
+.gallery-header-row {
   display: flex;
-  align-items: center;
-  gap: 10px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  border-radius: 10px;
-  padding: 8px 12px;
-  margin-bottom: 16px;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  padding-bottom: 8px;
+  flex-wrap: wrap;
+  gap: 6px;
 }
 
-.chords-ribbon-label {
-  font-size: 0.75rem;
+.gallery-title-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.gallery-badge-studio {
+  font-size: 0.65rem;
+  font-weight: 900;
+  color: var(--accent-primary);
+  letter-spacing: 1px;
+}
+
+.gallery-heading {
+  font-size: 0.95rem;
   font-weight: 800;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  color: #ffffff;
+  margin: 0;
 }
 
-.chords-ribbon-list {
+.gallery-tip {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+.chords-visual-cards-grid {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding: 4px 2px 8px 2px;
+  scrollbar-width: thin;
+}
+
+.song-chord-visual-card {
+  flex: 0 0 auto;
+  background: #13131c;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  width: 135px;
+}
+
+.song-chord-visual-card:hover {
+  background: #1c1c28;
+  border-color: var(--accent-primary);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+}
+
+.chord-card-diagram-box {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  transform: scale(0.82);
+  transform-origin: top center;
+  height: 145px;
+  margin-bottom: -15px;
+}
+
+.chord-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 6px;
+}
+
+.chord-card-name {
+  font-size: 0.88rem;
+  font-weight: 900;
+  color: #00e5ff;
+  font-family: var(--font-mono);
+}
+
+.chord-card-action-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.song-chord-visual-card:hover .chord-card-action-label {
+  color: var(--accent-primary);
+}
+
+/* ==========================================================================
+   GRABADOR DE ENSAYOS (Banner & Tarjeta de Reproducción)
+   ========================================================================== */
+.btn-quick-record-action {
   display: flex;
   align-items: center;
   gap: 6px;
-  flex-wrap: wrap;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--border-strong);
+  color: #ffffff;
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 6px 11px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
 }
 
-.chord-ribbon-chip {
-  background: rgba(255, 87, 34, 0.12);
-  border: 1px solid rgba(255, 87, 34, 0.35);
-  color: #ff7043;
-  font-size: 0.82rem;
+.btn-quick-record-action:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: #ff1744;
+}
+
+.btn-quick-record-action.recording-active {
+  background: rgba(255, 23, 68, 0.2);
+  border-color: #ff1744;
+  color: #ff5252;
+}
+
+.record-red-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ff1744;
+  display: inline-block;
+}
+
+.recording-active .record-red-dot {
+  animation: pulseDot 1s infinite alternate;
+}
+
+@keyframes pulseDot {
+  from { transform: scale(0.8); opacity: 0.6; }
+  to { transform: scale(1.3); opacity: 1; box-shadow: 0 0 8px #ff1744; }
+}
+
+.active-recording-bar {
+  background: linear-gradient(135deg, rgba(255, 23, 68, 0.25) 0%, rgba(20, 20, 28, 0.95) 100%);
+  border: 1px solid #ff1744;
+  border-radius: 10px;
+  padding: 10px 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  animation: popoverFadeIn 0.15s ease-out;
+}
+
+.rec-live-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #ffffff;
+  font-size: 0.85rem;
+}
+
+.rec-dot-pulsing {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #ff1744;
+  animation: pulseDot 0.8s infinite alternate;
+}
+
+.btn-rec-stop-bar {
+  background: #ff1744;
+  color: #ffffff;
+  border: none;
   font-weight: 800;
-  padding: 3px 8px;
+  font-size: 0.78rem;
+  padding: 6px 12px;
   border-radius: 6px;
   cursor: pointer;
   transition: all var(--transition-fast);
 }
 
-.chord-ribbon-chip:hover {
-  background: var(--accent-primary);
+.btn-rec-stop-bar:hover {
+  transform: scale(1.04);
+  box-shadow: 0 0 12px rgba(255, 23, 68, 0.6);
+}
+
+.recording-playback-card {
+  background: #111118;
+  border: 1px solid rgba(0, 230, 118, 0.3);
+  border-radius: 10px;
+  padding: 12px 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.rec-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.rec-card-meta strong {
+  font-size: 0.85rem;
+  color: #00e676;
+}
+
+.rec-audio-element {
+  height: 32px;
+  outline: none;
+}
+
+.rec-card-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-rec-download {
+  background: #00e676;
+  color: #000000;
+  border: none;
+  font-weight: 800;
+  font-size: 0.78rem;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.btn-rec-download:hover {
+  transform: scale(1.04);
+}
+
+.btn-rec-dismiss {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.btn-rec-dismiss:hover {
   color: #ffffff;
-  transform: translateY(-2px);
-  box-shadow: 0 2px 8px rgba(255, 87, 34, 0.4);
+  border-color: #ff5252;
 }
 
 /* ==========================================================================
@@ -220,7 +467,7 @@
   font-weight: 600;
 }
 
-/* Barra de Controles Esenciales (Despejada y Compacta) */
+/* Barra de Controles Esenciales */
 .lyrics-essential-toolbar {
   display: flex;
   align-items: center;
@@ -252,8 +499,7 @@
   color: #ffe6b3;
 }
 
-.lyrics-chords-container.theme-amber .chord-badge,
-.lyrics-chords-container.theme-amber .chord-ribbon-chip {
+.lyrics-chords-container.theme-amber .chord-badge {
   background: rgba(255, 179, 0, 0.15);
   border-color: rgba(255, 179, 0, 0.5);
   color: #ffb300;
@@ -286,8 +532,7 @@
   font-weight: 500;
 }
 
-.lyrics-chords-container.theme-paper .chord-badge,
-.lyrics-chords-container.theme-paper .chord-ribbon-chip {
+.lyrics-chords-container.theme-paper .chord-badge {
   background: #ff5722;
   color: #ffffff;
   border-color: #e64a19;
@@ -533,7 +778,7 @@
   text-align: center;
 }
 
-/* Escalador de Tamaño de Fuente con Micro-Animación táctil ([A-] 100% [A+]) */
+/* Escalador de Tamaño de Fuente ([A-] 100% [A+]) */
 .font-scaler-group {
   display: flex;
   align-items: center;
