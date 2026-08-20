@@ -1,12 +1,12 @@
 /**
  * @file ToolsView.js
  * @description Suite Completa de Herramientas de Estudio del Músico Pro:
- * 1. ⏱️ Metrónomo Web Audio de Precisión con subdivisiones, compases, sonidos y TAP tempo.
+ * 1. ⏱️ Metrónomo Web Audio de Precisión con subdivisiones, compases, sonidos, TAP tempo, acento y flash visual.
  * 2. 🎵 Afinador Cromático con Pitch Pipe multi-afinación (Drop D, Open G, DADGAD, Bajo, Ukelele).
  * 3. 📚 Diccionario de Acordes con Voicings, audio arpegiado y selector de tensiones.
- * 4. 👂 Entrenador de Oído Armónico interactivo con niveles y puntuación.
- * 5. 🎸 Calculadora de Cejilla / Capotraste con tabla de transposición automática.
- * 6. ⭕ Círculo de Quintas y Mapa de Progresiones Armónicas con acordes audibles.
+ * 4. 👂 Entrenador de Oído Armónico interactivo con niveles, puntuación y feedback visual.
+ * 5. 🎸 Calculadora de Cejilla / Capotraste con tabla de transposición automática de acordes.
+ * 6. ⭕ Círculo de Quintas SVG Interactivo con grados armónicos audibles.
  */
 
 import { Component } from './Component.js';
@@ -47,6 +47,8 @@ export class ToolsView extends Component {
     this.earStreak = 0;
     this.earDifficulty = 'easy'; // 'easy' | 'medium' | 'hard'
     this.earCurrentQuestion = null;
+    this.earCurrentOptions = [];
+    this.earHasPlayed = false; // bloqueo: debe escuchar antes de responder
 
     // Cejilla
     this.capoTargetKey = 'Eb';
@@ -143,6 +145,9 @@ export class ToolsView extends Component {
       this.schedulerTimer = null;
     }
     this.currentBeat = 0;
+    // Apagar LEDs
+    const leds = this.container?.querySelectorAll('.metronome-beat-dot');
+    if (leds) leds.forEach(l => l.classList.remove('active', 'accent'));
   }
 
   scheduleBeat(beatNumber, time) {
@@ -154,7 +159,6 @@ export class ToolsView extends Component {
     else if (this.metronomeSubdivision === 'triplet') subFactor = 3;
     else if (this.metronomeSubdivision === 'sixteenth') subFactor = 4;
 
-    const totalSubBeats = beatsPerMeasure * subFactor;
     const isMainBeat = (beatNumber % subFactor) === 0;
     const measureBeat = Math.floor(beatNumber / subFactor) % beatsPerMeasure;
     const isAccent = isMainBeat && measureBeat === 0 && this.metronomeAccent;
@@ -206,11 +210,12 @@ export class ToolsView extends Component {
         }
       }
 
+      // Flash visual: parpadeo en el readout en el acento del primer tiempo
       if (this.metronomeFlash && isAccent) {
         const readout = this.container?.querySelector('.metronome-bpm-readout');
         if (readout) {
-          readout.style.transform = 'scale(1.04)';
-          setTimeout(() => { readout.style.transform = 'scale(1)'; }, 70);
+          readout.classList.add('flash-accent');
+          setTimeout(() => readout.classList.remove('flash-accent'), 80);
         }
       }
     }, delay);
@@ -544,21 +549,45 @@ export class ToolsView extends Component {
 
     // Generar 4 opciones con 1 correcta
     let choices = [this.earCurrentQuestion];
-    while (choices.length < 4) {
+    let attempts = 0;
+    while (choices.length < 4 && attempts < 50) {
       const rnd = pool[Math.floor(Math.random() * pool.length)];
       if (!choices.some(c => c.chord === rnd.chord)) {
         choices.push(rnd);
       }
+      attempts++;
     }
     this.earCurrentOptions = choices.sort(() => Math.random() - 0.5);
+    this.earHasPlayed = false; // reset: requiere escuchar antes de responder
 
-    this.playCurrentEarQuestion();
+    // Auto-reproducir el acorde al iniciar la pregunta
+    setTimeout(() => {
+      this.playCurrentEarQuestion();
+    }, 300);
+
     this.updateEarTrainerUI();
   }
 
   playCurrentEarQuestion() {
     if (!this.earCurrentQuestion) return;
     chordEngine.auditionChord(this.earCurrentQuestion.chord, 'guitar');
+    this.earHasPlayed = true;
+
+    // Actualizar estado visual de los botones (desbloqueados tras escuchar)
+    const grid = this.container?.querySelector('#earAnswersGrid');
+    if (grid) {
+      grid.querySelectorAll('.btn-ear-answer').forEach(btn => {
+        btn.disabled = false;
+        btn.classList.remove('ear-locked');
+      });
+    }
+
+    // Efecto visual en el botón de reproducir
+    const playBtn = this.container?.querySelector('#btnPlayEarChord');
+    if (playBtn) {
+      playBtn.classList.add('playing');
+      setTimeout(() => playBtn.classList.remove('playing'), 1500);
+    }
   }
 
   checkEarAnswer(selectedChord) {
@@ -567,16 +596,52 @@ export class ToolsView extends Component {
       return;
     }
 
-    if (selectedChord === this.earCurrentQuestion.chord) {
+    // Bloquear si no ha escuchado el acorde
+    if (!this.earHasPlayed) {
+      toast.show('🔊 Escucha el acorde primero antes de responder', 'warning', 1200);
+      const playBtn = this.container?.querySelector('#btnPlayEarChord');
+      if (playBtn) {
+        playBtn.classList.add('pulse-hint');
+        setTimeout(() => playBtn.classList.remove('pulse-hint'), 800);
+      }
+      return;
+    }
+
+    // Bloquear todos los botones durante el feedback
+    const grid = this.container?.querySelector('#earAnswersGrid');
+    if (grid) {
+      grid.querySelectorAll('.btn-ear-answer').forEach(btn => { btn.disabled = true; });
+    }
+
+    const isCorrect = selectedChord === this.earCurrentQuestion.chord;
+
+    // Feedback visual en los botones (verde correcto, rojo incorrecto)
+    if (grid) {
+      grid.querySelectorAll('.btn-ear-answer').forEach(btn => {
+        if (btn.dataset.chord === this.earCurrentQuestion.chord) {
+          btn.classList.add('ear-correct');
+        } else if (btn.dataset.chord === selectedChord && !isCorrect) {
+          btn.classList.add('ear-wrong');
+        }
+      });
+    }
+
+    if (isCorrect) {
       this.earScore += 10;
       this.earStreak++;
-      toast.show(`¡Correcto! Era ${this.earCurrentQuestion.name} (+10 pts)`, 'success', 1000);
-      setTimeout(() => this.startEarTest(), 800);
+      const bonus = this.earStreak >= 3 ? ` 🔥 ¡Racha x${this.earStreak}!` : '';
+      toast.show(`✅ ¡Correcto! Era ${this.earCurrentQuestion.name} (+10 pts)${bonus}`, 'success', 1500);
+      setTimeout(() => this.startEarTest(), 1400);
     } else {
       this.earStreak = 0;
-      toast.show(`Incorrecto. Era ${this.earCurrentQuestion.name}`, 'error', 1500);
-      setTimeout(() => this.startEarTest(), 1200);
+      toast.show(`❌ Incorrecto. Era ${this.earCurrentQuestion.name}`, 'error', 1800);
+      // Reproducir el acorde correcto para que aprenda
+      setTimeout(() => {
+        chordEngine.auditionChord(this.earCurrentQuestion.chord, 'guitar');
+      }, 500);
+      setTimeout(() => this.startEarTest(), 2200);
     }
+
     this.updateEarTrainerUI();
   }
 
@@ -590,7 +655,7 @@ export class ToolsView extends Component {
 
     if (grid && this.earCurrentOptions) {
       grid.innerHTML = this.earCurrentOptions.map(opt => `
-        <button class="btn-ear-answer" data-chord="${opt.chord}">
+        <button class="btn-ear-answer${!this.earHasPlayed ? ' ear-locked' : ''}" data-chord="${opt.chord}"${!this.earHasPlayed ? ' title="Escucha el acorde primero"' : ''}>
           <strong>${opt.chord}</strong>
           <small style="display:block; font-size:0.75rem; font-weight:normal; opacity:0.7; margin-top:4px;">${opt.name.split('(')[1]?.replace(')', '') || ''}</small>
         </button>
@@ -613,7 +678,7 @@ export class ToolsView extends Component {
     const flatMap = { 'Db': 'C#', 'Eb': 'D#', 'Gb': 'F#', 'Ab': 'G#', 'Bb': 'A#' };
 
     const cleanTarget = flatMap[targetKey] || targetKey;
-    const cleanShape = flatMap[openShape] || openShape;
+    const cleanShape = flatMap[openShape] || openShape.replace('m', ''); // extraer raíz para shapes tipo Am, Em, Dm
 
     const targetIdx = chromatic.indexOf(cleanTarget);
     const shapeIdx = chromatic.indexOf(cleanShape);
@@ -625,16 +690,60 @@ export class ToolsView extends Component {
     return fret;
   }
 
+  getCapoTranspositionTable(targetKey, openShape, capoFret) {
+    // Acordes típicos de las familias de posición abierta
+    const shapeChords = {
+      'C': { I: 'C', ii: 'Dm', IV: 'F', V: 'G', vi: 'Am' },
+      'G': { I: 'G', ii: 'Am', IV: 'C', V: 'D', vi: 'Em' },
+      'D': { I: 'D', ii: 'Em', IV: 'G', V: 'A', vi: 'Bm' },
+      'E': { I: 'E', ii: 'F#m', IV: 'A', V: 'B', vi: 'C#m' },
+      'A': { I: 'A', ii: 'Bm', IV: 'D', V: 'E', vi: 'F#m' },
+      'Am': { I: 'Am', ii: 'Bdim', IV: 'Dm', V: 'E', vi: 'C' },
+      'Em': { I: 'Em', ii: 'F#dim', IV: 'Am', V: 'B', vi: 'G' },
+      'Dm': { I: 'Dm', ii: 'Edim', IV: 'Gm', V: 'A', vi: 'F' },
+    };
+
+    const shapes = shapeChords[openShape] || shapeChords['C'];
+    const rows = Object.entries(shapes).map(([degree, chord]) => {
+      // Transponer el acorde por el número de semitonos del capo
+      const transposed = chordEngine.transposeChord(chord, capoFret);
+      return `
+        <tr>
+          <td class="capo-table-degree">${degree}</td>
+          <td class="capo-table-shape">${chord}</td>
+          <td class="capo-table-result">${transposed}</td>
+        </tr>
+      `;
+    }).join('');
+
+    return `
+      <table class="capo-transposition-table">
+        <thead>
+          <tr>
+            <th>Grado</th>
+            <th>Digitación que tocas</th>
+            <th>Suena como</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+    `;
+  }
+
   updateCapoUI() {
     const fret = this.calculateCapoFret(this.capoTargetKey, this.capoOpenShape);
     const resultBox = this.container?.querySelector('#capoResultFretDisplay');
     const descBox = this.container?.querySelector('#capoResultDescription');
+    const tableBox = this.container?.querySelector('#capoTranspositionTable');
 
     if (resultBox) {
       resultBox.textContent = fret === 0 ? 'Sin cejilla (Traste 0)' : `Traste ${fret}`;
     }
     if (descBox) {
-      descBox.textContent = `Pon la cejilla en el traste ${fret} y toca las posiciones de acordes de la familia de [${this.capoOpenShape}]. El resultado sonará exactamente en tono de [${this.capoTargetKey}].`;
+      descBox.textContent = `Coloca la cejilla en el traste ${fret} y toca posiciones de [${this.capoOpenShape}]. Sonará en tono de [${this.capoTargetKey}].`;
+    }
+    if (tableBox) {
+      tableBox.innerHTML = this.getCapoTranspositionTable(this.capoTargetKey, this.capoOpenShape, fret);
     }
   }
 
@@ -644,36 +753,147 @@ export class ToolsView extends Component {
 
   getHarmonizedChords(key) {
     const harmonyMap = {
-      'C': { I: 'C', ii: 'Dm', iii: 'Em', IV: 'F', V: 'G7', vi: 'Am', dim: 'Bdim', rel: 'Am', v_of_v: 'D7' },
-      'G': { I: 'G', ii: 'Am', iii: 'Bm', IV: 'C', V: 'D7', vi: 'Em', dim: 'F#dim', rel: 'Em', v_of_v: 'A7' },
-      'D': { I: 'D', ii: 'Em', iii: 'F#m', IV: 'G', V: 'A7', vi: 'Bm', dim: 'C#dim', rel: 'Bm', v_of_v: 'E7' },
-      'A': { I: 'A', ii: 'Bm', iii: 'C#m', IV: 'D', V: 'E7', vi: 'F#m', dim: 'G#dim', rel: 'F#m', v_of_v: 'B7' },
-      'E': { I: 'E', ii: 'F#m', iii: 'G#m', IV: 'A', V: 'B7', vi: 'C#m', dim: 'D#dim', rel: 'C#m', v_of_v: 'F#7' },
-      'B': { I: 'B', ii: 'C#m', iii: 'D#m', IV: 'E', V: 'F#7', vi: 'G#m', dim: 'A#dim', rel: 'G#m', v_of_v: 'C#7' },
-      'F': { I: 'F', ii: 'Gm', iii: 'Am', IV: 'Bb', V: 'C7', vi: 'Dm', dim: 'Edim', rel: 'Dm', v_of_v: 'G7' },
-      'Bb': { I: 'Bb', ii: 'Cm', iii: 'Dm', IV: 'Eb', V: 'F7', vi: 'Gm', dim: 'Adim', rel: 'Gm', v_of_v: 'C7' },
-      'Eb': { I: 'Eb', ii: 'Fm', iii: 'Gm', IV: 'Ab', V: 'Bb7', vi: 'Cm', dim: 'Ddim', rel: 'Cm', v_of_v: 'F7' }
+      'C':  { I: 'C',  ii: 'Dm',  iii: 'Em',  IV: 'F',   V: 'G7',  vi: 'Am',  dim: 'Bdim',  rel: 'Am',  v_of_v: 'D7'  },
+      'G':  { I: 'G',  ii: 'Am',  iii: 'Bm',  IV: 'C',   V: 'D7',  vi: 'Em',  dim: 'F#dim', rel: 'Em',  v_of_v: 'A7'  },
+      'D':  { I: 'D',  ii: 'Em',  iii: 'F#m', IV: 'G',   V: 'A7',  vi: 'Bm',  dim: 'C#dim', rel: 'Bm',  v_of_v: 'E7'  },
+      'A':  { I: 'A',  ii: 'Bm',  iii: 'C#m', IV: 'D',   V: 'E7',  vi: 'F#m', dim: 'G#dim', rel: 'F#m', v_of_v: 'B7'  },
+      'E':  { I: 'E',  ii: 'F#m', iii: 'G#m', IV: 'A',   V: 'B7',  vi: 'C#m', dim: 'D#dim', rel: 'C#m', v_of_v: 'F#7' },
+      'B':  { I: 'B',  ii: 'C#m', iii: 'D#m', IV: 'E',   V: 'F#7', vi: 'G#m', dim: 'A#dim', rel: 'G#m', v_of_v: 'C#7' },
+      'F':  { I: 'F',  ii: 'Gm',  iii: 'Am',  IV: 'Bb',  V: 'C7',  vi: 'Dm',  dim: 'Edim',  rel: 'Dm',  v_of_v: 'G7'  },
+      'Bb': { I: 'Bb', ii: 'Cm',  iii: 'Dm',  IV: 'Eb',  V: 'F7',  vi: 'Gm',  dim: 'Adim',  rel: 'Gm',  v_of_v: 'C7'  },
+      'Eb': { I: 'Eb', ii: 'Fm',  iii: 'Gm',  IV: 'Ab',  V: 'Bb7', vi: 'Cm',  dim: 'Ddim',  rel: 'Cm',  v_of_v: 'F7'  },
+      'Ab': { I: 'Ab', ii: 'Bbm', iii: 'Cm',  IV: 'Db',  V: 'Eb7', vi: 'Fm',  dim: 'Gdim',  rel: 'Fm',  v_of_v: 'Bb7' },
+      'Db': { I: 'Db', ii: 'Ebm', iii: 'Fm',  IV: 'Gb',  V: 'Ab7', vi: 'Bbm', dim: 'Cdim',  rel: 'Bbm', v_of_v: 'Eb7' },
+      'F#': { I: 'F#', ii: 'G#m', iii: 'A#m', IV: 'B',   V: 'C#7', vi: 'D#m', dim: 'E#dim', rel: 'D#m', v_of_v: 'G#7' },
     };
     return harmonyMap[key] || harmonyMap['C'];
+  }
+
+  renderCircleSVG(selectedKey) {
+    // Las 12 tonalidades en orden de quintas (en el sentido horario)
+    const keysOrder = ['C', 'G', 'D', 'A', 'E', 'B', 'F#', 'Db', 'Ab', 'Eb', 'Bb', 'F'];
+    const minorKeys = ['Am', 'Em', 'Bm', 'F#m', 'C#m', 'G#m', 'D#m', 'Bbm', 'Fm', 'Cm', 'Gm', 'Dm'];
+
+    const cx = 160, cy = 160;
+    const outerR = 130, innerR = 85, minorR = 58;
+
+    const segments = keysOrder.map((key, i) => {
+      const angle = (i * 30 - 90) * (Math.PI / 180); // -90° para empezar en el top
+      const nextAngle = ((i + 1) * 30 - 90) * (Math.PI / 180);
+      const isActive = key === selectedKey;
+
+      // Posición del texto (mayor)
+      const textAngle = (i * 30 - 90 + 15) * (Math.PI / 180);
+      const textR = (outerR + innerR) / 2;
+      const tx = cx + textR * Math.cos(textAngle);
+      const ty = cy + textR * Math.sin(textAngle);
+
+      // Posición del texto menor
+      const minorTextR = (innerR + minorR) / 2;
+      const mtx = cx + minorTextR * Math.cos(textAngle);
+      const mty = cy + minorTextR * Math.sin(textAngle);
+
+      // Calcular puntos del arco para el sector (outer)
+      const x1 = cx + outerR * Math.cos(angle);
+      const y1 = cy + outerR * Math.sin(angle);
+      const x2 = cx + outerR * Math.cos(nextAngle);
+      const y2 = cy + outerR * Math.sin(nextAngle);
+      const x3 = cx + innerR * Math.cos(nextAngle);
+      const y3 = cy + innerR * Math.sin(nextAngle);
+      const x4 = cx + innerR * Math.cos(angle);
+      const y4 = cy + innerR * Math.sin(angle);
+
+      // Arco inner (para menores)
+      const mx1 = cx + innerR * Math.cos(angle);
+      const my1 = cy + innerR * Math.sin(angle);
+      const mx2 = cx + innerR * Math.cos(nextAngle);
+      const my2 = cy + innerR * Math.sin(nextAngle);
+      const mx3 = cx + minorR * Math.cos(nextAngle);
+      const my3 = cy + minorR * Math.sin(nextAngle);
+      const mx4 = cx + minorR * Math.cos(angle);
+      const my4 = cy + minorR * Math.sin(angle);
+
+      const majorFill = isActive ? '#ff5722' : 'rgba(255,87,34,0.08)';
+      const majorStroke = isActive ? '#ff5722' : 'rgba(255,255,255,0.15)';
+      const minorFill = 'rgba(0,229,255,0.08)';
+      const minorStroke = 'rgba(0,229,255,0.15)';
+
+      return `
+        <!-- Sector Mayor: ${key} -->
+        <path d="M ${x1} ${y1} A ${outerR} ${outerR} 0 0 1 ${x2} ${y2} L ${x3} ${y3} A ${innerR} ${innerR} 0 0 0 ${x4} ${y4} Z"
+          fill="${majorFill}" stroke="${majorStroke}" stroke-width="1.5"
+          class="circle-key-sector${isActive ? ' active' : ''}" data-key="${key}"
+          style="cursor:pointer; transition: fill 0.2s;"/>
+        <text x="${tx}" y="${ty}" text-anchor="middle" dominant-baseline="middle"
+          fill="${isActive ? '#ffffff' : 'var(--text-primary)'}" font-size="${isActive ? '13' : '12'}" font-weight="${isActive ? '900' : '700'}"
+          class="circle-key-label" data-key="${key}" style="cursor:pointer; pointer-events:none;">
+          ${key}
+        </text>
+
+        <!-- Sector Menor: ${minorKeys[i]} -->
+        <path d="M ${mx1} ${my1} A ${innerR} ${innerR} 0 0 1 ${mx2} ${my2} L ${mx3} ${my3} A ${minorR} ${minorR} 0 0 0 ${mx4} ${my4} Z"
+          fill="${minorFill}" stroke="${minorStroke}" stroke-width="1"
+          class="circle-minor-sector" data-key="${key}" style="cursor:pointer;"/>
+        <text x="${mtx}" y="${mty}" text-anchor="middle" dominant-baseline="middle"
+          fill="rgba(0,229,255,0.85)" font-size="9" font-weight="600"
+          style="pointer-events:none;">
+          ${minorKeys[i]}
+        </text>
+      `;
+    });
+
+    return `
+      <svg width="320" height="320" viewBox="0 0 320 320" class="circle-of-fifths-svg" role="img" aria-label="Círculo de quintas">
+        <!-- Fondo central -->
+        <circle cx="${cx}" cy="${cy}" r="${minorR - 2}" fill="var(--bg-surface-solid)" stroke="rgba(255,255,255,0.08)" stroke-width="1.5"/>
+        <text x="${cx}" y="${cy - 8}" text-anchor="middle" fill="var(--accent-primary)" font-size="13" font-weight="900">${selectedKey}</text>
+        <text x="${cx}" y="${cy + 10}" text-anchor="middle" fill="var(--text-secondary)" font-size="9">Mayor</text>
+
+        ${segments.join('')}
+
+        <!-- Etiquetas de anillos -->
+        <text x="${cx}" y="12" text-anchor="middle" fill="rgba(255,87,34,0.6)" font-size="8">MAYORES</text>
+        <text x="${cx}" y="24" text-anchor="middle" fill="rgba(0,229,255,0.5)" font-size="7">menores</text>
+      </svg>
+    `;
   }
 
   updateCircleUI() {
     const harmony = this.getHarmonizedChords(this.circleKey);
     const container = this.container?.querySelector('#circleDegreesGrid');
+    const svgBox = this.container?.querySelector('#circleOfFifthsSVG');
+
+    // Actualizar SVG del círculo
+    if (svgBox) {
+      svgBox.innerHTML = this.renderCircleSVG(this.circleKey);
+      // Bind clicks en los sectores del SVG
+      svgBox.querySelectorAll('.circle-key-sector').forEach(sector => {
+        sector.addEventListener('click', () => {
+          const key = sector.dataset.key;
+          if (key) {
+            this.circleKey = key;
+            const sel = this.container?.querySelector('#selCircleKey');
+            if (sel) sel.value = key;
+            this.updateCircleUI();
+          }
+        });
+      });
+    }
+
     if (!container) return;
 
     const degrees = [
-      { deg: 'I (Tónica)', chord: harmony.I, role: 'Punto de reposo' },
-      { deg: 'IV (Subdominante)', chord: harmony.IV, role: 'Movimiento suave' },
-      { deg: 'V (Dominante)', chord: harmony.V, role: 'Tensión máxima' },
-      { deg: 'vi (Relativo Menor)', chord: harmony.vi, role: 'Color melancólico' },
-      { deg: 'ii (Subdominante m)', chord: harmony.ii, role: 'Preparación de cadencia' },
-      { deg: 'V / V (Dominante Secundario)', chord: harmony.v_of_v, role: 'Modulación brillante' }
+      { deg: 'I (Tónica)', chord: harmony.I, role: 'Punto de reposo', color: '#ff5722' },
+      { deg: 'IV (Subdominante)', chord: harmony.IV, role: 'Movimiento suave', color: '#ff9800' },
+      { deg: 'V (Dominante)', chord: harmony.V, role: 'Tensión máxima', color: '#ffd600' },
+      { deg: 'vi (Relativo Menor)', chord: harmony.vi, role: 'Color melancólico', color: '#00e5ff' },
+      { deg: 'ii (Subdominante m)', chord: harmony.ii, role: 'Preparación de cadencia', color: '#7c4dff' },
+      { deg: 'V/V (Dominante Sec.)', chord: harmony.v_of_v, role: 'Modulación brillante', color: '#00e676' },
     ];
 
     container.innerHTML = degrees.map(d => `
-      <button class="harmony-degree-card" data-chord="${d.chord}">
-        <span class="harmony-degree-label">${d.deg}</span>
+      <button class="harmony-degree-card" data-chord="${d.chord}" style="border-top: 3px solid ${d.color};">
+        <span class="harmony-degree-label" style="color:${d.color};">${d.deg}</span>
         <strong class="harmony-chord-name">${d.chord}</strong>
         <small class="harmony-role-desc">${d.role}</small>
       </button>
@@ -686,6 +906,76 @@ export class ToolsView extends Component {
         toast.show(`Sonando grado armónico: ${chord}`, 'info', 700);
       });
     });
+  }
+
+  // =========================================================================
+  // MINI-PREVISUALIZACIONES PARA LA LISTA PRINCIPAL
+  // =========================================================================
+
+  renderMetronomePreview() {
+    return `
+      <div class="tool-mini-preview metronome-mini">
+        <div class="mini-bpm-display">${this.metronomeBpm} BPM</div>
+        <div class="mini-dots-row">
+          <span class="mini-dot accent"></span>
+          <span class="mini-dot"></span>
+          <span class="mini-dot"></span>
+          <span class="mini-dot"></span>
+        </div>
+      </div>
+    `;
+  }
+
+  renderTunerPreview() {
+    return `
+      <div class="tool-mini-preview tuner-mini">
+        <div class="mini-note-display">E A D G B e</div>
+        <div class="mini-freq-display">440 Hz</div>
+      </div>
+    `;
+  }
+
+  renderDictionaryPreview() {
+    const svgMini = chordEngine.renderChordSVG('C', { instrument: 'guitar' });
+    return `
+      <div class="tool-mini-preview dict-mini">
+        <div class="mini-chord-svg-wrapper">${svgMini}</div>
+      </div>
+    `;
+  }
+
+  renderEarPreview() {
+    return `
+      <div class="tool-mini-preview ear-mini">
+        <div class="mini-ear-options">
+          <span class="mini-ear-btn">C</span>
+          <span class="mini-ear-btn active">Am</span>
+          <span class="mini-ear-btn">G</span>
+          <span class="mini-ear-btn">Em</span>
+        </div>
+      </div>
+    `;
+  }
+
+  renderCapoPreview() {
+    const fret = this.calculateCapoFret(this.capoTargetKey, this.capoOpenShape);
+    return `
+      <div class="tool-mini-preview capo-mini">
+        <span class="mini-capo-shape">[${this.capoOpenShape}]</span>
+        <span class="mini-capo-arrow">→</span>
+        <span class="mini-capo-result">Traste ${fret} = ${this.capoTargetKey}</span>
+      </div>
+    `;
+  }
+
+  renderCirclePreview() {
+    return `
+      <div class="tool-mini-preview circle-mini">
+        <div class="mini-circle-keys">
+          ${['C','G','D','A','E','F'].map(k => `<span class="mini-circle-key${k === this.circleKey ? ' active' : ''}">${k}</span>`).join('')}
+        </div>
+      </div>
+    `;
   }
 
   // =========================================================================
@@ -707,7 +997,9 @@ export class ToolsView extends Component {
       this.renderTunerStrings();
     } else if (toolId === 'dictionary') {
       this.updateChordDictionary();
-    } else if (toolId === 'ear' && !this.earCurrentQuestion) {
+    } else if (toolId === 'ear') {
+      // Resetear estado del ear trainer y empezar nueva pregunta
+      this.earHasPlayed = false;
       this.startEarTest();
     } else if (toolId === 'capo') {
       this.updateCapoUI();
@@ -737,7 +1029,7 @@ export class ToolsView extends Component {
           <p>Suite completa de utilidades de estudio, armonía y directo</p>
         </header>
 
-        <!-- Menu Principal en Lista Premium -->
+        <!-- Menu Principal en Lista Premium con Mini-Previsualizaciones -->
         <div class="tools-premium-list">
           
           <div class="premium-list-item" data-tool="metronome">
@@ -745,6 +1037,7 @@ export class ToolsView extends Component {
             <div class="premium-content">
               <h3>Metrónomo de Precisión</h3>
               <p>Reloj lookahead, acentos, subdivisiones y TAP tempo</p>
+              ${this.renderMetronomePreview()}
             </div>
             <div class="premium-arrow">›</div>
           </div>
@@ -754,6 +1047,7 @@ export class ToolsView extends Component {
             <div class="premium-content">
               <h3>Afinador & Diapasón Acústico</h3>
               <p>Presets Drop D, Open G, DADGAD, Bajo, Ukelele y 432/440Hz</p>
+              ${this.renderTunerPreview()}
             </div>
             <div class="premium-arrow">›</div>
           </div>
@@ -763,6 +1057,7 @@ export class ToolsView extends Component {
             <div class="premium-content">
               <h3>Diccionario de Acordes</h3>
               <p>Voicings multi-instrumento, audio arpegiado y tensiones</p>
+              ${this.renderDictionaryPreview()}
             </div>
             <div class="premium-arrow">›</div>
           </div>
@@ -772,6 +1067,7 @@ export class ToolsView extends Component {
             <div class="premium-content">
               <h3>Entrenador de Oído</h3>
               <p>Reconocimiento auditivo de tríadas, 7mas y tensiones</p>
+              ${this.renderEarPreview()}
             </div>
             <div class="premium-arrow">›</div>
           </div>
@@ -781,6 +1077,7 @@ export class ToolsView extends Component {
             <div class="premium-content">
               <h3>Calculadora de Cejilla</h3>
               <p>Transpositor instantáneo de trastes y digitaciones</p>
+              ${this.renderCapoPreview()}
             </div>
             <div class="premium-arrow">›</div>
           </div>
@@ -789,7 +1086,8 @@ export class ToolsView extends Component {
             <div class="premium-icon" style="background: linear-gradient(135deg, #FFC107, #FF9800);">⭕</div>
             <div class="premium-content">
               <h3>Círculo de Quintas & Armonía</h3>
-              <p>Mapa interactivo de grados, relativos y dominantes</p>
+              <p>Mapa interactivo SVG de grados, relativos y dominantes</p>
+              ${this.renderCirclePreview()}
             </div>
             <div class="premium-arrow">›</div>
           </div>
@@ -873,7 +1171,12 @@ export class ToolsView extends Component {
 
                 <label class="pro-label">
                   <span>Acento 1er Tiempo</span>
-                  <input type="checkbox" id="chkMetronomeAccent" checked>
+                  <input type="checkbox" id="chkMetronomeAccent" ${this.metronomeAccent ? 'checked' : ''}>
+                </label>
+
+                <label class="pro-label">
+                  <span>Flash Visual</span>
+                  <input type="checkbox" id="chkMetronomeFlash" ${this.metronomeFlash ? 'checked' : ''}>
                 </label>
 
               </div>
@@ -1038,8 +1341,9 @@ export class ToolsView extends Component {
               <button class="btn-pro-preset ${this.earDifficulty === 'hard' ? 'active' : ''}" id="btnEarDiffHard" style="flex:1;">Nivel 3 (Avanzado)</button>
             </div>
 
-            <button id="btnPlayEarChord" style="width: 100%; padding: 22px; background: var(--bg-surface-solid); border: 2px solid var(--accent-primary); border-radius: 16px; color: var(--text-primary); font-size: 1.25rem; font-weight: 800; cursor: pointer; margin-bottom: 20px; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 4px 20px rgba(255, 87, 34, 0.15);">
-              🔊 Reproducir Acorde Otra Vez
+            <button id="btnPlayEarChord" class="btn-play-ear-chord">
+              🔊 Reproducir Acorde
+              <span class="ear-play-hint">← Escucha antes de responder</span>
             </button>
 
             <div id="earAnswersGrid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 20px;"></div>
@@ -1091,6 +1395,13 @@ export class ToolsView extends Component {
               </div>
             </div>
 
+            <!-- Tabla de Transposición de Acordes -->
+            <div class="pro-options-card" style="margin-top: 16px;">
+              <h3>📊 Tabla de Transposición de Acordes</h3>
+              <p style="font-size: 0.82rem; color: var(--text-secondary); margin: 0 0 12px 0;">Los acordes que tocarás con la cejilla y cómo suenan en la tonalidad real:</p>
+              <div id="capoTranspositionTable"></div>
+            </div>
+
             <div class="tool-info-box">
               <h4>💡 ¿Por qué usar Cejilla / Capotraste?</h4>
               <p>El capotraste te permite cantar en tu rango vocal perfecto (por ejemplo, en Mi bemol o Fa sostenido) sin tener que tocar incómodos acordes con cejilla en todos los compases. Al colocar el capo, aprovechas la resonancia y facilidad de los acordes abiertos (C, G, D, Em).</p>
@@ -1109,21 +1420,27 @@ export class ToolsView extends Component {
             
             <div class="pro-options-card" style="margin-top: 0; margin-bottom: 20px;">
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
-                <h3 style="margin: 0;">Selecciona Tonalidad Central:</h3>
+                <h3 style="margin: 0;">Tonalidad Central:</h3>
                 <select id="selCircleKey" style="background: var(--bg-surface); color: var(--text-primary); border: 1px solid var(--border-strong); padding: 8px 14px; border-radius: 10px; font-weight: 800;">
-                  ${['C', 'G', 'D', 'A', 'E', 'B', 'F', 'Bb', 'Eb'].map(k => `
+                  ${['C', 'G', 'D', 'A', 'E', 'B', 'F#', 'Db', 'Ab', 'Eb', 'Bb', 'F'].map(k => `
                     <option value="${k}" ${k === this.circleKey ? 'selected' : ''}>Tonalidad de ${k}</option>
                   `).join('')}
                 </select>
               </div>
 
-              <!-- Grados Armónicos -->
+              <!-- SVG Interactivo del Círculo de Quintas -->
+              <div id="circleOfFifthsSVG" style="display: flex; justify-content: center; margin-bottom: 16px;"></div>
+            </div>
+
+            <!-- Grados Armónicos -->
+            <div class="pro-options-card" style="margin-top: 0; margin-bottom: 20px;">
+              <h3 style="margin-bottom: 12px;">Grados Armónicos de ${this.circleKey} Mayor</h3>
               <div id="circleDegreesGrid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px;"></div>
             </div>
 
             <div class="tool-info-box">
               <h4>💡 Cómo Componer y Acompañar usando el Círculo</h4>
-              <p>Los acordes más cercanos entre sí en el círculo de quintas suenan naturalmente armónicos y fluidos. La progresión más famosa de la música moderna (<strong>I - V - vi - IV</strong>) utiliza exactamente los acordes principales que ves en esta pantalla. Pulsa cualquiera de las tarjetas para escuchar su función sonora.</p>
+              <p>Los acordes más cercanos entre sí en el círculo de quintas suenan naturalmente armónicos y fluidos. La progresión más famosa de la música moderna (<strong>I - V - vi - IV</strong>) utiliza exactamente los acordes principales que ves en esta pantalla. Pulsa cualquiera de las tarjetas para escuchar su función sonora. Haz clic en las tonalidades del círculo para navegar.</p>
             </div>
 
           </div>
@@ -1188,6 +1505,12 @@ export class ToolsView extends Component {
 
     this.container.querySelector('#chkMetronomeAccent')?.addEventListener('change', (e) => {
       this.metronomeAccent = e.target.checked;
+    });
+
+    // NUEVO: Checkbox de Flash Visual
+    this.container.querySelector('#chkMetronomeFlash')?.addEventListener('change', (e) => {
+      this.metronomeFlash = e.target.checked;
+      toast.show(`Flash visual ${this.metronomeFlash ? 'activado' : 'desactivado'}`, 'info', 500);
     });
 
     // 4. Afinador

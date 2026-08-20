@@ -89,3 +89,39 @@ body.theme-ivory {
   background-color: var(--bg-app);
   color: var(--text-primary);
 }
+
+/* =========================================================
+   THEME AMBER (Stage Warm / Anti-Fatigue Mode)
+   ========================================================= */
+body.theme-amber {
+  /* Fondos Principales Cálidos */
+  --bg-app: #120e0a;
+  --bg-surface: #1a140f;
+  --bg-surface-solid: #211a13;
+  --bg-surface-raised: #2a2118;
+  --bg-surface-hover: #352a1f;
+
+  /* Glassmorphism Cálido */
+  --glass-blur: blur(20px) saturate(160%);
+  --glass-border: rgba(255, 183, 77, 0.12);
+  --glass-border-hover: rgba(255, 183, 77, 0.25);
+  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.6);
+
+  /* Acentos Ámbar Brillantes */
+  --accent-primary: #ff9800; /* Warm Amber */
+  --accent-primary-hover: #ffa726;
+  --accent-secondary: #ffd54f;
+
+  /* Texto Cálido de Alto Contraste */
+  --text-primary: #fff8e1;
+  --text-secondary: #d7ccc8;
+  --text-muted: #a1887f;
+  --text-inverse: #120e0a;
+
+  /* Bordes */
+  --border-subtle: rgba(255, 183, 77, 0.12);
+  --border-strong: rgba(255, 183, 77, 0.25);
+
+  background-color: var(--bg-app);
+  color: var(--text-primary);
+}

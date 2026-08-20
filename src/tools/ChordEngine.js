@@ -4,7 +4,7 @@
  * - Guitarra (6 cuerdas)
  * - Ukelele (4 cuerdas G-C-E-A)
  * - Piano / Teclado (Visualizador preciso de teclas y notas)
- * - Síntesis acústica Web Audio de alta fidelidad con modelado físico y resonancia armónica.
+ * - Síntesis acústica Web Audio de alta fidelidad con modelado físico Karplus-Strong y resonancia armónica.
  */
 
 import { events } from '../core/EventBus.js';
@@ -40,6 +40,9 @@ export const GUITAR_CHORDS = {
   'Am7': { frets: [-1, 0, 2, 0, 1, 0], fingers: [0, 0, 2, 0, 1, 0], baseFret: 1 },
   'Em7': { frets: [0, 2, 0, 0, 3, 3], fingers: [0, 1, 0, 0, 3, 4], baseFret: 1 },
   'Dsus4': { frets: [-1, -1, 0, 2, 3, 3], fingers: [0, 0, 0, 1, 2, 4], baseFret: 1 },
+  'Csus4': { frets: [-1, 3, 3, 0, 1, 1], fingers: [0, 3, 4, 0, 1, 1], baseFret: 1 },
+  'Dsus2': { frets: [-1, -1, 0, 2, 3, 0], fingers: [0, 0, 0, 1, 3, 0], baseFret: 1 },
+  'Esus4': { frets: [0, 2, 2, 2, 0, 0], fingers: [0, 1, 2, 3, 0, 0], baseFret: 1 },
   'A7sus4': { frets: [-1, 0, 2, 0, 3, 0], fingers: [0, 0, 1, 0, 2, 0], baseFret: 1 },
   'Cadd9': { frets: [-1, 3, 2, 0, 3, 0], fingers: [0, 2, 1, 0, 3, 0], baseFret: 1 },
   'F#m': { frets: [2, 4, 4, 2, 2, 2], fingers: [1, 3, 4, 1, 1, 1], baseFret: 2, barres: [2] },
@@ -51,6 +54,11 @@ export const GUITAR_CHORDS = {
   'F5': { frets: [1, 3, 3, -1, -1, -1], fingers: [1, 3, 4, 0, 0, 0], baseFret: 1 },
   'Ab5': { frets: [4, 6, 6, -1, -1, -1], fingers: [1, 3, 4, 0, 0, 0], baseFret: 4 },
   'Db5': { frets: [-1, 4, 6, 6, -1, -1], fingers: [0, 1, 3, 4, 0, 0], baseFret: 4 },
+  // Ear trainer advanced chords
+  'Bm7b5': { frets: [-1, 2, 3, 2, 3, -1], fingers: [0, 1, 3, 2, 4, 0], baseFret: 1 },
+  'Cdim': { frets: [-1, 3, 4, 5, 4, -1], fingers: [0, 1, 2, 4, 3, 0], baseFret: 1 },
+  'E7#9': { frets: [0, 2, 0, 1, 3, 3], fingers: [0, 2, 0, 1, 3, 4], baseFret: 1 },
+  'C9': { frets: [-1, 3, 2, 3, 3, -1], fingers: [0, 2, 1, 3, 4, 0], baseFret: 1 },
 };
 
 // Base de datos de digitaciones estándar de UKELELE (G C E A)
@@ -95,6 +103,12 @@ export const UKULELE_CHORDS = {
   'F5': { frets: [5, 5, -1, -1], fingers: [1, 2, 0, 0], baseFret: 5 },
   'Ab5': { frets: [1, 3, -1, -1], fingers: [1, 3, 0, 0], baseFret: 1 },
   'Db5': { frets: [1, 1, 4, 4], fingers: [1, 1, 3, 4], baseFret: 1 },
+  'Csus4': { frets: [0, 0, 1, 3], fingers: [0, 0, 1, 3], baseFret: 1 },
+  'Dsus2': { frets: [2, 2, 2, 5], fingers: [1, 1, 1, 4], baseFret: 1 },
+  'Bm7b5': { frets: [2, 3, 2, 3], fingers: [1, 3, 2, 4], baseFret: 1 },
+  'Cdim': { frets: [2, 3, 2, 0], fingers: [1, 3, 2, 0], baseFret: 1 },
+  'E7#9': { frets: [1, 2, 0, 2], fingers: [1, 2, 0, 3], baseFret: 1 },
+  'C9': { frets: [0, 2, 0, 1], fingers: [0, 2, 0, 1], baseFret: 1 },
 };
 
 // Notas reales por acorde de Piano
@@ -104,16 +118,21 @@ export const PIANO_VOICINGS = {
   'C7': [{ key: 'C', oct: 4 }, { key: 'E', oct: 4 }, { key: 'G', oct: 4 }, { key: 'Bb', oct: 4 }],
   'Cmaj7': [{ key: 'C', oct: 4 }, { key: 'E', oct: 4 }, { key: 'G', oct: 4 }, { key: 'B', oct: 4 }],
   'Cadd9': [{ key: 'C', oct: 4 }, { key: 'D', oct: 4 }, { key: 'E', oct: 4 }, { key: 'G', oct: 4 }],
+  'Csus4': [{ key: 'C', oct: 4 }, { key: 'F', oct: 4 }, { key: 'G', oct: 4 }],
+  'C9': [{ key: 'C', oct: 4 }, { key: 'E', oct: 4 }, { key: 'G', oct: 4 }, { key: 'Bb', oct: 4 }, { key: 'D', oct: 5 }],
+  'Cdim': [{ key: 'C', oct: 4 }, { key: 'Eb', oct: 4 }, { key: 'Gb', oct: 4 }],
 
   'D': [{ key: 'D', oct: 4 }, { key: 'F#', oct: 4 }, { key: 'A', oct: 4 }],
   'Dm': [{ key: 'D', oct: 4 }, { key: 'F', oct: 4 }, { key: 'A', oct: 4 }],
   'D7': [{ key: 'D', oct: 4 }, { key: 'F#', oct: 4 }, { key: 'A', oct: 4 }, { key: 'C', oct: 5 }],
   'Dsus4': [{ key: 'D', oct: 4 }, { key: 'G', oct: 4 }, { key: 'A', oct: 4 }],
+  'Dsus2': [{ key: 'D', oct: 4 }, { key: 'E', oct: 4 }, { key: 'A', oct: 4 }],
 
   'E': [{ key: 'E', oct: 4 }, { key: 'G#', oct: 4 }, { key: 'B', oct: 4 }],
   'Em': [{ key: 'E', oct: 4 }, { key: 'G', oct: 4 }, { key: 'B', oct: 4 }],
   'Em7': [{ key: 'E', oct: 4 }, { key: 'G', oct: 4 }, { key: 'B', oct: 4 }, { key: 'D', oct: 5 }],
   'E7': [{ key: 'E', oct: 4 }, { key: 'G#', oct: 4 }, { key: 'B', oct: 4 }, { key: 'D', oct: 5 }],
+  'E7#9': [{ key: 'E', oct: 4 }, { key: 'G#', oct: 4 }, { key: 'B', oct: 4 }, { key: 'D', oct: 5 }, { key: 'G', oct: 5 }],
 
   'F': [{ key: 'F', oct: 4 }, { key: 'A', oct: 4 }, { key: 'C', oct: 5 }],
   'Fm': [{ key: 'F', oct: 4 }, { key: 'Ab', oct: 4 }, { key: 'C', oct: 5 }],
@@ -135,6 +154,7 @@ export const PIANO_VOICINGS = {
 
   'B': [{ key: 'B', oct: 4 }, { key: 'D#', oct: 5 }, { key: 'F#', oct: 5 }],
   'Bm': [{ key: 'B', oct: 4 }, { key: 'D', oct: 5 }, { key: 'F#', oct: 5 }],
+  'Bm7b5': [{ key: 'B', oct: 4 }, { key: 'D', oct: 5 }, { key: 'F', oct: 5 }, { key: 'A', oct: 5 }],
   'B7': [{ key: 'B', oct: 4 }, { key: 'D#', oct: 5 }, { key: 'F#', oct: 5 }, { key: 'A', oct: 5 }],
   'G#m': [{ key: 'G#', oct: 4 }, { key: 'B', oct: 4 }, { key: 'D#', oct: 5 }],
   'Bb5': [{ key: 'Bb', oct: 4 }, { key: 'F', oct: 5 }],
@@ -146,6 +166,13 @@ export const PIANO_VOICINGS = {
 
 const CHROMATIC_SCALE_SHARPS = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
 const CHROMATIC_SCALE_FLATS = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
+
+// Note frequency table (A4 = 440 Hz)
+const NOTE_FREQ = {
+  'C': 261.63, 'C#': 277.18, 'Db': 277.18, 'D': 293.66, 'D#': 311.13, 'Eb': 311.13,
+  'E': 329.63, 'F': 349.23, 'F#': 369.99, 'Gb': 369.99, 'G': 392.00, 'G#': 415.30,
+  'Ab': 415.30, 'A': 440.00, 'A#': 466.16, 'Bb': 466.16, 'B': 493.88
+};
 
 class ChordEngine {
   constructor() {
@@ -441,63 +468,215 @@ class ChordEngine {
   }
 
   /**
-   * Síntesis acústica de acordes realista con calidez de madera, armónicos orgánicos y transitorios de pulsación.
+   * Síntesis de cuerda pulsada realista con técnica Karplus-Strong mejorada:
+   * - Burst de ruido inicial filtrado → ataque natural
+   * - Múltiples osciladores con armónicos inarmónicos (guitarrísticos)
+   * - Envolvente de decaimiento logarítmico (como una cuerda real)
+   * - Leve reverb con delay/feedback
+   * - Spread de afinación por cuerda (calidez)
    */
   auditionChord(chordName, instrument = this.currentInstrument) {
     try {
       const ctx = this.getAudioContext();
+      const isPiano = instrument === 'piano';
+      const isUkulele = instrument === 'ukulele';
 
-      // Advanced Acoustic/Piano Synthesis
-      const chord = this.getChord(chordName, instrument === 'ukulele' ? 'ukulele' : 'guitar');
-      if (!chord && instrument !== 'piano') return;
+      // ─── Nodo de reverb ligero (shared) ─────────────────────────────────
+      const reverbDelay = ctx.createDelay(0.08);
+      reverbDelay.delayTime.value = 0.055;
+      const reverbFeedback = ctx.createGain();
+      reverbFeedback.gain.value = 0.28;
+      const reverbOut = ctx.createGain();
+      reverbOut.gain.value = 0.18;
+      reverbDelay.connect(reverbFeedback);
+      reverbFeedback.connect(reverbDelay);
+      reverbDelay.connect(reverbOut);
+      reverbOut.connect(ctx.destination);
 
-      const baseFreqs = instrument === 'ukulele' ? [392.00, 261.63, 329.63, 440.00] : [82.41, 110.00, 146.83, 196.00, 246.94, 329.63];
-
+      // ─── Recopilar notas según instrumento ──────────────────────────────
       let notes = [];
-      if (instrument === 'piano') {
+
+      if (isPiano) {
         const cleanName = this.simplifyChord(chordName);
-        const voicing = PIANO_VOICINGS[chordName] || PIANO_VOICINGS[cleanName] || [{ key: 'C', oct: 4 }, { key: 'E', oct: 4 }, { key: 'G', oct: 4 }];
-        const noteFreqMap = {'C':261.63,'C#':277.18,'Db':277.18,'D':293.66,'D#':311.13,'Eb':311.13,'E':329.63,'F':349.23,'F#':369.99,'Gb':369.99,'G':392.00,'G#':415.30,'Ab':415.30,'A':440.00,'A#':466.16,'Bb':466.16,'B':493.88};
-        notes = voicing.map((v, i) => ({ freq: (noteFreqMap[v.key]||261.63) * (v.oct===5?2:1), delay: i * 0.012 }));
+        const voicing = PIANO_VOICINGS[chordName] || PIANO_VOICINGS[cleanName]
+          || [{ key: 'C', oct: 4 }, { key: 'E', oct: 4 }, { key: 'G', oct: 4 }];
+        notes = voicing.map((v, i) => ({
+          freq: (NOTE_FREQ[v.key] || 261.63) * Math.pow(2, v.oct - 4),
+          delay: i * 0.018,
+          isLow: v.oct <= 3,
+        }));
       } else {
-        chord.frets.forEach((fret, stringIdx) => {
-          if (fret !== -1) notes.push({ freq: baseFreqs[stringIdx] * Math.pow(2, fret / 12), delay: stringIdx * (instrument==='ukulele'?0.015:0.025) });
-        });
+        const chordData = this.getChord(chordName, isUkulele ? 'ukulele' : 'guitar');
+        const baseFreqs = isUkulele
+          ? [392.00, 261.63, 329.63, 440.00]       // G4 C4 E4 A4
+          : [82.41, 110.00, 146.83, 196.00, 246.94, 329.63]; // E2 A2 D3 G3 B3 e4
+        const strumGap = isUkulele ? 0.018 : 0.028;
+
+        if (chordData) {
+          chordData.frets.forEach((fret, idx) => {
+            if (fret !== -1) {
+              notes.push({
+                freq: baseFreqs[idx] * Math.pow(2, fret / 12),
+                delay: idx * strumGap,
+                isLow: idx < 2,
+              });
+            }
+          });
+        }
       }
 
+      // ─── Sintetizar cada nota ────────────────────────────────────────────
       notes.forEach((note) => {
-        const startTime = ctx.currentTime + note.delay;
-        
-        // Better string pluck synthesis
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        const filter = ctx.createBiquadFilter();
+        const t = ctx.currentTime + note.delay;
+        const duration = isPiano ? 2.8 : (note.isLow ? 3.2 : 2.6);
 
-        osc.type = instrument === 'piano' ? 'sine' : 'sawtooth';
-        osc.frequency.setValueAtTime(note.freq, startTime);
-
-        filter.type = 'lowpass';
-        filter.frequency.setValueAtTime(instrument === 'piano' ? 3000 : 4000, startTime);
-        filter.frequency.exponentialRampToValueAtTime(300, startTime + 1.5);
-        filter.Q.value = 1.2;
-
-        gain.gain.setValueAtTime(0.0001, startTime);
-        gain.gain.exponentialRampToValueAtTime(0.3, startTime + 0.01);
-        gain.gain.exponentialRampToValueAtTime(0.0001, startTime + 2.5);
-
-        // Subtle detune for realism
-        osc.detune.value = (Math.random() - 0.5) * 6;
-
-        osc.connect(filter);
-        filter.connect(gain);
-        gain.connect(ctx.destination);
-
-        osc.start(startTime);
-        osc.stop(startTime + 3.0);
+        if (isPiano) {
+          this._synthPianoNote(ctx, note.freq, t, duration, reverbDelay);
+        } else {
+          this._synthStringNote(ctx, note.freq, t, duration, note.isLow, reverbDelay, isUkulele);
+        }
       });
+
     } catch (err) {
       console.warn('[ChordEngine] Error reproduciendo audio:', err);
     }
+  }
+
+  /**
+   * Síntesis de nota de guitarra/ukelele tipo Karplus-Strong mejorado.
+   * Combina: oscilador principal + 2 armónicos + burst de ataque con ruido filtrado.
+   */
+  _synthStringNote(ctx, freq, startTime, duration, isLow, reverbNode, isUkulele) {
+    const masterGain = ctx.createGain();
+    masterGain.connect(ctx.destination);
+    masterGain.connect(reverbNode);
+
+    // Envolvente principal (pluck natural)
+    const attackTime = 0.004;
+    const peakGain = isLow ? 0.55 : 0.45;
+    masterGain.gain.setValueAtTime(0.0001, startTime);
+    masterGain.gain.linearRampToValueAtTime(peakGain, startTime + attackTime);
+    masterGain.gain.exponentialRampToValueAtTime(peakGain * 0.6, startTime + 0.06);
+    masterGain.gain.exponentialRampToValueAtTime(0.0001, startTime + duration);
+
+    // Filtro de brillantez (simula posición del punteo)
+    const brightFilter = ctx.createBiquadFilter();
+    brightFilter.type = 'lowpass';
+    brightFilter.frequency.setValueAtTime(isUkulele ? 5500 : (isLow ? 3200 : 6000), startTime);
+    brightFilter.frequency.exponentialRampToValueAtTime(isLow ? 300 : 500, startTime + duration * 0.7);
+    brightFilter.Q.value = 0.8;
+    brightFilter.connect(masterGain);
+
+    // Oscilador 1: fundamental (sawtooth para cuerdas)
+    const osc1 = ctx.createOscillator();
+    const g1 = ctx.createGain();
+    osc1.type = 'sawtooth';
+    osc1.frequency.value = freq;
+    osc1.detune.value = (Math.random() - 0.5) * 5;
+    g1.gain.value = 0.65;
+    osc1.connect(g1);
+    g1.connect(brightFilter);
+
+    // Oscilador 2: 2° armónico (octava arriba, más suave)
+    const osc2 = ctx.createOscillator();
+    const g2 = ctx.createGain();
+    osc2.type = 'triangle';
+    osc2.frequency.value = freq * 2;
+    osc2.detune.value = (Math.random() - 0.5) * 8;
+    g2.gain.value = 0.2;
+    osc2.connect(g2);
+    g2.connect(brightFilter);
+
+    // Oscilador 3: 3° armónico parcial (inarmónico leve, da calidez)
+    const osc3 = ctx.createOscillator();
+    const g3 = ctx.createGain();
+    osc3.type = 'sine';
+    osc3.frequency.value = freq * 3.02; // ligeramente inarmónico
+    osc3.detune.value = (Math.random() - 0.5) * 10;
+    g3.gain.value = 0.08;
+    osc3.connect(g3);
+    g3.connect(brightFilter);
+
+    // Burst de ruido (transitorio de ataque → como rasgar cuerda)
+    const bufferSize = ctx.sampleRate * 0.04;
+    const noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+    const noiseData = noiseBuffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) noiseData[i] = Math.random() * 2 - 1;
+    const noise = ctx.createBufferSource();
+    noise.buffer = noiseBuffer;
+    const noiseGain = ctx.createGain();
+    const noiseFilter = ctx.createBiquadFilter();
+    noiseFilter.type = 'bandpass';
+    noiseFilter.frequency.value = freq * 1.5;
+    noiseFilter.Q.value = 2.0;
+    noiseGain.gain.setValueAtTime(0.18, startTime);
+    noiseGain.gain.exponentialRampToValueAtTime(0.0001, startTime + 0.035);
+    noise.connect(noiseFilter);
+    noiseFilter.connect(noiseGain);
+    noiseGain.connect(masterGain);
+
+    [osc1, osc2, osc3].forEach(o => { o.start(startTime); o.stop(startTime + duration + 0.05); });
+    noise.start(startTime);
+  }
+
+  /**
+   * Síntesis de nota de piano: sine + 2° armónico + attack click + reverb.
+   */
+  _synthPianoNote(ctx, freq, startTime, duration, reverbNode) {
+    const masterGain = ctx.createGain();
+    masterGain.connect(ctx.destination);
+    masterGain.connect(reverbNode);
+
+    // Envolvente piano: ataque muy rápido, decaimiento suave
+    masterGain.gain.setValueAtTime(0.0001, startTime);
+    masterGain.gain.linearRampToValueAtTime(0.42, startTime + 0.006);
+    masterGain.gain.exponentialRampToValueAtTime(0.22, startTime + 0.1);
+    masterGain.gain.exponentialRampToValueAtTime(0.0001, startTime + duration);
+
+    // Filtro warmth
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(7000, startTime);
+    filter.frequency.exponentialRampToValueAtTime(1200, startTime + duration * 0.5);
+    filter.connect(masterGain);
+
+    // Fundamental (sine)
+    const osc1 = ctx.createOscillator();
+    const g1 = ctx.createGain();
+    osc1.type = 'sine';
+    osc1.frequency.value = freq;
+    g1.gain.value = 0.7;
+    osc1.connect(g1); g1.connect(filter);
+
+    // 2° armónico (triangle, más suave)
+    const osc2 = ctx.createOscillator();
+    const g2 = ctx.createGain();
+    osc2.type = 'triangle';
+    osc2.frequency.value = freq * 2;
+    g2.gain.value = 0.22;
+    osc2.connect(g2); g2.connect(filter);
+
+    // 4° armónico (añade brillo como cuerdas del piano)
+    const osc3 = ctx.createOscillator();
+    const g3 = ctx.createGain();
+    osc3.type = 'sine';
+    osc3.frequency.value = freq * 4;
+    g3.gain.value = 0.06;
+    osc3.connect(g3); g3.connect(filter);
+
+    // Click de martillo (transitorio de ataque)
+    const bufferSize = Math.floor(ctx.sampleRate * 0.008);
+    const clickBuf = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+    const cd = clickBuf.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) cd[i] = (Math.random() * 2 - 1) * (1 - i / bufferSize);
+    const click = ctx.createBufferSource();
+    click.buffer = clickBuf;
+    const clickGain = ctx.createGain();
+    clickGain.gain.value = 0.12;
+    click.connect(clickGain); clickGain.connect(masterGain);
+
+    [osc1, osc2, osc3].forEach(o => { o.start(startTime); o.stop(startTime + duration + 0.05); });
+    click.start(startTime);
   }
 }
 
