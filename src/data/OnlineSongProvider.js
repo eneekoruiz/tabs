@@ -291,48 +291,45 @@ class OnlineSongProvider {
   async searchOnline(query) {
     if (!query || query.trim().length < 1) return [];
 
-    try {
-      // Usar iTunes API (millones de canciones) para un catálogo verdaderamente infinito y real
-      const cleanQuery = encodeURIComponent(query.trim());
-      const res = await fetch(`https://itunes.apple.com/search?term=${cleanQuery}&media=music&entity=song&limit=40`);
-      if (res.ok) {
-        const data = await res.json();
-        const results = [];
-        const seen = new Set();
-
-        data.results.forEach(track => {
-          const key = (track.trackName + track.artistName).toLowerCase();
-          if (!seen.has(key)) {
-            seen.add(key);
-            results.push({
-              id: track.trackId,
-              title: track.trackName,
-              artist: track.artistName,
-              genre: track.primaryGenreName || 'Pop',
-              difficulty: 'Variable',
-              tuning: 'Standard E',
-              tempo: 120, // iTunes no da tempo exacto, pero podemos calcularlo luego si es necesario
-              isOnline: true,
-            });
-          }
-        });
-
-        // Combinar con la base local si hay alguna que coincida exactamente
-        const localResults = [];
-        const q = query.toLowerCase().trim();
-        for (const item of this.index) {
-          if (item.title.toLowerCase().includes(q) || item.artist.toLowerCase().includes(q)) {
-            localResults.push(item);
-          }
-        }
-
-        return [...localResults, ...results].slice(0, 50);
+    const q = query.toLowerCase().trim();
+    const localResults = [];
+    for (const item of this.index) {
+      if (item.title.toLowerCase().includes(q) || item.artist.toLowerCase().includes(q)) {
+        localResults.push(item);
       }
-    } catch (e) {
-      console.warn('Error buscando en iTunes API', e);
     }
 
-    return [];
+    try {
+      if (window.__TAURI__ || window.location.protocol.startsWith('tauri')) {
+        const cleanQuery = encodeURIComponent(query.trim());
+        const res = await fetch(`https://itunes.apple.com/search?term=${cleanQuery}&media=music&entity=song&limit=40`);
+        if (res.ok) {
+          const data = await res.json();
+          const results = [];
+          const seen = new Set();
+
+          data.results.forEach(track => {
+            const key = (track.trackName + track.artistName).toLowerCase();
+            if (!seen.has(key)) {
+              seen.add(key);
+              results.push({
+                id: track.trackId,
+                title: track.trackName,
+                artist: track.artistName,
+                genre: track.primaryGenreName || 'Pop',
+                difficulty: 'Variable',
+                tuning: 'Standard E',
+                tempo: 120,
+                isOnline: true,
+              });
+            }
+          });
+          return [...localResults, ...results].slice(0, 50);
+        }
+      }
+    } catch (e) {}
+
+    return localResults.slice(0, 50);
   }
 
   /**

@@ -170,6 +170,18 @@ export class SettingsView extends Component {
                 <option value="paper" ${this.visualTheme === 'paper' ? 'selected' : ''}>Atril Papel (Cancionero)</option>
               </select>
             </div>
+
+            <!-- Micro-Feedback de Audio -->
+            <div class="settings-row-item">
+              <div class="settings-row-info">
+                <strong>Micro-Sonidos de Interfaz (Audio Micro-Feedback)</strong>
+                <span>Pulsación táctil y confirmación sutil sintetizada en tiempo real</span>
+              </div>
+              <label class="switch-toggle" aria-label="Sonidos de interfaz">
+                <input type="checkbox" id="chkSettingsAudioFeedback" ${localStorage.getItem('app_ui_sound_muted') !== 'true' ? 'checked' : ''}>
+                <span class="slider round"></span>
+              </label>
+            </div>
           </div>
 
           <!-- 3. Copia de Seguridad y Sincronización -->
@@ -201,6 +213,13 @@ export class SettingsView extends Component {
   }
 
   bindEvents() {
+    // Micro-Feedback de Audio
+    this.container.querySelector('#chkSettingsAudioFeedback')?.addEventListener('change', (e) => {
+      const enabled = e.target.checked;
+      localStorage.setItem('app_ui_sound_muted', String(!enabled));
+      toast.show(enabled ? 'Sonidos de interfaz activados' : 'Sonidos de interfaz silenciados', 'info', 1000);
+    });
+
     // Mano Dominante (Diestro / Zurdo)
     this.container.querySelector('#chkSettingsLeftHanded')?.addEventListener('change', (e) => {
       this.isLeftHanded = e.target.checked;

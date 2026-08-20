@@ -90,6 +90,10 @@ export class LyricsChordsView extends Component {
     this.registerUnsub(
       events.on('score:loaded', async ({ score }) => {
         const activeSong = state.get('activeSong');
+        if (!activeSong) return;
+        if (this.currentSong && (String(this.currentSong.id) === String(activeSong.id) || this.currentSong.title === activeSong.title) && this.currentSong.lyricsChords) {
+          return;
+        }
         this.currentSong = activeSong;
         this.transposeSemitones = 0;
         this.capoFret = 0;
@@ -105,6 +109,9 @@ export class LyricsChordsView extends Component {
 
     this.registerUnsub(
       events.on('ui:loadLyricsSong', async (song) => {
+        if (this.currentSong && (String(this.currentSong.id) === String(song.id) || this.currentSong.title === song.title) && this.currentSong.lyricsChords === song.lyricsChords) {
+          return;
+        }
         this.currentSong = song;
         this.transposeSemitones = 0;
         this.capoFret = 0;
@@ -800,9 +807,6 @@ export class LyricsChordsView extends Component {
           ${this.parseLyricsChords(rawLyrics)}
         </div>
       </div>
-
-      <!-- Popover Dinámico de Acorde al hacer Clic en la Letra -->
-      <div id="chordPopoverCard" class="chord-popover-card" style="display: none;"></div>
     `;
 
     const alphatabEl = document.getElementById('alphatab');
@@ -935,15 +939,6 @@ export class LyricsChordsView extends Component {
       this.toggleAutoScroll();
     });
 
-    // Cerrar menús al hacer clic fuera
-    document.addEventListener('click', () => {
-      if (this.isInstrumentMenuOpen || this.isOptionsMenuOpen) {
-        this.isInstrumentMenuOpen = false;
-        this.isOptionsMenuOpen = false;
-        this.updateDropdownsVisibility();
-      }
-    });
-
     this.container.querySelector('#btnToggleLiveListen')?.addEventListener('click', () => {
       this.toggleLiveListening();
       this.isOptionsMenuOpen = false;
@@ -1012,9 +1007,80 @@ export class LyricsChordsView extends Component {
       });
     });
 
-    document.addEventListener('click', () => {
-      this.hideChordPopover();
-    });
+    this.getPopoverElement();
+
+    if (!this._globalClickListenerAttached) {
+      this._globalClickListenerAttached = true;
+      document.addEventListener('click', (e) => {
+        if (!e.target.closest('#chordPopoverCard') && !e.target.closest('.btn-chord-popover')) {
+          this.hideChordPopover();
+        }
+        if (this.isInstrumentMenuOpen || this.isOptionsMenuOpen) {
+          this.isInstrumentMenuOpen = false;
+          this.isOptionsMenuOpen = false;
+          this.updateDropdownsVisibility();
+        }
+      });
+    }
+  }
+
+  getPopoverElement() {
+    let popover = document.getElementById('chordPopoverCard');
+    if (!popover) {
+      popover = document.createElement('div');
+      popover.id = 'chordPopoverCard';
+      popover.className = 'chord-popover-card';
+      popover.style.display = 'none';
+      popover.innerHTML = `
+        <div class="popover-header-row">
+          <div class="popover-inst-tabs" role="group" aria-label="Cambiar instrumento del acorde">
+            <button class="btn-popover-inst active" data-popinst="guitar">Guitarra</button>
+            <button class="btn-popover-inst" data-popinst="piano">Piano</button>
+            <button class="btn-popover-inst" data-popinst="ukulele">Ukelele</button>
+          </div>
+          <button class="btn-popover-x-close" id="btnPopoverXClose" aria-label="Cerrar ventana">✕</button>
+        </div>
+
+        <div class="chord-popover-diagram" id="chordPopoverDiagramSlot"></div>
+
+        <div class="popover-actions-row">
+          <button class="btn-audition-chord" id="btnAuditionPopoverChord" aria-label="Escuchar acorde">
+            Escuchar
+          </button>
+          <button class="btn-close-popover" id="btnCloseChordPopover">Cerrar</button>
+        </div>
+      `;
+      document.body.appendChild(popover);
+
+      popover.addEventListener('click', (e) => e.stopPropagation());
+
+      popover.querySelectorAll('.btn-popover-inst').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const selectedInst = btn.dataset.popinst;
+          this.activePopoverInstrument = selectedInst;
+          this.updatePopoverDisplay();
+        });
+      });
+
+      popover.querySelector('#btnAuditionPopoverChord')?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (this.activePopoverChord) {
+          chordEngine.auditionChord(this.activePopoverChord, this.activePopoverInstrument || this.currentInstrument);
+        }
+      });
+
+      popover.querySelector('#btnPopoverXClose')?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.hideChordPopover();
+      });
+
+      popover.querySelector('#btnCloseChordPopover')?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.hideChordPopover();
+      });
+    }
+    return popover;
   }
 
   updateDropdownsVisibility() {
@@ -1026,22 +1092,25 @@ export class LyricsChordsView extends Component {
   }
 
   showChordPopover(chordName, buttonElement) {
-    const popover = this.container.querySelector('#chordPopoverCard');
+    const popover = this.getPopoverElement();
     if (!popover) return;
 
     this.activePopoverChord = chordName;
-    const rect = buttonElement.getBoundingClientRect();
-
-    this.renderPopoverContent(chordName, this.currentInstrument);
+    this.activePopoverInstrument = this.currentInstrument;
+    this.updatePopoverDisplay();
 
     popover.style.display = 'flex';
 
-    const popoverHeight = 265;
-    const popoverWidth = 270;
+    const rect = buttonElement.getBoundingClientRect();
+    const popoverHeight = 310;
+    const popoverWidth = 280;
 
     let top = rect.bottom + 8;
-    if (top + popoverHeight > window.innerHeight - 70) {
+    if (top + popoverHeight > window.innerHeight - 80) {
       top = Math.max(10, rect.top - popoverHeight - 8);
+    }
+    if (top + popoverHeight > window.innerHeight - 80) {
+      top = Math.max(10, (window.innerHeight - 80 - popoverHeight) / 2);
     }
 
     let left = rect.left - 20;
@@ -1050,65 +1119,36 @@ export class LyricsChordsView extends Component {
     }
     if (left < 10) left = 10;
 
-    popover.style.top = `${top}px`;
-    popover.style.left = `${left}px`;
+    popover.style.top = `${Math.round(top)}px`;
+    popover.style.left = `${Math.round(left)}px`;
   }
 
-  renderPopoverContent(chordName, instrument) {
-    const popover = this.container.querySelector('#chordPopoverCard');
-    if (!popover) return;
+  updatePopoverDisplay() {
+    const popover = this.getPopoverElement();
+    if (!popover || !this.activePopoverChord) return;
 
-    const svgDiagram = chordEngine.renderChordSVG(chordName, { instrument });
-    const displayTitle = this.formatChordDisplay(chordName);
-
-    popover.innerHTML = `
-      <div class="popover-header-row">
-        <div class="popover-inst-tabs" role="group" aria-label="Cambiar instrumento del acorde">
-          <button class="btn-popover-inst ${instrument === 'guitar' ? 'active' : ''}" data-popinst="guitar">Guitarra</button>
-          <button class="btn-popover-inst ${instrument === 'piano' ? 'active' : ''}" data-popinst="piano">Piano</button>
-          <button class="btn-popover-inst ${instrument === 'ukulele' ? 'active' : ''}" data-popinst="ukulele">Ukelele</button>
-        </div>
-        <button class="btn-popover-x-close" id="btnPopoverXClose" aria-label="Cerrar ventana">✕</button>
-      </div>
-
-      <div class="chord-popover-diagram">
-        ${svgDiagram}
-      </div>
-
-      <div class="popover-actions-row">
-        <button class="btn-audition-chord" id="btnAuditionPopoverChord" aria-label="Escuchar acorde ${displayTitle}">
-          Escuchar (${displayTitle})
-        </button>
-        <button class="btn-close-popover" id="btnCloseChordPopover">Cerrar</button>
-      </div>
-    `;
+    const instrument = this.activePopoverInstrument || this.currentInstrument;
+    const chordName = this.activePopoverChord;
 
     popover.querySelectorAll('.btn-popover-inst').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const selectedInst = btn.dataset.popinst;
-        this.renderPopoverContent(chordName, selectedInst);
-      });
+      btn.classList.toggle('active', btn.dataset.popinst === instrument);
     });
 
-    popover.querySelector('#btnAuditionPopoverChord')?.addEventListener('click', (e) => {
-      e.stopPropagation();
-      chordEngine.auditionChord(chordName, instrument);
-    });
+    const diagramSlot = popover.querySelector('#chordPopoverDiagramSlot');
+    if (diagramSlot) {
+      diagramSlot.innerHTML = chordEngine.renderChordSVG(chordName, { instrument });
+    }
 
-    popover.querySelector('#btnPopoverXClose')?.addEventListener('click', (e) => {
-      e.stopPropagation();
-      this.hideChordPopover();
-    });
-
-    popover.querySelector('#btnCloseChordPopover')?.addEventListener('click', (e) => {
-      e.stopPropagation();
-      this.hideChordPopover();
-    });
+    const displayTitle = this.formatChordDisplay(chordName);
+    const auditionBtn = popover.querySelector('#btnAuditionPopoverChord');
+    if (auditionBtn) {
+      auditionBtn.textContent = `Escuchar (${displayTitle})`;
+      auditionBtn.setAttribute('aria-label', `Escuchar acorde ${displayTitle}`);
+    }
   }
 
   hideChordPopover() {
-    const popover = this.container?.querySelector('#chordPopoverCard');
+    const popover = document.getElementById('chordPopoverCard');
     if (popover) popover.style.display = 'none';
   }
 

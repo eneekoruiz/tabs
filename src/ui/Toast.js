@@ -4,6 +4,7 @@
  */
 
 import { events } from '../core/EventBus.js';
+import { audioFeedback } from '../audio/AudioFeedback.js';
 
 class ToastManager {
   constructor() {
@@ -31,6 +32,12 @@ class ToastManager {
 
   show(message, type = 'info', duration = 3500) {
     if (!this.container) return;
+
+    if (type === 'success') {
+      audioFeedback.playSuccess();
+    } else if (type === 'error') {
+      audioFeedback.playDismiss();
+    }
 
     const toast = document.createElement('div');
     toast.className = `toast toast-${type}`;

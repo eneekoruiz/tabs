@@ -9,6 +9,7 @@
 
 import { Component } from './Component.js';
 import { events } from '../core/EventBus.js';
+import { audioFeedback } from '../audio/AudioFeedback.js';
 
 export class BottomNav extends Component {
   constructor(container) {
@@ -115,6 +116,7 @@ export class BottomNav extends Component {
     this.container.querySelectorAll('.nav-tab-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         const tab = btn.dataset.tab;
+        audioFeedback.playTabSwitch();
         this.setActiveTab(tab);
       });
     });
