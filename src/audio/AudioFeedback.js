@@ -1,4 +1,4 @@
-﻿/**
+/**
  * @file AudioFeedback.js
  * @description Gestor de Micro-Feedback de Audio sensorial ultraligero (Web Audio API sintetizado).
  * Inspirado en el estándar de Helen: ENHANCE-ui-audio-micro-feedback.
@@ -136,6 +136,34 @@ class AudioFeedbackManager {
 
       osc.start(now);
       osc.stop(now + 0.045);
+    } catch (e) {}
+  }
+
+  // =========================================================================
+  // HAPTIC FEEDBACK (Vibración Física en Dispositivos Móviles)
+  // =========================================================================
+
+  hapticTap() {
+    try {
+      if (typeof navigator !== 'undefined' && navigator.vibrate) {
+        navigator.vibrate(15);
+      }
+    } catch (e) {}
+  }
+
+  hapticAccent() {
+    try {
+      if (typeof navigator !== 'undefined' && navigator.vibrate) {
+        navigator.vibrate([22, 20, 22]);
+      }
+    } catch (e) {}
+  }
+
+  hapticInTune() {
+    try {
+      if (typeof navigator !== 'undefined' && navigator.vibrate) {
+        navigator.vibrate([35, 30, 70]);
+      }
     } catch (e) {}
   }
 }

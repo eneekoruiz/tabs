@@ -396,3 +396,59 @@
 .song-card-artist {
   color: var(--text-secondary) !important;
 }
+
+/* Estados Vacíos Empáticos */
+.library-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 40px 20px;
+  gap: 12px;
+  background: var(--bg-surface-raised);
+  border: 1px dashed var(--border-strong);
+  border-radius: 16px;
+  margin: 16px 0;
+}
+
+.empty-icon {
+  font-size: 2.4rem;
+  margin-bottom: 4px;
+}
+
+.empty-title {
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.empty-sub {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  max-width: 320px;
+}
+
+.empty-actions-row {
+  margin-top: 8px;
+}
+
+.btn-empty-action {
+  background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-primary-hover) 100%);
+  color: var(--text-primary);
+  border: none;
+  font-size: 0.84rem;
+  font-weight: 800;
+  padding: 10px 20px;
+  border-radius: 24px;
+  cursor: pointer;
+  box-shadow: 0 4px 16px var(--accent-primary-glow);
+  transition: all var(--transition-fast);
+}
+
+.btn-empty-action:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 22px var(--accent-primary-glow);
+}

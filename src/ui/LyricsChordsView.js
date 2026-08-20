@@ -641,6 +641,7 @@ export class LyricsChordsView extends Component {
               <button class="btn-transpose-step" id="btnTransposeMinus" aria-label="Bajar semitono">-1</button>
               <span class="transpose-value-display" id="lblTransposeDisplay">${this.transposeSemitones > 0 ? '+' : ''}${this.transposeSemitones}</span>
               <button class="btn-transpose-step" id="btnTransposePlus" aria-label="Subir semitono">+1</button>
+              ${this.transposeSemitones !== 0 ? `<button class="btn-transpose-reset" id="btnTransposeReset" title="Restablecer tono original" aria-label="Restablecer tono original">↺ Original</button>` : ''}
             </div>
 
             <!-- 3. Zoom de Fuente Táctil con Porcentaje Animado ([A-] 100% [A+]) -->
@@ -780,6 +781,27 @@ export class LyricsChordsView extends Component {
                 <h2 class="gallery-heading">Acordes Utilizados (${this.getInstrumentDisplayName(this.currentInstrument)})</h2>
               </div>
               <span class="gallery-tip">Toca cualquier diagrama para escuchar su sonido acústico</span>
+            </div>
+
+            <!-- Patrón de Rasgueo Recomendado -->
+            <div class="gallery-strumming-bar">
+              <div class="strum-badge-group">
+                <span class="strum-badge">PATRÓN DE RASGUEO</span>
+                <div class="strum-pattern-arrows" aria-label="Flechas de rasgueo">
+                  <span class="strum-arrow down" title="Golpe abajo">↓</span>
+                  <span class="strum-arrow down" title="Golpe abajo">↓</span>
+                  <span class="strum-arrow up" title="Golpe arriba">↑</span>
+                  <span class="strum-space"></span>
+                  <span class="strum-arrow up" title="Golpe arriba">↑</span>
+                  <span class="strum-arrow down" title="Golpe abajo">↓</span>
+                  <span class="strum-arrow up" title="Golpe arriba">↑</span>
+                </div>
+              </div>
+              <div class="strum-tempo-pill">
+                <span>♩ ${this.currentSong?.tempo || 120} BPM</span>
+                <span class="strum-dot-sep">•</span>
+                <span>Compás ${this.currentSong?.timeSignature || '4/4'}</span>
+              </div>
             </div>
 
             <div class="chords-visual-cards-grid">
@@ -957,6 +979,10 @@ export class LyricsChordsView extends Component {
 
     this.container.querySelector('#btnTransposePlus')?.addEventListener('click', () => {
       this.setTranspose(this.transposeSemitones + 1);
+    });
+
+    this.container.querySelector('#btnTransposeReset')?.addEventListener('click', () => {
+      this.setTranspose(0);
     });
 
     this.container.querySelector('#btnToggleAutoScroll')?.addEventListener('click', () => {

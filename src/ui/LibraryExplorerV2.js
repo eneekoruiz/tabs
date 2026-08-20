@@ -162,29 +162,34 @@ export class LibraryExplorerV2 extends Component {
       return `
         <div class="library-empty-state">
           <span class="empty-icon" aria-hidden="true">🎤</span>
-          <p>No tienes repertorios creados.</p>
-          <span class="empty-sub">Haz clic en "+ Nuevo Setlist" para armar tu lista de temas</span>
+          <p class="empty-title">Aún no has creado repertorios de concierto.</p>
+          <span class="empty-sub">Organiza tus temas en listas ordenadas para ensayos o actuaciones en directo sin pausas.</span>
+          <button class="btn-empty-action" id="btnEmptyCreateSetlist">+ Crear Primer Setlist</button>
         </div>
       `;
     }
 
-    return this.setlists.map(setlist => `
-      <div class="setlist-card ${setlistManager.activeSetlistId === setlist.id ? 'setlist-card-active' : ''}" data-id="${setlist.id}">
-        <div class="setlist-card-main">
-          <span class="setlist-card-title">🎤 ${setlist.name}</span>
-          <span class="setlist-card-count">${setlist.songIds ? setlist.songIds.length : 0} canciones</span>
-        </div>
+    return this.setlists.map(setlist => {
+      const songCount = setlist.songIds ? setlist.songIds.length : 0;
+      const estimatedMinutes = Math.round(songCount * 3.5);
+      return `
+        <div class="setlist-card ${setlistManager.activeSetlistId === setlist.id ? 'setlist-card-active' : ''}" data-id="${setlist.id}">
+          <div class="setlist-card-main">
+            <span class="setlist-card-title">🎤 ${setlist.name}</span>
+            <span class="setlist-card-count">${songCount} canciones · ~${estimatedMinutes} min de directo</span>
+          </div>
 
-        <div class="setlist-card-actions">
-          <button class="btn-play-setlist" data-id="${setlist.id}" aria-label="Reproducir repertorio ${setlist.name}" title="Cargar repertorio">
-            <span>▶ Activar</span>
-          </button>
-          <button class="btn-del-setlist" data-id="${setlist.id}" aria-label="Eliminar repertorio ${setlist.name}" title="Eliminar">
-            <span aria-hidden="true">🗑️</span>
-          </button>
+          <div class="setlist-card-actions">
+            <button class="btn-play-setlist" data-id="${setlist.id}" aria-label="Reproducir repertorio ${setlist.name}" title="Cargar repertorio">
+              <span>▶ Activar</span>
+            </button>
+            <button class="btn-del-setlist" data-id="${setlist.id}" aria-label="Eliminar repertorio ${setlist.name}" title="Eliminar">
+              <span aria-hidden="true">🗑️</span>
+            </button>
+          </div>
         </div>
-      </div>
-    `).join('');
+      `;
+    }).join('');
   }
 
   renderSongsList() {
@@ -192,8 +197,11 @@ export class LibraryExplorerV2 extends Component {
       return `
         <div class="library-empty-state">
           <span class="empty-icon" aria-hidden="true">🎸</span>
-          <p>${this.searchQuery ? 'No se encontraron coincidencias.' : 'Aún no tienes canciones en este filtro.'}</p>
-          <span class="empty-sub">Arrastra archivos o carpetas .gp aquí</span>
+          <p class="empty-title">${this.searchQuery ? `No hay resultados para "${this.searchQuery}".` : 'Tu biblioteca personal está lista.'}</p>
+          <span class="empty-sub">Importa tus archivos Guitar Pro (.gp, .gtp), canciones o explora el catálogo masivo oficial.</span>
+          <div class="empty-actions-row">
+            <button class="btn-empty-action" id="btnEmptyGoExplore">Explorar Catálogo Masivo</button>
+          </div>
         </div>
       `;
     }
@@ -257,6 +265,19 @@ export class LibraryExplorerV2 extends Component {
         this.activeFilter = e.target.dataset.filter;
         this.filterAndRender();
       });
+    });
+
+    this.container.querySelector('#btnEmptyGoExplore')?.addEventListener('click', () => {
+      events.emit('ui:switchTab', 'explore');
+    });
+
+    this.container.querySelector('#btnEmptyCreateSetlist')?.addEventListener('click', async () => {
+      const name = prompt('Nombre del nuevo repertorio / setlist:', 'Concierto En Vivo');
+      if (name) {
+        await setlistManager.createSetlist(name);
+        this.setlists = setlistManager.setlists;
+        this.render();
+      }
     });
 
     this.container.querySelector('#btnCreateSetlist')?.addEventListener('click', async () => {

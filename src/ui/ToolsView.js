@@ -12,6 +12,7 @@
 import { Component } from './Component.js';
 import { events } from '../core/EventBus.js';
 import { chordEngine } from '../tools/ChordEngine.js';
+import { audioFeedback } from '../audio/AudioFeedback.js';
 import { toast } from './Toast.js';
 
 export class ToolsView extends Component {
@@ -89,6 +90,8 @@ export class ToolsView extends Component {
     const now = performance.now();
     this.tapTimes.push(now);
     if (this.tapTimes.length > 4) this.tapTimes.shift();
+
+    audioFeedback.hapticTap();
 
     if (this.tapTimes.length >= 2) {
       const intervals = [];
@@ -194,12 +197,18 @@ export class ToolsView extends Component {
       osc.stop(time + 0.085);
     }
 
-    // Actualización visual reactiva
+    // Actualización visual y háptica reactiva
     const delay = Math.max(0, (time - ctx.currentTime) * 1000);
     setTimeout(() => {
       if (!this.isMetronomeRunning) return;
       
       if (isMainBeat) {
+        if (isAccent) {
+          audioFeedback.hapticAccent();
+        } else {
+          audioFeedback.hapticTap();
+        }
+
         const leds = this.container?.querySelectorAll('.metronome-beat-dot');
         if (leds && leds.length > 0) {
           leds.forEach((led, idx) => {
@@ -629,11 +638,14 @@ export class ToolsView extends Component {
     if (isCorrect) {
       this.earScore += 10;
       this.earStreak++;
+      audioFeedback.hapticInTune();
+      audioFeedback.playSuccess();
       const bonus = this.earStreak >= 3 ? ` 🔥 ¡Racha x${this.earStreak}!` : '';
       toast.show(`✅ ¡Correcto! Era ${this.earCurrentQuestion.name} (+10 pts)${bonus}`, 'success', 1500);
       setTimeout(() => this.startEarTest(), 1400);
     } else {
       this.earStreak = 0;
+      audioFeedback.playDismiss();
       toast.show(`❌ Incorrecto. Era ${this.earCurrentQuestion.name}`, 'error', 1800);
       // Reproducir el acorde correcto para que aprenda
       setTimeout(() => {
