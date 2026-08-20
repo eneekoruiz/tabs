@@ -141,6 +141,19 @@ class SetlistManager {
     return true;
   }
 
+  async moveSong(setlistId, fromIndex, toIndex) {
+    const setlist = this.setlists.find(s => s.id === Number(setlistId));
+    if (!setlist || !setlist.songIds) return false;
+    if (fromIndex < 0 || fromIndex >= setlist.songIds.length) return false;
+    if (toIndex < 0 || toIndex >= setlist.songIds.length) return false;
+
+    const [moved] = setlist.songIds.splice(fromIndex, 1);
+    setlist.songIds.splice(toIndex, 0, moved);
+    setlist.updatedAt = Date.now();
+    await this.saveSetlist(setlist);
+    return true;
+  }
+
   async saveSetlist(setlist) {
     await db.init();
     return new Promise((resolve, reject) => {
