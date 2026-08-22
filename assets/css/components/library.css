@@ -5,7 +5,7 @@
 .library-sidebar {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  min-height: 100%;
   width: 96%;
   max-width: 1800px;
   margin: 0 auto;
@@ -240,7 +240,6 @@ body.theme-ivory .btn-import {
 /* Lista de Canciones */
 .library-song-list {
   flex: 1;
-  overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -484,6 +483,8 @@ body.theme-ivory .home-song-card {
   border: 1px dashed var(--border-strong);
   border-radius: 16px;
   margin: 16px 0;
+  grid-column: 1 / -1;
+  width: 100%;
 }
 
 .empty-icon {
