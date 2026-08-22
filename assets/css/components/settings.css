@@ -185,3 +185,5 @@ body.theme-ivory .sel-settings-control {
   border-color: rgba(0, 0, 0, 0.2);
   color: #181a1f;
 }
+
+@media (min-width: 1300px) { .settings-sections-list { grid-template-columns: 1fr 1fr 1fr; align-items: start; } }

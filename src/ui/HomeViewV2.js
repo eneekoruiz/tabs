@@ -60,7 +60,25 @@ export class HomeViewV2 extends Component {
     }
 
     this.songs = combined;
-    this.render();
+    
+    if (this.container.querySelector('.explore-view')) {
+      this.updateGridOnly();
+    } else {
+      this.render();
+    }
+  }
+
+  updateGridOnly() {
+    const grid = this.container.querySelector('.explore-songs-grid');
+    const headerTitle = this.container.querySelector('.section-header-row .section-title');
+    if (grid) {
+      grid.innerHTML = this.renderSongCards();
+    }
+    if (headerTitle) {
+      headerTitle.textContent = \`Repertorio Disponible (\${this.songs.length} temas encontrados)\`;
+    }
+    // Re-bind only the song card events
+    this.bindSongCardEvents();
   }
 
   getRecentSearches() {
@@ -98,7 +116,7 @@ export class HomeViewV2 extends Component {
     const recentSearches = this.getRecentSearches();
 
     this.container.innerHTML = `
-      <div class="explore-layout-wrapper">
+      <div class="explore-view" role="region" aria-label="Pantalla de exploración">
         <!-- Hero con Buscador Gigante Unificado -->
         <div class="explore-hero">
           <div class="explore-badge-chromatic">STUDIO PRO CATALOG · 100% OFFLINE</div>
@@ -253,11 +271,19 @@ export class HomeViewV2 extends Component {
       });
     });
 
+    this.bindSongCardEvents();
+  }
+
+  bindSongCardEvents() {
     this.container.querySelectorAll('.btn-load-explore-song').forEach(btn => {
-      btn.addEventListener('click', async () => {
-        const songId = btn.dataset.id;
-        const onlineTitle = btn.dataset.title ? decodeURIComponent(btn.dataset.title) : null;
-        const onlineArtist = btn.dataset.artist ? decodeURIComponent(btn.dataset.artist) : null;
+      // Remove any existing listener to prevent duplicates if re-bound
+      const newBtn = btn.cloneNode(true);
+      btn.parentNode.replaceChild(newBtn, btn);
+
+      newBtn.addEventListener('click', async () => {
+        const songId = newBtn.dataset.id;
+        const onlineTitle = newBtn.dataset.title ? decodeURIComponent(newBtn.dataset.title) : null;
+        const onlineArtist = newBtn.dataset.artist ? decodeURIComponent(newBtn.dataset.artist) : null;
 
         // Guardar la búsqueda reciente si existe
         if (this.searchQuery) {

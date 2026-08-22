@@ -388,12 +388,6 @@ export class LyricsChordsView extends Component {
           </div>
         ` : ''}
 
-        <!-- BARRA DE GUÍA RÁPIDA (CERO CURVA DE APRENDIZAJE) -->
-        <div class="lyrics-quick-help-bar">
-          <span class="help-sparkle">💡</span>
-          <span class="help-text"><strong>Cero Curva de Aprendizaje:</strong> Toca cualquier acorde sobre la letra para ver sus notas y digitación · Usa el botón [Auto-Scroll] para tocar sin manos · Transpón el tono con [-1] [+1].</span>
-        </div>
-
         <!-- GALERÍA DE DIAGRAMAS SVG -->
         ${ChordDiagramRenderer.renderGallery(uniqueChords, {
           instrument: this.currentInstrument,
@@ -455,7 +449,10 @@ export class LyricsChordsView extends Component {
       if (badge) badge.textContent = `${val}%`;
     });
 
-    this.container.querySelector('#btnTransposeMinus')?.addEventListener('click', () => this.setTranspose(this.transposeSemitones - 1));
+    
+    this.container.querySelector('#btnAsSlower')?.addEventListener('click', () => { this.autoScroller.stepSpeed(-5); document.getElementById('lblAsSpeed').textContent = this.autoScroller.speedPercent; });
+    this.container.querySelector('#btnAsFaster')?.addEventListener('click', () => { this.autoScroller.stepSpeed(5); document.getElementById('lblAsSpeed').textContent = this.autoScroller.speedPercent; });
+ this.container.querySelector('#btnTransposeMinus')?.addEventListener('click', () => this.setTranspose(this.transposeSemitones - 1));
     this.container.querySelector('#btnTransposePlus')?.addEventListener('click', () => this.setTranspose(this.transposeSemitones + 1));
     this.container.querySelector('#btnTransposeReset')?.addEventListener('click', () => this.setTranspose(0));
 

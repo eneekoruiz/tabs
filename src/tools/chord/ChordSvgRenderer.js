@@ -89,8 +89,8 @@ export class ChordSvgRenderer {
               const cy = startY + (displayFret - 0.5) * fretGap;
               const finger = fingers[s] || '';
               return `
-                <circle cx="${cx}" cy="${cy}" r="7" fill="var(--accent-primary)"/>
-                ${finger ? `<text x="${cx}" y="${cy + 3.5}" text-anchor="middle" fill="#ffffff" font-size="9" font-weight="900">${finger}</text>` : ''}
+                <circle cx="${cx}" cy="${cy}" r="6.5" class="chord-finger-dot"/>
+              ${finger ? `<text x="${cx}" y="${cy + 3.5}" text-anchor="middle" fill="var(--bg-base)" font-size="9" font-weight="900">${finger}</text>` : ''}
               `;
             }
           }

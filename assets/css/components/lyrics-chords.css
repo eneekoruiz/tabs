@@ -1551,3 +1551,9 @@ body.theme-ivory .hud-speed-badge,
 .btn-pip-close:hover {
   color: #ffffff;
 }
+
+
+.lyrics-tools-bar select, .lyrics-tools-bar button { padding: 6px 14px; border-radius: 8px; border: 1px solid var(--border-subtle); background: var(--bg-surface-raised); font-weight: 600; cursor: pointer; transition: all 0.2s ease; }
+.lyrics-tools-bar select:hover, .lyrics-tools-bar button:hover { background: var(--bg-surface-hover); border-color: var(--border-strong); }
+.lyrics-tools-bar .zoom-controls button { border: none !important; border-radius: 0 !important; background: transparent !important; }
+.lyrics-tools-bar .zoom-controls button:hover { background: var(--bg-surface-hover) !important; }

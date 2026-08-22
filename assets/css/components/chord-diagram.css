@@ -157,7 +157,7 @@
 }
 
 .chord-diagram-title {
-  fill: #ffffff;
+  fill: var(--text-primary);
   font-family: var(--font-main);
   font-size: 16px;
   font-weight: 800;
@@ -171,18 +171,36 @@
 }
 
 .chord-nut-line {
-  stroke: #ffffff;
+  stroke: var(--text-primary);
   stroke-linecap: round;
 }
 
 .chord-fret-line {
-  stroke: rgba(255, 255, 255, 0.35);
+  stroke: var(--border-strong);
   stroke-width: 1.5;
 }
 
 .chord-string-line {
-  stroke: rgba(255, 255, 255, 0.45);
-  stroke-width: 1.5;
+  stroke: var(--text-muted);
+  stroke-width: 2;
+}
+
+/* Bolitas de los dedos */
+.chord-finger-dot {
+  fill: var(--accent-primary);
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4));
+}
+
+.chord-finger-dot.barre {
+  fill: var(--accent-primary);
+  opacity: 0.9;
+}
+
+/* Texto dentro de los dedos */
+.chord-finger-text {
+  fill: var(--bg-base); /* Invertido para que se vea sobre el acento */
+  font-family: var(--font-mono);
+  font-weight: bold;
 }
 
 .chord-marker-x {

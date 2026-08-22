@@ -60,27 +60,13 @@ export class OnlineSongProvider {
               isOfflineReady: false
             }));
 
-            // Combinar evitando duplicados (agrupación inteligente por canción principal)
+            // Combinar evitando duplicados
             apiResults.forEach(item => {
-              // Limpiar título de sufijos comunes como (Live), (Remix), - Remastered, etc.
-              const cleanTitle = (title) => {
-                return title.replace(/\s*[\(\[].*?[\)\]]\s*/g, '')
-                            .replace(/\s*-\s*(Remastered|Live|Remix|Radio Edit|Acoustic).*$/i, '')
-                            .trim().toLowerCase();
-              };
-              
-              const itemCleanTitle = cleanTitle(item.title);
-              const itemArtist = item.artist.toLowerCase();
-
               const exists = offlineResults.some(r => 
-                cleanTitle(r.title) === itemCleanTitle && 
-                r.artist.toLowerCase() === itemArtist
+                r.title.toLowerCase() === item.title.toLowerCase() && 
+                r.artist.toLowerCase() === item.artist.toLowerCase()
               );
-
-              // Solo añadimos si no existe ya una versión base de esta canción por este artista
               if (!exists) {
-                // Reemplazamos el título original por el limpio para agruparlo limpiamente
-                item.title = item.title.replace(/\s*[\(\[].*?[\)\]]\s*/g, '').trim();
                 offlineResults.push(item);
               }
             });
