@@ -177,44 +177,21 @@ export class OfflineUniversalLibraryEngine {
    */
   generateProceduralResults(query, count = 10) {
     const capitalized = query.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
-    const results = [];
-
-    // Patrones de canciones universales
-    const suffixes = ['Acoustic', 'Live', 'Remix', 'Radio Edit', 'Orchestral', 'Unplugged', 'Piano Version', 'Original Version'];
     
-    // Si parece un artista (e.g. "Dua Lipa", "Queen", "Adele")
-    results.push({
-      id: `gen_${results.length + 1}`,
+    // Devolvemos solo una versión base genérica basada en la búsqueda para evitar saturar con resultados sin sentido (Acoustic, Remix, etc.)
+    return [{
+      id: `gen_1`,
       title: capitalized,
-      artist: capitalized,
-      difficulty: 'Fácil',
-      rating: '5.0',
-      views: '500K',
+      artist: 'Artista Local / IA',
+      difficulty: 'Intermedio',
+      rating: '4.5',
+      views: 'Offline',
       capo: 0,
       key: 'G',
       genre: 'pop',
       isPro: true,
       isOfflineReady: true
-    });
-
-    for (let i = 0; i < count - 1; i++) {
-      const suff = suffixes[i % suffixes.length];
-      results.push({
-        id: `gen_${results.length + 2}`,
-        title: `${capitalized} (${suff})`,
-        artist: capitalized,
-        difficulty: (i % 2 === 0) ? 'Fácil' : 'Intermedio',
-        rating: (4.8 + (i % 3) * 0.1).toFixed(1),
-        views: `${200 + i * 45}K`,
-        capo: (i % 3 === 0) ? 2 : 0,
-        key: ['C', 'G', 'D', 'Am', 'Em'][i % 5],
-        genre: 'pop',
-        isPro: true,
-        isOfflineReady: true
-      });
-    }
-
-    return results;
+    }];
   }
 
   /**

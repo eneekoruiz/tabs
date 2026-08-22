@@ -24,39 +24,28 @@ class KeyboardShortcuts {
   isUserTyping(e) {
     if (e.isComposing) return true;
 
-    const target = e.target;
-    const activeEl = document.activeElement;
+    let target = e.target;
+    let activeEl = document.activeElement;
 
-    // 1. Comprobación directa de etiquetas de entrada
-    const inputTags = ['INPUT', 'TEXTAREA', 'SELECT'];
-    if (target && inputTags.includes(target.tagName)) return true;
-    if (activeEl && inputTags.includes(activeEl.tagName)) return true;
-
-    // 2. Comprobación de contenido editable
-    if (target && (target.isContentEditable || (target.getAttribute && target.getAttribute('contenteditable') === 'true'))) return true;
-    if (activeEl && (activeEl.isContentEditable || (activeEl.getAttribute && activeEl.getAttribute('contenteditable') === 'true'))) return true;
-
-    // 3. Comprobación de ancestros en el árbol DOM (por ejemplo inputs dentro de contenedores o shadow DOM)
-    if (target && typeof target.closest === 'function') {
-      if (target.closest('input, textarea, select, [contenteditable="true"], [role="searchbox"], [role="textbox"], .explore-search-box, .library-search-box, .ai-chords-box, .quick-chord-search-row')) {
-        return true;
-      }
-    }
-
-    if (activeEl && typeof activeEl.closest === 'function') {
-      if (activeEl.closest('input, textarea, select, [contenteditable="true"], [role="searchbox"], [role="textbox"]')) {
-        return true;
-      }
-    }
-
-    // 4. Comprobación a través de composedPath para eventos que burbujean
-    if (typeof e.composedPath === 'function') {
+    // Si el evento original viene de un shadow root
+    if (e.composedPath && typeof e.composedPath === 'function') {
       const path = e.composedPath();
-      for (const el of path) {
-        if (el && el.tagName && inputTags.includes(el.tagName)) return true;
-        if (el && el.isContentEditable) return true;
+      if (path && path.length > 0) {
+        target = path[0];
       }
     }
+
+    const isInputEl = (el) => {
+      if (!el) return false;
+      if (el.isContentEditable || (el.getAttribute && el.getAttribute('contenteditable') === 'true')) return true;
+      const tag = (el.tagName || '').toUpperCase();
+      if (['INPUT', 'TEXTAREA', 'SELECT'].includes(tag)) return true;
+      if (el.closest && el.closest('input, textarea, select, [contenteditable="true"]')) return true;
+      return false;
+    };
+
+    if (isInputEl(target)) return true;
+    if (isInputEl(activeEl)) return true;
 
     return false;
   }

@@ -184,6 +184,21 @@ export class HomeViewV2 extends Component {
       });
     }
 
+    // Auto-enfocar el buscador si el usuario empieza a teclear en el vacío
+    this._globalTypingListener = (e) => {
+      // Ignorar teclas de control, modificadores, o si ya está en un input
+      if (e.ctrlKey || e.metaKey || e.altKey || e.key.length !== 1) return;
+      if (document.activeElement && ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) return;
+      if (document.activeElement && document.activeElement.isContentEditable) return;
+
+      if (input) {
+        input.focus();
+        // No prevenimos el evento, así que el carácter se escribirá normalmente en el input enfocado
+      }
+    };
+    document.addEventListener('keydown', this._globalTypingListener);
+    this.registerUnsub(() => document.removeEventListener('keydown', this._globalTypingListener));
+
     this.container.querySelector('#btnClearExploreSearch')?.addEventListener('click', () => {
       this.searchQuery = '';
       this.loadExploreData();
