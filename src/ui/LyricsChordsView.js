@@ -302,9 +302,13 @@ export class LyricsChordsView extends Component {
               <span class="lyrics-song-artist">— ${artist} (${tuning}${this.capoFret > 0 ? ` · Capo ${this.capoFret}` : ''})</span>
             </div>
             
-            <div class="view-mode-toggle" style="margin-left: auto; display: flex; background: var(--bg-surface-solid); border: 1px solid var(--border-subtle); border-radius: 8px; overflow: hidden;">
+            <div class="view-mode-toggle" style="margin-left: auto; display: flex; align-items: center; gap: 8px;">
+              <button id="btnPrintPDF" style="padding: 6px 12px; border: 1px solid var(--border-subtle); background: var(--bg-surface-raised); color: var(--text-primary); border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.85rem; display: flex; align-items: center; gap: 6px;" aria-label="Imprimir a PDF">
+                🖨️ PDF
+              </button>
+              <div style="display: flex; background: var(--bg-surface-solid); border: 1px solid var(--border-subtle); border-radius: 8px; overflow: hidden;">
               <button id="btnModeLyrics" style="padding: 6px 12px; border: none; background: ${this.viewMode === 'lyrics' ? 'var(--accent-primary)' : 'transparent'}; color: ${this.viewMode === 'lyrics' ? '#fff' : 'var(--text-primary)'}; cursor: pointer; font-weight: 600; font-size: 0.85rem;">Letra & Acordes</button>
-              <button id="btnModeScore" style="padding: 6px 12px; border: none; background: ${this.viewMode === 'score' ? 'var(--accent-primary)' : 'transparent'}; color: ${this.viewMode === 'score' ? '#fff' : 'var(--text-primary)'}; cursor: pointer; font-weight: 600; font-size: 0.85rem;">Partitura Musical</button>
+              ${this.song.data ? `<button id="btnModeScore" style="padding: 6px 12px; border: none; background: ${this.viewMode === 'score' ? 'var(--accent-primary)' : 'transparent'}; color: ${this.viewMode === 'score' ? '#fff' : 'var(--text-primary)'}; cursor: pointer; font-weight: 600; font-size: 0.85rem;">Partitura Musical</button>` : ''}
             </div>
           </div>
 
@@ -408,6 +412,11 @@ export class LyricsChordsView extends Component {
   }
 
   bindEvents() {
+    
+    this.container.querySelector('#btnPrintPDF')?.addEventListener('click', () => {
+      window.print();
+    });
+
     this.container.querySelector('#btnBackToExplore')?.addEventListener('click', () => {
       events.emit('ui:switchTab', 'explore');
     });
