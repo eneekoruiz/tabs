@@ -75,7 +75,7 @@ export class HomeViewV2 extends Component {
       grid.innerHTML = this.renderSongCards();
     }
     if (headerTitle) {
-      headerTitle.textContent = \`Repertorio Disponible (\${this.songs.length} temas encontrados)\`;
+      headerTitle.textContent = `Repertorio Disponible (${this.songs.length} temas encontrados)`;
     }
     // Re-bind only the song card events
     this.bindSongCardEvents();
