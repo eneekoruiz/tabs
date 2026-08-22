@@ -118,7 +118,7 @@ button, a, input, select, textarea, .chord-badge, .btn-popover-inst, .lyrics-lin
   overflow-y: auto;
   overflow-x: hidden;
   background-color: var(--bg-viewport);
-  padding: 12px 12px 100px 12px;
+  padding: 12px 12px 180px 12px;
   display: block;
   position: relative;
 }

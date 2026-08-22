@@ -187,3 +187,38 @@ body.theme-ivory .sel-settings-control {
 }
 
 @media (min-width: 1300px) { .settings-sections-list { grid-template-columns: 1fr 1fr 1fr; align-items: start; } }
+
+@media (max-width: 600px) {
+  .settings-view-wrapper {
+    padding: 12px 12px 140px 12px !important;
+    gap: 14px !important;
+  }
+
+  .settings-header-banner {
+    flex-direction: column !important;
+    text-align: center !important;
+    padding: 16px !important;
+  }
+
+  .settings-user-title-line {
+    justify-content: center !important;
+  }
+
+  .settings-row-item {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 8px !important;
+    border-bottom: 1px solid var(--border-subtle);
+    padding-bottom: 12px !important;
+  }
+
+  .settings-row-item:last-child {
+    border-bottom: none;
+  }
+
+  .settings-row-item .sel-settings-control,
+  .settings-row-item .btn-settings-action {
+    width: 100% !important;
+    text-align: center !important;
+  }
+}

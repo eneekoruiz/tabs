@@ -78,18 +78,32 @@ export class LyricsChordsView extends Component {
 
   initEvents() {
     const handleSongLoad = async (song) => {
-      if (this.currentSong && (String(this.currentSong.id) === String(song.id) || this.currentSong.title === song.title) && this.currentSong.lyricsChords) {
+      if (!song) return;
+      
+      const isSameSong = this.currentSong && 
+        ((this.currentSong.id && song.id && String(this.currentSong.id) === String(song.id)) ||
+         (this.currentSong.title && song.title && this.currentSong.title === song.title)) &&
+        this.currentSong.lyricsChords;
+
+      if (isSameSong) {
+        this.render();
         return;
       }
+
       this.currentSong = song;
       this.transposeSemitones = 0;
       this.capoFret = 0;
-      this.visualTheme = localStorage.getItem('app_visual_theme') || 'oled';
+      this.visualTheme = localStorage.getItem('app_visual_theme') || 'paper';
       this.audioRecorder.dismiss();
 
-      if (this.currentSong && (!this.currentSong.lyricsChords || this.currentSong.lyricsChords.trim().length === 0)) {
-        this.currentSong.lyricsChords = await onlineSongProvider.fetchLyricsAndChords(this.currentSong.title, this.currentSong.artist);
+      try {
+        if (this.currentSong && (!this.currentSong.lyricsChords || this.currentSong.lyricsChords.trim().length === 0)) {
+          this.currentSong.lyricsChords = await onlineSongProvider.fetchLyricsAndChords(this.currentSong.title, this.currentSong.artist);
+        }
+      } catch (e) {
+        console.warn('Error obteniendo acordes online:', e);
       }
+
       this.setViewMode('lyrics');
       this.render();
       this.syncContextualState();
@@ -253,7 +267,7 @@ export class LyricsChordsView extends Component {
     const artist = this.currentSong?.artist || 'Tabs & Chords PRO';
     const tuning = this.currentSong?.tuning || 'Standard E';
     const rawLyrics = this.currentSong?.lyricsChords || '';
-    this.visualTheme = localStorage.getItem('app_visual_theme') || 'oled';
+    this.visualTheme = localStorage.getItem('app_visual_theme') || 'paper';
 
     const uniqueChords = ChordProParser.extractUniqueChords(rawLyrics, this.transposeSemitones, this.capoFret);
     const parsedHtml = ChordProParser.parseToHtml(rawLyrics, {

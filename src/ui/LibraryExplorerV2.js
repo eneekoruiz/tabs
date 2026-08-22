@@ -18,13 +18,14 @@ export class LibraryExplorerV2 extends Component {
   constructor(container) {
     super(container);
     this.searchQuery = '';
-    this.activeFilter = 'favorites'; // 'all' | 'favorites' | 'setlists'
+    this.activeFilter = 'all'; // 'all' | 'favorites' | 'setlists'
     this.activeGenre = 'all';
     this.isOpen = true;
     this.songs = [];
     this.setlists = [];
 
     this.initEvents();
+    this.loadLibrary();
   }
 
   initEvents() {

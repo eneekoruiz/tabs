@@ -184,7 +184,7 @@ body.theme-ivory .nav-player-btn:hover {
 }
 
 .view-container.active-view {
-  display: block;
+  display: block !important;
 }
 
 .score-viewport.active-view {
@@ -497,20 +497,201 @@ body.theme-ivory .song-badge-diff.diff-hard {
 }
 
 .meta-pill {
-  font-size: 0.72rem;
-  color: var(--text-muted);
+.tools-header {
+  margin-bottom: 20px;
+}
+
+.tools-grid-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.tool-card-box {
+  background: rgba(18, 18, 26, 0.85);
+  border: 1px solid var(--border-subtle);
+  border-radius: 14px;
+  padding: 16px;
+  box-shadow: var(--shadow-md);
+}
+
+.tool-card-title-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.tool-card-icon {
+  font-size: 1.5rem;
+}
+
+.tool-card-title {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.tool-card-desc {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  margin-bottom: 12px;
+  line-height: 1.4;
+}
+
+/* Afinador de Oído (Ear Tuner) */
+.ear-tuner-strings-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.btn-string-pitch {
+  background: var(--bg-surface-raised);
+  border: 1px solid var(--border-strong);
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  font-weight: 800;
+  padding: 12px 4px;
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  transition: all var(--transition-fast);
+}
+
+.btn-string-pitch:hover, .btn-string-pitch:active {
+  background: var(--accent-primary);
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 12px var(--accent-primary-glow);
+  transform: scale(1.05);
+}
+
+.string-pitch-hz {
+  font-size: 0.65rem;
   font-weight: 600;
+  color: var(--text-muted);
 }
 
-/* ==========================================================================
-   Vista Herramientas (Tools Panel)
-   ========================================================================== */
-.tools-view {
-  padding: 20px 16px;
-  max-width: 700px;
-  margin: 0 auto;
+.btn-string-pitch:hover .string-pitch-hz {
+  color: var(--text-primary);
 }
 
+/* Sección Acordes con IA (YouTube link placeholder UI) */
+.ai-chords-box {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ai-youtube-input {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 8px;
+  background: rgba(10, 10, 14, 0.8);
+  border: 1px solid var(--border-strong);
+  color: var(--text-primary);
+  font-size: 0.88rem;
+}
+
+.ai-youtube-input:focus {
+  outline: none;
+  border-color: var(--accent-secondary);
+}
+
+.btn-ai-generate {
+  background: linear-gradient(135deg, #00e5ff 0%, #0088ff 100%);
+  color: var(--text-inverse);
+  font-weight: 800;
+  border: none;
+  padding: 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all var(--transition-fast);
+}
+
+.btn-ai-generate:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 0 15px rgba(0, 229, 255, 0.4);
+}
+.bottom-nav-bar {
+  background: var(--bg-surface) !important;
+}
+
+.song-card-artist {
+  font-size: 0.88rem;
+  color: var(--text-secondary) !important;
+  font-weight: 700;
+}
+
+.song-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+  flex-wrap: wrap;
+}
+
+.genre-badge {
+  background: var(--border-subtle);
+  color: var(--text-secondary) !important;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 6px;
+}
+
+.song-badge-diff {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 6px;
+}
+
+.song-badge-diff.diff-easy {
+  background: rgba(0, 230, 118, 0.18);
+  color: #00a854;
+}
+body.theme-charcoal .song-badge-diff.diff-easy {
+  background: rgba(0, 230, 118, 0.18);
+  color: #00e676;
+}
+body.theme-ivory .song-badge-diff.diff-easy {
+  background: rgba(46, 125, 50, 0.12);
+  color: #1b5e20;
+}
+
+.song-badge-diff.diff-med {
+  background: rgba(255, 214, 0, 0.18);
+  color: #d4a000;
+}
+body.theme-charcoal .song-badge-diff.diff-med {
+  background: rgba(255, 214, 0, 0.18);
+  color: #ffd600;
+}
+body.theme-ivory .song-badge-diff.diff-med {
+  background: rgba(230, 81, 0, 0.12);
+  color: #b24100;
+}
+
+.song-badge-diff.diff-hard {
+  background: rgba(255, 82, 82, 0.18);
+  color: #e53935;
+}
+body.theme-charcoal .song-badge-diff.diff-hard {
+  background: rgba(255, 82, 82, 0.18);
+  color: #ff5252;
+}
+body.theme-ivory .song-badge-diff.diff-hard {
+  background: rgba(198, 40, 40, 0.12);
+  color: #b71c1c;
+}
+
+.meta-pill {
 .tools-header {
   margin-bottom: 20px;
 }
@@ -642,6 +823,64 @@ body.theme-ivory .song-badge-diff.diff-hard {
 .bottom-nav-btn.active {
   color: var(--accent-primary) !important;
 }
-. e x p l o r e - l a y o u t - w r a p p e r  
-   p a d d i n g :   0   5 v w ;   m a x - w i d t h :   1 4 0 0 p x ;   m a r g i n :   0   a u t o ;   b o x - s i z i n g :   b o r d e r - b o x ;    
- 
+
+/* ==========================================================================
+   Optimizaciones Móviles Responsivas (Compact Hero & Tendencias)
+   ========================================================================== */
+@media (max-width: 768px) {
+  .explore-hero {
+    margin-bottom: 14px !important;
+    gap: 6px !important;
+  }
+
+  .explore-badge-chromatic {
+    display: none !important;
+  }
+
+  .explore-hero-subtitle {
+    display: none !important;
+  }
+
+  .explore-hero-title {
+    font-size: 1.35rem !important;
+    margin-bottom: 2px !important;
+  }
+
+  .explore-quick-chips {
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    justify-content: flex-start !important;
+    padding: 4px 0 8px 0 !important;
+    margin-top: 4px !important;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .explore-quick-chips::-webkit-scrollbar {
+    display: none;
+  }
+
+  .quick-chip-btn {
+    flex-shrink: 0 !important;
+    padding: 5px 12px !important;
+    font-size: 0.76rem !important;
+  }
+
+  .genre-grid-mobile {
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    padding: 4px 0 8px 0 !important;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .genre-grid-mobile::-webkit-scrollbar {
+    display: none;
+  }
+
+  .genre-card-item {
+    flex-shrink: 0 !important;
+    padding: 6px 14px !important;
+    font-size: 0.8rem !important;
+  }
+}
