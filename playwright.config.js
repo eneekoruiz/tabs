@@ -11,9 +11,10 @@ export default defineConfig({
     baseURL: 'http://127.0.0.1:3000',
     viewport: { width: 1280, height: 800 },
     channel: 'msedge', // Utiliza Microsoft Edge nativo del sistema Windows sin requerir descargas pesadas
+    headless: true,
   },
   webServer: {
-    command: 'npx serve . -p 3000',
+    command: 'cmd /c npx serve . -p 3000',
     url: 'http://127.0.0.1:3000',
     reuseExistingServer: true,
     timeout: 120000,

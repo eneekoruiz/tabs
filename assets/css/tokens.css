@@ -105,8 +105,8 @@ body.theme-ivory {
   --glass-specular: inset 0 1px 0 rgba(255, 255, 255, 0.7);
 
   /* Acentos Elegantes (Terracota Natural) */
-  --accent-primary: #da7756;
-  --accent-primary-hover: #c46445;
+  --accent-primary: #b54826;
+  --accent-primary-hover: #9c3a1c;
   --accent-primary-glow: rgba(218, 119, 86, 0.15);
   --accent-secondary: #5a6b5c; /* Verde musgo suave */
   --accent-secondary-glow: rgba(90, 107, 92, 0.15);
@@ -114,8 +114,8 @@ body.theme-ivory {
   
   /* Texto (Marrón muy oscuro, elegante y legible) */
   --text-primary: #2d2b29;
-  --text-secondary: #5e5a55;
-  --text-muted: #8b8681;
+  --text-secondary: #4a4642;
+  --text-muted: #524e4a;
   --text-inverse: #ffffff;
 
   /* Bordes sutiles y limpios */

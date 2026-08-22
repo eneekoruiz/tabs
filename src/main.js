@@ -191,7 +191,13 @@ class App {
   }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+function bootstrapAppMain() {
   const app = new App();
   app.start();
-});
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', bootstrapAppMain);
+} else {
+  bootstrapAppMain();
+}

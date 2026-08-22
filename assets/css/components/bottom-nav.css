@@ -824,6 +824,16 @@ body.theme-ivory .song-badge-diff.diff-hard {
   color: var(--accent-primary) !important;
 }
 
+body.theme-ivory .bottom-nav-btn {
+  color: #3b3733 !important;
+}
+body.theme-ivory .quick-chip-label {
+  color: #3b3733 !important;
+}
+body.theme-ivory .meta-pill {
+  color: #3b3733 !important;
+}
+
 /* ==========================================================================
    Optimizaciones Móviles Responsivas (Compact Hero & Tendencias)
    ========================================================================== */

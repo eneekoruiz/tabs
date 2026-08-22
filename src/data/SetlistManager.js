@@ -50,23 +50,32 @@ class SetlistManager {
     try {
       await db.init();
       return new Promise((resolve) => {
-        const tx = db._transaction('playlists', 'readonly');
-        const req = tx.store.getAll();
-        req.onsuccess = () => {
-          this.setlists = req.result || [];
-          if (this.setlists.length === 0) {
-            // Crear setlist inicial por defecto para directos
-            this.createSetlist('Repertorio Directo (Viernes)', [1, 2, 3]).then(created => {
-              this.setlists = [created];
+        try {
+          if (!db.db || !db.db.objectStoreNames.contains('playlists')) {
+            this.setlists = [];
+            events.emit('setlist:updated', this.setlists);
+            return resolve([]);
+          }
+          const { store } = db._transaction('playlists', 'readonly');
+          const req = store.getAll();
+          req.onsuccess = () => {
+            this.setlists = req.result || [];
+            if (this.setlists.length === 0) {
+              this.createSetlist('Repertorio Directo (Viernes)', [1, 2, 3]).then(created => {
+                this.setlists = created ? [created] : [];
+                events.emit('setlist:updated', this.setlists);
+                resolve(this.setlists);
+              }).catch(() => resolve([]));
+            } else {
               events.emit('setlist:updated', this.setlists);
               resolve(this.setlists);
-            });
-          } else {
-            events.emit('setlist:updated', this.setlists);
-            resolve(this.setlists);
-          }
-        };
-        req.onerror = () => resolve([]);
+            }
+          };
+          req.onerror = () => resolve([]);
+        } catch (err) {
+          console.warn('[SetlistManager] Error en IndexedDB:', err);
+          resolve([]);
+        }
       });
     } catch (e) {
       console.warn('[SetlistManager] Error cargando repertorios:', e);

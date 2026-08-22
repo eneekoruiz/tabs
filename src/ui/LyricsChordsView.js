@@ -322,7 +322,7 @@ export class LyricsChordsView extends Component {
               </button>
               <div style="display: flex; background: var(--bg-surface-solid); border: 1px solid var(--border-subtle); border-radius: 8px; overflow: hidden;">
               <button id="btnModeLyrics" style="padding: 6px 12px; border: none; background: ${this.viewMode === 'lyrics' ? 'var(--accent-primary)' : 'transparent'}; color: ${this.viewMode === 'lyrics' ? '#fff' : 'var(--text-primary)'}; cursor: pointer; font-weight: 600; font-size: 0.85rem;">Letra & Acordes</button>
-              ${this.song.data ? `<button id="btnModeScore" style="padding: 6px 12px; border: none; background: ${this.viewMode === 'score' ? 'var(--accent-primary)' : 'transparent'}; color: ${this.viewMode === 'score' ? '#fff' : 'var(--text-primary)'}; cursor: pointer; font-weight: 600; font-size: 0.85rem;">Partitura Musical</button>` : ''}
+              ${this.currentSong?.data ? `<button id="btnModeScore" style="padding: 6px 12px; border: none; background: ${this.viewMode === 'score' ? 'var(--accent-primary)' : 'transparent'}; color: ${this.viewMode === 'score' ? '#fff' : 'var(--text-primary)'}; cursor: pointer; font-weight: 600; font-size: 0.85rem;">Partitura Musical</button>` : ''}
             </div>
           </div>
 
@@ -347,6 +347,16 @@ export class LyricsChordsView extends Component {
               <span class="font-scale-percent-badge" id="lblFontScalePercent">${this.fontSizeScale}%</span>
               <button class="btn-font-scale-step" id="btnFontIncr" aria-label="Aumentar letra">A+</button>
             </div>
+
+            <!-- AutoScroll y Grabación Rápida -->
+            <div class="autoscroll-toolbar-cluster" style="display: flex; align-items: center; gap: 4px;">
+              <button class="btn-top-action-pill ${this.autoScroller.isRunning ? 'active' : ''}" id="btnToggleAutoScroll" aria-label="AutoScroll">⚡ Scroll</button>
+              <span id="lblAutoScrollPercent" style="font-size: 0.8rem; font-weight: 800; font-family: var(--font-mono); color: var(--text-primary); min-width: 3ch; text-align: center;">${this.autoScroller.speedPercent}%</span>
+              <button class="btn-font-scale-step" id="btnAutoScrollIncr" aria-label="Aumentar velocidad autoscroll">+</button>
+              <input type="range" id="rngAutoScrollSpeed" min="1" max="100" value="${this.autoScroller.speedPercent}" style="width: 65px; height: 4px; accent-color: var(--accent-primary); cursor: pointer;">
+            </div>
+
+            <button class="btn-top-action-pill ${this.audioRecorder.isRecording ? 'active' : ''}" id="btnQuickRecordAction" aria-label="Grabación rápida">🎙️ Grabador</button>
 
             <!-- Desplegable Opciones -->
             <div class="dropdown-container">

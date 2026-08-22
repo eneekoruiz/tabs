@@ -199,8 +199,14 @@ class AppV2 {
   }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+function bootstrapApp() {
   const app = new AppV2();
   app.setupGestureControls();
   app.start();
-});
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', bootstrapApp);
+} else {
+  bootstrapApp();
+}
