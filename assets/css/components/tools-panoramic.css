@@ -134,13 +134,24 @@
 .metro-param-group, .dict-group {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
+}
+
+.metronome-side-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  padding: 10px 0;
 }
 
 .metro-param-label {
-  font-size: 0.9rem;
-  font-weight: 600;
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
   color: var(--text-secondary);
+  margin-bottom: 10px;
+  display: block;
 }
 
 .metro-pill-grid, .dict-pill-grid, .capo-input-grid {
@@ -150,26 +161,31 @@
 }
 
 .metro-pill-btn, .dict-pill-btn, .dict-inst-btn {
-  padding: 8px 14px;
-  border-radius: 8px;
+  padding: 10px 18px;
+  border-radius: 20px;
   border: 1px solid var(--border-subtle);
-  background: var(--bg-surface-solid);
+  background: var(--bg-surface-raised);
   font-size: 0.9rem;
-  font-weight: 600;
-  color: var(--text-secondary);
+  font-weight: 700;
+  color: var(--text-primary);
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.04);
 }
 
 .metro-pill-btn:hover, .dict-pill-btn:hover, .dict-inst-btn:hover {
   background: var(--bg-surface-hover);
-  color: var(--text-primary);
+  border-color: var(--border-strong);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.08);
 }
 
 .metro-pill-btn.active, .dict-pill-btn.active, .dict-inst-btn.active {
-  background: var(--accent-primary);
-  color: white;
-  border-color: var(--accent-primary);
+  background: var(--text-primary);
+  color: var(--bg-base);
+  border-color: var(--text-primary);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+  transform: translateY(-1px);
 }
 
 /* ==========================================================================
