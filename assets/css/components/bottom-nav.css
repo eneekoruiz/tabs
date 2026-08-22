@@ -825,13 +825,36 @@ body.theme-ivory .song-badge-diff.diff-hard {
 }
 
 body.theme-ivory .bottom-nav-btn {
-  color: #3b3733 !important;
+  color: #55504a !important;
 }
+body.theme-ivory .bottom-nav-btn.active {
+  color: var(--accent-primary) !important;
+  font-weight: 800 !important;
+}
+body.theme-ivory .bottom-nav-btn.active svg {
+  transform: scale(1.1);
+}
+
 body.theme-ivory .quick-chip-label {
-  color: #3b3733 !important;
+  color: #55504a !important;
 }
 body.theme-ivory .meta-pill {
-  color: #3b3733 !important;
+  color: #55504a !important;
+}
+
+body.theme-ivory ::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+body.theme-ivory ::-webkit-scrollbar-track {
+  background: transparent;
+}
+body.theme-ivory ::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 10px;
+}
+body.theme-ivory ::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.3);
 }
 
 /* ==========================================================================
