@@ -22,7 +22,7 @@ export class SettingsView extends Component {
     this.isLeftHanded = localStorage.getItem('app_lefthanded') === 'true';
     this.defaultInstrument = localStorage.getItem('app_instrument') || 'guitar';
     this.masterTuning = localStorage.getItem('app_master_tuning') || '440';
-    this.visualTheme = localStorage.getItem('app_visual_theme') || 'oled';
+    this.visualTheme = localStorage.getItem('app_visual_theme') || 'paper';
 
     this.initEvents();
   }

@@ -16,6 +16,11 @@ html, body {
   color: var(--text-primary);
   user-select: none;
   -webkit-font-smoothing: antialiased;
+  touch-action: manipulation;
+}
+
+button, a, input, select, textarea, .chord-badge, .btn-popover-inst, .lyrics-line, .lyrics-word, .tool-card-pro {
+  touch-action: manipulation;
 }
 
 .app-root { display: flex; flex-direction: column; height: 100vh; width: 100vw; overflow: hidden; position: relative; }
@@ -84,13 +89,25 @@ html, body {
   display: flex;
   overflow: hidden;
   position: relative;
+  background-color: var(--bg-viewport);
+  width: 100%;
+}
+
+/* Contenedores de vista individuales */
+.view-container {
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background-color: var(--bg-viewport);
+  -webkit-overflow-scrolling: touch;
 }
 
 /* Sidebar de Biblioteca en Móvil / Desktop */
 #library-container {
   width: 100%;
   height: 100%;
-  background-color: var(--bg-surface);
+  background-color: var(--bg-viewport);
   flex-shrink: 0;
 }
 

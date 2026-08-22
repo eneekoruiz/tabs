@@ -50,6 +50,9 @@ body, body.theme-charcoal {
   --bg-surface-solid: #16181e;
   --bg-surface-raised: #1c1f26;
   --bg-surface-hover: #232730;
+  --bg-viewport: #0a0c10;
+  --bg-paper: #14161d;
+  --bg-card-subtle: #151720;
 
   /* Glassmorphism con Reflejo Especular */
   --glass-blur: blur(20px) saturate(190%);
@@ -64,6 +67,7 @@ body, body.theme-charcoal {
   --accent-primary-glow: rgba(255, 87, 34, 0.4);
   --accent-secondary: #00e5ff; /* Cyan */
   --accent-secondary-glow: rgba(0, 229, 255, 0.4);
+  --accent-amber: #ffb300;
   
   /* Texto (Alto Contraste) */
   --text-primary: #ffffff;
@@ -87,8 +91,11 @@ body.theme-ivory {
   --bg-app: #f4f3ed;
   --bg-surface: #ffffff;
   --bg-surface-solid: #ffffff;
-  --bg-surface-raised: #fbfbfa;
-  --bg-surface-hover: #f0f0ea;
+  --bg-surface-raised: #f7f6f0;
+  --bg-surface-hover: #eceae1;
+  --bg-viewport: #f8f7f2;
+  --bg-paper: #ffffff;
+  --bg-card-subtle: #f0efe8;
 
   /* Glassmorphism (Sombra Oscura Suave) */
   --glass-blur: blur(20px) saturate(150%);
@@ -97,22 +104,23 @@ body.theme-ivory {
   --glass-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
   --glass-specular: inset 0 1px 0 rgba(255, 255, 255, 0.9);
 
-  /* Acentos Elegantes */
-  --accent-primary: #a81c1c; /* Deep Crimson - AAA contrast */
-  --accent-primary-hover: #c92a2a;
-  --accent-primary-glow: rgba(168, 28, 28, 0.25);
-  --accent-secondary: #0c4a7e; /* Classic Deep Blue */
-  --accent-secondary-glow: rgba(12, 74, 126, 0.25);
+  /* Acentos Elegantes (Alta Legibilidad) */
+  --accent-primary: #c92a2a; /* Crimson */
+  --accent-primary-hover: #b02525;
+  --accent-primary-glow: rgba(201, 42, 42, 0.25);
+  --accent-secondary: #0b69a3; /* Royal Navy */
+  --accent-secondary-glow: rgba(11, 105, 163, 0.25);
+  --accent-amber: #d97706;
   
   /* Texto (Tinta Oscura - Contraste WCAG AAA) */
-  --text-primary: #121212;
-  --text-secondary: #4a4a4a;
-  --text-muted: #595959;
+  --text-primary: #181a1f;
+  --text-secondary: #474d57;
+  --text-muted: #646c7a;
   --text-inverse: #ffffff;
 
   /* Bordes */
-  --border-subtle: rgba(0, 0, 0, 0.1);
-  --border-strong: rgba(0, 0, 0, 0.2);
+  --border-subtle: rgba(0, 0, 0, 0.09);
+  --border-strong: rgba(0, 0, 0, 0.18);
 
   background-color: var(--bg-app);
   color: var(--text-primary);
@@ -128,6 +136,9 @@ body.theme-amber {
   --bg-surface-solid: #211a13;
   --bg-surface-raised: #2a2118;
   --bg-surface-hover: #352a1f;
+  --bg-viewport: #17110c;
+  --bg-paper: #211a13;
+  --bg-card-subtle: #241c14;
 
   /* Glassmorphism Cálido */
   --glass-blur: blur(20px) saturate(160%);
@@ -142,6 +153,7 @@ body.theme-amber {
   --accent-primary-glow: rgba(255, 152, 0, 0.45);
   --accent-secondary: #ffd54f;
   --accent-secondary-glow: rgba(255, 213, 79, 0.35);
+  --accent-amber: #ffb300;
 
   /* Texto Cálido de Alto Contraste */
   --text-primary: #fff8e1;

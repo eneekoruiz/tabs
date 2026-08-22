@@ -164,9 +164,33 @@ class AppV2 {
       }
     });
   }
+
+  setupGestureControls() {
+    // Previene el zoom involuntario por doble toque en móviles/tablets, pero permite el gesto de pellizco (pinch-to-zoom)
+    let lastTouchEndTime = 0;
+    document.addEventListener('touchend', (e) => {
+      const now = Date.now();
+      // Solo intercepta toques simples rápidos repetidos (doble clic táctil)
+      if (e.touches && e.touches.length <= 1 && (now - lastTouchEndTime) <= 280) {
+        // No interferir con inputs de texto normales
+        if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
+          e.preventDefault();
+        }
+      }
+      lastTouchEndTime = now;
+    }, { passive: false });
+
+    // Evitar zoom con rueda del ratón involuntaria salvo si se pulsa Ctrl explícitamente
+    document.addEventListener('dblclick', (e) => {
+      if (e.target.closest('.chord-badge, .btn-popover-inst, button, .lyrics-line, .lyrics-chords-container')) {
+        e.preventDefault();
+      }
+    });
+  }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
   const app = new AppV2();
+  app.setupGestureControls();
   app.start();
 });

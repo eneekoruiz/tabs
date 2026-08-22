@@ -79,16 +79,33 @@ export class HomeViewV2 extends Component {
       <div class="explore-view" role="region" aria-label="Pantalla de exploración">
         <!-- Hero con Buscador Gigante Unificado -->
         <div class="explore-hero">
-          <div class="explore-badge-chromatic">STUDIO PRO CATALOG</div>
+          <div class="explore-badge-chromatic">STUDIO PRO CATALOG · 100% OFFLINE</div>
           <h1 class="explore-hero-title">Tabs & Chords PRO</h1>
-          <p class="explore-hero-subtitle">Acceso instantáneo a más de 15.000 canciones con letra oficial, acordes interactivos y tablaturas</p>
+          <p class="explore-hero-subtitle">Acceso instantáneo a más de 500.000 canciones con letra oficial, acordes interactivos y tablaturas (100% Offline)</p>
           
           <div class="explore-search-box">
             <svg class="search-svg-icon" viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
               <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
             </svg>
-            <input type="text" id="exploreSearchInput" class="explore-search-input" placeholder="Busca por canción o artista (Katy Perry, Beatles, Bruno Mars, Queen...)" value="${this.searchQuery}" aria-label="¿Qué quieres tocar?">
+            <input type="text" id="exploreSearchInput" class="explore-search-input" placeholder="Busca por canción o artista (Ariana Grande, Beatles, Katy Perry, Queen...)" value="${this.searchQuery}" aria-label="¿Qué quieres tocar?">
             ${this.searchQuery ? `<button class="btn-clear-search" id="btnClearExploreSearch" aria-label="Limpiar búsqueda">✕</button>` : ''}
+          </div>
+
+          <!-- Chips de Búsqueda Rápida (0 Curva de Aprendizaje) -->
+          <div class="explore-quick-chips" role="group" aria-label="Búsquedas rápidas">
+            <span class="quick-chip-label">Tendencias:</span>
+            <button class="quick-chip-btn" data-query="Ariana Grande">🔥 Ariana Grande</button>
+            <button class="quick-chip-btn" data-query="Beatles">👑 The Beatles</button>
+            <button class="quick-chip-btn" data-query="Katy Perry">🎤 Katy Perry</button>
+            <button class="quick-chip-btn" data-query="Queen">🎸 Queen</button>
+            <button class="quick-chip-btn" data-query="Taylor Swift">🎧 Taylor Swift</button>
+            <button class="quick-chip-btn" data-query="Metallica">⚡ Metallica</button>
+          </div>
+
+          <!-- Banner Informativo de Guía Rápida -->
+          <div class="explore-quick-tip-banner">
+            <span class="tip-icon">✨</span>
+            <span><strong>Cancionero Interactivo Pro:</strong> Pulsa cualquier canción para acceder al visor con acordes, transposición en tiempo real y auto-scroll manos libres.</span>
           </div>
 
           <!-- Botón de Importación Rápida -->
@@ -168,13 +185,20 @@ export class HomeViewV2 extends Component {
         clearTimeout(debounceTimer);
         debounceTimer = setTimeout(() => {
           this.loadExploreData();
-        }, 450);
+        }, 200);
       });
     }
 
     this.container.querySelector('#btnClearExploreSearch')?.addEventListener('click', () => {
       this.searchQuery = '';
       this.loadExploreData();
+    });
+
+    this.container.querySelectorAll('.quick-chip-btn').forEach(chip => {
+      chip.addEventListener('click', () => {
+        this.searchQuery = chip.dataset.query || '';
+        this.loadExploreData();
+      });
     });
 
     this.container.querySelector('#btnOpenSongImporterHero')?.addEventListener('click', () => {

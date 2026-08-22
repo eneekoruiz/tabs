@@ -31,7 +31,8 @@
 
 .mixer-track-badge {
   font-size: 0.72rem;
-  background-color: #111115;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
   padding: 2px 8px;
   border-radius: 10px;
   color: var(--text-muted);
@@ -74,9 +75,9 @@
 
 .channel-strip {
   width: 90px;
-  background-color: #15151a;
+  background-color: var(--bg-surface-solid);
   border: 1px solid var(--border-subtle);
-  border-radius: 6px;
+  border-radius: 8px;
   padding: 8px 6px;
   display: flex;
   flex-direction: column;
@@ -86,13 +87,19 @@
   transition: border-color var(--transition-fast);
 }
 
+body.theme-ivory .channel-strip {
+  background-color: #ffffff;
+  border-color: rgba(0, 0, 0, 0.12);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
 .channel-strip:hover {
   border-color: var(--border-strong);
 }
 
 .channel-visual-active {
-  border-color: var(--accent-primary);
-  background-color: rgba(255, 87, 34, 0.04);
+  border-color: var(--accent-primary) !important;
+  background-color: rgba(255, 87, 34, 0.08) !important;
 }
 
 .btn-view-track {

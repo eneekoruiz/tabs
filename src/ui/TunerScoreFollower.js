@@ -93,6 +93,18 @@ export class TunerScoreFollower extends Component {
     );
 
     this.registerUnsub(
+      events.on('tuner:open', () => {
+        if (!this.isOpen) this.toggle();
+      })
+    );
+
+    this.registerUnsub(
+      events.on('tuner:close', () => {
+        if (this.isOpen) this.toggle();
+      })
+    );
+
+    this.registerUnsub(
       events.on('ui:closeAllOverlays', () => {
         if (this.isOpen) this.toggle();
       })
@@ -109,6 +121,7 @@ export class TunerScoreFollower extends Component {
           this.startMic();
         }
       } else {
+        this.container.innerHTML = '';
         this.stopMic();
       }
     }

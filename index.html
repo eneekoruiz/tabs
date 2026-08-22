@@ -117,13 +117,20 @@
   </div>
 
   <!-- Inicialización del Sistema Modular V2 -->
-  <script type="module" src="src/mainV2.js?t=101"></script>
+  <script type="module" src="src/mainV2.js?t=102"></script>
 </body>
 </html>
 <script>
   (function() {
     var theme = localStorage.getItem('app_visual_theme');
-    if (theme === 'paper') document.body.classList.add('theme-ivory');
-    else document.body.classList.add('theme-charcoal');
+    if (theme === 'oled') {
+      document.body.classList.add('theme-charcoal');
+    } else if (theme === 'amber') {
+      document.body.classList.add('theme-amber');
+    } else {
+      // Modo predeterminado: Blanco / Claro (Ivory / Paper)
+      document.body.classList.add('theme-ivory');
+      if (!theme) localStorage.setItem('app_visual_theme', 'paper');
+    }
   })();
 </script>

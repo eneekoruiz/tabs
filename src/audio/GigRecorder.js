@@ -17,6 +17,7 @@ export class GigRecorder {
     this.audioChunks = [];
     this.stream = null;
     this.isRecording = false;
+    this.isVideoRecording = false;
     this.startTime = 0;
     this.timerInterval = null;
     this.currentDuration = 0;
@@ -24,22 +25,58 @@ export class GigRecorder {
     this.latestAudioUrl = null;
   }
 
-  async startRecording(songMeta = {}) {
+  async startRecording(songMeta = {}, withCamera = false) {
     if (this.isRecording) return;
 
     try {
-      this.stream = await navigator.mediaDevices.getUserMedia({
+      this.isVideoRecording = withCamera;
+      const constraints = {
         audio: {
           echoCancellation: false,
           noiseSuppression: false,
           autoGainControl: false,
         }
-      });
+      };
+
+      if (withCamera) {
+        constraints.video = {
+          facingMode: 'user',
+          width: { ideal: 1280 },
+          height: { ideal: 720 }
+        };
+      }
+
+      try {
+        this.stream = await navigator.mediaDevices.getUserMedia(constraints);
+      } catch (camErr) {
+        if (withCamera) {
+          console.warn('[GigRecorder] No se pudo acceder a la cámara, reintentando solo con audio:', camErr);
+          this.isVideoRecording = false;
+          this.stream = await navigator.mediaDevices.getUserMedia({
+            audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false }
+          });
+        } else {
+          throw camErr;
+        }
+      }
 
       this.audioChunks = [];
-      const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
-        ? 'audio/webm;codecs=opus'
-        : 'audio/webm';
+      let mimeType = 'audio/webm';
+      if (this.isVideoRecording) {
+        if (MediaRecorder.isTypeSupported('video/webm;codecs=vp9,opus')) {
+          mimeType = 'video/webm;codecs=vp9,opus';
+        } else if (MediaRecorder.isTypeSupported('video/webm;codecs=vp8,opus')) {
+          mimeType = 'video/webm;codecs=vp8,opus';
+        } else if (MediaRecorder.isTypeSupported('video/webm')) {
+          mimeType = 'video/webm';
+        } else if (MediaRecorder.isTypeSupported('video/mp4')) {
+          mimeType = 'video/mp4';
+        }
+      } else {
+        mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
+          ? 'audio/webm;codecs=opus'
+          : 'audio/webm';
+      }
 
       this.mediaRecorder = new MediaRecorder(this.stream, { mimeType });
 
@@ -50,7 +87,8 @@ export class GigRecorder {
       };
 
       this.mediaRecorder.onstop = () => {
-        this.latestRecordingBlob = new Blob(this.audioChunks, { type: 'audio/webm' });
+        const type = this.isVideoRecording ? 'video/webm' : 'audio/webm';
+        this.latestRecordingBlob = new Blob(this.audioChunks, { type });
         if (this.latestAudioUrl) {
           URL.revokeObjectURL(this.latestAudioUrl);
         }
@@ -60,6 +98,7 @@ export class GigRecorder {
           blob: this.latestRecordingBlob,
           url: this.latestAudioUrl,
           duration: this.currentDuration,
+          isVideo: this.isVideoRecording,
           songMeta
         });
       };
@@ -71,15 +110,29 @@ export class GigRecorder {
 
       this.timerInterval = setInterval(() => {
         this.currentDuration = Math.floor((Date.now() - this.startTime) / 1000);
-        events.emit('recorder:tick', { duration: this.currentDuration, formatted: this.formatTime(this.currentDuration) });
+        events.emit('recorder:tick', { 
+          duration: this.currentDuration, 
+          formatted: this.formatTime(this.currentDuration),
+          isVideo: this.isVideoRecording 
+        });
       }, 1000);
 
-      events.emit('recorder:started', { songMeta });
-      toast.show('🎙️ Grabando ensayo en alta fidelidad...', 'info', 1000);
+      events.emit('recorder:started', { 
+        songMeta, 
+        stream: this.stream, 
+        isVideo: this.isVideoRecording 
+      });
+
+      toast.show(
+        this.isVideoRecording ? '📹 Grabando ensayo con cámara y audio...' : '🎙️ Grabando ensayo en alta fidelidad...', 
+        'info', 
+        1200
+      );
     } catch (err) {
-      console.error('[GigRecorder] Error accediendo al micrófono:', err);
-      toast.show('No se pudo acceder al micrófono para grabar.', 'warning');
+      console.error('[GigRecorder] Error accediendo a dispositivos de grabación:', err);
+      toast.show('No se pudo acceder al micrófono/cámara para grabar.', 'warning');
       this.isRecording = false;
+      this.isVideoRecording = false;
     }
   }
 
@@ -107,13 +160,15 @@ export class GigRecorder {
     }
 
     const cleanTitle = songTitle.replace(/[^a-zA-Z0-9_-]/g, '_');
+    const ext = this.isVideoRecording ? 'webm' : 'webm';
+    const prefix = this.isVideoRecording ? 'Video_Ensayo' : 'Audio_Ensayo';
     const a = document.createElement('a');
     a.href = this.latestAudioUrl;
-    a.download = `TabsAndChords_${cleanTitle}_${new Date().toISOString().slice(0, 10)}.webm`;
+    a.download = `TabsAndChords_${prefix}_${cleanTitle}_${new Date().toISOString().slice(0, 10)}.${ext}`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
-    toast.show('Descargando archivo de audio...', 'success', 1000);
+    toast.show(`Descargando ${this.isVideoRecording ? 'video' : 'audio'} de la toma...`, 'success', 1000);
   }
 
   formatTime(seconds) {

@@ -497,4 +497,44 @@ test.describe('🎸 Tabs & Chords PRO - Suite E2E Modo Letras & Acordes Multi-In
     await expect(btnRecord).toBeVisible();
   });
 
+  test('17. Catálogo Precargado Masivo de Ariana Grande y Búsqueda Universal Instantánea', async ({ page }) => {
+    const heroSearch = page.locator('#exploreSearchInput');
+    await expect(heroSearch).toBeVisible({ timeout: 10000 });
+
+    // 1. Buscar "Ariana Grande" en el buscador
+    await heroSearch.fill('Ariana Grande');
+    await page.waitForTimeout(500);
+
+    // 2. Verificar que se muestran canciones de Ariana Grande
+    const arianaCard = page.locator('.btn-load-explore-song', { hasText: /7 rings/i }).first();
+    await expect(arianaCard).toBeVisible({ timeout: 10000 });
+
+    const thankUCard = page.locator('.btn-load-explore-song', { hasText: /thank u, next/i }).first();
+    await expect(thankUCard).toBeVisible({ timeout: 10000 });
+
+    // 3. Abrir "7 rings" y verificar modo letra con acordes y barra contextual
+    await arianaCard.click();
+    await page.waitForTimeout(600);
+
+    const activeView = page.locator('#score-viewport');
+    await expect(activeView).toHaveClass(/active-view/);
+
+    const titleEl = page.locator('.lyrics-song-title');
+    await expect(titleEl).toContainText(/7 rings/i);
+
+    const chordsInLyrics = page.locator('.chord-badge');
+    await expect(chordsInLyrics.first()).toBeVisible({ timeout: 10000 });
+
+    // 4. Volver a explorar y buscar "Olivia Rodrigo"
+    const btnBack = page.locator('#btnBackToExplore');
+    await expect(btnBack).toBeVisible();
+    await btnBack.click();
+
+    await heroSearch.fill('Olivia Rodrigo');
+    await page.waitForTimeout(500);
+    const oliviaCard = page.locator('.btn-load-explore-song', { hasText: /drivers license|vampire/i }).first();
+    await expect(oliviaCard).toBeVisible({ timeout: 10000 });
+  });
+
 });
+

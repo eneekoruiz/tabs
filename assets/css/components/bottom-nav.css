@@ -20,6 +20,12 @@
   box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.6);
 }
 
+body.theme-ivory .bottom-nav-bar {
+  background-color: rgba(255, 255, 255, 0.94);
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
+}
+
 .nav-tab-btn {
   flex: 1;
   height: 100%;
@@ -48,6 +54,120 @@
 
 .nav-tab-btn.active .nav-icon {
   transform: translateY(-2px) scale(1.15);
+}
+
+/* ==========================================================================
+   Barra Inferior Contextual de Canción (Bottom Player Bar)
+   ========================================================================== */
+.bottom-player-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 12px;
+  background: rgba(18, 18, 24, 0.92);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.45);
+}
+
+body.theme-ivory .bottom-player-bar {
+  background: rgba(255, 255, 255, 0.94);
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.nav-player-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  padding: 6px 10px;
+  border-radius: 10px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  min-width: 54px;
+}
+
+.nav-player-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--accent-primary);
+}
+
+body.theme-ivory .nav-player-btn:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.nav-player-btn.active {
+  color: var(--accent-primary);
+  background: rgba(255, 87, 34, 0.12);
+}
+
+.nav-player-btn.recording-active {
+  color: #ff5252;
+  background: rgba(255, 82, 82, 0.15);
+  animation: pulseRecDot 1.2s infinite;
+}
+
+.nav-player-rec-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #ff5252;
+  box-shadow: 0 0 8px #ff5252;
+}
+
+.nav-player-scroll-icon {
+  font-size: 1.05rem;
+}
+
+/* Transpose cluster inside bottom bar */
+.nav-player-transpose-cluster {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--bg-surface-solid);
+  border: 1px solid var(--border-subtle);
+  padding: 4px 8px;
+  border-radius: 20px;
+}
+
+.nav-player-step-btn {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  font-size: 0.82rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.nav-player-step-btn:hover {
+  background: var(--accent-primary);
+  color: #ffffff;
+  border-color: var(--accent-primary);
+}
+
+.nav-player-val-badge {
+  font-size: 0.78rem;
+  font-weight: 800;
+  font-family: var(--font-mono);
+  color: var(--text-primary);
+  padding: 0 6px;
+  min-width: 44px;
+  text-align: center;
 }
 
 /* Contenedores de Vistas Principales */
@@ -232,6 +352,14 @@ body.theme-ivory .genre-card-item:hover, body.theme-ivory .genre-card-item.activ
   display: flex;
   flex-direction: column;
   gap: 10px;
+}
+
+@media (min-width: 800px) {
+  .explore-songs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+    gap: 12px;
+  }
 }
 
 .song-card {

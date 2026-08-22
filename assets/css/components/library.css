@@ -104,8 +104,21 @@
   display: none;
 }
 
+/* Chips de Géneros Musicales */
+.library-genre-chips {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+  scrollbar-width: none;
+}
+
+.library-genre-chips::-webkit-scrollbar {
+  display: none;
+}
+
 .genre-chip {
-  background: #181826;
+  background: var(--bg-surface-raised);
   border: 1px solid var(--border-subtle) !important;
   color: var(--text-secondary);
   font-size: 0.75rem;
@@ -117,15 +130,21 @@
   transition: all var(--transition-fast);
 }
 
+body.theme-ivory .genre-chip {
+  background: #f0eee9;
+  border-color: rgba(0, 0, 0, 0.12) !important;
+  color: #2c3038;
+}
+
 .genre-chip:hover {
   background: var(--border-strong);
   color: var(--text-primary);
 }
 
 .genre-chip.active {
-  background: var(--accent-primary);
-  color: var(--text-primary);
-  border-color: var(--accent-primary);
+  background: var(--accent-primary) !important;
+  color: #ffffff !important;
+  border-color: var(--accent-primary) !important;
   box-shadow: 0 0 10px var(--accent-primary-glow);
 }
 
@@ -133,10 +152,15 @@
 .library-filter-tabs {
   display: flex;
   gap: 6px;
-  background: #09090e;
+  background: var(--bg-surface-raised);
   border: 1px solid var(--border-subtle) !important;
-  border-radius: 8px;
-  padding: 3px;
+  border-radius: 10px;
+  padding: 4px;
+}
+
+body.theme-ivory .library-filter-tabs {
+  background: #f0eee9;
+  border-color: rgba(0, 0, 0, 0.12) !important;
 }
 
 .lib-tab {
@@ -152,14 +176,18 @@
   transition: all var(--transition-fast);
 }
 
+body.theme-ivory .lib-tab {
+  color: #474d57;
+}
+
 .lib-tab:hover {
   color: var(--text-primary);
 }
 
 .lib-tab.active {
-  background: var(--accent-primary);
-  color: var(--text-primary);
-  box-shadow: 0 2px 8px rgba(255, 87, 34, 0.4);
+  background: var(--accent-primary) !important;
+  color: #ffffff !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 /* Acciones de Importación */
@@ -186,19 +214,26 @@
   transition: all var(--transition-fast);
 }
 
+body.theme-ivory .btn-import {
+  background: #ffffff;
+  border-color: rgba(0, 0, 0, 0.15);
+  color: #1a1a1a;
+}
+
 .btn-import:hover {
   background-color: var(--accent-primary);
   border-color: var(--accent-primary);
+  color: #ffffff;
 }
 
 .btn-demo-quick {
   background: linear-gradient(135deg, rgba(0, 229, 255, 0.15) 0%, rgba(0, 136, 255, 0.15) 100%);
   border-color: rgba(0, 229, 255, 0.4);
-  color: #00e5ff;
+  color: var(--accent-secondary);
 }
 
 .btn-demo-quick:hover {
-  background: #00e5ff;
+  background: var(--accent-secondary);
   color: var(--text-inverse);
 }
 
@@ -211,6 +246,15 @@
   gap: 10px;
 }
 
+@media (min-width: 800px) {
+  .library-song-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+    gap: 12px;
+    align-content: start;
+  }
+}
+
 .library-empty-state {
   display: flex;
   flex-direction: column;
@@ -220,6 +264,7 @@
   text-align: center;
   color: var(--text-muted);
   gap: 8px;
+  grid-column: 1 / -1;
 }
 
 .empty-icon {
@@ -236,30 +281,45 @@
 .song-card {
   background: var(--bg-surface-solid);
   border: 1px solid var(--border-subtle) !important;
-  border-radius: 12px;
+  border-radius: 14px;
   padding: 12px 14px;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
   transition: all var(--transition-fast);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+body.theme-ivory .song-card {
+  background: #ffffff !important;
+  border-color: rgba(0, 0, 0, 0.12) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .song-card:hover {
   background: var(--bg-surface-raised);
-  border-color: var(--accent-primary);
+  border-color: var(--accent-primary) !important;
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+body.theme-ivory .song-card:hover {
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
 }
 
 .song-card-active {
-  border-color: #00e5ff;
+  border-color: var(--accent-secondary) !important;
   background: rgba(0, 229, 255, 0.08) !important;
-  box-shadow: 0 0 16px rgba(0, 229, 255, 0.4);
+  box-shadow: 0 0 16px var(--accent-secondary-glow) !important;
 }
 
 .song-card-main {
-  flex: 1;
+  flex: 1 1 auto;
+  min-width: 0 !important;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -300,24 +360,40 @@
   align-items: center;
   gap: 6px;
   margin-top: 4px;
+  flex-wrap: wrap;
 }
 
 .song-card-actions {
   display: flex;
   align-items: center;
-  gap: 6px;
-  margin-left: 8px;
+  gap: 4px;
+  flex-shrink: 0;
+  margin-left: 4px;
 }
 
 .btn-fav-song, .btn-del-song, .btn-add-setlist {
-  background: var(--border-subtle);
+  background: var(--bg-surface-raised);
   border: 1px solid var(--border-subtle) !important;
   cursor: pointer;
-  font-size: 0.85rem;
-  padding: 6px 8px;
-  border-radius: 6px;
+  font-size: 0.82rem;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
   color: var(--text-secondary);
+  flex-shrink: 0;
   transition: all var(--transition-fast);
+}
+
+body.theme-ivory .btn-fav-song,
+body.theme-ivory .btn-del-song,
+body.theme-ivory .btn-add-setlist {
+  background: #f0eee9;
+  border-color: rgba(0, 0, 0, 0.12) !important;
+  color: #374151;
 }
 
 .btn-fav-song:hover {
@@ -326,25 +402,34 @@
 }
 
 .fav-active {
-  background: var(--accent-amber); opacity: 0.8;
+  background: var(--accent-amber);
+  opacity: 1;
   border-color: #ffb300;
-  color: #ffb300;
+  color: #ffffff;
 }
 
 .btn-del-song:hover {
   background: #ff5252;
   border-color: #ff5252;
-  color: var(--text-primary);
+  color: #ffffff;
 }
 
 .setlist-card {
   background: var(--bg-surface-solid);
   border: 1px solid var(--border-subtle) !important;
-  border-radius: 12px;
+  border-radius: 14px;
   padding: 14px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 8px;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+body.theme-ivory .setlist-card {
+  background: #ffffff !important;
+  border-color: rgba(0, 0, 0, 0.12) !important;
 }
 
 .setlist-card-title {
@@ -360,16 +445,14 @@
 
 .btn-play-setlist {
   background: var(--accent-primary);
-  color: var(--text-primary);
+  color: #ffffff;
   border: none;
   font-weight: 800;
   padding: 6px 12px;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
 }
-.song-card-main {
-  min-width: 0 !important;
-}
+
 .home-song-card {
   min-width: 0 !important;
   background: var(--bg-surface-solid) !important;
@@ -377,24 +460,15 @@
   border-radius: 14px !important;
   padding: 14px 16px !important;
 }
+
+body.theme-ivory .home-song-card {
+  background: #ffffff !important;
+  border-color: rgba(0, 0, 0, 0.12) !important;
+}
+
 .home-song-card:hover {
-  border-color: rgba(255, 87, 34, 0.5) !important;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.6) !important;
-}
-.song-card, .setlist-card {
-  min-width: 0 !important;
-  background: var(--bg-surface-solid) !important;
-  border: 1px solid var(--border-subtle) !important;
-  border-radius: 14px !important;
-  padding: 14px 16px !important;
-  transition: all 0.3s ease;
-}
-.song-card:hover, .setlist-card:hover {
-  border-color: rgba(255, 87, 34, 0.5) !important;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.6) !important;
-}
-.song-card-artist {
-  color: var(--text-secondary) !important;
+  border-color: var(--accent-primary) !important;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3) !important;
 }
 
 /* Estados Vacíos Empáticos */
@@ -452,3 +526,86 @@
   transform: translateY(-2px);
   box-shadow: 0 6px 22px var(--accent-primary-glow);
 }
+
+/* ==========================================================================
+   Chips de Búsqueda Rápida & Guía Rápida (Cero Curva de Aprendizaje)
+   ========================================================================== */
+.explore-quick-chips {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 10px;
+  width: 100%;
+}
+
+.quick-chip-label {
+  font-size: 0.76rem;
+  font-weight: 800;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.quick-chip-btn {
+  background: var(--bg-surface-raised);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 5px 12px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  touch-action: manipulation;
+}
+
+.quick-chip-btn:hover {
+  background: var(--accent-primary);
+  border-color: var(--accent-primary);
+  color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px var(--accent-primary-glow);
+}
+
+body.theme-ivory .quick-chip-btn {
+  background: #ffffff;
+  border-color: rgba(0, 0, 0, 0.15);
+  color: #1a1a1a;
+}
+
+body.theme-ivory .quick-chip-btn:hover {
+  background: var(--accent-primary);
+  color: #ffffff;
+}
+
+.explore-quick-tip-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: linear-gradient(135deg, rgba(255, 87, 34, 0.08) 0%, rgba(0, 229, 255, 0.08) 100%);
+  border: 1px solid rgba(255, 87, 34, 0.25);
+  border-radius: 12px;
+  padding: 10px 16px;
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+  margin-top: 14px;
+  max-width: 680px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.explore-quick-tip-banner .tip-icon {
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+body.theme-ivory .explore-quick-tip-banner {
+  background: #ffffff;
+  border-color: rgba(255, 87, 34, 0.35);
+  color: #333333;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
