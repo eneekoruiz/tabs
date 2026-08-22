@@ -63,20 +63,42 @@ export class HomeViewV2 extends Component {
     this.render();
   }
 
+  getRecentSearches() {
+    try {
+      const saved = localStorage.getItem('agy_recent_searches');
+      return saved ? JSON.parse(saved) : [];
+    } catch(e) { return []; }
+  }
+
+  addRecentSearch(query) {
+    if (!query || query.trim().length < 2) return;
+    const clean = query.trim();
+    // No añadir si es una tendencia predefinida
+    if (['ariana grande', 'beatles', 'katy perry', 'queen', 'taylor swift', 'metallica'].includes(clean.toLowerCase())) return;
+    
+    let searches = this.getRecentSearches();
+    searches = searches.filter(s => s.toLowerCase() !== clean.toLowerCase());
+    searches.unshift(clean);
+    if (searches.length > 4) searches = searches.slice(0, 4);
+    localStorage.setItem('agy_recent_searches', JSON.stringify(searches));
+  }
+
   render() {
     if (!this.container) return;
 
     const genres = [
-      { id: 'all', label: 'Todos los Estilos' },
-      { id: 'Rock', label: 'Rock Clásico & Moderno' },
-      { id: 'Pop', label: 'Pop Internacional' },
-      { id: 'Acoustic', label: 'Acústico & Folk' },
-      { id: 'Metal', label: 'Heavy Metal' },
-      { id: 'Blues', label: 'Blues & Jazz' },
+      { id: 'all', label: 'Todo el Catálogo' },
+      { id: 'pop', label: 'Pop Internacional' },
+      { id: 'rock', label: 'Rock Clásico & Moderno' },
+      { id: 'acoustic', label: 'Acústico & Folk' },
+      { id: 'metal', label: 'Heavy Metal' },
+      { id: 'blues', label: 'Blues & Jazz' },
     ];
 
+    const recentSearches = this.getRecentSearches();
+
     this.container.innerHTML = `
-      <div class="explore-view" role="region" aria-label="Pantalla de exploración">
+      <div class="explore-layout-wrapper">
         <!-- Hero con Buscador Gigante Unificado -->
         <div class="explore-hero">
           <div class="explore-badge-chromatic">STUDIO PRO CATALOG · 100% OFFLINE</div>
@@ -93,7 +115,12 @@ export class HomeViewV2 extends Component {
 
           <!-- Chips de Búsqueda Rápida (0 Curva de Aprendizaje) -->
           <div class="explore-quick-chips" role="group" aria-label="Búsquedas rápidas">
-            <span class="quick-chip-label">Tendencias:</span>
+            ${recentSearches.length > 0 ? `
+              <span class="quick-chip-label">Recientes:</span>
+              ${recentSearches.map(q => `<button class="quick-chip-btn recent-chip" data-query="${q}">⏱️ ${q}</button>`).join('')}
+            ` : ''}
+            
+            <span class="quick-chip-label" style="${recentSearches.length > 0 ? 'margin-left: 10px;' : ''}">Tendencias:</span>
             <button class="quick-chip-btn" data-query="Ariana Grande">🔥 Ariana Grande</button>
             <button class="quick-chip-btn" data-query="Beatles">👑 The Beatles</button>
             <button class="quick-chip-btn" data-query="Katy Perry">🎤 Katy Perry</button>
@@ -228,14 +255,19 @@ export class HomeViewV2 extends Component {
 
     this.container.querySelectorAll('.btn-load-explore-song').forEach(btn => {
       btn.addEventListener('click', async () => {
-        const id = btn.dataset.id ? parseInt(btn.dataset.id, 10) : null;
-        const title = decodeURIComponent(btn.dataset.title);
-        const artist = decodeURIComponent(btn.dataset.artist);
+        const songId = btn.dataset.id;
+        const onlineTitle = btn.dataset.title ? decodeURIComponent(btn.dataset.title) : null;
+        const onlineArtist = btn.dataset.artist ? decodeURIComponent(btn.dataset.artist) : null;
 
-        if (id && !isNaN(id)) {
-          await this.playSong(id);
-        } else {
-          await this.importAndPlaySong(title, artist);
+        // Guardar la búsqueda reciente si existe
+        if (this.searchQuery) {
+          this.addRecentSearch(this.searchQuery);
+        }
+
+        if (songId && !isNaN(parseInt(songId))) {
+          await this.playSong(parseInt(songId, 10));
+        } else if (onlineTitle && onlineArtist) {
+          await this.importAndPlaySong(onlineTitle, onlineArtist);
         }
       });
     });

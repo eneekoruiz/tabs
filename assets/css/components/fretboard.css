@@ -3,7 +3,7 @@
    ========================================================================== */
 .fretboard-wrapper {
   padding: 10px 16px;
-  background-color: #121216;
+  background-color: var(--bg-surface-solid);
   display: flex;
   flex-direction: column;
   gap: 6px;

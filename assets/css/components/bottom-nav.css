@@ -357,15 +357,18 @@ body.theme-ivory .genre-card-item {
 }
 
 .genre-card-item.active {
-  background: var(--accent-primary);
-  color: #ffffff !important;
-  border-color: var(--accent-primary);
+  background: var(--text-primary);
+  color: var(--bg-surface) !important;
+  border-color: var(--text-primary);
   transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(218, 119, 86, 0.3);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
 }
 
 body.theme-ivory .genre-card-item.active {
-  box-shadow: 0 4px 15px rgba(218, 119, 86, 0.3);
+  background: var(--text-primary);
+  color: #ffffff !important;
+  border-color: var(--text-primary);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.12);
 }
 
 /* Tarjetas de Canción Enriquecidas (Estilo Spotify & Ultimate Guitar PRO) */

@@ -549,12 +549,12 @@ body.theme-ivory .home-song-card {
 }
 
 .quick-chip-btn {
-  background: var(--bg-surface-raised);
-  border: 1px solid var(--border-subtle);
+  background: transparent;
+  border: 1px solid var(--border-strong);
   color: var(--text-primary);
-  font-size: 0.78rem;
-  font-weight: 700;
-  padding: 5px 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 6px 16px;
   border-radius: 20px;
   cursor: pointer;
   transition: all var(--transition-fast);
@@ -562,22 +562,23 @@ body.theme-ivory .home-song-card {
 }
 
 .quick-chip-btn:hover {
-  background: var(--accent-primary);
-  border-color: var(--accent-primary);
-  color: #ffffff;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px var(--accent-primary-glow);
+  background: var(--bg-surface-hover);
+  border-color: var(--text-primary);
+  color: var(--text-primary);
+  transform: translateY(-1px);
 }
 
 body.theme-ivory .quick-chip-btn {
   background: #ffffff;
-  border-color: rgba(0, 0, 0, 0.15);
-  color: #1a1a1a;
+  border-color: var(--border-strong);
+  color: var(--text-primary);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.02);
 }
 
 body.theme-ivory .quick-chip-btn:hover {
-  background: var(--accent-primary);
-  color: #ffffff;
+  background: var(--bg-surface-hover);
+  border-color: var(--text-primary);
+  color: var(--text-primary);
 }
 
 .explore-quick-tip-banner {
