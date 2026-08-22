@@ -1646,3 +1646,60 @@ body.theme-ivory .hud-speed-badge,
   transform: translateY(-2px) !important;
   box-shadow: 0 6px 14px rgba(0,0,0,0.08) !important;
 }
+
+/* ==========================================================================
+   Corrección de Responsividad: evitar desbordamiento horizontal en móviles
+   ========================================================================== */
+
+/* El contenedor nunca desborda el viewport */
+.lyrics-chords-container {
+  box-sizing: border-box;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+/* Dropdowns: nunca salir por la derecha del viewport */
+.more-options-dropdown-popup,
+.instrument-dropdown-popup {
+  right: 0;
+  left: auto;
+  max-width: calc(100vw - 32px);
+  box-sizing: border-box;
+}
+
+/* En móviles pequeños: el toolbar hace scroll interno */
+@media (max-width: 480px) {
+  .lyrics-essential-toolbar {
+    overflow-x: auto;
+    overflow-y: visible;
+    flex-wrap: nowrap;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-bottom: 4px;
+  }
+  .lyrics-essential-toolbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .lyrics-chords-container {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  .lyrics-song-title {
+    font-size: 1.1rem !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+  }
+
+  .lyrics-title-nav-row {
+    max-width: 100%;
+    overflow: hidden;
+  }
+
+  .chords-visual-cards-grid {
+    max-width: 100%;
+  }
+}
