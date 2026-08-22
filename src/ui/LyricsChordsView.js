@@ -90,6 +90,7 @@ export class LyricsChordsView extends Component {
       if (this.currentSong && (!this.currentSong.lyricsChords || this.currentSong.lyricsChords.trim().length === 0)) {
         this.currentSong.lyricsChords = await onlineSongProvider.fetchLyricsAndChords(this.currentSong.title, this.currentSong.artist);
       }
+      this.setViewMode('lyrics');
       this.render();
       this.syncContextualState();
     };
@@ -109,8 +110,8 @@ export class LyricsChordsView extends Component {
       this.toggleAutoScroll();
     }));
 
-    this.registerUnsub(events.on('song:toggleRecording', () => {
-      this.toggleRecording();
+    this.registerUnsub(events.on('song:toggleRecording', (opts) => {
+      this.toggleRecording(opts?.video || false);
     }));
 
     this.registerUnsub(events.on('song:enterStageMode', () => {
@@ -173,8 +174,8 @@ export class LyricsChordsView extends Component {
     this.syncContextualState();
   }
 
-  toggleRecording() {
-    this.audioRecorder.toggle(this.currentSong?.title || 'Ensayo');
+  toggleRecording(wantVideo = false) {
+    this.audioRecorder.toggle(this.currentSong?.title || 'Ensayo', wantVideo);
   }
 
   enterStageMode() {
@@ -195,6 +196,26 @@ export class LyricsChordsView extends Component {
     events.emit('ui:stageMode', false);
     this.render();
     this.syncContextualState();
+  }
+
+  setViewMode(mode) {
+    this.viewMode = mode;
+    const alphatabEl = document.getElementById('alphatab');
+    const lyricsContent = this.container.querySelector('#lyricsBodyContent');
+    const lyricsToolbar = this.container.querySelector('.lyrics-essential-toolbar');
+    
+    if (this.viewMode === 'score') {
+      if (alphatabEl) alphatabEl.style.display = 'block';
+      if (lyricsContent) lyricsContent.style.display = 'none';
+      if (lyricsToolbar) lyricsToolbar.style.display = 'none';
+      // Forzar a AlphaTab a recalcular su tamaño al volverse visible
+      window.dispatchEvent(new Event('resize'));
+    } else {
+      if (alphatabEl) alphatabEl.style.display = 'none';
+      if (lyricsContent) lyricsContent.style.display = 'block';
+      if (lyricsToolbar) lyricsToolbar.style.display = 'flex';
+    }
+    this.render();
   }
 
   setFontSizeScale(delta) {
@@ -280,10 +301,15 @@ export class LyricsChordsView extends Component {
               <h1 class="lyrics-song-title">${title}</h1>
               <span class="lyrics-song-artist">— ${artist} (${tuning}${this.capoFret > 0 ? ` · Capo ${this.capoFret}` : ''})</span>
             </div>
+            
+            <div class="view-mode-toggle" style="margin-left: auto; display: flex; background: var(--bg-surface-solid); border: 1px solid var(--border-subtle); border-radius: 8px; overflow: hidden;">
+              <button id="btnModeLyrics" style="padding: 6px 12px; border: none; background: ${this.viewMode === 'lyrics' ? 'var(--accent-primary)' : 'transparent'}; color: ${this.viewMode === 'lyrics' ? '#fff' : 'var(--text-primary)'}; cursor: pointer; font-weight: 600; font-size: 0.85rem;">Letra & Acordes</button>
+              <button id="btnModeScore" style="padding: 6px 12px; border: none; background: ${this.viewMode === 'score' ? 'var(--accent-primary)' : 'transparent'}; color: ${this.viewMode === 'score' ? '#fff' : 'var(--text-primary)'}; cursor: pointer; font-weight: 600; font-size: 0.85rem;">Partitura Musical</button>
+            </div>
           </div>
 
           <!-- Barra de Controles Esenciales -->
-          <div class="lyrics-essential-toolbar">
+          <div class="lyrics-essential-toolbar" style="display: ${this.viewMode === 'score' ? 'none' : 'flex'};">
             <!-- Selector Instrumento -->
             <div class="dropdown-container">
               <button class="btn-instrument-select" id="btnInstrumentSelect" aria-label="Elige instrumento">
@@ -297,37 +323,12 @@ export class LyricsChordsView extends Component {
               </div>
             </div>
 
-            <!-- Transposición -->
-            <div class="transpose-box" role="group" aria-label="Transponer tono">
-              <button class="btn-transpose-step" id="btnTransposeMinus" aria-label="Bajar semitono">-1</button>
-              <span class="transpose-value-display" id="lblTransposeDisplay">${this.transposeSemitones > 0 ? '+' : ''}${this.transposeSemitones}</span>
-              <button class="btn-transpose-step" id="btnTransposePlus" aria-label="Subir semitono">+1</button>
-              ${this.transposeSemitones !== 0 ? `<button class="btn-transpose-reset" id="btnTransposeReset" title="Restablecer tono original">↺ Original</button>` : ''}
-            </div>
-
             <!-- Zoom de Fuente ([A-] 100% [A+]) -->
             <div class="font-scaler-group" role="group" aria-label="Tamaño de letra">
               <button class="btn-font-scale-step" id="btnFontDecr" aria-label="Reducir letra">A-</button>
               <span class="font-scale-percent-badge" id="lblFontScalePercent">${this.fontSizeScale}%</span>
               <button class="btn-font-scale-step" id="btnFontIncr" aria-label="Aumentar letra">A+</button>
             </div>
-
-            <!-- Auto-Scroll -->
-            <div class="autoscroll-control" role="group" aria-label="Desplazamiento automático">
-              <button class="btn-autoscroll-toggle ${this.autoScroller.isRunning ? 'active' : ''}" id="btnToggleAutoScroll" aria-label="Iniciar Auto-Scroll">
-                ${this.autoScroller.isRunning ? 'Pausa' : 'Auto-Scroll'}
-              </button>
-              <button class="btn-autoscroll-step-btn" id="btnAutoScrollDecr">-</button>
-              <input type="range" class="autoscroll-speed-slider" id="rngAutoScrollSpeed" min="1" max="100" step="1" value="${this.autoScroller.speedPercent}">
-              <button class="btn-autoscroll-step-btn" id="btnAutoScrollIncr">+</button>
-              <span class="autoscroll-percent-badge" id="lblAutoScrollPercent">${this.autoScroller.speedPercent}%</span>
-            </div>
-
-            <!-- Grabación Rápida -->
-            <button class="btn-quick-record-action ${this.audioRecorder.isRecording ? 'recording-active' : ''}" id="btnQuickRecordAction">
-              <span class="record-red-dot"></span>
-              <span>${this.audioRecorder.isRecording ? 'Detener' : 'Grabar'}</span>
-            </button>
 
             <!-- Desplegable Opciones -->
             <div class="dropdown-container">
@@ -402,7 +403,7 @@ export class LyricsChordsView extends Component {
         })}
 
         <!-- CUERPO DE LETRA -->
-        <div id="lyricsBodyContent">
+        <div id="lyricsBodyContent" style="display: ${this.viewMode === 'score' ? 'none' : 'block'};">
           ${parsedHtml}
         </div>
       </div>
@@ -416,6 +417,9 @@ export class LyricsChordsView extends Component {
     this.container.querySelector('#btnBackToExplore')?.addEventListener('click', () => {
       events.emit('ui:switchTab', 'explore');
     });
+
+    this.container.querySelector('#btnModeLyrics')?.addEventListener('click', () => this.setViewMode('lyrics'));
+    this.container.querySelector('#btnModeScore')?.addEventListener('click', () => this.setViewMode('score'));
 
     this.container.querySelector('#btnQuickRecordAction')?.addEventListener('click', () => this.toggleRecording());
     this.container.querySelector('#btnStageRecord')?.addEventListener('click', () => this.toggleRecording());

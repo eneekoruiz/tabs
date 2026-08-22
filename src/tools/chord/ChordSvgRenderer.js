@@ -59,25 +59,25 @@ export class ChordSvgRenderer {
 
     return `
       <svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" class="chord-diagram-svg guitar-svg" role="img" aria-label="Diagrama de guitarra ${chordName}">
-        <text x="${width / 2}" y="20" text-anchor="middle" class="chord-diagram-title" fill="#ff5722" font-weight="900" font-size="14">${chordName} (Guitarra)</text>
+        <text x="${width / 2}" y="20" text-anchor="middle" class="chord-diagram-title" fill="var(--accent-primary)" font-weight="900" font-size="14">${chordName} (Guitarra)</text>
 
         ${chord.baseFret > 1 
-          ? `<text x="10" y="${startY + 16}" fill="#00e5ff" font-size="11" font-weight="bold">${chord.baseFret}fr</text>`
-          : `<line x1="${startX}" y1="${startY}" x2="${startX + stringGap * (numStrings - 1)}" y2="${startY}" stroke="#ffffff" stroke-width="4"/>`
+          ? `<text x="10" y="${startY + 16}" fill="var(--accent-secondary, #00e5ff)" font-size="11" font-weight="bold">${chord.baseFret}fr</text>`
+          : `<line x1="${startX}" y1="${startY}" x2="${startX + stringGap * (numStrings - 1)}" y2="${startY}" stroke="var(--text-primary)" stroke-width="4"/>`
         }
 
         ${Array.from({ length: numFrets + 1 }, (_, f) => `
-          <line x1="${startX}" y1="${startY + f * fretGap}" x2="${startX + stringGap * (numStrings - 1)}" y2="${startY + f * fretGap}" stroke="rgba(255,255,255,0.25)" stroke-width="1.5"/>
+          <line x1="${startX}" y1="${startY + f * fretGap}" x2="${startX + stringGap * (numStrings - 1)}" y2="${startY + f * fretGap}" stroke="var(--border-strong)" stroke-width="1.5"/>
         `).join('')}
 
         ${Array.from({ length: numStrings }, (_, s) => `
-          <line x1="${startX + s * stringGap}" y1="${startY}" x2="${startX + s * stringGap}" y2="${startY + numFrets * fretGap}" stroke="rgba(255,255,255,0.5)" stroke-width="1.5"/>
+          <line x1="${startX + s * stringGap}" y1="${startY}" x2="${startX + s * stringGap}" y2="${startY + numFrets * fretGap}" stroke="var(--border-strong)" stroke-width="1.5"/>
         `).join('')}
 
         ${frets.map((fret, s) => {
           const x = startX + s * stringGap;
-          if (fret === -1) return `<text x="${x}" y="${startY - 6}" text-anchor="middle" fill="#ff5252" font-size="11" font-weight="bold">✕</text>`;
-          if (fret === 0) return `<circle cx="${x}" cy="${startY - 10}" r="3.5" fill="none" stroke="#00e676" stroke-width="2"/>`;
+          if (fret === -1) return `<text x="${x}" y="${startY - 6}" text-anchor="middle" fill="var(--error-color, #e53935)" font-size="11" font-weight="bold">✕</text>`;
+          if (fret === 0) return `<circle cx="${x}" cy="${startY - 10}" r="3.5" fill="none" stroke="var(--success-color, #00e676)" stroke-width="2"/>`;
           return '';
         }).join('')}
 
@@ -89,7 +89,7 @@ export class ChordSvgRenderer {
               const cy = startY + (displayFret - 0.5) * fretGap;
               const finger = fingers[s] || '';
               return `
-                <circle cx="${cx}" cy="${cy}" r="7" fill="#ff5722"/>
+                <circle cx="${cx}" cy="${cy}" r="7" fill="var(--accent-primary)"/>
                 ${finger ? `<text x="${cx}" y="${cy + 3.5}" text-anchor="middle" fill="#ffffff" font-size="9" font-weight="900">${finger}</text>` : ''}
               `;
             }
@@ -123,25 +123,25 @@ export class ChordSvgRenderer {
 
     return `
       <svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" class="chord-diagram-svg ukulele-svg" role="img" aria-label="Diagrama de ukelele ${chordName}">
-        <text x="${width / 2}" y="20" text-anchor="middle" fill="#00e5ff" font-weight="900" font-size="14">${chordName} (Ukelele)</text>
+        <text x="${width / 2}" y="20" text-anchor="middle" fill="var(--accent-secondary, #00e5ff)" font-weight="900" font-size="14">${chordName} (Ukelele)</text>
 
         ${chord.baseFret > 1 
-          ? `<text x="18" y="${startY + 16}" fill="#00e5ff" font-size="11" font-weight="bold">${chord.baseFret}fr</text>`
-          : `<line x1="${startX}" y1="${startY}" x2="${startX + stringGap * (numStrings - 1)}" y2="${startY}" stroke="#ffffff" stroke-width="4"/>`
+          ? `<text x="18" y="${startY + 16}" fill="var(--accent-secondary, #00e5ff)" font-size="11" font-weight="bold">${chord.baseFret}fr</text>`
+          : `<line x1="${startX}" y1="${startY}" x2="${startX + stringGap * (numStrings - 1)}" y2="${startY}" stroke="var(--text-primary)" stroke-width="4"/>`
         }
 
         ${Array.from({ length: numFrets + 1 }, (_, f) => `
-          <line x1="${startX}" y1="${startY + f * fretGap}" x2="${startX + stringGap * (numStrings - 1)}" y2="${startY + f * fretGap}" stroke="rgba(255,255,255,0.25)" stroke-width="1.5"/>
+          <line x1="${startX}" y1="${startY + f * fretGap}" x2="${startX + stringGap * (numStrings - 1)}" y2="${startY + f * fretGap}" stroke="var(--border-strong)" stroke-width="1.5"/>
         `).join('')}
 
         ${Array.from({ length: numStrings }, (_, s) => `
-          <line x1="${startX + s * stringGap}" y1="${startY}" x2="${startX + s * stringGap}" y2="${startY + numFrets * fretGap}" stroke="rgba(255,255,255,0.5)" stroke-width="1.5"/>
+          <line x1="${startX + s * stringGap}" y1="${startY}" x2="${startX + s * stringGap}" y2="${startY + numFrets * fretGap}" stroke="var(--border-strong)" stroke-width="1.5"/>
         `).join('')}
 
         ${frets.map((fret, s) => {
           const x = startX + s * stringGap;
-          if (fret === -1) return `<text x="${x}" y="${startY - 6}" text-anchor="middle" fill="#ff5252" font-size="11" font-weight="bold">✕</text>`;
-          if (fret === 0) return `<circle cx="${x}" cy="${startY - 10}" r="3.5" fill="none" stroke="#00e676" stroke-width="2"/>`;
+          if (fret === -1) return `<text x="${x}" y="${startY - 6}" text-anchor="middle" fill="var(--error-color, #e53935)" font-size="11" font-weight="bold">✕</text>`;
+          if (fret === 0) return `<circle cx="${x}" cy="${startY - 10}" r="3.5" fill="none" stroke="var(--success-color, #00e676)" stroke-width="2"/>`;
           return '';
         }).join('')}
 
@@ -153,7 +153,7 @@ export class ChordSvgRenderer {
               const cy = startY + (displayFret - 0.5) * fretGap;
               const finger = fingers[s] || '';
               return `
-                <circle cx="${cx}" cy="${cy}" r="7" fill="#00e5ff"/>
+                <circle cx="${cx}" cy="${cy}" r="7" fill="var(--accent-secondary, #00e5ff)"/>
                 ${finger ? `<text x="${cx}" y="${cy + 3.5}" text-anchor="middle" fill="#000000" font-size="9" font-weight="900">${finger}</text>` : ''}
               `;
             }
@@ -199,18 +199,18 @@ export class ChordSvgRenderer {
 
     return `
       <svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" class="chord-diagram-svg piano-svg" role="img" aria-label="Diagrama de teclado ${chordName}">
-        <text x="${width / 2}" y="15" text-anchor="middle" fill="#00e676" font-weight="900" font-size="12">${chordName} (Piano)</text>
+        <text x="${width / 2}" y="15" text-anchor="middle" fill="var(--accent-primary)" font-weight="900" font-size="12">${chordName} (Piano)</text>
 
         ${whiteKeys.map((k, i) => {
           const x = startX + i * whiteKeyWidth;
           const active = isWhiteActive(k);
           return `
-            <rect x="${x}" y="${startY}" width="${whiteKeyWidth}" height="${whiteKeyHeight}" rx="2" fill="${active ? '#00e5ff' : '#ffffff'}" stroke="#1a1a24" stroke-width="1"/>
+            <rect x="${x}" y="${startY}" width="${whiteKeyWidth}" height="${whiteKeyHeight}" rx="2" fill="${active ? 'var(--accent-primary)' : 'var(--bg-surface-solid)'}" stroke="var(--border-strong)" stroke-width="1.5"/>
             ${active ? `
-              <circle cx="${x + whiteKeyWidth / 2}" cy="${startY + whiteKeyHeight - 12}" r="4" fill="#000000"/>
-              <text x="${x + whiteKeyWidth / 2}" y="${startY + whiteKeyHeight - 9.5}" text-anchor="middle" fill="#ffffff" font-size="6.5" font-weight="900">${k.note}</text>
+              <circle cx="${x + whiteKeyWidth / 2}" cy="${startY + whiteKeyHeight - 12}" r="4" fill="var(--bg-surface-solid)"/>
+              <text x="${x + whiteKeyWidth / 2}" y="${startY + whiteKeyHeight - 9.5}" text-anchor="middle" fill="var(--text-primary)" font-size="6.5" font-weight="900">${k.note}</text>
             ` : `
-              <text x="${x + whiteKeyWidth / 2}" y="${startY + whiteKeyHeight - 4}" text-anchor="middle" fill="#999999" font-size="6">${k.note}</text>
+              <text x="${x + whiteKeyWidth / 2}" y="${startY + whiteKeyHeight - 4}" text-anchor="middle" fill="var(--text-muted)" font-size="6">${k.note}</text>
             `}
           `;
         }).join('')}
@@ -219,10 +219,10 @@ export class ChordSvgRenderer {
           const x = startX + (k.pos + 1) * whiteKeyWidth - (blackKeyWidth / 2);
           const active = isBlackActive(k);
           return `
-            <rect x="${x}" y="${startY}" width="${blackKeyWidth}" height="${blackKeyHeight}" rx="2" fill="${active ? '#ff5722' : '#14141c'}" stroke="#000000" stroke-width="1"/>
+            <rect x="${x}" y="${startY}" width="${blackKeyWidth}" height="${blackKeyHeight}" rx="2" fill="${active ? 'var(--accent-secondary, #00e5ff)' : 'var(--text-primary)'}" stroke="var(--border-strong)" stroke-width="1"/>
             ${active ? `
-              <circle cx="${x + blackKeyWidth / 2}" cy="${startY + blackKeyHeight - 10}" r="3.5" fill="#ffffff"/>
-              <text x="${x + blackKeyWidth / 2}" y="${startY + blackKeyHeight - 7.5}" text-anchor="middle" fill="#000000" font-size="5.5" font-weight="900">${k.note}</text>
+              <circle cx="${x + blackKeyWidth / 2}" cy="${startY + blackKeyHeight - 10}" r="3.5" fill="var(--bg-surface-solid)"/>
+              <text x="${x + blackKeyWidth / 2}" y="${startY + blackKeyHeight - 7.5}" text-anchor="middle" fill="var(--text-primary)" font-size="5.5" font-weight="900">${k.note}</text>
             ` : ''}
           `;
         }).join('')}

@@ -101,17 +101,6 @@ export class HomeViewV2 extends Component {
             <button class="quick-chip-btn" data-query="Taylor Swift">🎧 Taylor Swift</button>
             <button class="quick-chip-btn" data-query="Metallica">⚡ Metallica</button>
           </div>
-
-          <!-- Banner Informativo de Guía Rápida -->
-          <div class="explore-quick-tip-banner">
-            <span class="tip-icon">✨</span>
-            <span><strong>Cancionero Interactivo Pro:</strong> Pulsa cualquier canción para acceder al visor con acordes, transposición en tiempo real y auto-scroll manos libres.</span>
-          </div>
-
-          <!-- Botón de Importación Rápida -->
-          <button class="btn-add-custom-song-hero" id="btnOpenSongImporterHero" aria-label="Añadir nueva canción">
-            <span>+ ¿Quieres otra canción? Añádela o pega su letra aquí</span>
-          </button>
         </div>
 
         <!-- Secciones por Género Musical -->
@@ -133,6 +122,12 @@ export class HomeViewV2 extends Component {
           </div>
           <div class="explore-songs-grid">
             ${this.renderSongCards()}
+          </div>
+          
+          <div class="explore-footer-actions" style="margin-top: 30px; text-align: center;">
+            <button class="btn-add-custom-song-hero" id="btnOpenSongImporterHero" aria-label="Añadir nueva canción">
+              <span>+ ¿No encuentras tu canción? Añádela o pega su letra aquí</span>
+            </button>
           </div>
         </div>
       </div>

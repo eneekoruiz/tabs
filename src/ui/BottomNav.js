@@ -202,7 +202,12 @@ export class BottomNav extends Component {
       });
 
       this.container.querySelector('#btnBottomToggleRecord')?.addEventListener('click', () => {
-        events.emit('song:toggleRecording');
+        if (!this.isRecording) {
+          const wantVideo = window.confirm('¿Quieres grabar también vídeo con la cámara de tu dispositivo?\n\nAceptar = Vídeo + Audio\nCancelar = Solo Audio');
+          events.emit('song:toggleRecording', { video: wantVideo });
+        } else {
+          events.emit('song:toggleRecording', { video: false });
+        }
       });
 
       this.container.querySelector('#btnBottomEnterStage')?.addEventListener('click', () => {

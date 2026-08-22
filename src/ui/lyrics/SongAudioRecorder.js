@@ -49,14 +49,15 @@ export class SongAudioRecorder {
     };
   }
 
-  async toggle(songTitle = 'Ensayo') {
+  async toggle(songTitle = 'Ensayo', wantVideo = false) {
     if (this.isRecording) {
       gigRecorder.stopRecording();
     } else {
+      this.recordWithCamera = wantVideo;
       const ok = await gigRecorder.startRecording({
         video: this.recordWithCamera,
         title: songTitle
-      });
+      }, this.recordWithCamera);
       if (ok) {
         this.isRecording = true;
         this.recordedUrl = null;

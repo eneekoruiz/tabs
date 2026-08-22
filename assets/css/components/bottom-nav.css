@@ -2,28 +2,53 @@
    Estilos de Navegación Inferior Mobile-First (Bottom Nav Bar & Vistas)
    ========================================================================== */
 
-/* Barra de Navegación Inferior Fija */
-.bottom-nav-bar {
+/* Barra de Navegación Inferior y Barra Player */
+.bottom-nav-bar, .bottom-player-bar {
   position: fixed;
   bottom: 0;
   left: 0;
   width: 100vw;
-  height: 64px;
-  background-color: var(--bg-surface-raised);
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
-  border-top: 1px solid var(--glass-border);
+  height: 68px;
+  background-color: var(--bg-surface-solid);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid var(--border-subtle);
   display: flex;
   justify-content: space-around;
   align-items: center;
   z-index: 400;
-  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-body.theme-ivory .bottom-nav-bar {
-  background-color: rgba(255, 255, 255, 0.94);
-  border-top: 1px solid rgba(0, 0, 0, 0.1);
-  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
+body.theme-ivory .bottom-nav-bar, 
+body.theme-ivory .bottom-player-bar {
+  background-color: rgba(255, 255, 255, 0.85);
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 -4px 30px rgba(0, 0, 0, 0.06);
+}
+
+/* Modo Dock Flotante (Escritorio) */
+@media (min-width: 800px) {
+  .bottom-nav-bar, .bottom-player-bar {
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: auto;
+    min-width: 500px;
+    height: 64px;
+    border-radius: 32px;
+    border: 1px solid var(--border-subtle);
+    padding: 0 20px;
+    gap: 16px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  }
+  
+  body.theme-ivory .bottom-nav-bar, 
+  body.theme-ivory .bottom-player-bar {
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+    background-color: rgba(255, 255, 255, 0.95);
+  }
 }
 
 .nav-tab-btn {
@@ -54,27 +79,6 @@ body.theme-ivory .bottom-nav-bar {
 
 .nav-tab-btn.active .nav-icon {
   transform: translateY(-2px) scale(1.15);
-}
-
-/* ==========================================================================
-   Barra Inferior Contextual de Canción (Bottom Player Bar)
-   ========================================================================== */
-.bottom-player-bar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 12px;
-  background: rgba(18, 18, 24, 0.92);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.45);
-}
-
-body.theme-ivory .bottom-player-bar {
-  background: rgba(255, 255, 255, 0.94);
-  border-top: 1px solid rgba(0, 0, 0, 0.1);
-  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
 }
 
 .nav-player-btn {
@@ -322,33 +326,46 @@ body.theme-ivory .nav-player-btn:hover {
 }
 
 .genre-grid-mobile {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  display: flex;
+  flex-wrap: wrap;
   gap: 10px;
 }
 
 .genre-card-item {
   background: var(--bg-surface-solid);
   border: 1px solid var(--border-subtle);
-  border-radius: 12px;
-  padding: 12px 10px;
+  border-radius: 20px;
+  padding: 10px 18px;
   text-align: center;
   cursor: pointer;
-  font-weight: 700;
-  font-size: 0.85rem;
+  font-weight: 600;
+  font-size: 0.9rem;
   color: var(--text-secondary);
-  transition: all var(--transition-fast);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.02);
 }
 
-.genre-card-item:hover, .genre-card-item.active {
+body.theme-ivory .genre-card-item {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.genre-card-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  border-color: var(--text-muted);
+}
+
+.genre-card-item.active {
   background: var(--accent-primary);
-  color: #000000 !important;
+  color: #ffffff !important;
   border-color: var(--accent-primary);
   transform: translateY(-2px);
-  box-shadow: 0 4px 15px var(--accent-primary-glow);
+  box-shadow: 0 4px 15px rgba(218, 119, 86, 0.3);
 }
-body.theme-ivory .genre-card-item:hover, body.theme-ivory .genre-card-item.active {
-  color: #ffffff !important;
+
+body.theme-ivory .genre-card-item.active {
+  box-shadow: 0 4px 15px rgba(218, 119, 86, 0.3);
 }
 
 /* Tarjetas de Canción Enriquecidas (Estilo Spotify & Ultimate Guitar PRO) */

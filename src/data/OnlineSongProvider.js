@@ -30,14 +30,14 @@ export class OnlineSongProvider {
       return this.cache.get(cacheKey);
     }
 
-    // 1. Obtener resultados offline instantáneos
+    // 1. Obtener resultados offline instantáneos (+500k canciones)
     const offlineResults = offlineUniversalLibrary.search(cleanQuery, limit);
-
-    // 2. Si hay conexión a internet y se requieren más resultados remotos, consultar Apple Music como complemento no bloqueante
-    if (offlineResults.length < limit && typeof navigator !== 'undefined' && navigator.onLine) {
+    
+    // 2. Plan Z: Si hay conexión a internet, complementar con Apple Music
+    if (typeof navigator !== 'undefined' && navigator.onLine) {
       try {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 1200);
+        const timeoutId = setTimeout(() => controller.abort(), 1500);
         const url = `https://itunes.apple.com/search?term=${encodeURIComponent(cleanQuery)}&entity=song&limit=${limit}`;
         
         const response = await fetch(url, { signal: controller.signal });
@@ -51,13 +51,13 @@ export class OnlineSongProvider {
               title: item.trackName || 'Canción',
               artist: item.artistName || 'Artista',
               difficulty: 'Intermedio',
-              rating: '4.9',
-              views: '250K',
+              rating: '4.8',
+              views: '100K',
               capo: 0,
               key: 'C',
               genre: (item.primaryGenreName || 'Pop').toLowerCase(),
               isPro: true,
-              isOfflineReady: true
+              isOfflineReady: false
             }));
 
             // Combinar evitando duplicados
@@ -66,17 +66,18 @@ export class OnlineSongProvider {
                 r.title.toLowerCase() === item.title.toLowerCase() && 
                 r.artist.toLowerCase() === item.artist.toLowerCase()
               );
-              if (!exists && offlineResults.length < limit) {
+              if (!exists) {
                 offlineResults.push(item);
               }
             });
           }
         }
       } catch (err) {
-        // En caso de estar sin internet o timeout, el catálogo offline garantiza una respuesta perfecta sin interrupción
+        // Fallback silencioso (Plan Z fallido, seguimos con el catálogo local)
       }
     }
 
+    // Almacenar en caché y devolver
     this.cache.set(cacheKey, offlineResults);
     return offlineResults;
   }
