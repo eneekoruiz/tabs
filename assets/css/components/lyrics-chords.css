@@ -1557,3 +1557,92 @@ body.theme-ivory .hud-speed-badge,
 .lyrics-tools-bar select:hover, .lyrics-tools-bar button:hover { background: var(--bg-surface-hover); border-color: var(--border-strong); }
 .lyrics-tools-bar .zoom-controls button { border: none !important; border-radius: 0 !important; background: transparent !important; }
 .lyrics-tools-bar .zoom-controls button:hover { background: var(--bg-surface-hover) !important; }
+
+/* ==========================================================================
+   Premium Top Navbar Buttons (V2 Aesthetic)
+   ========================================================================== */
+.btn-top-action-pill {
+  padding: 8px 16px;
+  border-radius: 20px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-surface-raised);
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-top-action-pill:hover {
+  background: var(--bg-surface-hover);
+  border-color: var(--border-strong);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.08);
+}
+
+.view-mode-pill-group {
+  display: flex;
+  background: var(--bg-surface-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: 20px;
+  overflow: hidden;
+  padding: 2px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+}
+
+.view-mode-pill-btn {
+  padding: 6px 16px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+  border-radius: 18px;
+  transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.view-mode-pill-btn:hover {
+  color: var(--text-primary);
+}
+
+.view-mode-pill-btn.active {
+  background: var(--text-primary);
+  color: var(--bg-base);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+.btn-back-to-explore {
+  padding: 8px 16px !important;
+  border-radius: 20px !important;
+  border: 1px solid var(--border-subtle) !important;
+  background: var(--bg-surface-raised) !important;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.04) !important;
+  transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1) !important;
+}
+.btn-back-to-explore:hover {
+  background: var(--bg-surface-hover) !important;
+  border-color: var(--border-strong) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 14px rgba(0,0,0,0.08) !important;
+}
+
+/* Also upgrade the bottom essential tools */
+.btn-instrument-select, .btn-font-scale-step, .btn-lyrics-options {
+  border-radius: 20px !important;
+  border: 1px solid var(--border-subtle) !important;
+  background: var(--bg-surface-raised) !important;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.04) !important;
+  transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1) !important;
+  font-weight: 700 !important;
+}
+.btn-instrument-select:hover, .btn-font-scale-step:hover, .btn-lyrics-options:hover {
+  background: var(--bg-surface-hover) !important;
+  border-color: var(--border-strong) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 14px rgba(0,0,0,0.08) !important;
+}

@@ -461,7 +461,11 @@ export class LyricsChordsView extends Component {
     
     this.container.querySelector('#btnAsSlower')?.addEventListener('click', () => { this.autoScroller.stepSpeed(-5); document.getElementById('lblAsSpeed').textContent = this.autoScroller.speedPercent; });
     this.container.querySelector('#btnAsFaster')?.addEventListener('click', () => { this.autoScroller.stepSpeed(5); document.getElementById('lblAsSpeed').textContent = this.autoScroller.speedPercent; });
- this.container.querySelector('#btnTransposeMinus')?.addEventListener('click', () => this.setTranspose(this.transposeSemitones - 1));
+ 
+      this.container.querySelector('#btnAsSlower')?.addEventListener('click', () => { this.autoScroller.stepSpeed(-5); document.getElementById('lblAsSpeed').textContent = this.autoScroller.speedPercent; });
+      this.container.querySelector('#btnAsFaster')?.addEventListener('click', () => { this.autoScroller.stepSpeed(5); document.getElementById('lblAsSpeed').textContent = this.autoScroller.speedPercent; });
+  
+    this.container.querySelector('#btnTransposeMinus')?.addEventListener('click', () => this.setTranspose(this.transposeSemitones - 1));
     this.container.querySelector('#btnTransposePlus')?.addEventListener('click', () => this.setTranspose(this.transposeSemitones + 1));
     this.container.querySelector('#btnTransposeReset')?.addEventListener('click', () => this.setTranspose(0));
 
