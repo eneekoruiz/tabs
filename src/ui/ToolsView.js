@@ -238,79 +238,72 @@ export class ToolsView extends Component {
     if (!this.container) return;
 
     this.container.innerHTML = `
-      <div class="tools-view-container" role="main" aria-label="Herramientas del Músico Pro">
+      <div class="tools-view-wrapper" role="main" aria-label="Herramientas del Músico Pro">
         
-        <div class="tools-dashboard-header">
-          <div class="tools-header-badge">ESTUDIO & PRÁCTICA PROFESIONAL</div>
-          <h1 class="tools-main-title">Herramientas del Músico Pro</h1>
-          <p class="tools-subtitle">Metrónomo de precisión, afinador cromático, entrenador auditivo, diccionario y armonía avanzada.</p>
+        <div class="view-header">
+          <h1>Herramientas Pro</h1>
+          <p>Estudio & Práctica Profesional. Metrónomo, afinador, entrenador y armonía.</p>
         </div>
 
-        <div class="tools-cards-grid">
+        <div class="tools-premium-list">
           <!-- 1. METRÓNOMO -->
-          <div class="tool-card-pro premium-list-item" data-tool="metronome" role="button" tabindex="0" aria-label="Abrir Metrónomo">
-            <div class="tool-card-icon-box">⏱️</div>
-            <div class="tool-card-body">
-              <span class="tool-card-badge">TIEMPO REAL</span>
-              <h2 class="tool-card-title">Metrónomo de Precisión</h2>
-              <p class="tool-card-desc">Subdivisiones (3illos, semicorcheas), TAP tempo, acento del primer pulso y timbres clásicos.</p>
+          <div class="premium-list-item" data-tool="metronome" role="button" tabindex="0" aria-label="Abrir Metrónomo">
+            <div class="premium-icon" style="background: #da7756; color: white;">⏱️</div>
+            <div class="premium-content">
+              <h3>Metrónomo de Precisión</h3>
+              <p>Subdivisiones, TAP tempo, acento del primer pulso y timbres clásicos.</p>
             </div>
-            <button class="btn-open-tool-action">Abrir Metrónomo →</button>
+            <div class="premium-arrow">→</div>
           </div>
 
           <!-- 2. AFINADOR -->
-          <div class="tool-card-pro premium-list-item" data-tool="tuner" role="button" tabindex="0" aria-label="Abrir Afinador">
-            <div class="tool-card-icon-box">🎵</div>
-            <div class="tool-card-body">
-              <span class="tool-card-badge">DIAPASÓN</span>
-              <h2 class="tool-card-title">Afinador & Diapasón</h2>
-              <p class="tool-card-desc">Tonos de referencia para afinaciones Standard, Drop D, DADGAD, Open G, Bajo y Ukelele.</p>
+          <div class="premium-list-item" data-tool="tuner" role="button" tabindex="0" aria-label="Abrir Afinador">
+            <div class="premium-icon" style="background: #5a6b5c; color: white;">🎵</div>
+            <div class="premium-content">
+              <h3>Afinador & Diapasón</h3>
+              <p>Tonos de referencia para Standard, Drop D, DADGAD, Open G y Ukelele.</p>
             </div>
-            <button class="btn-open-tool-action">Abrir Afinador →</button>
+            <div class="premium-arrow">→</div>
           </div>
 
           <!-- 3. DICCIONARIO DE ACORDES -->
-          <div class="tool-card-pro premium-list-item" data-tool="dictionary" role="button" tabindex="0" aria-label="Abrir Diccionario de Acordes">
-            <div class="tool-card-icon-box">📚</div>
-            <div class="tool-card-body">
-              <span class="tool-card-badge">VOICINGS</span>
-              <h2 class="tool-card-title">Diccionario de Acordes</h2>
-              <p class="tool-card-desc">Diagramas SVG interactivos de acordes mayores, menores, 7mas, maj7 y tensiones con audio arpegiado.</p>
+          <div class="premium-list-item" data-tool="dictionary" role="button" tabindex="0" aria-label="Abrir Diccionario de Acordes">
+            <div class="premium-icon" style="background: #d99a4e; color: white;">📚</div>
+            <div class="premium-content">
+              <h3>Diccionario de Acordes</h3>
+              <p>Diagramas SVG interactivos de acordes con audio arpegiado.</p>
             </div>
-            <button class="btn-open-tool-action">Ver Diccionario →</button>
+            <div class="premium-arrow">→</div>
           </div>
 
           <!-- 4. ENTRENADOR DE OÍDO -->
-          <div class="tool-card-pro premium-list-item" data-tool="ear" role="button" tabindex="0" aria-label="Abrir Entrenador de Oído">
-            <div class="tool-card-icon-box">👂</div>
-            <div class="tool-card-body">
-              <span class="tool-card-badge">GAME / TEST</span>
-              <h2 class="tool-card-title">Entrenador de Oído</h2>
-              <p class="tool-card-desc">Desafía tu oído reconociendo tríadas, cuatríadas y acordes con tensiones por niveles de dificultad.</p>
+          <div class="premium-list-item" data-tool="ear" role="button" tabindex="0" aria-label="Abrir Entrenador de Oído">
+            <div class="premium-icon" style="background: #625a6b; color: white;">👂</div>
+            <div class="premium-content">
+              <h3>Entrenador de Oído</h3>
+              <p>Desafía tu oído reconociendo acordes y tensiones armónicas.</p>
             </div>
-            <button class="btn-open-tool-action">Entrenar Oído →</button>
+            <div class="premium-arrow">→</div>
           </div>
 
           <!-- 5. CALCULADORA DE CEJILLA -->
-          <div class="tool-card-pro premium-list-item" data-tool="capo" role="button" tabindex="0" aria-label="Abrir Calculadora de Cejilla">
-            <div class="tool-card-icon-box">🎸</div>
-            <div class="tool-card-body">
-              <span class="tool-card-badge">TRANSPOSICIÓN</span>
-              <h2 class="tool-card-title">Calculadora de Cejilla</h2>
-              <p class="tool-card-desc">Calcula el traste óptico del capo para cantar en tu tono manteniendo posiciones abiertas.</p>
+          <div class="premium-list-item" data-tool="capo" role="button" tabindex="0" aria-label="Abrir Calculadora de Cejilla">
+            <div class="premium-icon" style="background: #5a8e8b; color: white;">🎸</div>
+            <div class="premium-content">
+              <h3>Calculadora de Cejilla</h3>
+              <p>Calcula el traste óptico del capo para cantar en tu tono.</p>
             </div>
-            <button class="btn-open-tool-action">Calcular Capo →</button>
+            <div class="premium-arrow">→</div>
           </div>
 
           <!-- 6. CÍRCULO DE QUINTAS -->
-          <div class="tool-card-pro premium-list-item" data-tool="circle" role="button" tabindex="0" aria-label="Abrir Círculo de Quintas">
-            <div class="tool-card-icon-box">⭕</div>
-            <div class="tool-card-body">
-              <span class="tool-card-badge">COMPOSICIÓN</span>
-              <h2 class="tool-card-title">Círculo de Quintas</h2>
-              <p class="tool-card-desc">Visualiza armaduras, escalas relativas menores y familias armónicas de acordes I-IV-V-vi al instante.</p>
+          <div class="premium-list-item" data-tool="circle" role="button" tabindex="0" aria-label="Abrir Círculo de Quintas">
+            <div class="premium-icon" style="background: #8b5a6b; color: white;">⭕</div>
+            <div class="premium-content">
+              <h3>Círculo de Quintas</h3>
+              <p>Visualiza armaduras, escalas relativas y familias armónicas.</p>
             </div>
-            <button class="btn-open-tool-action">Ver Círculo →</button>
+            <div class="premium-arrow">→</div>
           </div>
         </div>
 
