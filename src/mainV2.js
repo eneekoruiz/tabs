@@ -3,6 +3,16 @@
  * @description Bootstrap V2 con soporte para Vista de Letra con Acordes interactivos (Ultimate Guitar UX).
  */
 
+// Suprimir warnings inofensivos de AlphaTab en consola
+const originalWarn = console.warn;
+console.warn = function(...args) {
+  if (args[0] && typeof args[0] === 'string' && (
+    args[0].includes('AlphaTab skipped rendering because of width=0') ||
+    args[0].includes('AlphaTab container was invisible while autosizing')
+  )) return;
+  originalWarn.apply(console, args);
+};
+
 import { events } from './core/EventBus.js';
 import { state } from './core/State.js';
 import { audioEngine } from './core/AudioEngineV2.js';

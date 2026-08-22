@@ -6,6 +6,17 @@
  */
 
 import { events } from './core/EventBus.js';
+
+// Suprimir warnings inofensivos de AlphaTab en consola
+const originalWarn = console.warn;
+console.warn = function(...args) {
+  if (args[0] && typeof args[0] === 'string' && (
+    args[0].includes('AlphaTab skipped rendering because of width=0') ||
+    args[0].includes('AlphaTab container was invisible while autosizing')
+  )) return;
+  originalWarn.apply(console, args);
+};
+
 import { state } from './core/State.js';
 import { audioEngine } from './core/AudioEngine.js';
 import { db } from './data/Database.js';

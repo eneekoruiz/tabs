@@ -7,6 +7,10 @@
  * - Interruptor maestro de Mute con persistencia en localStorage.
  */
 
+let userHasInteracted = false;
+window.addEventListener('pointerdown', () => userHasInteracted = true, { once: true });
+window.addEventListener('keydown', () => userHasInteracted = true, { once: true });
+
 class AudioFeedbackManager {
   constructor() {
     this.ctx = null;
@@ -15,6 +19,7 @@ class AudioFeedbackManager {
   }
 
   _initContext() {
+    if (!userHasInteracted) return; // Silent abort
     if (!this.ctx) {
       const AudioCtx = window.AudioContext || window.webkitAudioContext;
       if (AudioCtx) {
