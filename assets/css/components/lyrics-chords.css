@@ -554,10 +554,17 @@ body.theme-ivory .chord-card-name,
 }
 
 .lyrics-chords-container.theme-paper .chord-badge {
-  background: #ff5722;
-  color: var(--text-primary);
-  border-color: #e64a19;
-  font-weight: 800;
+  background: #f0ebe4;
+  color: #da7756;
+  border-color: rgba(218, 119, 86, 0.3);
+  font-weight: 700;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+}
+
+.lyrics-chords-container.theme-paper .chord-badge:hover {
+  background: #da7756;
+  color: #ffffff;
+  border-color: #da7756;
 }
 
 .lyrics-chords-container.theme-paper .btn-instrument-select,
@@ -575,20 +582,21 @@ body.theme-ivory .chord-card-name,
   display: flex;
   align-items: center;
   gap: 10px;
-  background: linear-gradient(135deg, rgba(255, 87, 34, 0.08) 0%, rgba(0, 229, 255, 0.08) 100%);
-  border: 1px solid rgba(255, 87, 34, 0.25);
+  background: var(--bg-surface-raised);
+  border: 1px solid var(--border-subtle);
   border-radius: 10px;
-  padding: 8px 14px;
-  margin: 10px 0 14px 0;
-  font-size: 0.8rem;
+  padding: 10px 14px;
+  margin: 10px 0 16px 0;
+  font-size: 0.85rem;
   color: var(--text-secondary);
-  line-height: 1.4;
+  line-height: 1.5;
   animation: fadeInDown 0.2s ease-out;
 }
 
 .lyrics-quick-help-bar .help-sparkle {
   font-size: 1.1rem;
   flex-shrink: 0;
+  color: var(--accent-amber);
 }
 
 .lyrics-quick-help-bar .help-text {
@@ -597,9 +605,9 @@ body.theme-ivory .chord-card-name,
 
 body.theme-ivory .lyrics-quick-help-bar {
   background: #ffffff;
-  border-color: rgba(255, 87, 34, 0.3);
-  color: #222222;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  border-color: rgba(0, 0, 0, 0.08);
+  color: #5e5a55;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.03), 0 4px 12px rgba(0,0,0,0.02);
 }
 
 /* Dropdowns */

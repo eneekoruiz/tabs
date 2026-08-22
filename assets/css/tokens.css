@@ -84,43 +84,43 @@ body, body.theme-charcoal {
 }
 
 /* =========================================================
-   THEME IVORY (Paper / Light Mode)
+   THEME IVORY (Paper / Claude Design / Natural)
    ========================================================= */
 body.theme-ivory {
-  /* Fondos Principales (Cálidos y Limpios) */
-  --bg-app: #f4f3ed;
+  /* Fondos Principales (Cálidos, naturales tipo Anthropic/Claude) */
+  --bg-app: #f0ebe4;
   --bg-surface: #ffffff;
   --bg-surface-solid: #ffffff;
-  --bg-surface-raised: #f7f6f0;
-  --bg-surface-hover: #eceae1;
-  --bg-viewport: #f8f7f2;
+  --bg-surface-raised: #faf8f5;
+  --bg-surface-hover: #f5f2ec;
+  --bg-viewport: #f4f0eb;
   --bg-paper: #ffffff;
-  --bg-card-subtle: #f0efe8;
+  --bg-card-subtle: #faf8f5;
 
-  /* Glassmorphism (Sombra Oscura Suave) */
-  --glass-blur: blur(20px) saturate(150%);
-  --glass-border: rgba(0, 0, 0, 0.08);
-  --glass-border-hover: rgba(0, 0, 0, 0.15);
-  --glass-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
-  --glass-specular: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  /* Sombra Natural Suave (0 glow artificial) */
+  --glass-blur: blur(24px) saturate(120%);
+  --glass-border: rgba(0, 0, 0, 0.06);
+  --glass-border-hover: rgba(0, 0, 0, 0.12);
+  --glass-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 4px 12px rgba(0, 0, 0, 0.03);
+  --glass-specular: inset 0 1px 0 rgba(255, 255, 255, 0.7);
 
-  /* Acentos Elegantes (Alta Legibilidad) */
-  --accent-primary: #c92a2a; /* Crimson */
-  --accent-primary-hover: #b02525;
-  --accent-primary-glow: rgba(201, 42, 42, 0.25);
-  --accent-secondary: #0b69a3; /* Royal Navy */
-  --accent-secondary-glow: rgba(11, 105, 163, 0.25);
-  --accent-amber: #d97706;
+  /* Acentos Elegantes (Terracota Natural) */
+  --accent-primary: #da7756;
+  --accent-primary-hover: #c46445;
+  --accent-primary-glow: rgba(218, 119, 86, 0.15);
+  --accent-secondary: #5a6b5c; /* Verde musgo suave */
+  --accent-secondary-glow: rgba(90, 107, 92, 0.15);
+  --accent-amber: #d99a4e;
   
-  /* Texto (Tinta Oscura - Contraste WCAG AAA) */
-  --text-primary: #181a1f;
-  --text-secondary: #474d57;
-  --text-muted: #646c7a;
+  /* Texto (Marrón muy oscuro, elegante y legible) */
+  --text-primary: #2d2b29;
+  --text-secondary: #5e5a55;
+  --text-muted: #8b8681;
   --text-inverse: #ffffff;
 
-  /* Bordes */
-  --border-subtle: rgba(0, 0, 0, 0.09);
-  --border-strong: rgba(0, 0, 0, 0.18);
+  /* Bordes sutiles y limpios */
+  --border-subtle: rgba(0, 0, 0, 0.08);
+  --border-strong: rgba(0, 0, 0, 0.15);
 
   background-color: var(--bg-app);
   color: var(--text-primary);
