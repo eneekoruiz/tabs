@@ -192,7 +192,8 @@ body.theme-ivory .nav-player-btn:hover {
    ========================================================================== */
 .explore-view {
   padding: 20px 16px 100px 16px;
-  max-width: 1200px;
+  max-width: 1800px;
+  width: 96%;
   margin: 0 auto;
 }
 
@@ -235,8 +236,11 @@ body.theme-ivory .nav-player-btn:hover {
 
 .explore-search-box {
   width: 100%;
+  max-width: 900px;
   position: relative;
   margin-top: 6px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .search-svg-icon {
