@@ -17,9 +17,85 @@ export class EarTrainerTool {
     this.hasPlayed = false;
     this.isAudioPlaying = false;
     this.isAnswerChecking = false;
+    this.timeoutIds = new Set();
+    this.activeContainer = null;
+    this.modalElement = null;
+    this.closeButton = null;
+    this.lifecycleObserver = null;
+    this.handleClose = () => this.close();
+  }
+
+  schedule(callback, delay) {
+    const timeoutId = setTimeout(() => {
+      this.timeoutIds.delete(timeoutId);
+
+      if (this.modalElement && !this.modalElement.isConnected) {
+        this.close();
+        return;
+      }
+
+      callback();
+    }, delay);
+
+    this.timeoutIds.add(timeoutId);
+    return timeoutId;
+  }
+
+  clearTimeouts() {
+    this.timeoutIds.forEach(timeoutId => clearTimeout(timeoutId));
+    this.timeoutIds.clear();
+  }
+
+  bindLifecycle(container) {
+    const modalElement = container?.querySelector('#toolModalOverlay') || null;
+    if (this.activeContainer === container && this.modalElement === modalElement) {
+      return;
+    }
+
+    this.unbindLifecycle();
+    this.activeContainer = container || null;
+    this.modalElement = modalElement;
+    this.closeButton = modalElement?.querySelector('#btnCloseToolModal') || null;
+    this.closeButton?.addEventListener('click', this.handleClose);
+
+    const modalParent = modalElement?.parentNode;
+    if (modalParent && typeof MutationObserver !== 'undefined') {
+      this.lifecycleObserver = new MutationObserver(() => {
+        if (!modalElement.isConnected) {
+          this.close();
+        }
+      });
+      this.lifecycleObserver.observe(modalParent, { childList: true });
+    }
+  }
+
+  unbindLifecycle() {
+    this.closeButton?.removeEventListener('click', this.handleClose);
+    this.lifecycleObserver?.disconnect();
+    this.closeButton = null;
+    this.lifecycleObserver = null;
+  }
+
+  close() {
+    this.clearTimeouts();
+    this.unbindLifecycle();
+    this.activeContainer = null;
+    this.modalElement = null;
+    this.currentQuestion = null;
+    this.currentOptions = [];
+    this.hasPlayed = false;
+    this.isAudioPlaying = false;
+    this.isAnswerChecking = false;
+  }
+
+  destroy() {
+    this.close();
   }
 
   startTest(container) {
+    this.clearTimeouts();
+    this.bindLifecycle(container);
+
     const poolByDiff = {
       'easy': [
         { name: 'Do Mayor (C) — Tríada Brillante / Alegre', chord: 'C' },
@@ -68,7 +144,7 @@ export class EarTrainerTool {
 
     this.updateUI(container);
 
-    setTimeout(() => {
+    this.schedule(() => {
       this.playCurrentChord(container);
     }, 250);
   }
@@ -95,7 +171,7 @@ export class EarTrainerTool {
 
     chordEngine.auditionChord(this.currentQuestion.chord, 'guitar');
 
-    setTimeout(() => {
+    this.schedule(() => {
       this.isAudioPlaying = false;
       this.hasPlayed = true;
       this.updateStatusBox('ready', container);
@@ -148,7 +224,7 @@ export class EarTrainerTool {
       const playBtn = container?.querySelector('#btnPlayEarChord');
       if (playBtn) {
         playBtn.classList.add('pulse-hint');
-        setTimeout(() => playBtn.classList.remove('pulse-hint'), 800);
+        this.schedule(() => playBtn.classList.remove('pulse-hint'), 800);
       }
       return;
     }
@@ -196,7 +272,7 @@ export class EarTrainerTool {
 
       toast.show(`¡Correcto! ${this.currentQuestion.name} (+10 pts)`, 'success', 1400);
 
-      setTimeout(() => {
+      this.schedule(() => {
         this.startTest(container);
       }, 1400);
     } else {
@@ -217,11 +293,11 @@ export class EarTrainerTool {
 
       toast.show(`Incorrecto. Era ${this.currentQuestion.name}`, 'error', 1800);
 
-      setTimeout(() => {
+      this.schedule(() => {
         chordEngine.auditionChord(this.currentQuestion.chord, 'guitar');
       }, 400);
 
-      setTimeout(() => {
+      this.schedule(() => {
         this.startTest(container);
       }, 2200);
     }

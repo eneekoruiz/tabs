@@ -1,7 +1,7 @@
 /**
  * @file OnlineSongProvider.js
- * @description Proveedor de Búsqueda y Letras Universal 100% Offline y Autónomo.
- * Integra el motor OfflineUniversalLibraryEngine (+500k canciones) con fallback opcional a APIs en caso de estar conectado.
+ * @description Proveedor del catálogo local y de guías de acordes disponibles sin conexión.
+ * Integra el índice de discografías incluido y distingue letras curadas de guías generadas.
  */
 
 import { offlineUniversalLibrary } from './catalog/OfflineUniversalLibraryEngine.js';
@@ -15,13 +15,13 @@ export class OnlineSongProvider {
   }
 
   /**
-   * Búsqueda universal instantánea (100% Offline primero, con soporte para 500.000 canciones)
+   * Búsqueda instantánea sobre el catálogo incluido en la aplicación
    */
-  async searchOnline(query, limit = 20) {
+  async searchOnline(query, limit = 30) {
     return this.searchSongs(query, limit);
   }
 
-  async searchSongs(query, limit = 20) {
+  async searchSongs(query, limit = 30) {
     if (!query || !query.trim()) return [];
     const cleanQuery = query.trim();
     const cacheKey = `search_${cleanQuery.toLowerCase()}`;
@@ -30,52 +30,11 @@ export class OnlineSongProvider {
       return this.cache.get(cacheKey);
     }
 
-    // 1. Obtener resultados offline instantáneos (+500k canciones)
-    const offlineResults = offlineUniversalLibrary.search(cleanQuery, limit);
-    
-    // 2. Plan Z: Si hay conexión a internet, complementar con Apple Music
-    if (typeof navigator !== 'undefined' && navigator.onLine) {
-      try {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 1500);
-        const url = `https://itunes.apple.com/search?term=${encodeURIComponent(cleanQuery)}&entity=song&limit=${limit}`;
-        
-        const response = await fetch(url, { signal: controller.signal });
-        clearTimeout(timeoutId);
-
-        if (response.ok) {
-          const data = await response.json();
-          if (data.results && Array.isArray(data.results)) {
-            const apiResults = data.results.map((item, idx) => ({
-              id: `api_${item.trackId || idx}`,
-              title: item.trackName || 'Canción',
-              artist: item.artistName || 'Artista',
-              difficulty: 'Intermedio',
-              rating: '4.8',
-              views: '100K',
-              capo: 0,
-              key: 'C',
-              genre: (item.primaryGenreName || 'Pop').toLowerCase(),
-              isPro: true,
-              isOfflineReady: false
-            }));
-
-            // Combinar evitando duplicados
-            apiResults.forEach(item => {
-              const exists = offlineResults.some(r => 
-                r.title.toLowerCase() === item.title.toLowerCase() && 
-                r.artist.toLowerCase() === item.artist.toLowerCase()
-              );
-              if (!exists) {
-                offlineResults.push(item);
-              }
-            });
-          }
-        }
-      } catch (err) {
-        // Fallback silencioso (Plan Z fallido, seguimos con el catálogo local)
-      }
-    }
+    // Obtener únicamente resultados que existen en el índice local verificable
+    const offlineResults = offlineUniversalLibrary.search(cleanQuery, limit).map(s => ({
+      ...s,
+      isOfflineReady: true
+    }));
 
     // Almacenar en caché y devolver
     this.cache.set(cacheKey, offlineResults);
@@ -83,7 +42,7 @@ export class OnlineSongProvider {
   }
 
   /**
-   * Obtiene la letra con acordes en texto formato ChordPro (100% Offline garantizado)
+   * Obtiene el contenido ChordPro incluido o generado localmente
    */
   async fetchLyricsAndChords(title, artist) {
     const sheet = await this.getSongLyrics(title, artist);
@@ -112,6 +71,12 @@ export class OnlineSongProvider {
     return fallbackSheet;
   }
 
+  getCatalogStats() {
+    return {
+      songs: offlineUniversalLibrary.totalIndexedSongs,
+      artists: offlineUniversalLibrary.totalIndexedArtists
+    };
+  }
   getKnownSongLyrics(title, artist) {
     return getKnownSongLyrics(title, artist);
   }

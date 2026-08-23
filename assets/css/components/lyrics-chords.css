@@ -430,70 +430,192 @@ body.theme-ivory .chord-card-name,
 }
 
 /* ==========================================================================
-   Cabecera Principal y Barra de Controles Esenciales
+   Top HUD Fijo y Cabecera Principal con Título Prominente
    ========================================================================== */
-.lyrics-header-main {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  padding-bottom: 14px;
-  margin-bottom: 18px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.lyrics-title-nav-row {
+.lyrics-top-hud {
+  position: sticky;
+  top: 0;
+  z-index: 100;
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
+  background: var(--bg-surface);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border-bottom: 1px solid var(--border-subtle);
+  padding: 10px 14px;
+  margin: -16px -16px 16px -16px;
+  border-top-left-radius: 14px;
+  border-top-right-radius: 14px;
+  box-shadow: var(--shadow-sm);
 }
 
-.btn-back-to-explore {
+.lyrics-hud-actions-scrollable {
   display: flex;
   align-items: center;
-  gap: 6px;
-  background: var(--border-subtle);
-  border: 1px solid var(--border-strong);
-  color: var(--text-primary);
-  font-size: 0.8rem;
-  font-weight: 700;
-  padding: 6px 12px;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all var(--transition-fast);
-  white-space: nowrap;
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  flex: 1;
+  min-width: 0;
 }
 
-.btn-back-to-explore:hover {
-  background: var(--accent-primary);
-  border-color: var(--accent-primary);
-  transform: translateX(-2px);
+.lyrics-hud-actions-scrollable > * {
+  flex-shrink: 0;
 }
 
-.lyrics-title-group {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
+.lyrics-hud-actions-scrollable::-webkit-scrollbar {
+  display: none;
+}
+
+.lyrics-header-main-title-block {
+  padding: 8px 0 16px 0;
+  margin-bottom: 14px;
+  border-bottom: 1px solid var(--border-subtle);
 }
 
 .lyrics-song-title {
-  font-size: 1.35rem;
-  font-weight: 800;
-  margin: 0;
+  font-size: 2rem;
+  font-weight: 900;
+  margin: 0 0 6px 0;
   color: var(--text-primary);
+  letter-spacing: 0;
+  line-height: 1.2;
+}
+
+.lyrics-song-artist-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
 .lyrics-song-artist {
-  font-size: 0.85rem;
+  font-size: 1.05rem;
   color: var(--text-secondary);
   font-weight: 600;
 }
 
-/* Barra de Controles Esenciales */
-.lyrics-essential-toolbar {
+.lyrics-song-meta-pills {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
+}
+
+.capo-active-pill {
+  background: rgba(255, 179, 0, 0.15);
+  color: #ffb300;
+  border-color: rgba(255, 179, 0, 0.4);
+}
+
+.transpose-active-pill {
+  background: rgba(0, 229, 255, 0.15);
+  color: #00e5ff;
+  border-color: rgba(0, 229, 255, 0.4);
+}
+
+/* ==========================================================================
+   Patrón de Rasgueo & Barra de Acordes Utilizados
+   ========================================================================== */
+.song-meta-rhythm-strip {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.strumming-pattern-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--bg-surface-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  padding: 10px 16px;
   flex-wrap: wrap;
+  gap: 8px;
+}
+
+body.theme-ivory .strumming-pattern-card {
+  background: #ffffff;
+  border-color: rgba(0, 0, 0, 0.08);
+}
+
+.strum-info-col {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.strum-tempo-badge {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+.song-used-chords-bar {
+  background: var(--bg-surface-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  padding: 12px 16px;
+}
+
+body.theme-ivory .song-used-chords-bar {
+  background: #ffffff;
+  border-color: rgba(0, 0, 0, 0.08);
+}
+
+.used-chords-label-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.used-chords-title {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.used-chords-chips-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.used-chord-pill {
+  padding: 4px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.chords-diagrams-accordion {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px dashed var(--border-subtle);
+}
+
+.btn-toggle-diagrams-summary {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--accent-primary);
+  cursor: pointer;
+  user-select: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.btn-toggle-diagrams-summary:hover {
+  text-decoration: underline;
+}
+
+.chords-diagrams-accordion[open] .summary-caret {
+  transform: rotate(180deg);
 }
 
 /* 1. Tema OLED Dark (Predeterminado - Negro Profundo) */
@@ -555,16 +677,16 @@ body.theme-ivory .chord-card-name,
 
 .lyrics-chords-container.theme-paper .chord-badge {
   background: #f0ebe4;
-  color: #da7756;
-  border-color: rgba(218, 119, 86, 0.3);
+  color: #873c24;
+  border-color: rgba(135, 60, 36, 0.38);
   font-weight: 700;
   box-shadow: 0 1px 2px rgba(0,0,0,0.02);
 }
 
 .lyrics-chords-container.theme-paper .chord-badge:hover {
-  background: #da7756;
+  background: #873c24;
   color: #ffffff;
-  border-color: #da7756;
+  border-color: #873c24;
 }
 
 .lyrics-chords-container.theme-paper .btn-instrument-select,
@@ -1238,27 +1360,34 @@ body.theme-ivory .lyrics-quick-help-bar {
   border-color: #ff5252;
 }
 .stage-mode-view {
-  background: #050505 !important;
+  background: var(--bg-app) !important;
+  color: var(--text-primary) !important;
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
   z-index: 9999;
   overflow-y: auto;
-  padding: 40px 20px 100px 20px;
+  padding: 30px 20px 100px 20px;
 }
+
+body.theme-ivory .stage-mode-view {
+  background: #ffffff !important;
+  color: #1a1a1a !important;
+}
+
 .stage-mode-view .stage-floating-hud {
   position: fixed;
-  top: 20px;
-  right: 20px;
+  bottom: 24px;
+  right: 24px;
   display: flex;
-  gap: 15px;
-  background: rgba(20, 20, 25, 0.75);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid var(--border-subtle);
-  padding: 10px 20px;
+  gap: 10px;
+  background: var(--bg-surface-raised);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--border-strong);
+  padding: 8px 16px;
   border-radius: 30px;
   z-index: 10000;
-  box-shadow: 0 12px 40px rgba(0,0,0,0.6);
+  box-shadow: var(--shadow-lg);
   align-items: center;
 }
 :root:has(.stage-mode-view) .bottom-nav-bar,
@@ -1519,7 +1648,7 @@ body.theme-ivory .hud-speed-badge,
   height: 140px;
   object-fit: cover;
   background: #111;
-  transform: scaleX(-1); /* Efecto espejo para el músico */
+  transform: scaleX(-1);
 }
 
 .camera-pip-controls {
@@ -1552,15 +1681,7 @@ body.theme-ivory .hud-speed-badge,
   color: #ffffff;
 }
 
-
-.lyrics-tools-bar select, .lyrics-tools-bar button { padding: 6px 14px; border-radius: 8px; border: 1px solid var(--border-subtle); background: var(--bg-surface-raised); font-weight: 600; cursor: pointer; transition: all 0.2s ease; }
-.lyrics-tools-bar select:hover, .lyrics-tools-bar button:hover { background: var(--bg-surface-hover); border-color: var(--border-strong); }
-.lyrics-tools-bar .zoom-controls button { border: none !important; border-radius: 0 !important; background: transparent !important; }
-.lyrics-tools-bar .zoom-controls button:hover { background: var(--bg-surface-hover) !important; }
-
-/* ==========================================================================
-   Premium Top Navbar Buttons (V2 Aesthetic)
-   ========================================================================== */
+/* Premium Top Navbar Buttons */
 .btn-top-action-pill {
   padding: 8px 16px;
   border-radius: 20px;
@@ -1582,6 +1703,24 @@ body.theme-ivory .hud-speed-badge,
   border-color: var(--border-strong);
   transform: translateY(-2px);
   box-shadow: 0 6px 14px rgba(0,0,0,0.08);
+}
+
+.btn-song-top-metro.is-active {
+  background: rgba(255, 87, 34, 0.18);
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+}
+
+.top-metro-bpm-badge {
+  font-size: 0.72rem;
+  font-weight: 800;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 2px 6px;
+  border-radius: 10px;
+}
+
+body.theme-ivory .top-metro-bpm-badge {
+  background: rgba(0, 0, 0, 0.08);
 }
 
 .view-mode-pill-group {
@@ -1631,7 +1770,6 @@ body.theme-ivory .hud-speed-badge,
   box-shadow: 0 6px 14px rgba(0,0,0,0.08) !important;
 }
 
-/* Also upgrade the bottom essential tools */
 .btn-instrument-select, .btn-font-scale-step, .btn-lyrics-options {
   border-radius: 20px !important;
   border: 1px solid var(--border-subtle) !important;
@@ -1646,10 +1784,6 @@ body.theme-ivory .hud-speed-badge,
   transform: translateY(-2px) !important;
   box-shadow: 0 6px 14px rgba(0,0,0,0.08) !important;
 }
-
-/* ==========================================================================
-   Corrección de Responsividad: evitar desbordamiento horizontal en móviles
-   ========================================================================== */
 
 /* El contenedor nunca desborda el viewport */
 .lyrics-chords-container {
@@ -1701,5 +1835,35 @@ body.theme-ivory .hud-speed-badge,
 
   .chords-visual-cards-grid {
     max-width: 100%;
+  }
+}
+
+/* Mobile HUD layout: keep controls grouped and fully discoverable. */
+@media (max-width: 600px) {
+  .lyrics-top-hud {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    padding: 8px 10px;
+  }
+
+  .lyrics-top-hud > .btn-back-to-explore {
+    align-self: flex-start;
+    flex: 0 0 auto;
+  }
+
+  .lyrics-hud-actions-scrollable {
+    flex: 0 0 auto;
+    width: 100%;
+    max-width: 100%;
+    padding: 2px 0 4px;
+    scroll-padding-inline: 4px;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .lyrics-hud-actions-scrollable > * {
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
   }
 }

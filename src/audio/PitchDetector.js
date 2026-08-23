@@ -33,7 +33,7 @@ export class PitchDetector {
    * @param {MediaStream} [mockStream] - Stream simulado opcional para pruebas unitarias y Playwright
    */
   async start(mockStream = null) {
-    if (this.isRunning) return;
+    if (this.isRunning) return true;
 
     try {
       const AudioCtx = window.AudioContext || window.webkitAudioContext;
@@ -67,12 +67,14 @@ export class PitchDetector {
 
       events.emit('pitch:started');
       this.loop();
+      return true;
     } catch (err) {
       this.isRunning = false;
       events.emit('pitch:error', err);
       if (err.name !== 'NotAllowedError') {
         console.warn('[PitchDetector] Captura de audio no disponible:', err);
       }
+      return false;
     }
   }
 

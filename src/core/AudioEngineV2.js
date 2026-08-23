@@ -26,11 +26,11 @@ class AudioEngineV2 {
 
     state.set('systemStatus', { text: 'Iniciando AlphaTab...', type: 'loading' });
 
-    const soundFontUrl = 'https://cdn.jsdelivr.net/npm/@coderline/alphatab@latest/dist/soundfont/sonivox.sf2';
+    const soundFontUrl = './assets/vendor/alphatab/1.8.4/soundfont/sonivox.sf2';
 
     const settings = {
       core: {
-        fontDirectory: 'https://cdn.jsdelivr.net/npm/@coderline/alphatab@latest/dist/font/',
+        fontDirectory: './assets/vendor/alphatab/1.8.4/font/',
         logLevel: alphaTab.LogLevel.Warning,
         includeNoteBounds: true,
       },

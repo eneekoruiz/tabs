@@ -17,6 +17,8 @@ class AudioSyncEngine {
     this.volume = 0.85;
     this.isMuted = false;
     this.syncToleranceMs = 150; // Margen para re-sincronización suave
+    this.objectUrl = null;
+    this.pendingLoadCancel = null;
 
     this.initEvents();
   }
@@ -60,28 +62,120 @@ class AudioSyncEngine {
     this.audioElement.volume = this.volume;
   }
 
+  cancelPendingLoad() {
+    const cancel = this.pendingLoadCancel;
+    this.pendingLoadCancel = null;
+    cancel?.();
+  }
+
+  revokeObjectUrl(url = this.objectUrl) {
+    if (!url) return;
+
+    URL.revokeObjectURL(url);
+    if (this.objectUrl === url) {
+      this.objectUrl = null;
+    }
+  }
+
+  resetMediaSource() {
+    this.cancelPendingLoad();
+    this.audioElement.pause();
+    this.audioElement.removeAttribute('src');
+    this.audioElement.load();
+    this.revokeObjectUrl();
+  }
+
+  waitForMediaReady() {
+    const HAVE_METADATA = 1;
+    if (this.audioElement.readyState >= HAVE_METADATA) {
+      return Promise.resolve();
+    }
+
+    return new Promise((resolve, reject) => {
+      let settled = false;
+      let cancelLoad;
+
+      const cleanup = () => {
+        this.audioElement.removeEventListener('loadedmetadata', onReady);
+        this.audioElement.removeEventListener('canplay', onReady);
+        this.audioElement.removeEventListener('error', onError);
+        this.audioElement.removeEventListener('abort', onAbort);
+        if (this.pendingLoadCancel === cancelLoad) {
+          this.pendingLoadCancel = null;
+        }
+      };
+
+      const settle = (callback, value) => {
+        if (settled) return;
+        settled = true;
+        cleanup();
+        callback(value);
+      };
+
+      const onReady = () => settle(resolve);
+      const onError = () => {
+        const mediaError = this.audioElement.error;
+        const message = mediaError?.message || 'No se pudo cargar el archivo de audio';
+        settle(reject, new Error(message));
+      };
+      const onAbort = () => {
+        const error = new Error('Carga de audio cancelada');
+        error.name = 'AbortError';
+        settle(reject, error);
+      };
+
+      cancelLoad = onAbort;
+      this.pendingLoadCancel = cancelLoad;
+      this.audioElement.addEventListener('loadedmetadata', onReady, { once: true });
+      this.audioElement.addEventListener('canplay', onReady, { once: true });
+      this.audioElement.addEventListener('error', onError, { once: true });
+      this.audioElement.addEventListener('abort', onAbort, { once: true });
+      this.audioElement.load();
+    });
+  }
+
   /**
    * Carga un archivo de audio real desde un Blob / File o URL
    * @param {File|Blob} file 
    */
   async loadAudioFile(file) {
-    if (!file) return;
+    if (!file) return false;
+
+    this.resetMediaSource();
+    this.isLoaded = false;
+
+    const objectUrl = URL.createObjectURL(file);
+    this.objectUrl = objectUrl;
+    this.audioElement.src = objectUrl;
+    this.fileName = file.name || 'Audio Sincronizado.mp3';
 
     try {
-      const objectUrl = URL.createObjectURL(file);
-      this.audioElement.src = objectUrl;
-      this.fileName = file.name || 'Audio Sincronizado.mp3';
+      await this.waitForMediaReady();
+
+      if (this.objectUrl !== objectUrl) {
+        return false;
+      }
+
       this.isLoaded = true;
 
-      await this.audioElement.load();
       events.emit('audioSync:loaded', {
         fileName: this.fileName,
-        duration: this.audioElement.duration || 0,
+        duration: Number.isFinite(this.audioElement.duration) ? this.audioElement.duration : 0,
         offsetMs: this.offsetMs,
       });
 
       return true;
     } catch (err) {
+      if (this.objectUrl === objectUrl) {
+        this.resetMediaSource();
+        this.isLoaded = false;
+        this.fileName = '';
+      }
+
+      if (err?.name === 'AbortError') {
+        return false;
+      }
+
       console.warn('[AudioSyncEngine] Error cargando archivo de audio:', err);
       throw err;
     }
@@ -131,8 +225,7 @@ class AudioSyncEngine {
   }
 
   unload() {
-    this.stop();
-    this.audioElement.src = '';
+    this.resetMediaSource();
     this.isLoaded = false;
     this.fileName = '';
     this.offsetMs = 0;

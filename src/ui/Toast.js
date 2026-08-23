@@ -33,6 +33,14 @@ class ToastManager {
   show(message, type = 'info', duration = 3500) {
     if (!this.container) return;
 
+    // Deduplicar notificaciones idénticas activas
+    const existing = this.container.querySelectorAll('.toast');
+    existing.forEach((el) => {
+      if (el.querySelector('.toast-message')?.textContent === message) {
+        el.remove();
+      }
+    });
+
     if (type === 'success') {
       audioFeedback.playSuccess();
     } else if (type === 'error') {

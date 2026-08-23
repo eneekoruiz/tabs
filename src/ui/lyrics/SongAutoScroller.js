@@ -1,77 +1,143 @@
 /**
  * @file SongAutoScroller.js
- * @description Gestor de auto-scroll fluido con control porcentual y optimización con requestAnimationFrame.
+ * @description Smooth song auto-scroll with explicit lifecycle and end detection.
  */
+
+const END_EPSILON_PX = 2;
+const END_CONFIRMATION_FRAMES = 3;
+const EMPTY_CONTENT_CONFIRMATION_FRAMES = 15;
 
 export class SongAutoScroller {
   constructor(options = {}) {
-    this.speedPercent = options.initialSpeed || 35;
+    this.speedPercent = Math.max(1, Math.min(100, Number(options.initialSpeed) || 35));
     this.isRunning = false;
     this.rafId = null;
     this.lastTimestamp = null;
+    this.endCandidateFrames = 0;
+    this.hasAnnouncedEnd = false;
     this.onStateChange = options.onStateChange || (() => {});
+    this.onEnd = options.onEnd || (() => {});
   }
 
   setSpeed(percent) {
-    this.speedPercent = Math.max(1, Math.min(100, percent));
-    this.onStateChange({ isRunning: this.isRunning, speedPercent: this.speedPercent });
+    this.speedPercent = Math.max(1, Math.min(100, Number(percent) || 1));
+    this.emitState('speed');
   }
 
   stepSpeed(delta) {
-    this.setSpeed(this.speedPercent + delta);
+    this.setSpeed(this.speedPercent + Number(delta || 0));
   }
 
   toggle() {
-    if (this.isRunning) {
-      this.stop();
-    } else {
-      this.start();
-    }
+    if (this.isRunning) this.stop('explicit');
+    else this.start();
   }
 
   start() {
     if (this.isRunning) return;
+
     this.isRunning = true;
     this.lastTimestamp = performance.now();
+    this.endCandidateFrames = 0;
+    this.hasAnnouncedEnd = false;
 
     const step = (timestamp) => {
       if (!this.isRunning) return;
 
-      const elapsed = timestamp - this.lastTimestamp;
+      const elapsed = Math.max(0, Math.min(64, timestamp - this.lastTimestamp));
       this.lastTimestamp = timestamp;
+      const metrics = this.readScrollMetrics();
 
-      // Velocidad calibrada: 1% = 6px/segundo, 100% = 240px/segundo
-      const pixelsPerSecond = 6 + (this.speedPercent / 100) * 234;
-      const distance = (pixelsPerSecond * elapsed) / 1000;
-
-      const scrollEl = document.getElementById('score-viewport') || window;
-      if (scrollEl.scrollBy) {
-        scrollEl.scrollBy({ top: distance, behavior: 'auto' });
-      } else if (window.scrollBy) {
-        window.scrollBy(0, distance);
+      if (this.confirmEnd(metrics)) {
+        this.finishAtEnd();
+        return;
       }
 
+      const pixelsPerSecond = 6 + (this.speedPercent / 100) * 234;
+      const distance = (pixelsPerSecond * elapsed) / 1000;
+      this.writeScrollTop(metrics, Math.min(metrics.maxScrollTop, metrics.scrollTop + distance));
       this.rafId = requestAnimationFrame(step);
     };
 
     this.rafId = requestAnimationFrame(step);
-    this.onStateChange({ isRunning: true, speedPercent: this.speedPercent });
+    this.emitState('start');
   }
 
-  stop() {
+  stop(reason = 'explicit') {
+    const wasRunning = this.isRunning;
     this.isRunning = false;
-    if (this.rafId) {
+    this.lastTimestamp = null;
+    this.endCandidateFrames = 0;
+
+    if (this.rafId !== null) {
       cancelAnimationFrame(this.rafId);
       this.rafId = null;
     }
-    this.onStateChange({ isRunning: false, speedPercent: this.speedPercent });
+
+    if (wasRunning) this.emitState(reason);
+  }
+
+  pause() {
+    this.stop('view-hidden');
+  }
+
+  finishAtEnd() {
+    if (this.hasAnnouncedEnd) return;
+    this.hasAnnouncedEnd = true;
+    this.stop('end');
+    this.onEnd({ speedPercent: this.speedPercent });
+  }
+
+  confirmEnd(metrics) {
+    const contentIsEmpty = metrics.maxScrollTop <= END_EPSILON_PX;
+    const isAtEnd = !contentIsEmpty && metrics.scrollTop >= metrics.maxScrollTop - END_EPSILON_PX;
+
+    if (!contentIsEmpty && !isAtEnd) {
+      this.endCandidateFrames = 0;
+      return false;
+    }
+
+    this.endCandidateFrames += 1;
+    const requiredFrames = contentIsEmpty
+      ? EMPTY_CONTENT_CONFIRMATION_FRAMES
+      : END_CONFIRMATION_FRAMES;
+    return this.endCandidateFrames >= requiredFrames;
+  }
+
+  readScrollMetrics() {
+    const target = document.getElementById('score-viewport');
+    if (target) {
+      return {
+        target,
+        scrollTop: target.scrollTop,
+        maxScrollTop: Math.max(0, target.scrollHeight - target.clientHeight)
+      };
+    }
+
+    const root = document.scrollingElement || document.documentElement;
+    return {
+      target: window,
+      scrollTop: window.scrollY || root.scrollTop || 0,
+      maxScrollTop: Math.max(0, root.scrollHeight - window.innerHeight)
+    };
+  }
+
+  writeScrollTop(metrics, top) {
+    if (metrics.target === window) window.scrollTo({ top, behavior: 'auto' });
+    else metrics.target.scrollTop = top;
+  }
+
+  emitState(reason) {
+    this.onStateChange({
+      isRunning: this.isRunning,
+      speedPercent: this.speedPercent,
+      reason
+    });
   }
 
   scrollToTop() {
-    const scrollEl = document.getElementById('score-viewport') || window;
-    if (scrollEl.scrollTo) {
-      scrollEl.scrollTo({ top: 0, behavior: 'smooth' });
-    }
+    const target = document.getElementById('score-viewport') || window;
+    if (target.scrollTo) target.scrollTo({ top: 0, behavior: 'smooth' });
   }
 }
 

@@ -41,6 +41,21 @@ import { SongImporterModal } from './ui/SongImporterModal.js';
 import './ui/KeyboardShortcuts.js';
 import { toast } from './ui/Toast.js';
 
+function applyStoredTheme() {
+  let theme = 'paper';
+  try {
+    theme = localStorage.getItem('app_visual_theme') || 'paper';
+    if (!localStorage.getItem('app_visual_theme')) localStorage.setItem('app_visual_theme', theme);
+  } catch {
+    // The default remains usable when storage is restricted.
+  }
+
+  document.body.classList.remove('theme-ivory', 'theme-charcoal', 'theme-amber');
+  if (theme === 'oled') document.body.classList.add('theme-charcoal');
+  else if (theme === 'amber') document.body.classList.add('theme-amber');
+  else document.body.classList.add('theme-ivory');
+}
+
 class AppV2 {
   constructor() {
     this.components = {};
@@ -106,7 +121,6 @@ class AppV2 {
       this.setupGlobalEvents();
       this.setupDragAndDrop();
 
-      toast.show('Tabs & Chords PRO listo (Modo Letra con Acordes activo)', 'success');
     } catch (error) {
       console.error('❌ [Tabs & Chords PRO V2] Error crítico durante el arranque:', error);
       toast.show('Error iniciando el sistema: ' + error.message, 'error');
@@ -176,23 +190,9 @@ class AppV2 {
   }
 
   setupGestureControls() {
-    // Previene el zoom involuntario por doble toque en móviles/tablets, pero permite el gesto de pellizco (pinch-to-zoom)
-    let lastTouchEndTime = 0;
-    document.addEventListener('touchend', (e) => {
-      const now = Date.now();
-      // Solo intercepta toques simples rápidos repetidos (doble clic táctil)
-      if (e.touches && e.touches.length <= 1 && (now - lastTouchEndTime) <= 280) {
-        // No interferir con inputs de texto normales
-        if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
-          e.preventDefault();
-        }
-      }
-      lastTouchEndTime = now;
-    }, { passive: false });
-
-    // Evitar zoom con rueda del ratón involuntaria salvo si se pulsa Ctrl explícitamente
+    // Evitar zoom involuntario en botones de interfaz con doble clic
     document.addEventListener('dblclick', (e) => {
-      if (e.target.closest('.chord-badge, .btn-popover-inst, button, .lyrics-line, .lyrics-chords-container')) {
+      if (e.target.closest('.chord-badge, .btn-popover-inst, button, .lyrics-line, .lyrics-chords-container, .nav-tab-btn')) {
         e.preventDefault();
       }
     });
@@ -200,6 +200,7 @@ class AppV2 {
 }
 
 function bootstrapApp() {
+  applyStoredTheme();
   const app = new AppV2();
   app.setupGestureControls();
   app.start();

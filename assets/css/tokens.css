@@ -18,7 +18,7 @@
   --transition-fast: var(--duration-fast) var(--ease-spring);
   --transition-normal: var(--duration-normal) var(--ease-spring);
   --transition-tactile: transform var(--duration-instant) var(--ease-spring), background var(--duration-fast) ease, box-shadow var(--duration-fast) ease;
-  --transition-spring: all var(--duration-normal) var(--ease-spring);
+  --transition-spring: background-color var(--duration-normal) var(--ease-spring), border-color var(--duration-normal) var(--ease-spring), color var(--duration-normal) var(--ease-spring), box-shadow var(--duration-normal) var(--ease-spring), opacity var(--duration-normal) var(--ease-spring), transform var(--duration-normal) var(--ease-spring);
   --transition-modal: transform var(--duration-normal) var(--ease-spring), opacity var(--duration-normal) var(--ease-spring);
   
   /* Tipografía */
@@ -31,6 +31,21 @@
   --topbar-height: 58px;
   --songbar-height: 42px;
   --sidebar-width: 340px;
+  --content-max: 1440px;
+  --reading-max: 980px;
+  --control-height: 44px;
+  --control-height-compact: 36px;
+
+  /* Geometría compartida */
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
 
   /* Resplandores y Sombras Globales */
   --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.2);
@@ -78,6 +93,10 @@ body, body.theme-charcoal {
   /* Bordes */
   --border-subtle: rgba(255, 255, 255, 0.1);
   --border-strong: rgba(255, 255, 255, 0.2);
+  --focus-ring: rgba(0, 229, 255, 0.32);
+  --status-success: #45c486;
+  --status-warning: #ffbf47;
+  --status-danger: #ff6b61;
 
   background-color: var(--bg-app);
   color: var(--text-primary);
@@ -121,6 +140,10 @@ body.theme-ivory {
   /* Bordes sutiles y limpios */
   --border-subtle: rgba(0, 0, 0, 0.08);
   --border-strong: rgba(0, 0, 0, 0.15);
+  --focus-ring: rgba(181, 72, 38, 0.22);
+  --status-success: #176b45;
+  --status-warning: #8a5a00;
+  --status-danger: #a92f27;
 
   background-color: var(--bg-app);
   color: var(--text-primary);
@@ -164,6 +187,10 @@ body.theme-amber {
   /* Bordes */
   --border-subtle: rgba(255, 183, 77, 0.12);
   --border-strong: rgba(255, 183, 77, 0.25);
+  --focus-ring: rgba(255, 213, 79, 0.3);
+  --status-success: #9ed9a4;
+  --status-warning: #ffd166;
+  --status-danger: #ff8b7f;
 
   background-color: var(--bg-app);
   color: var(--text-primary);
@@ -206,9 +233,37 @@ button:active:not(:disabled),
 *:focus-visible {
   outline: 2px solid var(--accent-secondary) !important;
   outline-offset: 2px !important;
-  box-shadow: 0 0 0 4px rgba(0, 229, 255, 0.25) !important;
+  box-shadow: 0 0 0 4px var(--focus-ring) !important;
 }
 
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button:disabled,
+[aria-disabled="true"] {
+  cursor: not-allowed;
+  opacity: 0.56;
+}
+
+::selection {
+  color: var(--text-inverse);
+  background: var(--accent-primary);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
 /* Scrollbars Minimalistas de Estudio */
 ::-webkit-scrollbar {
   width: 6px;

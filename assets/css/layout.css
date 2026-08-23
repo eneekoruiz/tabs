@@ -305,21 +305,21 @@ body.stage-mode-active .lyrics-chords-container {
   }
 }
 .top-app-bar {
-  background: rgba(18, 18, 25, 0.85) !important;
-  backdrop-filter: blur(25px) !important;
-  -webkit-backdrop-filter: blur(25px) !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.5) !important;
+  background: var(--bg-surface) !important;
+  backdrop-filter: var(--glass-blur) !important;
+  -webkit-backdrop-filter: var(--glass-blur) !important;
+  border-bottom: 1px solid var(--border-subtle) !important;
+  box-shadow: var(--shadow-sm) !important;
 }
 .explore-search-input:focus {
   outline: none;
-  border-color: #00e5ff;
-  box-shadow: 0 0 0 3px rgba(0, 229, 255, 0.25), 0 0 20px rgba(0, 229, 255, 0.4);
-  background: rgba(20, 20, 30, 0.95);
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 3px var(--accent-primary-glow), 0 0 16px var(--accent-primary-glow);
+  background: var(--bg-surface-solid);
 }
 .explore-search-input {
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-  border: 1px solid rgba(255,255,255,0.1);
+  transition: all 0.25s var(--ease-spring);
+  border: 1px solid var(--border-strong);
   border-radius: 24px;
 }
 .tool-card {
@@ -423,4 +423,29 @@ h1, h2, .song-card-title, .lyrics-song-title {
 
 
 .player-body { flex: 1; display: flex; flex-direction: column; overflow: hidden; width: 100%; }
-#alphatab { flex: 1; width: 100%; max-width: 1200px; margin: 0 auto; overflow: auto; background: #fcfbf8; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.15); border: 1px solid var(--border-subtle); padding: 20px; }\n\n@media print { body * { visibility: hidden; } #alphatab, #alphatab *, #lyrics-chords-container, #lyrics-chords-container * { visibility: visible; } #alphatab { position: absolute; left: 0; top: 0; box-shadow: none; border: none; } #lyrics-chords-container { position: absolute; left: 0; top: 0; width: 100%; } .lyrics-header-main, .player-bottom-nav, .autoScrollOverlay, .sidebar { display: none !important; } }
+#alphatab { flex: 1; width: 100%; max-width: 1200px; margin: 0 auto; overflow: auto; background: #fcfbf8; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.15); border: 1px solid var(--border-subtle); padding: 20px; }
+
+@media print {
+  body * { visibility: hidden; }
+  #alphatab,
+  #alphatab *,
+  #lyrics-chords-container,
+  #lyrics-chords-container * { visibility: visible; }
+  #alphatab {
+    position: absolute;
+    left: 0;
+    top: 0;
+    box-shadow: none;
+    border: none;
+  }
+  #lyrics-chords-container {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+  }
+  .lyrics-top-hud,
+  .player-bottom-nav,
+  .autoScrollOverlay,
+  .sidebar { display: none !important; }
+}

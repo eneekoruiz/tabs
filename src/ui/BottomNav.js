@@ -10,6 +10,7 @@
 import { Component } from './Component.js';
 import { events } from '../core/EventBus.js';
 import { audioFeedback } from '../audio/AudioFeedback.js';
+import { gigRecorder } from '../audio/GigRecorder.js';
 
 export class BottomNav extends Component {
   constructor(container) {
@@ -17,9 +18,27 @@ export class BottomNav extends Component {
     this.activeTab = 'explore'; // 'explore' | 'library' | 'tools' | 'settings' | 'player'
     this.currentTranspose = 0;
     this.isAutoScrolling = false;
+    this.autoScrollSpeed = 50;
     this.isRecording = false;
+    this.isRecordingPending = false;
+    this.isMetronomeRunning = false;
+    this.metronomeBpm = 120;
+    this.recordingDialog = null;
+    this.recordingSurface = null;
+    this.recordingReturnFocus = null;
 
+    this.ensureRecordingStyles();
     this.initEvents();
+    this.render();
+  }
+
+  ensureRecordingStyles() {
+    if (document.querySelector('link[data-recording-preview-styles]')) return;
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = new URL('../../assets/css/components/recording-preview.css', import.meta.url).href;
+    link.dataset.recordingPreviewStyles = 'true';
+    document.head.appendChild(link);
   }
 
   initEvents() {
@@ -30,29 +49,313 @@ export class BottomNav extends Component {
     );
 
     this.registerUnsub(
-      events.on('song:stateChanged', ({ transpose, isAutoScrolling, isRecording }) => {
+      events.on('song:stateChanged', ({ transpose, isAutoScrolling, autoScrollSpeed, isRecording, metronome }) => {
         if (transpose !== undefined) this.currentTranspose = transpose;
         if (isAutoScrolling !== undefined) this.isAutoScrolling = isAutoScrolling;
+        if (autoScrollSpeed !== undefined) this.autoScrollSpeed = autoScrollSpeed;
         if (isRecording !== undefined) this.isRecording = isRecording;
-        if (this.activeTab === 'player') {
-          this.render();
+        if (metronome !== undefined) {
+          this.isMetronomeRunning = Boolean(metronome.isRunning);
+          this.metronomeBpm = Number(metronome.bpm) || 120;
         }
+        if (this.activeTab === 'player') this.render();
       })
     );
 
     this.registerUnsub(
-      events.on('recorder:started', () => {
+      events.on('song:metronomeBeat', ({ beat, isAccent }) => {
+        this.flashMetronomeBeat(beat, isAccent);
+      })
+    );
+
+    this.registerUnsub(
+      events.on('recorder:requesting', ({ isVideo } = {}) => {
+        this.isRecordingPending = true;
+        this.showRecordingSurface({
+          phase: 'requesting',
+          isVideo: Boolean(isVideo),
+          status: isVideo ? 'Solicitando cámara y micrófono' : 'Solicitando micrófono'
+        });
+      })
+    );
+
+    this.registerUnsub(
+      events.on('recorder:streamReady', ({ stream, isVideo } = {}) => {
+        this.showRecordingSurface({
+          phase: 'preparing',
+          isVideo: Boolean(isVideo),
+          stream,
+          status: 'Preparando grabación'
+        });
+      })
+    );
+
+    this.registerUnsub(
+      events.on('recorder:started', ({ stream, isVideo } = {}) => {
+        this.isRecordingPending = false;
         this.isRecording = true;
-        if (this.activeTab === 'player') this.render();
+        this.syncRecordingButton();
+        this.showRecordingSurface({
+          phase: 'recording',
+          isVideo: Boolean(isVideo),
+          stream,
+          status: isVideo ? 'Grabando vídeo y audio' : 'Grabando solo audio'
+        });
       })
     );
 
     this.registerUnsub(
       events.on('recorder:finished', () => {
+        this.isRecordingPending = false;
         this.isRecording = false;
-        if (this.activeTab === 'player') this.render();
+        this.removeRecordingSurface({ restoreFocus: true });
+        this.syncRecordingButton();
       })
     );
+
+    this.registerUnsub(
+      events.on('recorder:tick', ({ formatted } = {}) => {
+        const timer = this.recordingSurface?.querySelector('[data-recording-timer]');
+        if (timer) timer.textContent = formatted || '00:00';
+      })
+    );
+
+    this.registerUnsub(
+      events.on('recorder:stopping', () => {
+        this.updateRecordingStatus('Finalizando grabación');
+        const stopButton = this.recordingSurface?.querySelector('[data-recording-stop]');
+        if (stopButton) stopButton.disabled = true;
+      })
+    );
+
+    const clearRecordingUi = () => {
+      this.isRecordingPending = false;
+      this.isRecording = false;
+      this.removeRecordingSurface({ restoreFocus: true });
+      this.syncRecordingButton();
+    };
+
+    this.registerUnsub(events.on('recorder:cancelled', clearRecordingUi));
+    this.registerUnsub(events.on('recorder:error', clearRecordingUi));
+  }
+
+  openRecordingDialog(trigger) {
+    if (this.recordingDialog || this.isRecordingPending || this.isRecording) return;
+
+    this.recordingReturnFocus = trigger || document.activeElement;
+    const dialog = document.createElement('dialog');
+    dialog.className = 'recording-choice-dialog';
+    dialog.setAttribute('aria-modal', 'true');
+    dialog.setAttribute('aria-labelledby', 'recordingChoiceTitle');
+    dialog.innerHTML = '<div class="recording-choice-dialog__body">' +
+        '<h2 id="recordingChoiceTitle">Nueva grabación</h2>' +
+        '<div class="recording-choice-dialog__actions" role="group" aria-label="Formato de grabación">' +
+          '<button type="button" class="recording-choice-dialog__primary" data-recording-choice="video">Vídeo y audio</button>' +
+          '<button type="button" data-recording-choice="audio">Solo audio</button>' +
+          '<button type="button" data-recording-choice="cancel">Cancelar</button>' +
+        '</div>' +
+      '</div>';
+
+    const closeAsCancel = () => this.closeRecordingDialog({ restoreFocus: true });
+    dialog.addEventListener('cancel', (event) => {
+      event.preventDefault();
+      closeAsCancel();
+    });
+    dialog.addEventListener('click', (event) => {
+      if (event.target === dialog) closeAsCancel();
+    });
+    dialog.addEventListener('keydown', (event) => this.trapDialogFocus(event));
+    dialog.querySelectorAll('[data-recording-choice]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const choice = button.dataset.recordingChoice;
+        if (choice === 'cancel') {
+          closeAsCancel();
+          return;
+        }
+        this.closeRecordingDialog({ restoreFocus: false });
+        this.beginRecordingRequest(choice === 'video');
+      });
+    });
+
+    document.body.appendChild(dialog);
+    this.recordingDialog = dialog;
+    if (typeof dialog.showModal === 'function') dialog.showModal();
+    else dialog.setAttribute('open', '');
+    dialog.querySelector('[data-recording-choice="video"]')?.focus();
+  }
+
+  trapDialogFocus(event) {
+    if (event.key !== 'Tab' || !this.recordingDialog) return;
+    const controls = Array.from(this.recordingDialog.querySelectorAll('button:not([disabled])'));
+    if (!controls.length) return;
+    const first = controls[0];
+    const last = controls[controls.length - 1];
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  }
+
+  closeRecordingDialog({ restoreFocus = true } = {}) {
+    const dialog = this.recordingDialog;
+    if (!dialog) return;
+    this.recordingDialog = null;
+    if (dialog.open && typeof dialog.close === 'function') dialog.close();
+    dialog.remove();
+    if (restoreFocus) this.restoreRecordingFocus();
+  }
+
+  beginRecordingRequest(withVideo) {
+    this.isRecordingPending = true;
+    this.showRecordingSurface({
+      phase: 'requesting',
+      isVideo: withVideo,
+      status: withVideo ? 'Solicitando cámara y micrófono' : 'Solicitando micrófono'
+    });
+    events.emit('song:toggleRecording', { video: withVideo });
+  }
+
+  showRecordingSurface({ phase, isVideo, stream = null, status }) {
+    if (!this.recordingSurface) {
+      const surface = document.createElement('section');
+      surface.className = 'recording-preview';
+      surface.setAttribute('aria-label', 'Estado de grabación');
+      surface.innerHTML = '<div class="recording-preview__media" data-recording-media hidden></div>' +
+        '<div class="recording-preview__status-row">' +
+          '<span class="recording-preview__dot" aria-hidden="true"></span>' +
+          '<span class="recording-preview__status" role="status" aria-live="polite"></span>' +
+          '<output class="recording-preview__timer" data-recording-timer aria-label="Duración">00:00</output>' +
+        '</div>' +
+        '<button type="button" class="recording-preview__stop" data-recording-stop></button>';
+      document.body.appendChild(surface);
+      this.recordingSurface = surface;
+      surface.querySelector('[data-recording-stop]')?.addEventListener('click', () => {
+        if (this.isRecordingPending && !this.isRecording) {
+          gigRecorder.cancelPendingRecording();
+          return;
+        }
+        events.emit('song:toggleRecording', { video: false });
+      });
+    }
+
+    const surface = this.recordingSurface;
+    surface.dataset.phase = phase;
+    surface.setAttribute('aria-busy', String(phase !== 'recording'));
+    surface.classList.toggle('recording-preview--video', Boolean(isVideo));
+    surface.classList.toggle('recording-preview--audio', !isVideo);
+
+    const media = surface.querySelector('[data-recording-media]');
+    const currentVideo = media?.querySelector('video');
+    if (isVideo && stream) {
+      const video = currentVideo || document.createElement('video');
+      video.muted = true;
+      video.autoplay = true;
+      video.playsInline = true;
+      video.setAttribute('aria-label', 'Vista previa de tu cámara');
+      if (!currentVideo) media.appendChild(video);
+      if (video.srcObject !== stream) video.srcObject = stream;
+      media.hidden = false;
+      video.play().catch(() => {});
+    } else if (media) {
+      if (currentVideo) {
+        currentVideo.pause();
+        currentVideo.srcObject = null;
+        currentVideo.remove();
+      }
+      media.hidden = true;
+    }
+
+    this.updateRecordingStatus(status);
+    const timer = surface.querySelector('[data-recording-timer]');
+    if (timer) timer.hidden = phase !== 'recording';
+    const stopButton = surface.querySelector('[data-recording-stop]');
+    if (stopButton) {
+      stopButton.disabled = false;
+      stopButton.textContent = phase === 'recording' ? 'Detener' : 'Cancelar';
+      stopButton.setAttribute(
+        'aria-label',
+        phase === 'recording' ? 'Detener y guardar grabación' : 'Cancelar solicitud de grabación'
+      );
+    }
+  }
+
+  updateRecordingStatus(message) {
+    const status = this.recordingSurface?.querySelector('.recording-preview__status');
+    if (status) status.textContent = message || '';
+  }
+
+  removeRecordingSurface({ restoreFocus = false } = {}) {
+    const video = this.recordingSurface?.querySelector('video');
+    if (video) {
+      video.pause();
+      video.srcObject = null;
+    }
+    this.recordingSurface?.remove();
+    this.recordingSurface = null;
+    if (restoreFocus) queueMicrotask(() => this.restoreRecordingFocus());
+  }
+
+  restoreRecordingFocus() {
+    const preferred = document.getElementById('btnBottomToggleRecord');
+    const target = preferred || this.recordingReturnFocus;
+    this.recordingReturnFocus = null;
+    if (target?.isConnected && typeof target.focus === 'function') target.focus();
+  }
+
+  syncRecordingButton() {
+    if (this.activeTab !== 'player') return;
+    const button = this.container?.querySelector('#btnBottomToggleRecord');
+    if (!button) return;
+    button.classList.toggle('recording-active', this.isRecording);
+    button.setAttribute('aria-pressed', String(this.isRecording));
+    button.setAttribute(
+      'aria-label',
+      this.isRecording ? 'Detener y guardar grabación' : 'Grabar toma de ensayo'
+    );
+    const label = button.querySelector('[data-recording-button-label]');
+    if (label) label.textContent = this.isRecording ? 'Detener' : 'Grabar';
+  }
+
+  flashMetronomeBeat(beat, isAccent) {
+    if (this.activeTab !== 'player') return;
+    const dot = this.container?.querySelector('#bottomMetronomeBeatDot');
+    if (dot) {
+      dot.classList.remove('beat-pulse', 'beat-accent');
+      void dot.offsetWidth;
+      dot.classList.add(isAccent ? 'beat-accent' : 'beat-pulse');
+    }
+  }
+
+  syncMetronomeButton() {
+    if (this.activeTab !== 'player') return;
+    const button = this.container?.querySelector('#btnBottomMetronomePlay');
+    if (button) {
+      button.classList.toggle('active', this.isMetronomeRunning);
+      button.setAttribute('aria-pressed', String(this.isMetronomeRunning));
+      button.setAttribute(
+        'aria-label',
+        this.isMetronomeRunning ? 'Pausar metrónomo' : 'Iniciar metrónomo'
+      );
+      const icon = button.querySelector('.nav-player-metro-icon');
+      if (icon) icon.textContent = this.isMetronomeRunning ? '⏸' : '⏱️';
+      const label = button.querySelector('.nav-player-metro-label');
+      if (label) label.textContent = this.isMetronomeRunning ? 'Pausa' : 'Metro';
+    }
+    const bpmLabel = this.container?.querySelector('#lblBottomMetronomeBpm');
+    if (bpmLabel) bpmLabel.textContent = String(this.metronomeBpm);
+    const openBtn = this.container?.querySelector('#btnBottomMetronomeOpen');
+    if (openBtn) openBtn.setAttribute('aria-label', `Abrir panel de metrónomo (${this.metronomeBpm} BPM)`);
+    const dot = this.container?.querySelector('#bottomMetronomeBeatDot');
+    if (dot) dot.classList.toggle('active', this.isMetronomeRunning);
+  }
+
+  destroy() {
+    this.closeRecordingDialog({ restoreFocus: false });
+    this.removeRecordingSurface();
+    super.destroy();
   }
 
   setActiveTab(tabName) {
@@ -123,16 +426,42 @@ export class BottomNav extends Component {
             <button class="nav-player-step-btn" id="btnBottomTransposeUp" aria-label="Subir semitono">+1</button>
           </div>
 
-          <!-- Auto-Scroll Directo -->
-          <button class="nav-player-btn btn-player-autoscroll ${this.isAutoScrolling ? 'active' : ''}" id="btnBottomToggleAutoScroll" aria-label="Auto-Scroll">
-            <span class="nav-player-scroll-icon">${this.isAutoScrolling ? '⏸' : '⚡'}</span>
-            <span>${this.isAutoScrolling ? 'Pausa' : 'AutoScroll'}</span>
-          </button>
+          <!-- Auto-Scroll Directo y Control de Velocidad -->
+          <div class="nav-player-autoscroll-cluster" role="group" aria-label="Auto-scroll y velocidad">
+            <button class="nav-player-btn btn-player-autoscroll ${this.isAutoScrolling ? 'active' : ''}" id="btnBottomToggleAutoScroll" aria-label="${this.isAutoScrolling ? 'Pausar auto-scroll' : 'Iniciar auto-scroll'}" aria-pressed="${this.isAutoScrolling}">
+              <span class="nav-player-scroll-icon">${this.isAutoScrolling ? '⏸' : '⚡'}</span>
+              <span>${this.isAutoScrolling ? 'Pausa' : 'Scroll'}</span>
+            </button>
+            <div class="nav-player-scroll-controls" role="group" aria-label="Velocidad de desplazamiento">
+              <button type="button" class="nav-player-step-btn" id="btnBottomScrollSpeedDecr" aria-label="Reducir velocidad">−</button>
+              <span class="nav-player-val-badge nav-player-speed-badge font-mono" id="lblBottomScrollSpeed" title="Velocidad de auto-scroll">${this.autoScrollSpeed || 50}%</span>
+              <button type="button" class="nav-player-step-btn" id="btnBottomScrollSpeedIncr" aria-label="Aumentar velocidad">+</button>
+              <input type="range" id="rngAutoScrollSpeed" min="1" max="100" value="${this.autoScrollSpeed || 50}" class="sr-only" aria-label="Velocidad de desplazamiento automático">
+            </div>
+          </div>
+
+          <!-- Metrónomo Directo en Barra Inferior -->
+          <div class="nav-player-metronome-cluster" role="group" aria-label="Metrónomo de canción">
+            <button class="nav-player-btn btn-player-metro-toggle ${this.isMetronomeRunning ? 'active' : ''}" id="btnBottomMetronomePlay" aria-label="${this.isMetronomeRunning ? 'Pausar metrónomo' : 'Iniciar metrónomo'}" aria-pressed="${this.isMetronomeRunning}">
+              <span class="nav-player-metro-dot ${this.isMetronomeRunning ? 'active' : ''}" id="bottomMetronomeBeatDot" aria-hidden="true"></span>
+              <span class="nav-player-metro-icon">${this.isMetronomeRunning ? '⏸' : '⏱️'}</span>
+              <span class="nav-player-metro-label">${this.isMetronomeRunning ? 'Pausa' : 'Metro'}</span>
+            </button>
+            <div class="nav-player-metro-controls" role="group" aria-label="Ajuste de BPM">
+              <button class="nav-player-step-btn btn-metro-step" id="btnBottomMetronomeMinus" aria-label="Reducir 1 BPM">−</button>
+              <button class="nav-player-val-badge nav-player-bpm-btn" id="btnBottomMetronomeOpen" aria-label="Abrir panel de metrónomo (${this.metronomeBpm} BPM)" title="Configurar metrónomo">
+                <span id="lblBottomMetronomeBpm">${this.metronomeBpm}</span>
+                <span class="bpm-unit">BPM</span>
+              </button>
+              <button class="nav-player-step-btn btn-metro-step" id="btnBottomMetronomePlus" aria-label="Aumentar 1 BPM">+</button>
+              <button class="nav-player-step-btn btn-metro-tap" id="btnBottomMetronomeTap" aria-label="Tap tempo por pulsación" title="Tap Tempo">TAP</button>
+            </div>
+          </div>
 
           <!-- Grabador Directo -->
-          <button class="nav-player-btn btn-player-record ${this.isRecording ? 'recording-active' : ''}" id="btnBottomToggleRecord" aria-label="Grabar toma de ensayo">
+          <button class="nav-player-btn btn-player-record ${this.isRecording ? 'recording-active' : ''}" id="btnBottomToggleRecord" aria-label="${this.isRecording ? 'Detener y guardar grabación' : 'Grabar toma de ensayo'}" aria-pressed="${this.isRecording}">
             <span class="nav-player-rec-dot"></span>
-            <span>${this.isRecording ? 'Detener' : 'Grabar'}</span>
+            <span data-recording-button-label>${this.isRecording ? 'Detener' : 'Grabar'}</span>
           </button>
 
           <!-- Modo Atril / Pantalla Completa -->
@@ -201,12 +530,45 @@ export class BottomNav extends Component {
         events.emit('song:toggleAutoScroll');
       });
 
+      this.container.querySelector('#btnBottomScrollSpeedDecr')?.addEventListener('click', () => {
+        events.emit('song:stepAutoScrollSpeed', -1);
+      });
+
+      this.container.querySelector('#btnBottomScrollSpeedIncr')?.addEventListener('click', () => {
+        events.emit('song:stepAutoScrollSpeed', 1);
+      });
+
+      this.container.querySelector('#rngAutoScrollSpeed')?.addEventListener('input', (event) => {
+        events.emit('song:setAutoScrollSpeed', Number(event.target.value));
+      });
+
+      this.container.querySelector('#btnBottomMetronomePlay')?.addEventListener('click', () => {
+        events.emit('song:toggleMetronome');
+      });
+
+      this.container.querySelector('#btnBottomMetronomeMinus')?.addEventListener('click', () => {
+        events.emit('song:stepMetronomeBpm', -1);
+      });
+
+      this.container.querySelector('#btnBottomMetronomePlus')?.addEventListener('click', () => {
+        events.emit('song:stepMetronomeBpm', 1);
+      });
+
+      this.container.querySelector('#btnBottomMetronomeTap')?.addEventListener('click', () => {
+        events.emit('song:tapMetronome');
+      });
+
+      this.container.querySelector('#btnBottomMetronomeOpen')?.addEventListener('click', () => {
+        events.emit('song:openMetronomePanel');
+      });
+
       this.container.querySelector('#btnBottomToggleRecord')?.addEventListener('click', () => {
-        if (!this.isRecording) {
-          const wantVideo = window.confirm('¿Quieres grabar también vídeo con la cámara de tu dispositivo?\n\nAceptar = Vídeo + Audio\nCancelar = Solo Audio');
-          events.emit('song:toggleRecording', { video: wantVideo });
-        } else {
+        const trigger = this.container.querySelector('#btnBottomToggleRecord');
+        this.recordingReturnFocus = trigger;
+        if (this.isRecording) {
           events.emit('song:toggleRecording', { video: false });
+        } else if (!this.isRecordingPending) {
+          this.openRecordingDialog(trigger);
         }
       });
 

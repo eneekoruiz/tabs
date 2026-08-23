@@ -4,12 +4,13 @@
   "version": "1.0.0",
   "identifier": "com.tabsandchords.pro",
   "build": {
-    "frontendDist": "../"
+    "beforeBuildCommand": "npm run build:web",
+    "frontendDist": "../dist"
   },
   "app": {
-    "withGlobalTauri": true,
+    "withGlobalTauri": false,
     "security": {
-      "csp": "default-src 'self' tauri: 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net blob: data:; script-src 'self' tauri: 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net blob:; style-src 'self' tauri: 'unsafe-inline' https://cdn.jsdelivr.net; font-src 'self' tauri: data: https://cdn.jsdelivr.net; img-src 'self' tauri: asset: blob: data: https:; media-src 'self' tauri: asset: blob: data: https: https://cdn.jsdelivr.net; connect-src 'self' tauri: https://cdn.jsdelivr.net blob: data:; worker-src 'self' blob:;"
+      "csp": "default-src 'self' tauri: blob: data:; script-src 'self' tauri: blob:; style-src 'self' tauri: 'unsafe-inline'; font-src 'self' tauri: data:; img-src 'self' tauri: asset: blob: data: https:; media-src 'self' tauri: asset: blob: data: https:; connect-src 'self' tauri: blob: data:; worker-src 'self' blob:; frame-src https://www.youtube-nocookie.com https://www.youtube.com;"
     },
     "windows": [
       {

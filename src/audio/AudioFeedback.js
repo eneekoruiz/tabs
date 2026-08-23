@@ -8,13 +8,15 @@
  */
 
 let userHasInteracted = false;
-window.addEventListener('pointerdown', () => userHasInteracted = true, { once: true });
-window.addEventListener('keydown', () => userHasInteracted = true, { once: true });
+if (typeof window !== 'undefined') {
+  window.addEventListener('pointerdown', () => userHasInteracted = true, { once: true });
+  window.addEventListener('keydown', () => userHasInteracted = true, { once: true });
+}
 
 class AudioFeedbackManager {
   constructor() {
     this.ctx = null;
-    this.isMuted = localStorage.getItem('app_ui_sound_muted') === 'true';
+    this.isMuted = typeof localStorage !== 'undefined' ? localStorage.getItem('app_ui_sound_muted') === 'true' : false;
     this.masterGain = 0.08; // 8% de volumen por defecto para máxima sutileza
   }
 

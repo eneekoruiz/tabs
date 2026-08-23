@@ -3,46 +3,55 @@
    ========================================================================== */
 .toast-container {
   position: fixed;
-  top: 24px;
-  left: 50%;
-  transform: translateX(-50%);
+  bottom: 84px;
+  right: 24px;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 10px;
+  align-items: flex-end;
+  gap: 8px;
   z-index: 99999;
-  pointer-events: none;
+  pointer-events: none !important;
   width: auto;
   max-width: 90vw;
 }
 
+@media (max-width: 600px) {
+  .toast-container {
+    right: auto;
+    left: 50%;
+    transform: translateX(-50%);
+    align-items: center;
+    bottom: 78px;
+  }
+}
+
 .toast {
-  background: rgba(22, 22, 30, 0.88);
+  background: rgba(22, 22, 30, 0.92);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.12);
   color: #ffffff;
-  padding: 10px 20px;
+  padding: 8px 16px;
   border-radius: 999px;
-  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.35), 0 2px 8px rgba(0, 0, 0, 0.2);
-  font-size: 0.88rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  font-size: 0.84rem;
   font-weight: 600;
   letter-spacing: -0.01em;
   display: inline-flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   opacity: 0;
-  transform: translateY(-20px) scale(0.92);
-  transition: all 0.32s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  pointer-events: auto;
+  transform: translateY(16px) scale(0.95);
+  transition: all 0.25s var(--ease-spring);
+  pointer-events: none !important;
   white-space: nowrap;
 }
 
 body.theme-ivory .toast {
-  background: rgba(255, 255, 255, 0.94);
+  background: rgba(255, 255, 255, 0.96);
   color: #1a1e26;
   border: 1px solid rgba(0, 0, 0, 0.12);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .toast-visible {

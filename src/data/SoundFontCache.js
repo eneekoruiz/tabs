@@ -1,14 +1,14 @@
 /**
  * @file SoundFontCache.js
  * @description Gestor de caché permanente del SoundFont para funcionamiento 100% Offline.
- * Descarga el archivo de instrumentos (SF2) una sola vez y lo persiste en IndexedDB/Blob URL.
+ * Carga el archivo de instrumentos (SF2) incluido y lo persiste en IndexedDB/Blob URL.
  */
 
 import { db } from './Database.js';
 import { events } from '../core/EventBus.js';
 import { state } from '../core/State.js';
 
-const DEFAULT_SF2_URL = 'https://cdn.jsdelivr.net/npm/@coderline/alphatab@latest/dist/soundfont/sonivox.sf2';
+const DEFAULT_SF2_URL = './assets/vendor/alphatab/1.8.4/soundfont/sonivox.sf2';
 const SOUNDFONT_CACHE_KEY = 'sonivox_default_sf2';
 
 class SoundFontCache {
@@ -19,11 +19,11 @@ class SoundFontCache {
 
   /**
    * Obtiene la fuente del SoundFont: o bien desde IndexedDB local (offline)
-   * o bien descargándolo de la red y persistiendo el binario para siempre.
-   * @param {string} [remoteUrl] - URL opcional si se usa un SoundFont personalizado
+   * o bien leyéndolo del paquete local y persistiendo el binario.
+   * @param {string} [assetUrl] - Ruta opcional si se usa un SoundFont personalizado
    * @returns {Promise<string|ArrayBuffer>}
    */
-  async getSoundFontSource(remoteUrl = DEFAULT_SF2_URL) {
+  async getSoundFontSource(assetUrl = DEFAULT_SF2_URL) {
     try {
       // 1. Intentar cargar desde IndexedDB (Caché local offline)
       const cachedData = await db.getSoundFont(SOUNDFONT_CACHE_KEY);
@@ -42,11 +42,11 @@ class SoundFontCache {
         return this.arrayBuffer;
       }
 
-      // 2. Si no está en caché, descargarlo por red y guardarlo
-      console.log('[SoundFontCache] SoundFont no encontrado en caché local. Descargando desde CDN...');
+      // 2. Si no está en IndexedDB, cargar el recurso empaquetado y guardarlo
+      console.log('[SoundFontCache] SoundFont no encontrado en IndexedDB. Cargando recurso local...');
       events.emit('soundfont:downloadStart');
 
-      const response = await fetch(remoteUrl);
+      const response = await fetch(assetUrl);
       if (!response.ok) {
         throw new Error(`Fallo HTTP al descargar SoundFont: ${response.status} ${response.statusText}`);
       }
@@ -86,14 +86,14 @@ class SoundFontCache {
 
       state.set('isSoundFontLoaded', true);
       state.set('isOfflineReady', true);
-      events.emit('soundfont:ready', { source: 'network', size: this.arrayBuffer.byteLength });
+      events.emit('soundfont:ready', { source: 'bundle', size: this.arrayBuffer.byteLength });
       events.emit('soundfont:cached', { size: this.arrayBuffer.byteLength });
 
       return this.arrayBuffer;
     } catch (error) {
-      console.error('[SoundFontCache] Error en SoundFontCache, recurriendo a URL remota directa:', error);
-      // Fallback a URL directa si fetch/IndexedDB falla
-      return remoteUrl;
+      console.error('[SoundFontCache] Error al preparar el SoundFont; se usará el recurso local directo:', error);
+      // El consumidor puede cargar directamente el mismo recurso local
+      return assetUrl;
     }
   }
 

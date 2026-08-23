@@ -14,7 +14,7 @@ export default defineConfig({
     headless: true,
   },
   webServer: {
-    command: 'cmd /c npx serve . -p 3000',
+    command: 'cmd /c npx serve . -l 3000',
     url: 'http://127.0.0.1:3000',
     reuseExistingServer: true,
     timeout: 120000,

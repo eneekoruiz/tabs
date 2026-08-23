@@ -1,6 +1,6 @@
 /**
  * @file ArtistDiscographies.js
- * @description Catálogo masivo de artistas y discografías mundiales (+15.000 canciones).
+ * @description Catálogo local de artistas y títulos incluidos en la aplicación.
  */
 
 export const ARTIST_DISCOGRAPHIES = [
@@ -1844,8 +1844,12 @@ export const ARTIST_DISCOGRAPHIES = [
       "Rock the Casbah",
       "Train in Vain"
     ]
+  },
+  {
+    artist: 'Leonard Cohen',
+    genre: 'Folk',
+    songs: ['Hallelujah']
   }
-
 ];
 
 

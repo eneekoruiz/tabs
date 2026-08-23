@@ -18,6 +18,23 @@ const LATIN_MAP = {
 };
 
 export class ChordProParser {
+  static getAccidentalPreference() {
+    try {
+      return globalThis.localStorage?.getItem('app_accidental_preference') === 'flats' ? 'flats' : 'sharps';
+    } catch {
+      return 'sharps';
+    }
+  }
+
+  static spellAccidentals(chord, preference = this.getAccidentalPreference()) {
+    if (!chord) return '';
+    const notes = preference === 'flats' ? NOTES_FLAT : NOTES_SHARP;
+    return String(chord).split('/').map((part) => part.replace(/^([A-G][#b]?)/, (match, note) => {
+      let index = NOTES_SHARP.indexOf(note);
+      if (index < 0) index = NOTES_FLAT.indexOf(note);
+      return index < 0 ? match : notes[index];
+    })).join('/');
+  }
   /**
    * Transpone un acorde un número de semitonos teniendo en cuenta la cejilla.
    * @param {string} chordName 
@@ -80,12 +97,13 @@ export class ChordProParser {
    * @param {'anglo'|'latin'} notation 
    * @returns {string}
    */
-  static formatChordDisplay(chord, notation = 'anglo') {
+  static formatChordDisplay(chord, notation = 'anglo', accidentalPreference = this.getAccidentalPreference()) {
     if (!chord) return '';
-    if (notation !== 'latin') return chord;
+    const spelledChord = this.spellAccidentals(chord, accidentalPreference);
+    if (notation !== 'latin') return spelledChord;
 
-    const match = chord.match(/^([A-G][#b]?)(.*)$/);
-    if (!match) return chord;
+    const match = spelledChord.match(/^([A-G][#b]?)(.*)$/);
+    if (!match) return spelledChord;
 
     const root = match[1];
     const suffix = match[2];

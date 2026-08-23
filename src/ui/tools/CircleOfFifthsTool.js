@@ -3,6 +3,8 @@
  * @description Círculo de Quintas SVG Interactivo con análisis de grados armónicos y tonalidades relativas.
  */
 
+import { ChordProParser } from '../lyrics/ChordProParser.js';
+
 export class CircleOfFifthsTool {
   constructor() {
     this.key = 'C';
@@ -29,6 +31,14 @@ export class CircleOfFifthsTool {
   renderCircleSVG(selectedKey) {
     const keysOrder = ['C', 'G', 'D', 'A', 'E', 'B', 'F#', 'Db', 'Ab', 'Eb', 'Bb', 'F'];
     const minorKeys = ['Am', 'Em', 'Bm', 'F#m', 'C#m', 'G#m', 'D#m', 'Bbm', 'Fm', 'Cm', 'Gm', 'Dm'];
+    const harmony = this.getHarmonizedChords(selectedKey);
+    const normalizeEnharmonic = (note) => String(note)
+      .replace(/^C#/, 'Db')
+      .replace(/^Gb/, 'F#')
+      .replace(/^Eb/, 'D#')
+      .replace(/^A#/, 'Bb');
+    const majorFamily = new Set([harmony.I, harmony.IV, harmony.V.replace(/7$/, '')].map(normalizeEnharmonic));
+    const minorFamily = new Set([harmony.ii, harmony.iii, harmony.vi].map(normalizeEnharmonic));
 
     const cx = 160, cy = 160;
     const outerR = 130, innerR = 85, minorR = 58;
@@ -37,6 +47,12 @@ export class CircleOfFifthsTool {
       const angle = (i * 30 - 90) * (Math.PI / 180);
       const nextAngle = ((i + 1) * 30 - 90) * (Math.PI / 180);
       const isActive = key === selectedKey;
+      const isMajorFamily = majorFamily.has(normalizeEnharmonic(key));
+      const minorKey = minorKeys[i];
+      const displayKey = ChordProParser.formatChordDisplay(key);
+      const displayMinorKey = ChordProParser.formatChordDisplay(minorKey);
+      const isMinorFamily = minorFamily.has(normalizeEnharmonic(minorKey));
+      const isRelativeMinor = normalizeEnharmonic(minorKey) === normalizeEnharmonic(harmony.vi);
 
       const textAngle = (i * 30 - 90 + 15) * (Math.PI / 180);
       const textR = (outerR + innerR) / 2;
@@ -65,29 +81,31 @@ export class CircleOfFifthsTool {
       const mx4 = cx + minorR * Math.cos(angle);
       const my4 = cy + minorR * Math.sin(angle);
 
-      const majorFill = isActive ? '#ff5722' : 'rgba(255,87,34,0.08)';
-      const majorStroke = isActive ? '#ff5722' : 'rgba(255,255,255,0.15)';
-      const minorFill = 'rgba(0,229,255,0.08)';
-      const minorStroke = 'rgba(0,229,255,0.15)';
+      const majorFill = isActive ? '#ff5722' : (isMajorFamily ? 'rgba(255,87,34,0.24)' : 'rgba(255,87,34,0.08)');
+      const majorStroke = isActive ? '#ff5722' : (isMajorFamily ? 'rgba(255,87,34,0.65)' : 'rgba(255,255,255,0.15)');
+      const minorFill = isRelativeMinor ? 'rgba(0,159,181,0.42)' : (isMinorFamily ? 'rgba(0,159,181,0.24)' : 'rgba(0,159,181,0.06)');
+      const minorStroke = isMinorFamily ? 'rgba(0,159,181,0.72)' : 'rgba(0,159,181,0.18)';
 
       return `
         <path d="M ${x1} ${y1} A ${outerR} ${outerR} 0 0 1 ${x2} ${y2} L ${x3} ${y3} A ${innerR} ${innerR} 0 0 0 ${x4} ${y4} Z"
           fill="${majorFill}" stroke="${majorStroke}" stroke-width="1.5"
-          class="circle-key-sector${isActive ? ' active' : ''}" data-key="${key}"
+          class="circle-key-sector${isActive ? ' active' : ''}${isMajorFamily ? ' harmonic-family' : ''}" data-key="${key}"
+          role="button" tabindex="0" aria-label="${key} mayor${isActive ? ', tonalidad seleccionada' : (isMajorFamily ? ', familia armónica' : '')}"
           style="cursor:pointer; transition: fill 0.2s;"/>
         <text x="${tx}" y="${ty}" text-anchor="middle" dominant-baseline="middle"
           fill="${isActive ? '#ffffff' : 'var(--text-primary)'}" font-size="${isActive ? '13' : '12'}" font-weight="${isActive ? '900' : '700'}"
           class="circle-key-label" data-key="${key}" style="cursor:pointer; pointer-events:none;">
-          ${key}
+          ${displayKey}
         </text>
 
         <path d="M ${mx1} ${my1} A ${innerR} ${innerR} 0 0 1 ${mx2} ${my2} L ${mx3} ${my3} A ${minorR} ${minorR} 0 0 0 ${mx4} ${my4} Z"
           fill="${minorFill}" stroke="${minorStroke}" stroke-width="1"
-          class="circle-minor-sector" data-key="${key}" style="cursor:pointer;"/>
+          class="circle-minor-sector${isMinorFamily ? ' harmonic-family' : ''}${isRelativeMinor ? ' relative-minor' : ''}" data-key="${key}"
+          role="button" tabindex="0" aria-label="${minorKey}${isRelativeMinor ? ', relativa menor' : (isMinorFamily ? ', familia armónica menor' : '')}" style="cursor:pointer;"/>
         <text x="${mtx}" y="${mty}" text-anchor="middle" dominant-baseline="middle"
-          fill="rgba(0,229,255,0.85)" font-size="9" font-weight="600"
+          fill="${isMinorFamily ? '#007f91' : 'rgba(0,127,145,0.72)'}" font-size="9" font-weight="${isMinorFamily ? '800' : '600'}"
           style="pointer-events:none;">
-          ${minorKeys[i]}
+          ${displayMinorKey}
         </text>
       `;
     });
@@ -95,8 +113,8 @@ export class CircleOfFifthsTool {
     return `
       <svg width="320" height="320" viewBox="0 0 320 320" class="circle-of-fifths-svg" role="img" aria-label="Círculo de quintas">
         <circle cx="${cx}" cy="${cy}" r="${minorR}" fill="rgba(18,18,24,0.95)" stroke="rgba(255,255,255,0.1)"/>
-        <text x="${cx}" y="${cy - 8}" text-anchor="middle" fill="#ff5722" font-size="16" font-weight="bold">${selectedKey} M</text>
-        <text x="${cx}" y="${cy + 12}" text-anchor="middle" fill="rgba(0,229,255,0.9)" font-size="11">Rel: ${minorKeys[keysOrder.indexOf(selectedKey)]}</text>
+        <text x="${cx}" y="${cy - 8}" text-anchor="middle" fill="#ff5722" font-size="16" font-weight="bold">${ChordProParser.formatChordDisplay(selectedKey)} M</text>
+        <text x="${cx}" y="${cy + 12}" text-anchor="middle" fill="rgba(0,229,255,0.9)" font-size="11">Rel: ${ChordProParser.formatChordDisplay(minorKeys[keysOrder.indexOf(selectedKey)])}</text>
         <g>${segments.join('')}</g>
       </svg>
     `;

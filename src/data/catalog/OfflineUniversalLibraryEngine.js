@@ -1,7 +1,7 @@
 /**
  * @file OfflineUniversalLibraryEngine.js
- * @description Motor Universal Offline de 500.000 Canciones con Armonización Algorítmica y Búsqueda Instantánea.
- * Permite buscar y tocar cualquier canción, artista, álbum o estándar musical 100% OFFLINE sin requerir internet.
+ * @description Catálogo offline verificable con búsqueda instantánea y guías armónicas generadas.
+ * Distingue el contenido curado de las guías generadas y nunca inventa resultados de catálogo.
  */
 
 import { ARTIST_DISCOGRAPHIES } from './ArtistDiscographies.js';
@@ -85,7 +85,8 @@ export class OfflineUniversalLibraryEngine {
   constructor() {
     this.searchIndex = new Map();
     this.builtInArtists = new Set();
-    this.totalIndexedSongs = 500000;
+    this.totalIndexedSongs = 0;
+    this.totalIndexedArtists = 0;
     this.init();
   }
 
@@ -121,6 +122,9 @@ export class OfflineUniversalLibraryEngine {
       });
     }
 
+    this.totalIndexedSongs = this.searchIndex.size;
+    this.totalIndexedArtists = this.builtInArtists.size;
+
     // Las letras curadas se consultan bajo demanda con getKnownSongLyrics(title, artist)
   }
 
@@ -139,17 +143,17 @@ export class OfflineUniversalLibraryEngine {
         const uniqueKey = `${item.title.toLowerCase()}_${item.artist.toLowerCase()}`;
         if (!seenTitles.has(uniqueKey)) {
           seenTitles.add(uniqueKey);
+          const hasCuratedLyrics = Boolean(getKnownSongLyrics(item.title, item.artist));
           results.push({
-            id: `offline_${results.length + 1}`,
+            id: 'offline_' + Math.abs(this._hashString(uniqueKey)),
             title: item.title,
             artist: item.artist,
-            difficulty: 'Intermedio',
-            rating: '4.9',
-            views: '350K',
+            difficulty: 'Sin clasificar',
             capo: 0,
-            key: 'C',
             genre: item.genre,
-            isPro: true,
+            source: item.source,
+            contentKind: hasCuratedLyrics ? 'curated_lyrics' : 'generated_chord_guide',
+            hasCuratedLyrics,
             isOfflineReady: true
           });
           if (results.length >= maxResults) break;
@@ -157,68 +161,13 @@ export class OfflineUniversalLibraryEngine {
       }
     }
 
-    // 2. Si la consulta especifica un artista o título libre no presente aún, generar resultados offline instantáneos
-    if (results.length < 5) {
-      const generated = this.generateProceduralResults(cleanQuery, maxResults - results.length);
-      generated.forEach(item => {
-        const uniqueKey = `${item.title.toLowerCase()}_${item.artist.toLowerCase()}`;
-        if (!seenTitles.has(uniqueKey)) {
-          seenTitles.add(uniqueKey);
-          results.push(item);
-        }
-      });
-    }
 
     return results;
   }
 
-  /**
-   * Generación determinista de canciones offline para cubrir el catálogo masivo de 500k
-   */
-  generateProceduralResults(query, count = 10) {
-    const capitalized = query.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
-    const results = [];
-
-    // Patrones de canciones universales
-    const suffixes = ['Acoustic', 'Live', 'Remix', 'Radio Edit', 'Orchestral', 'Unplugged', 'Piano Version', 'Original Version'];
-    
-    // Si parece un artista (e.g. "Dua Lipa", "Queen", "Adele")
-    results.push({
-      id: `gen_${results.length + 1}`,
-      title: capitalized,
-      artist: capitalized,
-      difficulty: 'Fácil',
-      rating: '5.0',
-      views: '500K',
-      capo: 0,
-      key: 'G',
-      genre: 'pop',
-      isPro: true,
-      isOfflineReady: true
-    });
-
-    for (let i = 0; i < count - 1; i++) {
-      const suff = suffixes[i % suffixes.length];
-      results.push({
-        id: `gen_${results.length + 2}`,
-        title: `${capitalized} (${suff})`,
-        artist: capitalized,
-        difficulty: (i % 2 === 0) ? 'Fácil' : 'Intermedio',
-        rating: (4.8 + (i % 3) * 0.1).toFixed(1),
-        views: `${200 + i * 45}K`,
-        capo: (i % 3 === 0) ? 2 : 0,
-        key: ['C', 'G', 'D', 'Am', 'Em'][i % 5],
-        genre: 'pop',
-        isPro: true,
-        isOfflineReady: true
-      });
-    }
-
-    return results;
-  }
 
   /**
-   * Obtiene o genera la letra y acordes reales completos 100% OFFLINE para cualquier canción
+   * Obtiene una letra curada o una guía armónica generada sin conexión
    */
   getSongSheet(title, artist) {
     // 1. Comprobar si existe en letras exactas curadas
@@ -238,12 +187,12 @@ export class OfflineUniversalLibraryEngine {
       };
     }
 
-    // 2. Generar automáticamente una estructura de partitura auténtica de alta fidelidad
+    // 2. Crear una guía armónica generada y claramente identificada como tal
     return this.synthesizeSongSheet(title, artist);
   }
 
   /**
-   * Sintetizador Algorítmico Armónico y Lírico Offline
+   * Generador algorítmico de una guía armónica offline (no es una letra oficial)
    */
   synthesizeSongSheet(title, artist) {
     // Determinar estilo según artista o título
@@ -265,59 +214,44 @@ export class OfflineUniversalLibraryEngine {
     const c4 = map[progDegrees[3]] || 'F';
 
     const chordpro = `[Intro]
-[${c1}]   [${c2}]   [${c3}]   [${c4}]
-[${c1}]   [${c2}]   [${c3}]   [${c4}]
+[${c1}] [${c2}] [${c3}] [${c4}]
 
-[Verso 1]
-[${c1}] Caminando bajo la luz de la ciudad
-[${c2}] Buscando las notas que dan libertad
-[${c3}] Cada acorde que resuena en el aire
-[${c4}] Es una historia que vuelve a empezar
+[Verse 1]
+[${c1}]Walking through the shadows where the [${c2}]rhythm starts to play
+[${c3}]Searching for the melodies that [${c4}]take our fears away
+[${c1}]Every single heartbeat keeping [${c2}]harmony and time
+[${c3}]Writing all our stories in a [${c4}]simple song and rhyme
 
-[Pre-Estribillo]
-[${c2}] Y cuando el ritmo comienza a vibrar
-[${c3}] Sentimos la fuerza de la melodía
-[${c4}] Nada en el mundo nos puede parar
-[${c2}] Cantamos juntos hasta el nuevo día
+[Chorus]
+[${c1}]Here we are together under[${c2}]neath the shining light
+[${c3}]Singing out the anthem that will [${c4}]guide us through the night
+[${c1}]Feel the music rising as the [${c2}]world begins to turn
+[${c3}]Every single lesson that our [${c4}]open hearts can learn
 
-[Estribillo]
-[${c1}] Esta es la canción de ${title}
-[${c2}] Tocando con el alma y el corazón
-[${c3}] Dejando que la música sea la guía
-[${c4}] En cada compás de esta gran pasión
-[${c1}] ¡${title}! [${c2}] En cada nota, [${c3}] en cada voz [${c4}]
+[Verse 2]
+[${c1}]Listening to the echoes of the [${c2}]steps along the road
+[${c3}]Sharing all the laughter and the [${c4}]lightening of the load
+[${c1}]Never looking backwards with a [${c2}]dream that's burning bright
+[${c3}]Holding on to passion and the [${c4}]power of tonight
 
-[Verso 2]
-[${c1}] Los acordes fluyen con precisión
-[${c2}] Siguiendo las líneas de esta partitura
-[${c3}] El sonido llena toda la habitación
-[${c4}] Elevando el arte a su máxima altura
+[Chorus]
+[${c1}]Here we are together under[${c2}]neath the shining light
+[${c3}]Singing out the anthem that will [${c4}]guide us through the night
+[${c1}]Feel the music rising as the [${c2}]world begins to turn
+[${c3}]Every single lesson that our [${c4}]open hearts can learn
 
-[Estribillo]
-[${c1}] Esta es la canción de ${title}
-[${c2}] Tocando con el alma y el corazón
-[${c3}] Dejando que la música sea la guía
-[${c4}] En cada compás de esta gran pasión
+[Bridge]
+[${c3}]When the tempo slows down and the [${c4}]silence makes us see
+[${c1}]Every little whisper in the [${c2}]boundless melody
 
-[Solo de Guitarra / Instrumental]
-[${c1}]   [${c2}]   [${c3}]   [${c4}]
-[${c1}]   [${c2}]   [${c3}]   [${c4}]
-
-[Puente]
-[${c3}] Aunque pasen los años y cambie el compás
-[${c4}] La música viva siempre quedará
-[${c1}] Tocamos juntos sin mirar atrás
-[${c2}] Con la melodía que nunca morirá
-
-[Estribillo Final]
-[${c1}] Esta es la canción de ${title}
-[${c2}] Tocando con el alma y el corazón
-[${c3}] Dejando que la música sea la guía
-[${c4}] En cada compás de esta gran pasión
+[Chorus]
+[${c1}]Here we are together under[${c2}]neath the shining light
+[${c3}]Singing out the anthem that will [${c4}]guide us through the night
+[${c1}]Feel the music rising as the [${c2}]world begins to turn
+[${c3}]Every single lesson that our [${c4}]open hearts can learn
 
 [Outro]
-[${c1}] ${title} [${c2}] sonando eterno
-[${c3}] ${artist} [${c4}] en armonía
+[${c1}] [${c2}] [${c3}] [${c4}]
 [${c1}]`;
 
     return {
@@ -330,7 +264,8 @@ export class OfflineUniversalLibraryEngine {
       strumming: pattern.strumming,
       chords: Array.from(new Set([c1, c2, c3, c4])),
       chordpro,
-      source: 'offline_synthesizer'
+      source: 'generated_chord_guide',
+      isGenerated: true
     };
   }
 

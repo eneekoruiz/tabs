@@ -15,6 +15,7 @@ class Database {
   constructor() {
     this.db = null;
     this.isInitialized = false;
+    this.initializationPromise = null;
   }
 
   async init() {
@@ -22,7 +23,11 @@ class Database {
       return this.db;
     }
 
-    return new Promise((resolve, reject) => {
+    if (this.initializationPromise) {
+      return this.initializationPromise;
+    }
+
+    const initializationPromise = new Promise((resolve, reject) => {
       const request = indexedDB.open(DB_NAME, DB_VERSION);
 
       request.onupgradeneeded = (e) => {
@@ -52,33 +57,60 @@ class Database {
       };
 
       request.onsuccess = async (e) => {
-        this.db = e.target.result;
-        this.isInitialized = true;
+        const openedDb = e.target.result;
+        this.db = openedDb;
+        this.isInitialized = false;
 
-        this.db.onversionchange = () => {
+        openedDb.onversionchange = () => {
           console.warn('[Database] Cambio de versión detectado, cerrando conexión...');
-          this.db.close();
-          this.isInitialized = false;
-          this.db = null;
+          openedDb.close();
+          if (this.db === openedDb) {
+            this.isInitialized = false;
+            this.db = null;
+          }
         };
 
-        this.db.onclose = () => {
+        openedDb.onclose = () => {
           console.warn('[Database] Conexión IndexedDB cerrada.');
-          this.isInitialized = false;
-          this.db = null;
+          if (this.db === openedDb) {
+            this.isInitialized = false;
+            this.db = null;
+          }
         };
 
-        await this._syncAndSeedCatalog();
+        try {
+          await this._syncAndSeedCatalog();
+          this.isInitialized = true;
 
-        events.emit('db:ready', this);
-        resolve(this.db);
+          events.emit('db:ready', this);
+          resolve(openedDb);
+        } catch (error) {
+          console.error('[Database] Error sincronizando el catálogo:', error);
+          this.isInitialized = false;
+          if (this.db === openedDb) {
+            this.db = null;
+          }
+          openedDb.close();
+          reject(error);
+        }
       };
 
       request.onerror = (e) => {
         console.error('[Database] Error abriendo IndexedDB:', e.target.error);
+        this.isInitialized = false;
+        this.db = null;
         reject(e.target.error);
       };
     });
+
+    this.initializationPromise = initializationPromise;
+    try {
+      return await initializationPromise;
+    } finally {
+      if (this.initializationPromise === initializationPromise) {
+        this.initializationPromise = null;
+      }
+    }
   }
 
   _isClosing(db) {
@@ -93,51 +125,70 @@ class Database {
    * Sincroniza y actualiza todas las canciones de IndexedDB con las letras oficiales reales.
    */
   async _syncAndSeedCatalog() {
-    try {
-      const { store } = this._transaction('songs', 'readwrite');
-      const req = store.getAll();
+    return new Promise((resolve, reject) => {
+      try {
+        const { tx, store } = this._transaction('songs', 'readwrite');
+        const req = store.getAll();
 
-      req.onsuccess = async () => {
-        const existingSongs = req.result || [];
-        const existingByTitle = new Map(existingSongs.map(s => [s.title.toLowerCase(), s]));
+        tx.oncomplete = () => resolve();
+        tx.onerror = () => reject(tx.error || new Error('Error sincronizando el catálogo.'));
+        tx.onabort = () => reject(tx.error || new Error('Sincronización del catálogo abortada.'));
 
-        // Actualizar letras oficiales para canciones existentes
-        for (const song of existingSongs) {
-          const catalogItem = MEGA_CATALOG.find(m => m.title.toLowerCase() === song.title.toLowerCase());
-          const knownLyrics = catalogItem?.lyricsChords || onlineSongProvider.getKnownSongLyrics(song.title, song.artist);
+        req.onerror = () => reject(req.error || new Error('No se pudo leer el catálogo local.'));
+        req.onsuccess = () => {
+          try {
+            const existingSongs = req.result || [];
+            const existingByTitle = new Map(existingSongs.map(s => [s.title.toLowerCase(), s]));
 
-          if (knownLyrics && song.lyricsChords !== knownLyrics) {
-            song.lyricsChords = knownLyrics;
-            if (catalogItem?.data) song.data = catalogItem.data;
-            store.put(song);
+            // Actualizar letras oficiales para canciones existentes
+            for (const song of existingSongs) {
+              const catalogItem = MEGA_CATALOG.find(m => m.title.toLowerCase() === song.title.toLowerCase());
+              const knownLyrics = catalogItem?.lyricsChords || onlineSongProvider.getKnownSongLyrics(song.title, song.artist);
+              const contentSource = song.contentSource || (knownLyrics ? 'curated_lyrics' : 'generated_chord_guide');
+
+              if ((knownLyrics && song.lyricsChords !== knownLyrics) || song.contentSource !== contentSource) {
+                if (knownLyrics) song.lyricsChords = knownLyrics;
+                song.contentSource = contentSource;
+                if (catalogItem?.data) song.data = catalogItem.data;
+                store.put(song);
+              }
+            }
+
+            // Insertar canciones faltantes del catálogo
+            for (const item of MEGA_CATALOG) {
+              if (!existingByTitle.has(item.title.toLowerCase())) {
+                const record = {
+                  title: item.title,
+                  artist: item.artist,
+                  genre: item.genre || 'Rock',
+                  difficulty: item.difficulty || 'Intermedio',
+                  tuning: item.tuning || 'Standard E',
+                  fileName: `${item.title}.alphatex`,
+                  tempo: item.tempo || 120,
+                  timeSignature: item.timeSignature || '4/4',
+                  tracksCount: item.tracksCount || 1,
+                  data: item.data,
+                  lyricsChords: item.lyricsChords || '',
+                  contentSource: item.contentSource || (item.lyricsChords ? 'curated_lyrics' : 'generated_chord_guide'),
+                  isFavorite: false,
+                  addedAt: Date.now(),
+                };
+                store.add(record);
+              }
+            }
+          } catch (error) {
+            try {
+              tx.abort();
+            } catch (abortError) {
+              console.warn('[Database] No se pudo abortar la sincronización:', abortError);
+            }
+            reject(error);
           }
-        }
-
-        // Insertar canciones faltantes del catálogo
-        for (const item of MEGA_CATALOG) {
-          if (!existingByTitle.has(item.title.toLowerCase())) {
-            const record = {
-              title: item.title,
-              artist: item.artist,
-              genre: item.genre || 'Rock',
-              difficulty: item.difficulty || 'Intermedio',
-              tuning: item.tuning || 'Standard E',
-              fileName: `${item.title}.alphatex`,
-              tempo: item.tempo || 120,
-              timeSignature: item.timeSignature || '4/4',
-              tracksCount: item.tracksCount || 1,
-              data: item.data,
-              lyricsChords: item.lyricsChords || '',
-              isFavorite: false,
-              addedAt: Date.now(),
-            };
-            store.add(record);
-          }
-        }
-      };
-    } catch (e) {
-      console.warn('[Database] Aviso en syncAndSeedCatalog:', e);
-    }
+        };
+      } catch (error) {
+        reject(error);
+      }
+    });
   }
 
   _transaction(storeName, mode = 'readonly') {
@@ -153,8 +204,8 @@ class Database {
     await this.init();
     return new Promise((resolve, reject) => {
       try {
-        const { store } = this._transaction('songs', 'readwrite');
-        
+        const { tx, store } = this._transaction('songs', 'readwrite');
+
         const record = {
           title: songData.title || songData.fileName || 'Sin título',
           artist: songData.artist || 'Artista desconocido',
@@ -173,17 +224,24 @@ class Database {
           lastOpenedAt: Date.now(),
         };
 
+        if (songData.contentSource) {
+          record.contentSource = songData.contentSource;
+        }
+
         if (songData.id) {
           record.id = songData.id;
         }
 
+        let savedId = null;
         const req = store.put(record);
-        req.onsuccess = () => {
-          const id = req.result;
-          events.emit('db:songSaved', { ...record, id });
-          resolve(id);
+        req.onsuccess = () => { savedId = req.result; };
+        req.onerror = () => reject(req.error || new Error('No se pudo guardar la canción.'));
+        tx.oncomplete = () => {
+          events.emit('db:songSaved', { ...record, id: savedId });
+          resolve(savedId);
         };
-        req.onerror = () => reject(req.error);
+        tx.onerror = () => reject(tx.error || new Error('Error guardando la canción.'));
+        tx.onabort = () => reject(tx.error || new Error('Guardado de canción abortado.'));
       } catch (err) {
         reject(err);
       }
@@ -201,7 +259,8 @@ class Database {
           events.emit('db:batchSaved', { count });
           resolve(count);
         };
-        tx.onerror = () => reject(tx.error);
+        tx.onerror = () => reject(tx.error || new Error('Error guardando el lote de canciones.'));
+        tx.onabort = () => reject(tx.error || new Error('Guardado del lote abortado.'));
 
         for (const song of songsArray) {
           const record = {
@@ -221,6 +280,9 @@ class Database {
             addedAt: Date.now(),
             lastOpenedAt: null,
           };
+          if (song.contentSource) {
+            record.contentSource = song.contentSource;
+          }
           store.put(record);
           count++;
         }
@@ -231,18 +293,35 @@ class Database {
   }
 
   async getSong(id) {
+    const numericId = Number(id);
+    const catalogMatch = Number.isInteger(numericId) && numericId > 0
+      ? MEGA_CATALOG.find(item => Number(item.id) === numericId) || MEGA_CATALOG[numericId - 1] || null
+      : null;
+    const catalogSong = catalogMatch
+      ? {
+          ...catalogMatch,
+          contentSource: catalogMatch.contentSource || (catalogMatch.lyricsChords ? 'curated_lyrics' : 'generated_chord_guide'),
+        }
+      : null;
+
     try {
       await this.init();
       return await new Promise((resolve, reject) => {
         try {
-          const { store } = this._transaction('songs', 'readonly');
-          const req = store.get(Number(id));
+          const { tx, store } = this._transaction('songs', 'readonly');
+          let result = catalogSong;
+
+          tx.oncomplete = () => resolve(result);
+          tx.onerror = () => reject(tx.error || new Error('Error leyendo la canción.'));
+          tx.onabort = () => reject(tx.error || new Error('Lectura de canción abortada.'));
+
+          const req = store.get(numericId);
           req.onsuccess = () => {
             const song = req.result || null;
             if (song) {
               const catalogItem = MEGA_CATALOG.find(m => m.title.toLowerCase() === song.title.toLowerCase());
               const officialLyrics = catalogItem?.lyricsChords || onlineSongProvider.getKnownSongLyrics(song.title, song.artist);
-              
+
               if (officialLyrics) {
                 song.lyricsChords = officialLyrics;
               }
@@ -250,19 +329,76 @@ class Database {
                 song.data = catalogItem.data;
               }
             }
-            resolve(song);
+            result = song || catalogSong;
           };
-          req.onerror = () => reject(req.error);
+          req.onerror = () => reject(req.error || new Error('No se pudo leer la canción.'));
         } catch (txErr) {
           reject(txErr);
         }
       });
     } catch (err) {
-      console.warn('[Database] Recuperando canción desde MEGA_CATALOG por reconexión:', err);
-      this.isInitialized = false;
-      this.db = null;
-      const catalogItem = MEGA_CATALOG.find(m => m.title.toLowerCase() === 'blackbird' || m.id === Number(id)) || MEGA_CATALOG[0];
-      return catalogItem || null;
+      console.warn('[Database] Error en getSong, usando fallback:', err);
+      return catalogSong;
+    }
+  }
+
+  async recordSongVisit(song) {
+    if (!song) return;
+    try {
+      const visits = JSON.parse(localStorage.getItem('app_recent_visited_songs') || '[]');
+      const existing = visits.find(v => (v.title.toLowerCase() === song.title.toLowerCase() && (v.artist || '').toLowerCase() === (song.artist || '').toLowerCase()));
+      const currentPlayCount = existing ? (existing.playCount || 1) + 1 : 1;
+
+      const filtered = visits.filter(v => !(v.title.toLowerCase() === song.title.toLowerCase() && (v.artist || '').toLowerCase() === (song.artist || '').toLowerCase()));
+      filtered.unshift({
+        id: song.id,
+        title: song.title,
+        artist: song.artist,
+        genre: song.genre || 'Pop',
+        tuning: song.tuning || 'Standard E',
+        tempo: song.tempo || 120,
+        difficulty: song.difficulty || 'Intermedio',
+        lastOpenedAt: Date.now(),
+        playCount: currentPlayCount
+      });
+      localStorage.setItem('app_recent_visited_songs', JSON.stringify(filtered.slice(0, 40)));
+    } catch(e) {}
+  }
+
+  getRecentVisitedSongs() {
+    try {
+      return JSON.parse(localStorage.getItem('app_recent_visited_songs') || '[]');
+    } catch(e) { return []; }
+  }
+
+  getMostVisitedSongs() {
+    try {
+      const songs = this.getRecentVisitedSongs();
+      return [...songs].sort((a, b) => (b.playCount || 1) - (a.playCount || 1));
+    } catch(e) { return []; }
+  }
+
+  async getAllSongs() {
+    try {
+      await this.init();
+      return await new Promise((resolve, reject) => {
+        try {
+          const { tx, store } = this._transaction('songs', 'readonly');
+          let songs = MEGA_CATALOG;
+
+          tx.oncomplete = () => resolve(songs);
+          tx.onerror = () => reject(tx.error || new Error('Error leyendo el catálogo local.'));
+          tx.onabort = () => reject(tx.error || new Error('Lectura del catálogo abortada.'));
+
+          const req = store.getAll();
+          req.onsuccess = () => { songs = req.result || MEGA_CATALOG; };
+          req.onerror = () => reject(req.error || new Error('No se pudo leer el catálogo local.'));
+        } catch (e) {
+          reject(e);
+        }
+      });
+    } catch (err) {
+      return MEGA_CATALOG;
     }
   }
 
@@ -271,14 +407,18 @@ class Database {
       await this.init();
       return await new Promise((resolve, reject) => {
         try {
-          const { store } = this._transaction('songs', 'readonly');
+          const { tx, store } = this._transaction('songs', 'readonly');
           const songs = [];
-          const req = store.openCursor();
 
+          tx.oncomplete = () => resolve(songs);
+          tx.onerror = () => reject(tx.error || new Error('Error leyendo los metadatos.'));
+          tx.onabort = () => reject(tx.error || new Error('Lectura de metadatos abortada.'));
+
+          const req = store.openCursor();
           req.onsuccess = (e) => {
             const cursor = e.target.result;
             if (cursor) {
-              const { id, title, artist, genre, difficulty, tuning, fileName, tempo, timeSignature, tracksCount, isFavorite, addedAt, fileSize } = cursor.value;
+              const { id, title, artist, genre, difficulty, tuning, fileName, tempo, timeSignature, tracksCount, isFavorite, addedAt, fileSize, contentSource } = cursor.value;
               songs.push({
                 id,
                 title,
@@ -293,32 +433,37 @@ class Database {
                 isFavorite,
                 addedAt,
                 fileSize,
+                contentSource,
               });
               cursor.continue();
-            } else {
-              resolve(songs);
             }
           };
-          req.onerror = () => reject(req.error);
+          req.onerror = () => reject(req.error || new Error('No se pudieron leer los metadatos.'));
         } catch (txErr) {
           reject(txErr);
         }
       });
     } catch (err) {
-      return MEGA_CATALOG.map((m, idx) => ({ ...m, id: idx + 1 }));
+      return MEGA_CATALOG.map((m, idx) => ({
+        ...m,
+        id: idx + 1,
+        contentSource: m.contentSource || (m.lyricsChords ? 'curated_lyrics' : 'generated_chord_guide'),
+      }));
     }
   }
 
   async deleteSong(id) {
     await this.init();
     return new Promise((resolve, reject) => {
-      const { store } = this._transaction('songs', 'readwrite');
+      const { tx, store } = this._transaction('songs', 'readwrite');
       const req = store.delete(Number(id));
-      req.onsuccess = () => {
+      req.onerror = () => reject(req.error || new Error('No se pudo eliminar la canción.'));
+      tx.oncomplete = () => {
         events.emit('db:songDeleted', id);
         resolve(true);
       };
-      req.onerror = () => reject(req.error);
+      tx.onerror = () => reject(tx.error || new Error('Error eliminando la canción.'));
+      tx.onabort = () => reject(tx.error || new Error('Eliminación de canción abortada.'));
     });
   }
 
@@ -334,27 +479,35 @@ class Database {
   async saveSoundFont(id, data) {
     await this.init();
     return new Promise((resolve, reject) => {
-      const { store } = this._transaction('soundfonts', 'readwrite');
+      const { tx, store } = this._transaction('soundfonts', 'readwrite');
       const req = store.put({
         id,
         data,
         size: data.byteLength,
         cachedAt: Date.now(),
       });
-      req.onsuccess = () => resolve(true);
-      req.onerror = () => reject(req.error);
+      req.onerror = () => reject(req.error || new Error('No se pudo guardar el SoundFont.'));
+      tx.oncomplete = () => resolve(true);
+      tx.onerror = () => reject(tx.error || new Error('Error guardando el SoundFont.'));
+      tx.onabort = () => reject(tx.error || new Error('Guardado de SoundFont abortado.'));
     });
   }
 
   async getSoundFont(id) {
     await this.init();
     return new Promise((resolve, reject) => {
-      const { store } = this._transaction('soundfonts', 'readonly');
+      const { tx, store } = this._transaction('soundfonts', 'readonly');
+      let soundFont = null;
+
+      tx.oncomplete = () => resolve(soundFont);
+      tx.onerror = () => reject(tx.error || new Error('Error leyendo el SoundFont.'));
+      tx.onabort = () => reject(tx.error || new Error('Lectura de SoundFont abortada.'));
+
       const req = store.get(id);
       req.onsuccess = () => {
-        resolve(req.result ? req.result.data : null);
+        soundFont = req.result ? req.result.data : null;
       };
-      req.onerror = () => reject(req.error);
+      req.onerror = () => reject(req.error || new Error('No se pudo leer el SoundFont.'));
     });
   }
 }
