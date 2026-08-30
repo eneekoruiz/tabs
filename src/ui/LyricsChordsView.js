@@ -28,6 +28,7 @@ export class LyricsChordsView extends Component {
     this.currentInstrument = localStorage.getItem('app_instrument') || 'guitar';
     this.visualTheme = localStorage.getItem('app_visual_theme') || 'paper';
     this.notationSystem = localStorage.getItem('app_notation') || 'anglo';
+    this.performanceMode = localStorage.getItem('app_performance_mode') || 'play';
     this.isSimplified = localStorage.getItem('app_simplified_chords') === 'true';
     this.hideChordsMode = false;
     this.isStageMode = false;
@@ -328,6 +329,31 @@ export class LyricsChordsView extends Component {
             </div>
           </div>
 
+          <!-- Selector Guía de Modo: ¿La quieres TOCAR o CANTAR? -->
+          <div class="song-interpretation-guider">
+            <div class="guider-prompt">
+              <span class="guider-badge">MODO GUÍA</span>
+              <strong class="guider-title">¿Cómo quieres interpretar esta canción hoy?</strong>
+            </div>
+            <div class="guider-buttons">
+              <button class="btn-guider-choice ${this.performanceMode === 'play' ? 'active' : ''}" id="btnGuiderPlay">
+                <span class="guider-icon">🎸</span>
+                <div class="guider-text">
+                  <strong>Quiero TOCARLA</strong>
+                  <span>Guitarra, Piano, Ukelele, Tablatura & Acordes</span>
+                </div>
+              </button>
+
+              <button class="btn-guider-choice ${this.performanceMode === 'sing' ? 'active' : ''}" id="btnGuiderSing">
+                <span class="guider-icon">🎤</span>
+                <div class="guider-text">
+                  <strong>Quiero CANTARLA</strong>
+                  <span>Letra gigante, Vocal Coach & Afinación por micro</span>
+                </div>
+              </button>
+            </div>
+          </div>
+
           <!-- Barra de Controles Esenciales -->
           <div class="lyrics-essential-toolbar" style="display: ${this.viewMode === 'score' ? 'none' : 'flex'};">
             <!-- Selector Instrumento -->
@@ -535,6 +561,23 @@ export class LyricsChordsView extends Component {
 
     this.container.querySelector('#btnBackToExplore')?.addEventListener('click', () => {
       events.emit('ui:switchTab', 'explore');
+    });
+
+    this.container.querySelector('#btnGuiderPlay')?.addEventListener('click', () => {
+      this.performanceMode = 'play';
+      localStorage.setItem('app_performance_mode', 'play');
+      this.render();
+      toast.show('🎸 Modo Instrumento: Acordes, tablatura y acompañamiento listos', 'info', 1500);
+    });
+
+    this.container.querySelector('#btnGuiderSing')?.addEventListener('click', () => {
+      this.performanceMode = 'sing';
+      localStorage.setItem('app_performance_mode', 'sing');
+      this.fontSizeScale = 130;
+      localStorage.setItem('lyrics_font_scale', 130);
+      this.render();
+      events.emit('vocalCoach:open');
+      toast.show('🎤 Modo Guía Cantante: Letra ampliada y Vocal Coach activo', 'success', 2000);
     });
 
     this.container.querySelector('#btnModeLyrics')?.addEventListener('click', () => this.setViewMode('lyrics'));
