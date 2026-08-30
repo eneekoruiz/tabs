@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#ff5722">
+  <title>Tabs & Chords PRO - Visor, Acordes & Letras</title>
+  
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎸</text></svg>">
+  <link rel="manifest" href="manifest.json">
+
+  <!-- Script de registro oficial de Service Worker PWA Offline -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').then((reg) => {
+          console.log('🚀 [PWA] Service Worker activo y listo para instalación offline:', reg.scope);
+        }).catch((err) => {
+          console.warn('[PWA] Error al registrar Service Worker:', err);
+        });
+      });
+    }
+  </script>
+
+  <!-- Estilos Modulares y Design Tokens Studio OLED -->
+  <link rel="stylesheet" href="assets/css/tokens.css?v=20260815">
+  <link rel="stylesheet" href="assets/css/layout.css?v=20260815">
+  <link rel="stylesheet" href="assets/css/components/transport.css?v=20260815">
+  <link rel="stylesheet" href="assets/css/components/library.css?v=20260815">
+  <link rel="stylesheet" href="assets/css/components/mixer.css?v=20260815">
+  <link rel="stylesheet" href="assets/css/components/fretboard.css?v=20260815">
+  <link rel="stylesheet" href="assets/css/components/speedtrainer.css?v=20260815">
+  <link rel="stylesheet" href="assets/css/components/tuner.css?v=20260815">
+  <link rel="stylesheet" href="assets/css/components/pro-toolbox.css?v=20260815">
+  <link rel="stylesheet" href="assets/css/components/tools-premium.css?v=20260820">
+  <link rel="stylesheet" href="assets/css/components/tools-panoramic.css?v=20260822">
+  <link rel="stylesheet" href="assets/css/components/chord-diagram.css?v=20260815">
+  <link rel="stylesheet" href="assets/css/components/gig-mode.css?v=20260815">
+  <link rel="stylesheet" href="assets/css/components/audio-sync.css?v=20260815">
+  <link rel="stylesheet" href="assets/css/components/multi-instrument.css?v=20260815">
+  <link rel="stylesheet" href="assets/css/components/export-modal.css?v=20260815">
+  <link rel="stylesheet" href="assets/css/components/lyrics-chords.css?v=20260815">
+  <link rel="stylesheet" href="assets/css/components/song-importer.css?v=20260815">
+  <link rel="stylesheet" href="assets/css/components/settings.css?v=20260815">
+  <link rel="stylesheet" href="assets/css/components/bottom-nav.css?v=20260816">
+  <link rel="stylesheet" href="assets/css/components/toast.css?v=20260816">
+  <link rel="stylesheet" href="assets/css/components/command-palette.css?v=20260816">
+  <link rel="stylesheet" href="assets/css/components/vocal-coach.css?v=20260830">
+  <link rel="stylesheet" href="assets/css/components/transcriber.css?v=20260830">
+  <link rel="stylesheet" href="assets/css/components/analytics-dashboard.css?v=20260830">
+  <link rel="stylesheet" href="assets/css/components/stems-mixer.css?v=20260830">
+  <link rel="stylesheet" href="assets/css/components/pedalboard.css?v=20260830">
+  <link rel="stylesheet" href="assets/css/components/smart-looper.css?v=20260830">
+  <link rel="stylesheet" href="assets/css/components/smart-band.css?v=20260830">
+  <link rel="stylesheet" href="assets/css/components/arcade-mode.css?v=20260830">
+  <link rel="stylesheet" href="assets/css/components/band-room.css?v=20260830">
+  <link rel="stylesheet" href="assets/css/components/stage-automation.css?v=20260830">
+  <link rel="stylesheet" href="assets/css/components/spatial-xr.css?v=20260830">
+
+
+  <!-- AlphaTab CDN Oficial (Motor de partituras y síntesis) -->
+  <script src="https://cdn.jsdelivr.net/npm/@coderline/alphatab@latest/dist/alphaTab.js"></script>
+</head>
+<body class="theme-ivory">
+
+  <div class="app-root">
+    <!-- 1. Barra de Transporte Superior para Reproductor -->
+    <header id="transport-container" style="display: none;"></header>
+
+    <!-- 2. Barra de Metadatos de la Canción Activa -->
+    <section class="song-info-strip" id="songInfoStrip" role="region" aria-label="Información de la partitura activa" style="display: none;">
+      <div class="song-info-meta">
+        <span class="song-info-title" id="songInfoTitle">Tabs & Chords PRO</span>
+        <span class="song-info-artist" id="songInfoArtist">— Selecciona una canción</span>
+      </div>
+      <div class="song-info-details" id="songInfoDetails">
+        <span>♩ 120 BPM</span>
+        <span>Standard E</span>
+      </div>
+    </section>
+
+    <!-- 3. Área de Trabajo Principal Mobile-First (Vistas Alternables) -->
+    <main class="main-workspace">
+      <!-- Vista 1: Explorar / Buscador Gigante -->
+      <div id="explore-view-container" class="view-container active-view"></div>
+
+      <!-- Vista 2: Mis Tablaturas & Repertorios -->
+      <div id="library-container" class="view-container"></div>
+
+      <!-- Vista 3: Herramientas del Músico (Afinador de Oído & Acordes IA) -->
+      <div id="tools-view-container" class="view-container"></div>
+
+      <!-- Vista 4: Ajustes del Músico, Perfil & Cuenta -->
+      <div id="settings-view-container" class="view-container"></div>
+
+      <!-- Vista 5: Reproductor Limpio (Letra con Acordes por Defecto + Lienzo Tablatura) -->
+      <div class="score-viewport view-container" id="score-viewport" role="region" aria-label="Lienzo de letra y acordes musicales">
+        <div id="lyrics-chords-container"></div>
+        <div id="alphatab" style="display: none;"></div>
+      </div>
+
+      <!-- Overlays y Modales Secundarios (Desactivados por Defecto) -->
+      <div id="speedtrainer-container" role="region" aria-label="Speed Trainer"></div>
+      <div id="tuner-container" role="region" aria-label="Afinador Cromático"></div>
+      <div id="vocal-coach-container" role="region" aria-label="Asistente Vocal"></div>
+      <div id="transcription-modal-container" role="region" aria-label="Transcripción de Audio"></div>
+      <div id="analytics-modal-container" role="region" aria-label="Panel de Analíticas"></div>
+      <div id="stems-modal-container" role="region" aria-label="Separador de Stems"></div>
+      <div id="pedalboard-modal-container" role="region" aria-label="Pedalera Virtual"></div>
+      <div id="looper-modal-container" role="region" aria-label="Smart Looper"></div>
+      <div id="smart-band-modal-container" role="region" aria-label="The Smart Band"></div>
+      <div id="arcade-mode-modal-container" role="region" aria-label="Modo Arcade"></div>
+      <div id="bandroom-modal-container" role="region" aria-label="BandRoom Multijugador"></div>
+      <div id="stage-automation-modal-container" role="region" aria-label="Stage Automation MIDI"></div>
+      <div id="spatial-xr-modal-container" role="region" aria-label="Spatial Computing XR HUD"></div>
+      <div id="pro-toolbox-container" role="region" aria-label="Arsenal PRO"></div>
+      <div id="chord-modal-container" role="region" aria-label="Diccionario de acordes"></div>
+      <div id="audio-sync-modal-container" role="region" aria-label="Sincronización de audio"></div>
+      <div id="export-modal-container" role="region" aria-label="Exportar partitura"></div>
+      <div id="gig-mode-container" role="region" aria-label="Modo Directo"></div>
+      <div id="song-importer-container" role="region" aria-label="Importar canción"></div>
+    </main>
+
+    <!-- 4. Deck Inferior Secundario (Oculto por Defecto) -->
+    <footer class="bottom-dock">
+      <div id="piano-container" role="region" aria-label="Teclado de piano"></div>
+      <div id="drums-container" role="region" aria-label="Batería interactiva"></div>
+      <div id="mixer-container" role="region" aria-label="Mezclador multicanal"></div>
+      <div id="fretboard-container" role="region" aria-label="Mástil interactivo"></div>
+    </footer>
+
+    <!-- 5. Barra de Navegación Inferior Fija (Bottom Nav Bar) -->
+    <nav id="bottom-nav-container"></nav>
+  </div>
+
+  <!-- Inicialización del Sistema Modular V2 -->
+  <script type="module" src="src/mainV2.js?t=102"></script>
+</body>
+</html>
+<script>
+  (function() {
+    var theme = localStorage.getItem('app_visual_theme');
+    if (theme === 'oled') {
+      document.body.classList.add('theme-charcoal');
+    } else if (theme === 'amber') {
+      document.body.classList.add('theme-amber');
+    } else {
+      // Modo predeterminado: Blanco / Claro (Ivory / Paper)
+      document.body.classList.add('theme-ivory');
+      if (!theme) localStorage.setItem('app_visual_theme', 'paper');
+    }
+  })();
+</script>

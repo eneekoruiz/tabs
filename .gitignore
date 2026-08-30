@@ -1,0 +1,24 @@
+# Dependencias de Node
+node_modules/
+npm-debug.log*
+yarn-error.log*
+
+# Playwright & Testing artifacts
+test-results/
+playwright-report/
+blob-report/
+.playwright-artifacts/
+
+# Build de Rust y Tauri
+src-tauri/target/
+src-tauri/gen/
+dist/
+
+# Archivos del sistema operativo e IDE
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+.gemini/
+
+recordatorios/

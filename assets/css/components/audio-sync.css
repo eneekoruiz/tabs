@@ -1,0 +1,93 @@
+/* ==========================================================================
+   Estilos de Sincronización de Audio Real (AudioSyncModal)
+   ========================================================================== */
+.audio-sync-card {
+  width: 380px;
+  max-width: 90vw;
+}
+
+.audio-sync-body {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.sync-file-box {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: rgba(10, 10, 14, 0.6);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.btn-load-audio {
+  width: 100%;
+  justify-content: center;
+}
+
+.sync-filename-label {
+  font-size: 0.76rem;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
+}
+
+.offset-slider-row, .sync-volume-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.slider-range-styled {
+  flex: 1;
+  accent-color: var(--accent-primary);
+  cursor: pointer;
+}
+
+.offset-quick-btns {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.btn-offset-step {
+  font-size: 0.75rem;
+  font-family: var(--font-mono);
+  padding: 4px 0;
+  justify-content: center;
+}
+
+.btn-mute-audio {
+  padding: 4px 8px;
+  font-size: 0.9rem;
+}
+
+.sync-status-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.74rem;
+  color: var(--text-muted);
+  background: rgba(14, 14, 20, 0.7);
+  border: 1px solid var(--border-subtle);
+  padding: 8px 12px;
+  border-radius: 6px;
+}
+
+.sync-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #666;
+}
+
+.sync-active .sync-dot {
+  background: var(--accent-secondary);
+  box-shadow: 0 0 8px var(--accent-secondary-glow);
+}

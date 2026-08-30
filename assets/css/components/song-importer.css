@@ -1,0 +1,157 @@
+/* ==========================================================================
+   Estilos de Importador de Canciones (Añadir Cualquier Canción)
+   ========================================================================== */
+
+.importer-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(8px);
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.importer-modal-card {
+  background: #151520;
+  border: 1px solid var(--border-strong);
+  border-radius: 16px;
+  width: 100%;
+  max-width: 620px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 24px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.9);
+  color: var(--text-primary);
+}
+
+.importer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.importer-title {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--accent-primary);
+  margin: 0;
+}
+
+.btn-close-importer {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: all var(--transition-fast);
+}
+
+.btn-close-importer:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.importer-description {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin-bottom: 20px;
+}
+
+.importer-description code {
+  background: rgba(255, 87, 34, 0.15);
+  color: var(--accent-primary);
+  padding: 2px 5px;
+  border-radius: 4px;
+}
+
+.importer-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.importer-row {
+  display: flex;
+  gap: 12px;
+}
+
+.importer-field {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.importer-field label {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.importer-field input,
+.importer-field select,
+.importer-field textarea {
+  background: #0d0d14;
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  color: var(--text-primary);
+  padding: 10px 12px;
+  font-size: 0.92rem;
+  font-family: inherit;
+  transition: all var(--transition-fast);
+}
+
+.importer-field input:focus,
+.importer-field select:focus,
+.importer-field textarea:focus {
+  border-color: var(--accent-primary);
+  outline: none;
+  box-shadow: 0 0 0 2px var(--accent-primary-glow);
+}
+
+.importer-field textarea {
+  font-family: monospace;
+  font-size: 0.88rem;
+  line-height: 1.4;
+  resize: vertical;
+}
+
+.importer-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.btn-add-custom-song-hero {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, rgba(255, 87, 34, 0.2), rgba(0, 229, 255, 0.15));
+  border: 1px dashed var(--accent-primary);
+  color: var(--text-primary);
+  font-weight: 700;
+  font-size: 0.88rem;
+  padding: 10px 18px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  margin-top: 12px;
+}
+
+.btn-add-custom-song-hero:hover {
+  background: var(--accent-primary);
+  color: var(--text-primary);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px var(--accent-primary-glow);
+}

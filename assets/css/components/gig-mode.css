@@ -1,0 +1,184 @@
+/* ==========================================================================
+   Estilos de Modo Directo (Gig Mode / Performance Teleprompter)
+   ========================================================================== */
+body.gig-mode-active #transport-container,
+body.gig-mode-active .song-info-strip,
+body.gig-mode-active #library-container,
+body.gig-mode-active .bottom-dock,
+body.gig-mode-active #speedtrainer-container,
+body.gig-mode-active #tuner-container,
+body.gig-mode-active #pro-toolbox-container,
+body.gig-mode-active #chord-modal-container {
+  display: none !important;
+}
+
+body.gig-mode-active .score-viewport {
+  padding: 80px 20px 90px 20px !important;
+  background-color: #000000 !important;
+}
+
+body.gig-mode-active #alphatab {
+  max-width: 1300px !important;
+  border-radius: 12px;
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.9);
+}
+
+.gig-hud-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 500;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 16px 24px;
+}
+
+.gig-top-hud {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(12, 12, 16, 0.88);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+  padding: 10px 20px;
+  box-shadow: var(--shadow-lg);
+  pointer-events: auto;
+}
+
+.gig-current-song-tag {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.gig-live-indicator {
+  background: #d32f2f;
+  color: var(--text-primary);
+  font-size: 0.72rem;
+  font-weight: 900;
+  padding: 2px 8px;
+  border-radius: 6px;
+  animation: pulseLive 1.8s infinite;
+}
+
+@keyframes pulseLive {
+  0% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(0.96); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+.gig-song-name {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.gig-song-artist {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+}
+
+.gig-teleprompter-meta {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.gig-next-song-card {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  background: rgba(255, 87, 34, 0.12);
+  border: 1px solid rgba(255, 87, 34, 0.3);
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 0.84rem;
+}
+
+.gig-next-label {
+  color: var(--accent-primary);
+  font-weight: 700;
+}
+
+.gig-clock-card {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--border-subtle);
+  border: 1px solid var(--border-subtle);
+  padding: 6px 12px;
+  border-radius: 8px;
+}
+
+.gig-clock-digits {
+  font-family: var(--font-mono);
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #00e5ff;
+}
+
+.gig-battery-card {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--accent-secondary);
+}
+
+.btn-exit-gig {
+  font-weight: 700;
+  font-size: 0.8rem;
+  padding: 6px 12px;
+}
+
+/* Barra Flotante Inferior de Escenario */
+.gig-bottom-hud {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  pointer-events: auto;
+  margin-bottom: 8px;
+}
+
+.btn-gig-action {
+  background: rgba(20, 20, 28, 0.85);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  color: var(--text-primary);
+  font-size: 0.92rem;
+  font-weight: 700;
+  padding: 10px 20px;
+  border-radius: 30px;
+  cursor: pointer;
+  box-shadow: var(--shadow-md);
+  transition: all var(--transition-fast);
+}
+
+.btn-gig-action:hover {
+  background: rgba(40, 40, 56, 0.95);
+  transform: translateY(-2px);
+}
+
+.btn-gig-play {
+  background: var(--accent-primary);
+  border: 1px solid var(--accent-primary);
+  color: var(--text-primary);
+  font-size: 1.05rem;
+  font-weight: 800;
+  padding: 12px 28px;
+  border-radius: 30px;
+  cursor: pointer;
+  box-shadow: 0 0 20px var(--accent-primary-glow);
+  transition: all var(--transition-fast);
+}
+
+.btn-gig-play:hover {
+  background: var(--accent-primary-hover);
+  transform: scale(1.04);
+}

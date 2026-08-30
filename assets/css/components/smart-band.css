@@ -1,0 +1,386 @@
+/* ==========================================================================
+   THE SMART BAND (GENERATIVE AI JAMMING SUITE)
+   ========================================================================== */
+
+.modal-smartband-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(10, 10, 14, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+.modal-smartband-card {
+  background: var(--bg-surface-raised, #16171d);
+  border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.12));
+  border-radius: 20px;
+  width: 100%;
+  max-width: 820px;
+  max-height: 92vh;
+  overflow-y: auto;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.05);
+  display: flex;
+  flex-direction: column;
+  color: var(--text-primary, #f0f0f5);
+  animation: smartBandPop 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes smartBandPop {
+  0% { transform: scale(0.96) translateY(12px); opacity: 0; }
+  100% { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+.smartband-modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 24px 28px 16px;
+  border-bottom: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.08));
+}
+
+.smartband-badge {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #ec4899;
+  background: rgba(236, 72, 153, 0.14);
+  border: 1px solid rgba(236, 72, 153, 0.3);
+  padding: 3px 10px;
+  border-radius: 999px;
+  margin-bottom: 8px;
+}
+
+.smartband-modal-title {
+  margin: 0 0 4px;
+  font-size: 1.45rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.smartband-modal-subtitle {
+  margin: 0;
+  font-size: 0.88rem;
+  color: var(--text-secondary, #94a3b8);
+}
+
+.btn-close-smartband {
+  background: rgba(255, 255, 255, 0.06);
+  border: none;
+  color: var(--text-secondary, #94a3b8);
+  font-size: 1.1rem;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.btn-close-smartband:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+}
+
+.smartband-modal-body {
+  padding: 24px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.smartband-section-card {
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+  padding: 18px 20px;
+}
+
+.section-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.section-title {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #f0f0f5;
+}
+
+.song-ref-badge {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #ec4899;
+  background: rgba(236, 72, 153, 0.1);
+  padding: 3px 8px;
+  border-radius: 6px;
+}
+
+/* Chords chips */
+.chords-chips-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 14px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.chord-chip {
+  flex: 1;
+  min-width: 75px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  padding: 10px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: all 0.2s ease;
+}
+
+.chord-chip.active {
+  background: rgba(236, 72, 153, 0.2);
+  border-color: #ec4899;
+  box-shadow: 0 0 14px rgba(236, 72, 153, 0.4);
+  transform: translateY(-2px);
+}
+
+.chord-name {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #fff;
+}
+
+.chord-sub {
+  font-size: 0.72rem;
+  color: var(--text-secondary, #94a3b8);
+}
+
+.quick-progressions-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.quick-lbl {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-secondary, #94a3b8);
+}
+
+.btn-prog-preset {
+  padding: 6px 12px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-primary, #f0f0f5);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-prog-preset:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* Styles Grid */
+.styles-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(135px, 1fr));
+  gap: 10px;
+}
+
+.btn-style-card {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 12px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-style-card:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.btn-style-card.active {
+  background: rgba(236, 72, 153, 0.15);
+  border-color: #ec4899;
+  box-shadow: 0 0 14px rgba(236, 72, 153, 0.3);
+}
+
+.style-icon {
+  font-size: 1.5rem;
+}
+
+.style-info strong {
+  display: block;
+  font-size: 0.85rem;
+  color: #fff;
+}
+
+.style-info span {
+  display: block;
+  font-size: 0.68rem;
+  color: var(--text-secondary, #94a3b8);
+  margin-top: 2px;
+}
+
+/* Mixer Row */
+.smartband-mixer-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1.2fr;
+  gap: 14px;
+}
+
+@media (max-width: 640px) {
+  .smartband-mixer-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.band-channel-box,
+.band-tempo-box {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 14px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.channel-meta,
+.tempo-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.channel-name,
+.tempo-name {
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  color: #cbd5e1;
+}
+
+.tempo-val,
+.chan-vol-lbl {
+  font-family: monospace;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--text-secondary, #94a3b8);
+}
+
+.btn-chan-mute {
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  font-weight: 800;
+  font-size: 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-secondary, #94a3b8);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-chan-mute.active {
+  background: #ef4444;
+  border-color: #ef4444;
+  color: #fff;
+}
+
+.chan-slider,
+.tempo-slider {
+  width: 100%;
+  cursor: pointer;
+  accent-color: #ec4899;
+}
+
+.beat-indicators-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 8px 0;
+}
+
+.beat-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  transition: background 0.08s ease, transform 0.08s ease;
+}
+
+.beat-dot.active {
+  background: #ec4899;
+  box-shadow: 0 0 10px #ec4899;
+  transform: scale(1.3);
+}
+
+/* Footer */
+.smartband-modal-footer {
+  padding: 16px 28px 24px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  border-top: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.08));
+}
+
+.btn-smartband-action {
+  padding: 10px 22px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-smartband-action.secondary {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-primary, #f0f0f5);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.btn-smartband-action.secondary:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.btn-smartband-action.primary {
+  background: #ec4899;
+  color: #fff;
+  border: none;
+}
+
+.btn-smartband-action.primary.is-playing {
+  background: #f59e0b;
+  color: #000;
+  box-shadow: 0 0 16px rgba(245, 158, 11, 0.4);
+}
+
+.btn-smartband-action.primary:hover {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+}

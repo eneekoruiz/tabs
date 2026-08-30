@@ -1,0 +1,224 @@
+/* ==========================================================================
+   Estilos de Ajustes & Perfil del Músico (SettingsView Studio PRO)
+   ========================================================================== */
+
+.settings-view-wrapper {
+  max-width: 1050px;
+  margin: 0 auto;
+  padding: 16px 16px 140px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+}
+
+.settings-header-banner {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: linear-gradient(135deg, rgba(255, 87, 34, 0.15) 0%, rgba(0, 229, 255, 0.1) 100%);
+  border: 1px solid var(--border-strong);
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
+}
+
+body.theme-ivory .settings-header-banner {
+  background: linear-gradient(135deg, rgba(201, 42, 42, 0.08) 0%, rgba(11, 105, 163, 0.08) 100%);
+  border-color: rgba(0, 0, 0, 0.12);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+}
+
+.settings-user-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent-primary) 0%, #ff7043 100%);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 16px var(--accent-primary-glow);
+}
+
+.settings-user-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.settings-user-title-line {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.settings-user-name {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.pro-membership-pill {
+  background: linear-gradient(135deg, var(--accent-secondary) 0%, #0088ff 100%);
+  color: #ffffff;
+  font-size: 0.68rem;
+  font-weight: 900;
+  padding: 3px 8px;
+  border-radius: 6px;
+  letter-spacing: 0.5px;
+}
+
+.settings-user-email {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.settings-sections-list {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 18px;
+}
+
+@media (min-width: 850px) {
+  .settings-sections-list {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.settings-card-group {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 16px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+body.theme-ivory .settings-card-group {
+  background: #ffffff;
+  border-color: rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+}
+
+.settings-group-title {
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: var(--accent-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin: 0 0 4px 0;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+body.theme-ivory .settings-group-title {
+  color: #0b69a3;
+}
+
+.settings-row-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  gap: 14px;
+}
+
+.settings-row-info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.settings-row-info strong {
+  font-size: 0.86rem;
+  color: var(--text-primary);
+}
+
+.settings-row-info span {
+  font-size: 0.74rem;
+  color: var(--text-secondary);
+}
+
+.btn-settings-action {
+  background: var(--bg-surface-raised);
+  border: 1px solid var(--border-strong);
+  color: var(--text-primary);
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 7px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all var(--transition-fast);
+}
+
+body.theme-ivory .btn-settings-action {
+  background: #f0eee9;
+  border-color: rgba(0, 0, 0, 0.14);
+  color: #181a1f;
+}
+
+.btn-settings-action:hover {
+  background: var(--accent-primary);
+  border-color: var(--accent-primary);
+  color: #ffffff;
+}
+
+.sel-settings-control {
+  background: var(--bg-surface-raised);
+  border: 1px solid var(--border-strong);
+  color: var(--text-primary);
+  padding: 7px 10px;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+body.theme-ivory .sel-settings-control {
+  background: #ffffff;
+  border-color: rgba(0, 0, 0, 0.2);
+  color: #181a1f;
+}
+
+@media (min-width: 1300px) { .settings-sections-list { grid-template-columns: 1fr 1fr 1fr; align-items: start; } }
+
+@media (max-width: 600px) {
+  .settings-view-wrapper {
+    padding: 12px 12px 140px 12px !important;
+    gap: 14px !important;
+  }
+
+  .settings-header-banner {
+    flex-direction: column !important;
+    text-align: center !important;
+    padding: 16px !important;
+  }
+
+  .settings-user-title-line {
+    justify-content: center !important;
+  }
+
+  .settings-row-item {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 8px !important;
+    border-bottom: 1px solid var(--border-subtle);
+    padding-bottom: 12px !important;
+  }
+
+  .settings-row-item:last-child {
+    border-bottom: none;
+  }
+
+  .settings-row-item .sel-settings-control,
+  .settings-row-item .btn-settings-action {
+    width: 100% !important;
+    text-align: center !important;
+  }
+}

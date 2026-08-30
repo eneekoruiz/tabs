@@ -1,0 +1,290 @@
+/* ==========================================================================
+   Design Tokens & Variables Globales - Studio PRO / Luxury Dark & Light
+   ========================================================================== */
+:root {
+  /* Curvas Físicas de Alto Rendimiento (Apple / Linear Grade) */
+  --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);      /* Entrada rápida y asentamiento ultra suave */
+  --ease-exit: cubic-bezier(0.7, 0, 0.84, 0);        /* Aceleración inmediata en cierre */
+  --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);   /* Micro-rebote elástico táctil */
+  --ease-smooth: cubic-bezier(0.25, 1, 0.5, 1);
+
+  /* Duraciones Físicas */
+  --duration-instant: 80ms;
+  --duration-fast: 150ms;
+  --duration-normal: 260ms;
+  --duration-slow: 400ms;
+
+  /* Transiciones */
+  --transition-fast: var(--duration-fast) var(--ease-spring);
+  --transition-normal: var(--duration-normal) var(--ease-spring);
+  --transition-tactile: transform var(--duration-instant) var(--ease-spring), background var(--duration-fast) ease, box-shadow var(--duration-fast) ease;
+  --transition-spring: background-color var(--duration-normal) var(--ease-spring), border-color var(--duration-normal) var(--ease-spring), color var(--duration-normal) var(--ease-spring), box-shadow var(--duration-normal) var(--ease-spring), opacity var(--duration-normal) var(--ease-spring), transform var(--duration-normal) var(--ease-spring);
+  --transition-modal: transform var(--duration-normal) var(--ease-spring), opacity var(--duration-normal) var(--ease-spring);
+  
+  /* Tipografía */
+  --font-serif: 'Playfair Display', 'Merriweather', 'Georgia', serif;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+  --font-main: var(--font-sans);
+
+  /* Dimensiones */
+  --topbar-height: 58px;
+  --songbar-height: 42px;
+  --sidebar-width: 340px;
+  --content-max: 1440px;
+  --reading-max: 980px;
+  --control-height: 44px;
+  --control-height-compact: 36px;
+
+  /* Geometría compartida */
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+
+  /* Resplandores y Sombras Globales */
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.2);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.25);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.35);
+  --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.5);
+  --shadow-sheet: 0 20px 60px rgba(0, 0, 0, 0.65);
+}
+
+/* =========================================================
+   THEME CHARCOAL (OLED / Dark Mode) - DEFAULT
+   ========================================================= */
+body, body.theme-charcoal {
+  /* Fondos Principales */
+  --bg-app: #060608;
+  --bg-surface: #12141a;
+  --bg-surface-solid: #16181e;
+  --bg-surface-raised: #1c1f26;
+  --bg-surface-hover: #232730;
+  --bg-viewport: #0a0c10;
+  --bg-paper: #14161d;
+  --bg-card-subtle: #151720;
+
+  /* Glassmorphism con Reflejo Especular */
+  --glass-blur: blur(20px) saturate(190%);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-border-hover: rgba(255, 255, 255, 0.18);
+  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+  --glass-specular: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+
+  /* Acentos Vibrantes */
+  --accent-primary: #ff5722; /* Deep Orange */
+  --accent-primary-hover: #ff7043;
+  --accent-primary-glow: rgba(255, 87, 34, 0.4);
+  --accent-secondary: #00e5ff; /* Cyan */
+  --accent-secondary-glow: rgba(0, 229, 255, 0.4);
+  --accent-amber: #ffb300;
+  
+  /* Texto (Alto Contraste) */
+  --text-primary: #ffffff;
+  --text-secondary: #a8b0bd;
+  --text-muted: #8b929e;
+  --text-inverse: #000000;
+
+  /* Bordes */
+  --border-subtle: rgba(255, 255, 255, 0.1);
+  --border-strong: rgba(255, 255, 255, 0.2);
+  --focus-ring: rgba(0, 229, 255, 0.32);
+  --status-success: #45c486;
+  --status-warning: #ffbf47;
+  --status-danger: #ff6b61;
+
+  background-color: var(--bg-app);
+  color: var(--text-primary);
+}
+
+/* =========================================================
+   THEME IVORY (Paper / Claude Design / Natural)
+   ========================================================= */
+body.theme-ivory {
+  /* Fondos Principales (Cálidos, naturales tipo Anthropic/Claude) */
+  --bg-app: #f0ebe4;
+  --bg-surface: #ffffff;
+  --bg-surface-solid: #ffffff;
+  --bg-surface-raised: #faf8f5;
+  --bg-surface-hover: #f5f2ec;
+  --bg-viewport: #f4f0eb;
+  --bg-paper: #ffffff;
+  --bg-card-subtle: #faf8f5;
+
+  /* Sombra Natural Suave (0 glow artificial) */
+  --glass-blur: blur(24px) saturate(120%);
+  --glass-border: rgba(0, 0, 0, 0.06);
+  --glass-border-hover: rgba(0, 0, 0, 0.12);
+  --glass-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 4px 12px rgba(0, 0, 0, 0.03);
+  --glass-specular: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+
+  /* Acentos Elegantes (Terracota Natural) */
+  --accent-primary: #b54826;
+  --accent-primary-hover: #9c3a1c;
+  --accent-primary-glow: rgba(218, 119, 86, 0.15);
+  --accent-secondary: #5a6b5c; /* Verde musgo suave */
+  --accent-secondary-glow: rgba(90, 107, 92, 0.15);
+  --accent-amber: #d99a4e;
+  
+  /* Texto (Marrón muy oscuro, elegante y legible) */
+  --text-primary: #2d2b29;
+  --text-secondary: #4a4642;
+  --text-muted: #524e4a;
+  --text-inverse: #ffffff;
+
+  /* Bordes sutiles y limpios */
+  --border-subtle: rgba(0, 0, 0, 0.08);
+  --border-strong: rgba(0, 0, 0, 0.15);
+  --focus-ring: rgba(181, 72, 38, 0.22);
+  --status-success: #176b45;
+  --status-warning: #8a5a00;
+  --status-danger: #a92f27;
+
+  background-color: var(--bg-app);
+  color: var(--text-primary);
+}
+
+/* =========================================================
+   THEME AMBER (Stage Warm / Anti-Fatigue Mode)
+   ========================================================= */
+body.theme-amber {
+  /* Fondos Principales Cálidos */
+  --bg-app: #120e0a;
+  --bg-surface: #1a140f;
+  --bg-surface-solid: #211a13;
+  --bg-surface-raised: #2a2118;
+  --bg-surface-hover: #352a1f;
+  --bg-viewport: #17110c;
+  --bg-paper: #211a13;
+  --bg-card-subtle: #241c14;
+
+  /* Glassmorphism Cálido */
+  --glass-blur: blur(20px) saturate(160%);
+  --glass-border: rgba(255, 183, 77, 0.12);
+  --glass-border-hover: rgba(255, 183, 77, 0.25);
+  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.6);
+  --glass-specular: inset 0 1px 0 rgba(255, 183, 77, 0.18);
+
+  /* Acentos Ámbar Brillantes */
+  --accent-primary: #ff9800; /* Warm Amber */
+  --accent-primary-hover: #ffa726;
+  --accent-primary-glow: rgba(255, 152, 0, 0.45);
+  --accent-secondary: #ffd54f;
+  --accent-secondary-glow: rgba(255, 213, 79, 0.35);
+  --accent-amber: #ffb300;
+
+  /* Texto Cálido de Alto Contraste */
+  --text-primary: #fff8e1;
+  --text-secondary: #d7ccc8;
+  --text-muted: #a1887f;
+  --text-inverse: #120e0a;
+
+  /* Bordes */
+  --border-subtle: rgba(255, 183, 77, 0.12);
+  --border-strong: rgba(255, 183, 77, 0.25);
+  --focus-ring: rgba(255, 213, 79, 0.3);
+  --status-success: #9ed9a4;
+  --status-warning: #ffd166;
+  --status-danger: #ff8b7f;
+
+  background-color: var(--bg-app);
+  color: var(--text-primary);
+}
+
+/* =========================================================
+   REGLA UNIVERSAL DE TACTILIDAD Y FOCO ACCESIBLE
+   ========================================================= */
+button:active:not(:disabled),
+.btn:active:not(:disabled),
+.nav-tab-btn:active,
+.genre-card-item:active,
+.genre-chip:active,
+.song-card:active,
+.btn-string-pitch:active,
+.btn-root:active,
+.btn-type:active,
+.btn-tuner-pitch:active,
+.btn-bpm-step:active,
+.btn-tap-tempo:active,
+.btn-metronome-play:active,
+.btn-ear-choice:active,
+.btn-ear-answer:active:not(:disabled),
+.btn-pitch-pipe-key:active,
+.btn-stage-exit:active,
+.btn-stage-autoscroll:active,
+.btn-transpose-step:active,
+.btn-font-scale-step:active,
+.btn-autoscroll-step-btn:active,
+.btn-autoscroll-toggle:active,
+.chord-badge:active,
+.btn-close-modal:active,
+.btn-close-tuner:active,
+.btn-popover-x-close:active,
+.cmd-item:active {
+  transform: scale(0.96) !important;
+  transition: transform var(--duration-instant) var(--ease-spring) !important;
+}
+
+*:focus-visible {
+  outline: 2px solid var(--accent-secondary) !important;
+  outline-offset: 2px !important;
+  box-shadow: 0 0 0 4px var(--focus-ring) !important;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button:disabled,
+[aria-disabled="true"] {
+  cursor: not-allowed;
+  opacity: 0.56;
+}
+
+::selection {
+  color: var(--text-inverse);
+  background: var(--accent-primary);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+/* Scrollbars Minimalistas de Estudio */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: 10px;
+  transition: background 0.2s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-primary);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-strong) transparent;
+}

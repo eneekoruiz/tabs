@@ -1,0 +1,22 @@
+{
+  "name": "Tabs & Chords PRO",
+  "short_name": "Tabs PRO",
+  "description": "Visor y reproductor de tablaturas offline, transcripción IA, Neural DSP y acompañamiento generativo.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0a0a10",
+  "theme_color": "#161722",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "assets/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
