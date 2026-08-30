@@ -139,6 +139,25 @@ export class LyricsChordsView extends Component {
     }));
 
     this.registerUnsub(events.on('tuner:pitch', (pitch) => {
+      if (pitch && pitch.frequency > 0) {
+        const noteEl = this.container?.querySelector('#singerNoteBig');
+        const freqEl = this.container?.querySelector('#singerFreqBadge');
+        const labelEl = this.container?.querySelector('#singerPitchNoteLabel');
+        const meterNeedle = this.container?.querySelector('#singerMeterNeedle');
+
+        if (noteEl) noteEl.textContent = pitch.note || '—';
+        if (freqEl) freqEl.textContent = `${Math.round(pitch.frequency)} Hz`;
+        if (labelEl) {
+          const cents = pitch.cents || 0;
+          const statusText = Math.abs(cents) <= 15 ? '🎯 ¡Afinación Perfecta!' : cents < 0 ? '♭ Un poco bajo (sube la voz)' : '♯ Un poco alto (baja la voz)';
+          labelEl.textContent = `🎤 Cantando: ${pitch.note} (${statusText})`;
+        }
+        if (meterNeedle) {
+          const clampedCents = Math.max(-50, Math.min(50, pitch.cents || 0));
+          const percent = 50 + (clampedCents / 50) * 45;
+          meterNeedle.style.left = `${percent}%`;
+        }
+      }
       if (this.isLiveListening && pitch) {
         this.handleLiveChordDetected(pitch.note);
       }
@@ -354,6 +373,43 @@ export class LyricsChordsView extends Component {
             </div>
           </div>
 
+          <!-- Singer Live Pitch Ribbon Overlay (Modo Cantar) -->
+          ${this.performanceMode === 'sing' ? `
+            <div class="singer-vocal-ribbon" id="singerVocalRibbon">
+              <div class="ribbon-left">
+                <span class="ribbon-live-dot"></span>
+                <span class="ribbon-status-label" id="singerPitchNoteLabel">🎤 Cantando: Escuchando micrófono en vivo...</span>
+              </div>
+              <div class="ribbon-center">
+                <span class="ribbon-note-big" id="singerNoteBig">—</span>
+                <span class="ribbon-freq-badge font-mono" id="singerFreqBadge">0 Hz</span>
+                <div class="ribbon-meter-track">
+                  <div class="ribbon-meter-center"></div>
+                  <div class="ribbon-meter-needle" id="singerMeterNeedle"></div>
+                </div>
+              </div>
+              <div class="ribbon-right">
+                <button class="btn-ribbon-vocal-coach" id="btnOpenVocalCoachRibbon">
+                  🎙️ Abrir Vocal Coach 3D
+                </button>
+              </div>
+            </div>
+
+            <!-- Banner de Permiso de Micrófono si fue Denegado -->
+            <div class="mic-permission-warning-banner" id="micPermissionWarning" style="display: none;">
+              <div class="mic-warning-content">
+                <span class="mic-warning-icon">⚠️</span>
+                <div class="mic-warning-info">
+                  <strong>Permiso de Micrófono Requerido</strong>
+                  <span>La app necesita acceso al micrófono para detectar la afinación de tu voz mientras cantas.</span>
+                </div>
+              </div>
+              <button class="btn-request-mic-permission" id="btnRetryMicPermission">
+                🎤 Otorgar Permiso al Micrófono
+              </button>
+            </div>
+          ` : ''}
+
           <!-- Barra de Controles Esenciales -->
           <div class="lyrics-essential-toolbar" style="display: ${this.viewMode === 'score' ? 'none' : 'flex'};">
             <!-- Selector Instrumento -->
@@ -566,18 +622,30 @@ export class LyricsChordsView extends Component {
     this.container.querySelector('#btnGuiderPlay')?.addEventListener('click', () => {
       this.performanceMode = 'play';
       localStorage.setItem('app_performance_mode', 'play');
+      pitchDetector.stop();
       this.render();
       toast.show('🎸 Modo Instrumento: Acordes, tablatura y acompañamiento listos', 'info', 1500);
     });
 
-    this.container.querySelector('#btnGuiderSing')?.addEventListener('click', () => {
+    this.container.querySelector('#btnGuiderSing')?.addEventListener('click', async () => {
       this.performanceMode = 'sing';
       localStorage.setItem('app_performance_mode', 'sing');
-      this.fontSizeScale = 130;
-      localStorage.setItem('lyrics_font_scale', 130);
+      this.fontSizeScale = 135;
+      localStorage.setItem('lyrics_font_scale', 135);
       this.render();
-      events.emit('vocalCoach:open');
-      toast.show('🎤 Modo Guía Cantante: Letra ampliada y Vocal Coach activo', 'success', 2000);
+
+      const success = await pitchDetector.start();
+      if (!success) {
+        const warningEl = this.container?.querySelector('#micPermissionWarning');
+        if (warningEl) warningEl.style.display = 'flex';
+        toast.show('⚠️ Permiso de micrófono requerido para afinación vocal en tiempo real', 'warning', 3000);
+      } else {
+        toast.show('🎤 Modo Guía Cantante: Micrófono activo. ¡Canta para afinar en directo!', 'success', 2500);
+      }
+    });
+
+    this.container.querySelector('#btnOpenVocalCoachRibbon')?.addEventListener('click', () => {
+      events.emit('ui:openTool', 'vocal');
     });
 
     this.container.querySelector('#btnModeLyrics')?.addEventListener('click', () => this.setViewMode('lyrics'));

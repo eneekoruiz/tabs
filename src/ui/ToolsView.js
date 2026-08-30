@@ -325,217 +325,256 @@ export class ToolsView extends Component {
           <p>Entrenamiento vocal, metrónomo de precisión, afinador, entrenamiento auditivo y armonía.</p>
         </div>
 
-        <div class="tools-premium-list">
-          <!-- 0000A. BANDROOM MULTIJUGADOR -->
-          <div class="premium-list-item flagship-tool" data-tool="bandroom" role="button" tabindex="0" aria-label="Abrir BandRoom Multijugador">
-            <div class="premium-icon" style="background: linear-gradient(135deg, #38bdf8, #0284c7); color: white;">👥</div>
-            <div class="premium-content">
-              <div class="premium-badge-row">
-                <span class="tool-badge-pro">WEBRTC P2P</span>
-                <span class="tool-badge-dsp">FIGMA CURSORS</span>
+        <!-- CATEGORÍA 1: ESTUDIO & PROCESAMIENTO IA -->
+        <div class="tools-category-group">
+          <div class="tools-category-header">
+            <span class="category-icon">🌟</span>
+            <div>
+              <h2 class="tools-category-title">Estudio & Procesamiento IA</h2>
+              <p class="tools-category-desc">Aislamiento de audio, efectos en tiempo real, transcripción y entrenamiento vocal.</p>
+            </div>
+          </div>
+
+          <div class="tools-premium-list">
+            <!-- VOCAL COACH -->
+            <div class="premium-list-item flagship-tool" data-tool="vocal" role="button" tabindex="0" aria-label="Abrir Vocal Coach">
+              <div class="premium-icon" style="background: linear-gradient(135deg, #10b981, #047857); color: white;">🎙️</div>
+              <div class="premium-content">
+                <div class="premium-badge-row">
+                  <span class="tool-badge-pro">PITCH LANE 3D</span>
+                  <span class="tool-badge-dsp">COMMERCIAL GRADE</span>
+                </div>
+                <h3>Vocal Coach & Pitch Lane</h3>
+                <p>Asistente de afinación vocal en tiempo real con diana 3D, ejercicios de resonancia y Pitch Ribbon sobre letra.</p>
               </div>
-              <h3>BandRoom Multijugador</h3>
-              <p>Ensayo virtual a distancia con transmisión de audio en tiempo real y cursores colaborativos estilo Figma.</p>
+              <div class="premium-arrow">→</div>
             </div>
-            <div class="premium-arrow">→</div>
-          </div>
 
-          <!-- 0000B. STAGE AUTOMATION (MIDI USB) -->
-          <div class="premium-list-item flagship-tool" data-tool="stage" role="button" tabindex="0" aria-label="Abrir Stage Automation Control MIDI">
-            <div class="premium-icon" style="background: linear-gradient(135deg, #f59e0b, #b45309); color: white;">🎛️</div>
-            <div class="premium-content">
-              <div class="premium-badge-row">
-                <span class="tool-badge-pro">WEB MIDI API</span>
-                <span class="tool-badge-dsp">STAGE RIG CONTROL</span>
+            <!-- VIRTUAL PEDALBOARD & SMART TONE -->
+            <div class="premium-list-item flagship-tool" data-tool="pedalboard" role="button" tabindex="0" aria-label="Abrir Pedalera Virtual">
+              <div class="premium-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: white;">🎸</div>
+              <div class="premium-content">
+                <div class="premium-badge-row">
+                  <span class="tool-badge-pro">SMART TONE AI</span>
+                  <span class="tool-badge-dsp">LIVE NEURAL DSP</span>
+                </div>
+                <h3>Pedalera Virtual & Amp Simulator</h3>
+                <p>Procesamiento analógico en tiempo real con Drive a válvulas, Cab Sim 4x12, Delay y Reverb.</p>
               </div>
-              <h3>Stage Automation</h3>
-              <p>Controla tu pedalera USB física (Kemper, Helix, Quad Cortex): cambia presets de distorsión automáticamente por compás.</p>
+              <div class="premium-arrow">→</div>
             </div>
-            <div class="premium-arrow">→</div>
-          </div>
 
-          <!-- 0000C. SPATIAL COMPUTING (WEBXR AR) -->
-          <div class="premium-list-item flagship-tool" data-tool="spatial" role="button" tabindex="0" aria-label="Abrir Spatial Computing HUD">
-            <div class="premium-icon" style="background: linear-gradient(135deg, #a855f7, #ec4899); color: white;">🥽</div>
-            <div class="premium-content">
-              <div class="premium-badge-row">
-                <span class="tool-badge-pro">WEBXR AR/VR</span>
-                <span class="tool-badge-dsp">GLASS HUD</span>
+            <!-- SEPARADOR DE STEMS -->
+            <div class="premium-list-item flagship-tool" data-tool="stems" role="button" tabindex="0" aria-label="Abrir Separador de Stems">
+              <div class="premium-icon" style="background: linear-gradient(135deg, #38bdf8, #818cf8); color: white;">🎛️</div>
+              <div class="premium-content">
+                <div class="premium-badge-row">
+                  <span class="tool-badge-pro">MOISES AI STYLE</span>
+                  <span class="tool-badge-dsp">4-TRACK ISOLATION</span>
+                </div>
+                <h3>Separador de Pistas (Stems)</h3>
+                <p>Aísla o silencia Voz, Batería, Bajo y Guitarras en cualquier archivo de audio.</p>
               </div>
-              <h3>Spatial Computing HUD</h3>
-              <p>Entorno de realidad aumentada Glassmorphism para flotar la partitura y afinador en visores tipo Vision Pro.</p>
+              <div class="premium-arrow">→</div>
             </div>
-            <div class="premium-arrow">→</div>
-          </div>
-          <!-- 000A. THE SMART BAND (GENERATIVE JAMMING IA) -->
-          <div class="premium-list-item flagship-tool" data-tool="smart_band" role="button" tabindex="0" aria-label="Abrir The Smart Band Acompañamiento Generativo">
-            <div class="premium-icon" style="background: linear-gradient(135deg, #ec4899, #f43f5e); color: white;">🎷</div>
-            <div class="premium-content">
-              <div class="premium-badge-row">
-                <span class="tool-badge-pro">GENERATIVE AI JAM</span>
-                <span class="tool-badge-dsp">AUTO BASS & DRUMS</span>
+
+            <!-- TRANSCRIPCIÓN IA -->
+            <div class="premium-list-item flagship-tool" data-tool="transcriber" role="button" tabindex="0" aria-label="Abrir Transcriptor IA">
+              <div class="premium-icon" style="background: linear-gradient(135deg, #00b0ff, #00e5ff); color: white;">✨</div>
+              <div class="premium-content">
+                <div class="premium-badge-row">
+                  <span class="tool-badge-pro">MAGIC SCRATCHPAD</span>
+                  <span class="tool-badge-dsp">FFT CHROMAGRAM</span>
+                </div>
+                <h3>Transcripción de Audio a Acordes</h3>
+                <p>Graba con tu micrófono o sube un tema para extraer la progresión y tablatura al instante.</p>
               </div>
-              <h3>The Smart Band</h3>
-              <p>Banda virtual en tiempo real: Genera patrones de batería y bajo que se adaptan a tus acordes y tempo.</p>
+              <div class="premium-arrow">→</div>
             </div>
-            <div class="premium-arrow">→</div>
-          </div>
 
-          <!-- 000B. MODO ARCADE (SYNTHESIA / GUITAR HERO 60 FPS) -->
-          <div class="premium-list-item flagship-tool" data-tool="arcade" role="button" tabindex="0" aria-label="Abrir Modo Inmersivo Synthesia y Arcade Hero">
-            <div class="premium-icon" style="background: linear-gradient(135deg, #a855f7, #6366f1); color: white;">🎮</div>
-            <div class="premium-content">
-              <div class="premium-badge-row">
-                <span class="tool-badge-pro">SYNTHESIA / HERO</span>
-                <span class="tool-badge-dsp">60 FPS GAMIFICATION</span>
+            <!-- SMART LOOPER -->
+            <div class="premium-list-item flagship-tool" data-tool="looper" role="button" tabindex="0" aria-label="Abrir Smart Looper">
+              <div class="premium-icon" style="background: linear-gradient(135deg, #06b6d4, #0891b2); color: white;">🔁</div>
+              <div class="premium-content">
+                <div class="premium-badge-row">
+                  <span class="tool-badge-pro">PRACTICE LOOP</span>
+                  <span class="tool-badge-dsp">+5% SPEED TRAINER</span>
+                </div>
+                <h3>Smart Looper & Speed Trainer</h3>
+                <p>Practica bucles A-B con aceleración automática progresiva en cada vuelta.</p>
               </div>
-              <h3>Modo Arcade Inmersivo</h3>
-              <p>Cascada de notas 3D estilo Guitar Hero/Synthesia con puntuación en directo, combos y efectos de neón.</p>
+              <div class="premium-arrow">→</div>
             </div>
-            <div class="premium-arrow">→</div>
-          </div>
 
-          <!-- 00A. SEPARADOR DE STEMS (MOISES AI) -->
-          <div class="premium-list-item flagship-tool" data-tool="stems" role="button" tabindex="0" aria-label="Abrir Separador de Pistas Stems">
-            <div class="premium-icon" style="background: linear-gradient(135deg, #38bdf8, #818cf8); color: black;">🎛️</div>
-            <div class="premium-content">
-              <div class="premium-badge-row">
-                <span class="tool-badge-pro">MOISES AI STYLE</span>
-                <span class="tool-badge-dsp">4-TRACK ISOLATION</span>
+            <!-- PANEL DE ANALÍTICAS -->
+            <div class="premium-list-item flagship-tool" data-tool="analytics" role="button" tabindex="0" aria-label="Abrir Analíticas">
+              <div class="premium-icon" style="background: linear-gradient(135deg, #ec4899, #be185d); color: white;">📊</div>
+              <div class="premium-content">
+                <div class="premium-badge-row">
+                  <span class="tool-badge-pro">HABIT TRACKER</span>
+                  <span class="tool-badge-dsp">PRACTICE HEATMAP</span>
+                </div>
+                <h3>Panel de Rendimiento & Hábitos</h3>
+                <p>Métricas de tiempo ensayado, rachas diarias y distribución por instrumentos.</p>
               </div>
-              <h3>Separador de Pistas (Stems)</h3>
-              <p>Aísla o silencia Voz, Batería, Bajo y Guitarras en cualquier canción para crear tus backing tracks.</p>
+              <div class="premium-arrow">→</div>
             </div>
-            <div class="premium-arrow">→</div>
+          </div>
+        </div>
+
+        <!-- CATEGORÍA 2: JAMMING, DIRECTO & CONECTIVIDAD PRO -->
+        <div class="tools-category-group" style="margin-top: 36px;">
+          <div class="tools-category-header">
+            <span class="category-icon">🎷</span>
+            <div>
+              <h2 class="tools-category-title">Jamming, Directo & Conectividad Pro</h2>
+              <p class="tools-category-desc">Acompañamiento generativo, multijugador P2P, control hardware MIDI y realidad aumentada.</p>
+            </div>
           </div>
 
-          <!-- 00B. VIRTUAL PEDALBOARD & SMART TONE -->
-          <div class="premium-list-item flagship-tool" data-tool="pedalboard" role="button" tabindex="0" aria-label="Abrir Pedalera Virtual y Simulador de Amplis">
-            <div class="premium-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: black;">🎸</div>
-            <div class="premium-content">
-              <div class="premium-badge-row">
-                <span class="tool-badge-pro">SMART TONE AI</span>
-                <span class="tool-badge-dsp">LIVE NEURAL DSP</span>
+          <div class="tools-premium-list">
+            <!-- THE SMART BAND -->
+            <div class="premium-list-item flagship-tool" data-tool="smart_band" role="button" tabindex="0" aria-label="Abrir The Smart Band">
+              <div class="premium-icon" style="background: linear-gradient(135deg, #ec4899, #f43f5e); color: white;">🎷</div>
+              <div class="premium-content">
+                <div class="premium-badge-row">
+                  <span class="tool-badge-pro">GENERATIVE AI JAM</span>
+                  <span class="tool-badge-dsp">AUTO BASS & DRUMS</span>
+                </div>
+                <h3>The Smart Band</h3>
+                <p>Banda virtual que toca batería y bajo adaptados a tus acordes y tempo en vivo.</p>
               </div>
-              <h3>Pedalera Virtual & Amp Simulator</h3>
-              <p>Procesamiento de guitarra y voz en tiempo real con Overdrive a válvulas, Cab Sim 4x12, Delay y Reverb.</p>
+              <div class="premium-arrow">→</div>
             </div>
-            <div class="premium-arrow">→</div>
-          </div>
 
-          <!-- 00C. SMART LOOPER & SPEED TRAINER -->
-          <div class="premium-list-item flagship-tool" data-tool="looper" role="button" tabindex="0" aria-label="Abrir Smart Looper y Speed Trainer">
-            <div class="premium-icon" style="background: linear-gradient(135deg, #10b981, #059669); color: black;">🔁</div>
-            <div class="premium-content">
-              <div class="premium-badge-row">
-                <span class="tool-badge-pro">PRACTICE LOOP</span>
-                <span class="tool-badge-dsp">+5% SPEED TRAINER</span>
+            <!-- MODO ARCADE HERO -->
+            <div class="premium-list-item flagship-tool" data-tool="arcade" role="button" tabindex="0" aria-label="Abrir Modo Arcade">
+              <div class="premium-icon" style="background: linear-gradient(135deg, #a855f7, #6366f1); color: white;">🎮</div>
+              <div class="premium-content">
+                <div class="premium-badge-row">
+                  <span class="tool-badge-pro">SYNTHESIA / HERO</span>
+                  <span class="tool-badge-dsp">60 FPS GAMIFICATION</span>
+                </div>
+                <h3>Modo Arcade Inmersivo</h3>
+                <p>Visualización 3D tipo Guitar Hero/Synthesia con puntuación y efectos neón.</p>
               </div>
-              <h3>Smart Looper & Speed Trainer</h3>
-              <p>Practica compases A-B en bucle continuo con aceleración automática progresiva tras cada vuelta.</p>
+              <div class="premium-arrow">→</div>
             </div>
-            <div class="premium-arrow">→</div>
-          </div>
 
-          <!-- 0A. TRANSCRIPCIÓN IA (MAGIC SCRATCHPAD) -->
-          <div class="premium-list-item flagship-tool" data-tool="transcriber" role="button" tabindex="0" aria-label="Abrir Transcripción de Audio a Acordes">
-            <div class="premium-icon" style="background: linear-gradient(135deg, #00b0ff, #00e5ff); color: black;">✨</div>
-            <div class="premium-content">
-              <div class="premium-badge-row">
-                <span class="tool-badge-pro">MAGIC SCRATCHPAD</span>
-                <span class="tool-badge-dsp">FFT CHROMAGRAM</span>
+            <!-- BANDROOM MULTIJUGADOR -->
+            <div class="premium-list-item flagship-tool" data-tool="bandroom" role="button" tabindex="0" aria-label="Abrir BandRoom">
+              <div class="premium-icon" style="background: linear-gradient(135deg, #38bdf8, #0284c7); color: white;">👥</div>
+              <div class="premium-content">
+                <div class="premium-badge-row">
+                  <span class="tool-badge-pro">WEBRTC P2P</span>
+                  <span class="tool-badge-dsp">FIGMA CURSORS</span>
+                </div>
+                <h3>BandRoom Multijugador</h3>
+                <p>Ensayo a distancia con audio WebRTC de latencia ultrabaja y partitura sincronizada.</p>
               </div>
-              <h3>Transcripción de Audio a Acordes</h3>
-              <p>Graba con tu micrófono o sube audio para extraer la progresión y tablatura en segundos.</p>
+              <div class="premium-arrow">→</div>
             </div>
-            <div class="premium-arrow">→</div>
-          </div>
 
-          <!-- 0B. ANALÍTICAS Y PROGRESIÓN -->
-          <div class="premium-list-item" data-tool="analytics" role="button" tabindex="0" aria-label="Abrir Panel de Analíticas y Progresión">
-            <div class="premium-icon" style="background: linear-gradient(135deg, #ff9100, #ff6d00); color: white;">📊</div>
-            <div class="premium-content">
-              <div class="premium-badge-row">
-                <span class="tool-badge-pro">STUDIO INTELLIGENCE</span>
+            <!-- STAGE AUTOMATION -->
+            <div class="premium-list-item flagship-tool" data-tool="stage" role="button" tabindex="0" aria-label="Abrir Stage Automation">
+              <div class="premium-icon" style="background: linear-gradient(135deg, #f59e0b, #b45309); color: white;">🎛️</div>
+              <div class="premium-content">
+                <div class="premium-badge-row">
+                  <span class="tool-badge-pro">WEB MIDI API</span>
+                  <span class="tool-badge-dsp">STAGE RIG CONTROL</span>
+                </div>
+                <h3>Stage Automation</h3>
+                <p>Automatización de cambios de preset MIDI por compás en tu pedalera USB física (Kemper, Helix).</p>
               </div>
-              <h3>Panel de Rendimiento & Hábito</h3>
-              <p>Seguimiento de racha, tiempo de práctica diario, hitos del Speed Trainer y canciones más ensayadas.</p>
+              <div class="premium-arrow">→</div>
             </div>
-            <div class="premium-arrow">→</div>
-          </div>
 
-          <!-- 0C. VOCAL COACH (FLAGSHIP) -->
-          <div class="premium-list-item flagship-tool" data-tool="vocal" role="button" tabindex="0" aria-label="Abrir Asistente Vocal y Pitch Lane">
-            <div class="premium-icon" style="background: linear-gradient(135deg, #ff5722, #e64a19); color: white;">🎙️</div>
-            <div class="premium-content">
-              <div class="premium-badge-row">
-                <span class="tool-badge-pro">PRO FEATURE</span>
-                <span class="tool-badge-dsp">YIN DSP ENGINE</span>
+            <!-- SPATIAL COMPUTING -->
+            <div class="premium-list-item flagship-tool" data-tool="spatial" role="button" tabindex="0" aria-label="Abrir Spatial Computing HUD">
+              <div class="premium-icon" style="background: linear-gradient(135deg, #a855f7, #ec4899); color: white;">🥽</div>
+              <div class="premium-content">
+                <div class="premium-badge-row">
+                  <span class="tool-badge-pro">WEBXR AR/VR</span>
+                  <span class="tool-badge-dsp">GLASS HUD</span>
+                </div>
+                <h3>Spatial Computing HUD</h3>
+                <p>Visor de partitura y afinador en realidad aumentada transparente estilo Vision Pro.</p>
               </div>
-              <h3>Vocal Coach & Pitch Lane</h3>
-              <p>Visualizador Pitch Lane en directo, detección de apoyo diafragmático, estabilidad y consejos didácticos.</p>
+              <div class="premium-arrow">→</div>
             </div>
-            <div class="premium-arrow">→</div>
+          </div>
+        </div>
+
+        <!-- CATEGORÍA 3: ASISTENTES DE PRÁCTICA CLÁSICOS -->
+        <div class="tools-category-group" style="margin-top: 36px;">
+          <div class="tools-category-header">
+            <span class="category-icon">🎼</span>
+            <div>
+              <h2 class="tools-category-title">Asistentes de Práctica Clásicos</h2>
+              <p class="tools-category-desc">Herramientas esenciales de metrónomo, afinador cromático, diccionario y teoría musical.</p>
+            </div>
           </div>
 
-          <!-- 1. METRÓNOMO -->
-          <div class="premium-list-item" data-tool="metronome" role="button" tabindex="0" aria-label="Abrir Metrónomo">
-            <div class="premium-icon" style="background: #da7756; color: white;">⏱️</div>
-            <div class="premium-content">
-              <h3>Metrónomo de Precisión</h3>
-              <p>Subdivisiones, TAP tempo, acento del primer pulso y timbres clásicos.</p>
+          <div class="tools-premium-list">
+            <!-- METRÓNOMO -->
+            <div class="premium-list-item" data-tool="metronome" role="button" tabindex="0" aria-label="Abrir Metrónomo">
+              <div class="premium-icon" style="background: linear-gradient(135deg, #ef4444, #dc2626); color: white;">⏱️</div>
+              <div class="premium-content">
+                <h3>Metrónomo de Precisión</h3>
+                <p>Web Audio API con subdivisión ritmica, acentos configurables y tap tempo.</p>
+              </div>
+              <div class="premium-arrow">→</div>
             </div>
-            <div class="premium-arrow">→</div>
-          </div>
 
-          <!-- 2. AFINADOR -->
-          <div class="premium-list-item" data-tool="tuner" role="button" tabindex="0" aria-label="Abrir Afinador">
-            <div class="premium-icon" style="background: #5a6b5c; color: white;">🎵</div>
-            <div class="premium-content">
-              <h3>Afinador & Diapasón</h3>
-              <p>Tonos de referencia para Standard, Drop D, DADGAD, Open G y Ukelele.</p>
+            <!-- AFINADOR -->
+            <div class="premium-list-item" data-tool="tuner" role="button" tabindex="0" aria-label="Abrir Afinador">
+              <div class="premium-icon" style="background: linear-gradient(135deg, #10b981, #059669); color: white;">🎵</div>
+              <div class="premium-content">
+                <h3>Afinador Cromático & Pitch Pipe</h3>
+                <p>Detección YIN de frecuencia por micrófono y diapasón de tonos de referencia.</p>
+              </div>
+              <div class="premium-arrow">→</div>
             </div>
-            <div class="premium-arrow">→</div>
-          </div>
 
-          <!-- 3. DICCIONARIO DE ACORDES -->
-          <div class="premium-list-item" data-tool="dictionary" role="button" tabindex="0" aria-label="Abrir Diccionario de Acordes">
-            <div class="premium-icon" style="background: #d99a4e; color: white;">📚</div>
-            <div class="premium-content">
-              <h3>Diccionario de Acordes</h3>
-              <p>Diagramas SVG interactivos de acordes con audio arpegiado.</p>
+            <!-- DICCIONARIO DE ACORDES -->
+            <div class="premium-list-item" data-tool="dictionary" role="button" tabindex="0" aria-label="Abrir Diccionario de Acordes">
+              <div class="premium-icon" style="background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: white;">📚</div>
+              <div class="premium-content">
+                <h3>Diccionario de Acordes & Voicings</h3>
+                <p>Diagramas vectoriales SVG interactivos para Guitarra, Piano y Ukelele.</p>
+              </div>
+              <div class="premium-arrow">→</div>
             </div>
-            <div class="premium-arrow">→</div>
-          </div>
 
-          <!-- 4. ENTRENADOR DE OÍDO -->
-          <div class="premium-list-item" data-tool="ear" role="button" tabindex="0" aria-label="Abrir Entrenador de Oído">
-            <div class="premium-icon" style="background: #625a6b; color: white;">👂</div>
-            <div class="premium-content">
-              <h3>Entrenador de Oído</h3>
-              <p>Desafía tu oído reconociendo acordes y tensiones armónicas.</p>
+            <!-- ENTRENADOR DE OÍDO -->
+            <div class="premium-list-item" data-tool="ear" role="button" tabindex="0" aria-label="Abrir Entrenador de Oído">
+              <div class="premium-icon" style="background: linear-gradient(135deg, #8b5cf6, #6d28d9); color: white;">👂</div>
+              <div class="premium-content">
+                <h3>Entrenador de Oído Armónico</h3>
+                <p>Test auditivo interactivo para reconocer intervalos musicales y tipos de acordes.</p>
+              </div>
+              <div class="premium-arrow">→</div>
             </div>
-            <div class="premium-arrow">→</div>
-          </div>
 
-          <!-- 5. CALCULADORA DE CEJILLA -->
-          <div class="premium-list-item" data-tool="capo" role="button" tabindex="0" aria-label="Abrir Calculadora de Cejilla">
-            <div class="premium-icon" style="background: #5a8e8b; color: white;">🎸</div>
-            <div class="premium-content">
-              <h3>Calculadora de Cejilla</h3>
-              <p>Calcula el traste óptico del capo para cantar en tu tono.</p>
+            <!-- CALCULADORA DE CEJILLA -->
+            <div class="premium-list-item" data-tool="capo" role="button" tabindex="0" aria-label="Abrir Calculadora de Cejilla">
+              <div class="premium-icon" style="background: linear-gradient(135deg, #f97316, #c2410c); color: white;">🎸</div>
+              <div class="premium-content">
+                <h3>Calculadora de Cejilla / Capotraste</h3>
+                <p>Transposición instantánea de acordes según la posición del traste.</p>
+              </div>
+              <div class="premium-arrow">→</div>
             </div>
-            <div class="premium-arrow">→</div>
-          </div>
 
-          <!-- 6. CÍRCULO DE QUINTAS -->
-          <div class="premium-list-item" data-tool="circle" role="button" tabindex="0" aria-label="Abrir Círculo de Quintas">
-            <div class="premium-icon" style="background: #8b5a6b; color: white;">⭕</div>
-            <div class="premium-content">
-              <h3>Círculo de Quintas</h3>
-              <p>Visualiza armaduras, escalas relativas y familias armónicas.</p>
+            <!-- CÍRCULO DE QUINTAS -->
+            <div class="premium-list-item" data-tool="circle" role="button" tabindex="0" aria-label="Abrir Círculo de Quintas">
+              <div class="premium-icon" style="background: linear-gradient(135deg, #06b6d4, #0e7490); color: white;">⭕</div>
+              <div class="premium-content">
+                <h3>Círculo de Quintas Interactivo</h3>
+                <p>Visualización armónica de armaduras, tonalidades relativas y modulaciones.</p>
+              </div>
+              <div class="premium-arrow">→</div>
             </div>
-            <div class="premium-arrow">→</div>
           </div>
         </div>
 

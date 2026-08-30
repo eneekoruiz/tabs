@@ -37,6 +37,37 @@
   margin: 0;
 }
 
+/* Categorías Organizadas */
+.tools-category-group {
+  margin-bottom: 24px;
+}
+
+.tools-category-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.category-icon {
+  font-size: 1.5rem;
+}
+
+.tools-category-title {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 0 0 2px 0;
+}
+
+.tools-category-desc {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
 /* --------------------------------------------------------------------------
    Premium List Layout - Responsive Desktop Grid
    -------------------------------------------------------------------------- */
