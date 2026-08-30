@@ -7,10 +7,8 @@
   position: fixed;
   bottom: 0;
   left: 0;
-  width: 100%;
-  max-width: 100%;
+  width: 100vw;
   height: 68px;
-  box-sizing: border-box;
   background-color: var(--bg-surface-solid);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
@@ -23,24 +21,6 @@
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.bottom-player-bar {
-  justify-content: flex-start;
-  gap: 6px;
-  padding: 0 10px;
-  overflow-x: auto;
-  overflow-y: hidden;
-  scrollbar-width: none;
-  -webkit-overflow-scrolling: touch;
-}
-
-.bottom-player-bar::-webkit-scrollbar {
-  display: none;
-}
-
-.bottom-player-bar > * {
-  flex-shrink: 0;
-}
-
 body.theme-ivory .bottom-nav-bar, 
 body.theme-ivory .bottom-player-bar {
   background-color: rgba(255, 255, 255, 0.85);
@@ -50,7 +30,7 @@ body.theme-ivory .bottom-player-bar {
 
 /* Modo Dock Flotante (Escritorio) */
 @media (min-width: 800px) {
-  .bottom-nav-bar {
+  .bottom-nav-bar, .bottom-player-bar {
     bottom: 24px;
     left: 50%;
     transform: translateX(-50%);
@@ -63,22 +43,6 @@ body.theme-ivory .bottom-player-bar {
     gap: 16px;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
   }
-
-  .bottom-player-bar {
-    bottom: 24px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: max-content;
-    max-width: calc(100vw - 32px);
-    min-width: min(500px, calc(100vw - 32px));
-    height: 64px;
-    border-radius: 32px;
-    border: 1px solid var(--border-subtle);
-    padding: 0 16px;
-    gap: 8px;
-    justify-content: center;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-  }
   
   body.theme-ivory .bottom-nav-bar, 
   body.theme-ivory .bottom-player-bar {
@@ -89,7 +53,6 @@ body.theme-ivory .bottom-player-bar {
 
 .nav-tab-btn {
   flex: 1;
-  min-width: 0;
   height: 100%;
   background: transparent;
   border: none;
@@ -168,52 +131,15 @@ body.theme-ivory .nav-player-btn:hover {
   font-size: 1.05rem;
 }
 
-/* Transpose & Auto-Scroll clusters inside bottom bar */
-.nav-player-transpose-cluster,
-.nav-player-autoscroll-cluster {
-  display: inline-flex;
+/* Transpose cluster inside bottom bar */
+.nav-player-transpose-cluster {
+  display: flex;
   align-items: center;
   gap: 4px;
   background: var(--bg-surface-solid);
   border: 1px solid var(--border-subtle);
-  padding: 3px 6px;
+  padding: 4px 8px;
   border-radius: 20px;
-  height: 44px;
-  box-sizing: border-box;
-}
-
-body.theme-ivory .nav-player-transpose-cluster,
-body.theme-ivory .nav-player-autoscroll-cluster {
-  background: rgba(245, 243, 238, 0.95);
-  border-color: rgba(0, 0, 0, 0.12);
-}
-
-.nav-player-autoscroll-cluster .nav-player-btn {
-  padding: 0 8px;
-  height: 38px;
-  min-width: 44px;
-  border-radius: 14px;
-  flex-direction: row;
-  gap: 4px;
-}
-
-.nav-player-scroll-controls {
-  display: inline-flex;
-  align-items: center;
-  gap: 2px;
-}
-
-.nav-player-speed-badge {
-  font-size: 0.76rem;
-  font-weight: 800;
-  font-family: var(--font-mono);
-  color: var(--text-primary);
-  padding: 0 4px;
-  min-width: 38px;
-  text-align: center;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .nav-player-step-btn {
@@ -244,7 +170,7 @@ body.theme-ivory .nav-player-autoscroll-cluster {
   font-family: var(--font-mono);
   color: var(--text-primary);
   padding: 0 6px;
-  min-width: 38px;
+  min-width: 44px;
   text-align: center;
 }
 
@@ -272,7 +198,6 @@ body.theme-ivory .nav-player-autoscroll-cluster {
   padding: 20px 16px 100px 16px;
   max-width: 1800px;
   width: 96%;
-  box-sizing: border-box;
   margin: 0 auto;
 }
 
@@ -282,43 +207,49 @@ body.theme-ivory .nav-player-autoscroll-cluster {
   align-items: center;
   text-align: center;
   margin-bottom: 28px;
-  gap: 10px;
+  gap: 12px;
+  position: relative;
 }
 
 .explore-badge-chromatic {
-  background: linear-gradient(135deg, rgba(255, 87, 34, 0.2) 0%, rgba(0, 229, 255, 0.2) 100%);
-  border: 1px solid rgba(255, 87, 34, 0.5);
-  color: #ff7043;
-  font-size: 0.72rem;
-  font-weight: 900;
-  letter-spacing: 1px;
-  padding: 4px 12px;
+  background: var(--bg-surface-raised);
+  border: 1px solid var(--border-strong);
+  color: var(--accent-primary);
+  font-size: 0.7rem;
+  font-weight: 800;
+  font-family: var(--font-mono);
+  letter-spacing: 0.08em;
+  padding: 4px 14px;
   border-radius: 20px;
-  box-shadow: 0 0 12px rgba(255, 87, 34, 0.3);
+  box-shadow: var(--shadow-xs);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .explore-hero-title {
-  font-size: 1.95rem;
+  font-size: 2.2rem;
   font-weight: 900;
-  letter-spacing: 0;
-  overflow-wrap: anywhere;
-  background: linear-gradient(135deg, var(--text-primary) 40%, var(--accent-primary) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  font-family: var(--font-serif);
+  letter-spacing: -0.03em;
+  color: var(--text-primary);
+  margin: 0;
+  line-height: 1.15;
 }
 
 .explore-hero-subtitle {
-  font-size: 0.88rem;
+  font-size: 0.92rem;
   color: var(--text-secondary);
-  max-width: 520px;
-  line-height: 1.4;
+  max-width: 560px;
+  line-height: 1.5;
+  margin: 0 auto;
 }
 
 .explore-search-box {
   width: 100%;
   max-width: 900px;
   position: relative;
-  margin-top: 6px;
+  margin-top: 8px;
   margin-left: auto;
   margin-right: auto;
 }
@@ -351,7 +282,6 @@ body.theme-ivory .nav-player-autoscroll-cluster {
 
 .explore-search-input {
   width: 100%;
-  box-sizing: border-box;
   padding: 16px 44px 16px 48px;
   font-size: 1.02rem;
   border-radius: 30px;
@@ -495,7 +425,6 @@ body.theme-ivory .genre-card-item.active {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 12px;
   width: 100%;
 }
 
@@ -503,8 +432,6 @@ body.theme-ivory .genre-card-item.active {
   font-size: 1.05rem;
   font-weight: 800;
   color: var(--text-primary);
-  min-width: 0;
-  overflow-wrap: anywhere;
 }
 
 .song-card-artist {
@@ -577,19 +504,6 @@ body.theme-ivory .song-badge-diff.diff-hard {
 }
 
 .meta-pill {
-  display: inline-flex;
-  align-items: center;
-  max-width: 100%;
-  padding: 3px 8px;
-  border-radius: 6px;
-  background: var(--border-subtle);
-  color: var(--text-secondary);
-  font-size: 0.72rem;
-  font-weight: 700;
-  line-height: 1.35;
-  overflow-wrap: anywhere;
-}
-
 .tools-header {
   margin-bottom: 20px;
 }
@@ -601,7 +515,7 @@ body.theme-ivory .song-badge-diff.diff-hard {
 }
 
 .tool-card-box {
-  background: var(--bg-surface-solid);
+  background: rgba(18, 18, 26, 0.85);
   border: 1px solid var(--border-subtle);
   border-radius: 14px;
   padding: 16px;
@@ -635,7 +549,7 @@ body.theme-ivory .song-badge-diff.diff-hard {
 /* Afinador de Oído (Ear Tuner) */
 .ear-tuner-strings-grid {
   display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-template-columns: repeat(6, 1fr);
   gap: 8px;
   margin-top: 8px;
 }
@@ -682,10 +596,9 @@ body.theme-ivory .song-badge-diff.diff-hard {
 
 .ai-youtube-input {
   width: 100%;
-  box-sizing: border-box;
   padding: 12px 14px;
   border-radius: 8px;
-  background: var(--bg-surface-raised);
+  background: rgba(10, 10, 14, 0.8);
   border: 1px solid var(--border-strong);
   color: var(--text-primary);
   font-size: 0.88rem;
@@ -712,20 +625,201 @@ body.theme-ivory .song-badge-diff.diff-hard {
   transform: translateY(-1px);
   box-shadow: 0 0 15px rgba(0, 229, 255, 0.4);
 }
-
-.nav-tab-btn:focus-visible,
-.nav-player-btn:focus-visible,
-.btn-add-custom-song-hero:focus-visible,
-.genre-card-item:focus-visible,
-.song-card-main:focus-visible,
-.btn-clear-search:focus-visible,
-.btn-string-pitch:focus-visible,
-.ai-youtube-input:focus-visible,
-.btn-ai-generate:focus-visible {
-  outline: 2px solid var(--accent-primary);
-  outline-offset: 2px;
+.bottom-nav-bar {
+  background: var(--bg-surface) !important;
 }
 
+.song-card-artist {
+  font-size: 0.88rem;
+  color: var(--text-secondary) !important;
+  font-weight: 700;
+}
+
+.song-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+  flex-wrap: wrap;
+}
+
+.genre-badge {
+  background: var(--border-subtle);
+  color: var(--text-secondary) !important;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 6px;
+}
+
+.song-badge-diff {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 6px;
+}
+
+.song-badge-diff.diff-easy {
+  background: rgba(0, 230, 118, 0.18);
+  color: #00a854;
+}
+body.theme-charcoal .song-badge-diff.diff-easy {
+  background: rgba(0, 230, 118, 0.18);
+  color: #00e676;
+}
+body.theme-ivory .song-badge-diff.diff-easy {
+  background: rgba(46, 125, 50, 0.12);
+  color: #1b5e20;
+}
+
+.song-badge-diff.diff-med {
+  background: rgba(255, 214, 0, 0.18);
+  color: #d4a000;
+}
+body.theme-charcoal .song-badge-diff.diff-med {
+  background: rgba(255, 214, 0, 0.18);
+  color: #ffd600;
+}
+body.theme-ivory .song-badge-diff.diff-med {
+  background: rgba(230, 81, 0, 0.12);
+  color: #b24100;
+}
+
+.song-badge-diff.diff-hard {
+  background: rgba(255, 82, 82, 0.18);
+  color: #e53935;
+}
+body.theme-charcoal .song-badge-diff.diff-hard {
+  background: rgba(255, 82, 82, 0.18);
+  color: #ff5252;
+}
+body.theme-ivory .song-badge-diff.diff-hard {
+  background: rgba(198, 40, 40, 0.12);
+  color: #b71c1c;
+}
+
+.meta-pill {
+.tools-header {
+  margin-bottom: 20px;
+}
+
+.tools-grid-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.tool-card-box {
+  background: rgba(18, 18, 26, 0.85);
+  border: 1px solid var(--border-subtle);
+  border-radius: 14px;
+  padding: 16px;
+  box-shadow: var(--shadow-md);
+}
+
+.tool-card-title-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.tool-card-icon {
+  font-size: 1.5rem;
+}
+
+.tool-card-title {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.tool-card-desc {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  margin-bottom: 12px;
+  line-height: 1.4;
+}
+
+/* Afinador de Oído (Ear Tuner) */
+.ear-tuner-strings-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.btn-string-pitch {
+  background: var(--bg-surface-raised);
+  border: 1px solid var(--border-strong);
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  font-weight: 800;
+  padding: 12px 4px;
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  transition: all var(--transition-fast);
+}
+
+.btn-string-pitch:hover, .btn-string-pitch:active {
+  background: var(--accent-primary);
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 12px var(--accent-primary-glow);
+  transform: scale(1.05);
+}
+
+.string-pitch-hz {
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.btn-string-pitch:hover .string-pitch-hz {
+  color: var(--text-primary);
+}
+
+/* Sección Acordes con IA (YouTube link placeholder UI) */
+.ai-chords-box {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ai-youtube-input {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 8px;
+  background: rgba(10, 10, 14, 0.8);
+  border: 1px solid var(--border-strong);
+  color: var(--text-primary);
+  font-size: 0.88rem;
+}
+
+.ai-youtube-input:focus {
+  outline: none;
+  border-color: var(--accent-secondary);
+}
+
+.btn-ai-generate {
+  background: linear-gradient(135deg, #00e5ff 0%, #0088ff 100%);
+  color: var(--text-inverse);
+  font-weight: 800;
+  border: none;
+  padding: 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all var(--transition-fast);
+}
+
+.btn-ai-generate:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 0 15px rgba(0, 229, 255, 0.4);
+}
 .bottom-nav-bar {
   background: var(--bg-surface) !important;
   backdrop-filter: blur(25px) !important;
@@ -733,21 +827,17 @@ body.theme-ivory .song-badge-diff.diff-hard {
   border-top: 1px solid var(--border-subtle) !important;
   box-shadow: 0 -4px 20px rgba(0,0,0,0.15) !important;
 }
-.nav-tab-btn.active,
 .bottom-nav-btn.active {
   color: var(--accent-primary) !important;
 }
 
-body.theme-ivory .nav-tab-btn,
 body.theme-ivory .bottom-nav-btn {
   color: #55504a !important;
 }
-body.theme-ivory .nav-tab-btn.active,
 body.theme-ivory .bottom-nav-btn.active {
   color: var(--accent-primary) !important;
   font-weight: 800 !important;
 }
-body.theme-ivory .nav-tab-btn.active svg,
 body.theme-ivory .bottom-nav-btn.active svg {
   transform: scale(1.1);
 }
@@ -772,20 +862,6 @@ body.theme-ivory ::-webkit-scrollbar-thumb {
 }
 body.theme-ivory ::-webkit-scrollbar-thumb:hover {
   background: rgba(0, 0, 0, 0.3);
-}
-
-@supports (padding-bottom: env(safe-area-inset-bottom)) {
-  @media (max-width: 799px) {
-    .bottom-nav-bar,
-    .bottom-player-bar {
-      height: calc(68px + env(safe-area-inset-bottom));
-      padding-bottom: env(safe-area-inset-bottom);
-    }
-
-    .view-container {
-      padding-bottom: calc(75px + env(safe-area-inset-bottom));
-    }
-  }
 }
 
 /* ==========================================================================

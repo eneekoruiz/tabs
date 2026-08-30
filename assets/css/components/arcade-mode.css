@@ -1,0 +1,338 @@
+/* ==========================================================================
+   ARCADE MODE (SYNTHESIA / GUITAR HERO HIGHWAY & GAMIFICATION)
+   ========================================================================== */
+
+.modal-arcade-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: #08080c;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.arcade-canvas-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.arcade-highway-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* HUD Top */
+.arcade-hud-top {
+  position: absolute;
+  top: 20px;
+  left: 24px;
+  right: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.arcade-score-badge {
+  background: rgba(15, 23, 42, 0.85);
+  border: 2px solid rgba(56, 189, 248, 0.4);
+  box-shadow: 0 0 20px rgba(56, 189, 248, 0.2);
+  padding: 8px 18px;
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+}
+
+.arcade-score-badge .hud-label {
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  color: #38bdf8;
+}
+
+.arcade-score-badge .hud-value {
+  font-size: 1.5rem;
+  font-weight: 900;
+  font-family: monospace;
+  color: #fff;
+}
+
+.arcade-song-title-pill {
+  background: rgba(0, 0, 0, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 8px 18px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #f8fafc;
+}
+
+.arcade-live-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 8px #22c55e;
+}
+
+.arcade-tempo-badge {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  color: #38bdf8;
+}
+
+.arcade-combo-badge {
+  background: rgba(15, 23, 42, 0.85);
+  border: 2px solid rgba(234, 179, 8, 0.4);
+  box-shadow: 0 0 20px rgba(234, 179, 8, 0.2);
+  padding: 8px 18px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.combo-mult {
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: #eab308;
+  text-shadow: 0 0 10px #eab308;
+}
+
+.combo-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.combo-streak {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #fff;
+}
+
+.combo-label {
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  color: var(--text-secondary, #94a3b8);
+}
+
+/* Hit Feedback Banner */
+.arcade-hit-feedback {
+  position: absolute;
+  bottom: 160px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 2.2rem;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  pointer-events: none;
+  z-index: 10;
+  transition: opacity 0.1s ease;
+}
+
+/* HUD Bottom */
+.arcade-hud-bottom {
+  position: absolute;
+  bottom: 24px;
+  left: 24px;
+  right: 24px;
+  display: flex;
+  justify-content: center;
+  z-index: 10;
+}
+
+.arcade-bottom-actions {
+  display: flex;
+  gap: 12px;
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 8px 16px;
+  border-radius: 16px;
+  backdrop-filter: blur(8px);
+}
+
+.btn-arcade-control {
+  padding: 8px 16px;
+  border-radius: 10px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #f8fafc;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-arcade-control:hover {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.btn-arcade-control.active {
+  background: #22c55e;
+  color: #000;
+  border-color: #22c55e;
+  box-shadow: 0 0 12px rgba(34, 197, 94, 0.4);
+}
+
+.btn-arcade-autoplay {
+  background: rgba(56, 189, 248, 0.15);
+  border-color: rgba(56, 189, 248, 0.35);
+  color: #38bdf8;
+}
+
+.btn-arcade-exit {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: rgba(239, 68, 68, 0.35);
+  color: #f87171;
+}
+
+/* Results Overlay */
+.arcade-results-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(8, 8, 14, 0.92);
+  backdrop-filter: blur(16px);
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: resultsPop 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes resultsPop {
+  0% { transform: scale(0.92); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.arcade-results-card {
+  background: #161722;
+  border: 2px solid rgba(56, 189, 248, 0.3);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.8), 0 0 30px rgba(56, 189, 248, 0.15);
+  border-radius: 24px;
+  width: 100%;
+  max-width: 520px;
+  padding: 36px 28px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.results-trophy-slot {
+  font-size: 4rem;
+  line-height: 1;
+  filter: drop-shadow(0 0 16px rgba(234, 179, 8, 0.6));
+  animation: bounceTrophy 1.5s infinite alternate;
+}
+
+@keyframes bounceTrophy {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-8px); }
+}
+
+.results-rank-title {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+}
+
+.results-score-highlight {
+  font-size: 2.2rem;
+  font-weight: 900;
+  font-family: monospace;
+  color: #fff;
+  background: linear-gradient(90deg, #38bdf8, #818cf8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.results-stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  width: 100%;
+  margin: 10px 0;
+}
+
+.stat-box {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 12px 10px;
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-val {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #f8fafc;
+}
+
+.stat-lbl {
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: var(--text-secondary, #94a3b8);
+  margin-top: 2px;
+}
+
+.results-actions-row {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+  margin-top: 8px;
+}
+
+.btn-results-action {
+  flex: 1;
+  padding: 12px 0;
+  border-radius: 12px;
+  font-weight: 800;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-results-action.secondary {
+  background: rgba(255, 255, 255, 0.08);
+  color: #f8fafc;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.btn-results-action.secondary:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.btn-results-action.primary {
+  background: #38bdf8;
+  color: #000;
+  border: none;
+  box-shadow: 0 4px 16px rgba(56, 189, 248, 0.4);
+}
+
+.btn-results-action.primary:hover {
+  background: #7dd3fc;
+  transform: translateY(-1px);
+}

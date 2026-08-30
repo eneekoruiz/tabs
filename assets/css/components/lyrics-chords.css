@@ -810,6 +810,18 @@ body.theme-ivory .lyrics-quick-help-bar {
   background: var(--accent-primary) !important;
 }
 
+.btn-menu-vocal-highlight {
+  background: linear-gradient(135deg, rgba(255, 87, 34, 0.15), rgba(0, 229, 255, 0.15)) !important;
+  border-color: rgba(255, 87, 34, 0.4) !important;
+  color: var(--text-primary) !important;
+  font-weight: 700 !important;
+}
+
+.btn-menu-vocal-highlight:hover {
+  background: var(--accent-primary) !important;
+  color: white !important;
+}
+
 .options-menu-row {
   display: flex;
   align-items: center;
@@ -1810,6 +1822,10 @@ body.theme-ivory .top-metro-bpm-badge {
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
     padding-bottom: 4px;
+    gap: 8px;
+  }
+  .lyrics-essential-toolbar > * {
+    flex-shrink: 0;
   }
   .lyrics-essential-toolbar::-webkit-scrollbar {
     display: none;

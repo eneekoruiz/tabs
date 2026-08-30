@@ -38,6 +38,24 @@ import { ToolsView } from './ui/ToolsView.js';
 import { SettingsView } from './ui/SettingsView.js';
 import { LyricsChordsView } from './ui/LyricsChordsView.js';
 import { SongImporterModal } from './ui/SongImporterModal.js';
+import { practiceTrackerService } from './data/PracticeTrackerService.js';
+import { backupSyncEngine } from './data/BackupSyncEngine.js';
+import { audioTranscriptionEngine } from './audio/AudioTranscriptionEngine.js';
+import { stemSeparatorEngine } from './audio/StemSeparatorEngine.js';
+import { pedalboardEngine } from './audio/PedalboardEngine.js';
+import { smartLooperEngine } from './audio/SmartLooperEngine.js';
+import { smartBandEngine } from './audio/SmartBandEngine.js';
+import { gamificationEngine } from './audio/GamificationEngine.js';
+import { bandRoomEngine } from './net/BandRoomEngine.js';
+import { stageAutomationEngine } from './hardware/StageAutomationEngine.js';
+import { spatialXRHudView } from './ui/SpatialXRHudView.js';
+import { stemSeparatorTool } from './ui/tools/StemSeparatorTool.js';
+import { pedalboardTool } from './ui/tools/PedalboardTool.js';
+import { smartLooperTool } from './ui/tools/SmartLooperTool.js';
+import { smartBandTool } from './ui/tools/SmartBandTool.js';
+import { arcadeHighwayVisualizer } from './ui/tools/ArcadeHighwayVisualizer.js';
+import { bandRoomTool } from './ui/tools/BandRoomTool.js';
+import { stageAutomationTool } from './ui/tools/StageAutomationTool.js';
 import './ui/KeyboardShortcuts.js';
 import { toast } from './ui/Toast.js';
 
@@ -59,10 +77,28 @@ function applyStoredTheme() {
 class AppV2 {
   constructor() {
     this.components = {};
+    window.practiceTrackerService = practiceTrackerService;
+    window.backupSyncEngine = backupSyncEngine;
+    window.audioTranscriptionEngine = audioTranscriptionEngine;
+    window.stemSeparatorEngine = stemSeparatorEngine;
+    window.pedalboardEngine = pedalboardEngine;
+    window.smartLooperEngine = smartLooperEngine;
+    window.smartBandEngine = smartBandEngine;
+    window.gamificationEngine = gamificationEngine;
+    window.bandRoomEngine = bandRoomEngine;
+    window.stageAutomationEngine = stageAutomationEngine;
+    window.spatialXRHudView = spatialXRHudView;
+    window.stemSeparatorTool = stemSeparatorTool;
+    window.pedalboardTool = pedalboardTool;
+    window.smartLooperTool = smartLooperTool;
+    window.smartBandTool = smartBandTool;
+    window.arcadeHighwayVisualizer = arcadeHighwayVisualizer;
+    window.bandRoomTool = bandRoomTool;
+    window.stageAutomationTool = stageAutomationTool;
   }
 
   async start() {
-    console.log('🚀 [Tabs & Chords PRO V2] Iniciando sistema con Modo Letra & Acordes y Catálogo Extendido...');
+    console.log('🚀 [Tabs & Chords PRO V2] Iniciando sistema con Modo Letra & Acordes, Transcripción IA y Analíticas...');
 
     try {
       await db.init();

@@ -21,6 +21,16 @@
   color: var(--text-primary);
 }
 
+.view-header-badge {
+  display: inline-block;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent-primary);
+  margin-bottom: 6px;
+}
+
 .view-header p {
   font-size: 0.9rem;
   color: var(--text-secondary);
@@ -43,6 +53,40 @@
     grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)) !important;
     gap: 16px !important;
   }
+}
+
+.premium-list-item.flagship-tool {
+  border-color: rgba(255, 87, 34, 0.4) !important;
+  background: linear-gradient(135deg, rgba(255, 87, 34, 0.06), var(--bg-surface-solid)) !important;
+}
+
+.premium-badge-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+
+.tool-badge-pro {
+  font-size: 0.62rem;
+  font-weight: 800;
+  font-family: var(--font-mono);
+  background: var(--accent-primary);
+  color: white;
+  padding: 1px 6px;
+  border-radius: 6px;
+  letter-spacing: 0.05em;
+}
+
+.tool-badge-dsp {
+  font-size: 0.62rem;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  background: rgba(0, 229, 255, 0.15);
+  color: var(--accent-secondary);
+  border: 1px solid rgba(0, 229, 255, 0.3);
+  padding: 1px 6px;
+  border-radius: 6px;
 }
 
 .premium-list-item {

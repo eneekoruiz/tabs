@@ -1,0 +1,590 @@
+/* ==========================================================================
+   Vocal Coach & Pitch Lane Studio CSS - Commercial Grade UI
+   ========================================================================== */
+
+.vocal-coach-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(4, 5, 8, 0.85);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  animation: fadeInModal var(--duration-normal) var(--ease-spring);
+}
+
+@keyframes fadeInModal {
+  from { opacity: 0; transform: scale(0.97); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.vocal-coach-container-card {
+  width: 100%;
+  max-width: 720px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-strong);
+  border-radius: 20px;
+  box-shadow: var(--shadow-sheet);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 20px;
+  max-height: 94vh;
+  overflow-y: auto;
+  position: relative;
+}
+
+/* Header */
+.vocal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border-subtle);
+  padding-bottom: 12px;
+}
+
+.vocal-title-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.vocal-badge-live {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: var(--accent-primary);
+  text-transform: uppercase;
+}
+
+.vocal-pulse-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #888888;
+}
+
+.vocal-pulse-dot.active {
+  background-color: #00e676;
+  box-shadow: 0 0 10px #00e676;
+  animation: pulseLive 1.4s infinite alternate;
+}
+
+@keyframes pulseLive {
+  from { transform: scale(0.85); opacity: 0.7; }
+  to { transform: scale(1.2); opacity: 1; }
+}
+
+.vocal-modal-title {
+  font-size: 1.35rem;
+  font-weight: 800;
+  font-family: var(--font-serif);
+  color: var(--text-primary);
+  margin: 0;
+}
+
+/* Control Bar */
+.vocal-control-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.btn-vocal-mic-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: 24px;
+  border: 1px solid var(--border-strong);
+  background: var(--bg-surface-raised);
+  color: var(--text-primary);
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease-spring);
+}
+
+.btn-vocal-mic-toggle:hover {
+  background: var(--bg-surface-hover);
+  border-color: var(--accent-secondary);
+}
+
+.btn-vocal-mic-toggle.recording {
+  background: linear-gradient(135deg, #d32f2f, #b71c1c);
+  color: white;
+  border-color: transparent;
+  box-shadow: 0 4px 16px rgba(211, 47, 47, 0.4);
+}
+
+.vocal-mode-pills {
+  display: flex;
+  gap: 4px;
+  background: var(--bg-surface-raised);
+  padding: 4px;
+  border-radius: 20px;
+  border: 1px solid var(--border-subtle);
+}
+
+.vocal-pill-btn {
+  padding: 6px 12px;
+  border-radius: 16px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.vocal-pill-btn.active {
+  background: var(--accent-primary);
+  color: white;
+  box-shadow: var(--shadow-xs);
+}
+
+.btn-vocal-pitchpipe {
+  padding: 8px 14px;
+  border-radius: 18px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-surface-raised);
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-vocal-pitchpipe:hover {
+  color: var(--text-primary);
+  border-color: var(--accent-secondary);
+}
+
+/* PITCH LANE VIEWPORT */
+.pitch-lane-viewport {
+  position: relative;
+  width: 100%;
+  height: 170px;
+  min-height: 150px;
+  background: #080a0e;
+  border-radius: 14px;
+  border: 1px solid var(--border-strong);
+  overflow: hidden;
+  box-shadow: inset 0 2px 8px rgba(0,0,0,0.5);
+  flex-shrink: 0;
+}
+
+.pitch-lane-canvas {
+  width: 100%;
+  height: 100%;
+  min-height: 150px;
+  display: block;
+}
+
+.pitch-lane-guides {
+  position: absolute;
+  top: 0;
+  left: 8px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 6px 0;
+  pointer-events: none;
+}
+
+.lane-label {
+  font-size: 0.65rem;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.lane-label.mid {
+  color: rgba(0, 229, 255, 0.8);
+}
+
+.pitch-lane-cursor-line {
+  position: absolute;
+  top: 0;
+  left: 85%;
+  width: 1px;
+  height: 100%;
+  background: rgba(255, 87, 34, 0.4);
+  pointer-events: none;
+}
+
+/* HUD Grid */
+.vocal-hud-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.6fr 1.4fr;
+  gap: 12px;
+}
+
+@media (max-width: 600px) {
+  .vocal-hud-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.vocal-hud-card {
+  background: var(--bg-surface-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: 14px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 6px;
+}
+
+.hud-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+}
+
+/* Note Card */
+.note-card {
+  align-items: center;
+  text-align: center;
+  transition: border-color var(--duration-fast) ease, box-shadow var(--duration-fast) ease;
+}
+
+.note-card.in-tune {
+  border-color: #00e676;
+  box-shadow: 0 0 16px rgba(0, 230, 118, 0.2);
+}
+
+.note-card.flat {
+  border-color: #ffb300;
+  box-shadow: 0 0 16px rgba(255, 179, 0, 0.2);
+}
+
+.note-card.sharp {
+  border-color: #f50057;
+  box-shadow: 0 0 16px rgba(245, 0, 87, 0.2);
+}
+
+.hud-note-display {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 2px;
+}
+
+.hud-main-note {
+  font-size: 2.2rem;
+  font-weight: 900;
+  font-family: var(--font-mono);
+  color: var(--text-primary);
+  line-height: 1;
+}
+
+.hud-octave {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--accent-primary);
+}
+
+.hud-freq-sub {
+  font-size: 0.75rem;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+}
+
+/* Cents Needle Card */
+.cents-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.cents-offset-badge {
+  font-size: 0.72rem;
+  font-weight: 800;
+  font-family: var(--font-mono);
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-secondary);
+}
+
+.cents-offset-badge.in-tune {
+  background: rgba(0, 230, 118, 0.2);
+  color: #00e676;
+}
+
+.cents-offset-badge.flat {
+  background: rgba(255, 179, 0, 0.2);
+  color: #ffb300;
+}
+
+.cents-offset-badge.sharp {
+  background: rgba(245, 0, 87, 0.2);
+  color: #ff4081;
+}
+
+.cents-meter-track {
+  position: relative;
+  width: 100%;
+  height: 14px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 7px;
+  border: 1px solid var(--border-subtle);
+  overflow: hidden;
+  margin: 6px 0 2px 0;
+}
+
+.cents-in-tune-zone {
+  position: absolute;
+  left: 35%;
+  width: 30%;
+  height: 100%;
+  background: rgba(0, 230, 118, 0.25);
+}
+
+.cents-needle {
+  position: absolute;
+  top: 0;
+  width: 4px;
+  height: 100%;
+  background: var(--text-primary);
+  border-radius: 2px;
+  box-shadow: 0 0 8px var(--text-primary);
+  transform: translateX(-50%);
+  transition: left 0.08s ease-out;
+}
+
+.cents-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.65rem;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+}
+
+/* Metrics Card */
+.metric-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.75rem;
+}
+
+.metric-name {
+  color: var(--text-secondary);
+  width: 115px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.metric-bar-wrap {
+  flex: 1;
+  height: 8px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.metric-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.2s ease;
+}
+
+.metric-bar-fill.breath {
+  background: linear-gradient(90deg, #00e5ff, #00b0ff);
+}
+
+.metric-bar-fill.stability {
+  background: linear-gradient(90deg, #76ff03, #00e676);
+}
+
+.metric-val {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  width: 36px;
+  text-align: right;
+}
+
+.tessitura-badge {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--accent-primary);
+}
+
+/* ADVICE BOX */
+.vocal-coach-advice-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(255, 87, 34, 0.08);
+  border: 1px solid rgba(255, 87, 34, 0.25);
+  border-radius: 14px;
+  padding: 12px 16px;
+}
+
+.advice-avatar {
+  font-size: 1.6rem;
+  flex-shrink: 0;
+}
+
+.advice-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.advice-title {
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--accent-primary);
+}
+
+.advice-text {
+  font-size: 0.86rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin: 0;
+  transition: opacity 0.2s ease;
+}
+
+.advice-text.highlight {
+  animation: pulseTip 0.4s ease;
+}
+
+@keyframes pulseTip {
+  0% { transform: scale(0.98); opacity: 0.6; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* Target Notes Selector Bar */
+.vocal-target-selector-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  border-top: 1px solid var(--border-subtle);
+  padding-top: 10px;
+}
+
+.target-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.target-notes-row {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.btn-target-note-chip {
+  padding: 4px 10px;
+  border-radius: 12px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-surface-raised);
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-target-note-chip.active {
+  background: var(--accent-primary);
+  color: white;
+  border-color: var(--accent-primary);
+  box-shadow: 0 2px 8px var(--accent-primary-glow);
+}
+
+/* ==========================================================================
+   INLINE VOCAL COACH BANNER FOR LYRICS VIEW (Sing-Along Pitch Lane)
+   ========================================================================== */
+.lyrics-vocal-coach-drawer {
+  background: var(--bg-surface-solid);
+  border: 1px solid var(--border-strong);
+  border-radius: 14px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.drawer-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.drawer-title-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.drawer-title {
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.drawer-hud-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.drawer-pitch-badge {
+  font-family: var(--font-mono);
+  font-size: 1.1rem;
+  font-weight: 900;
+  color: var(--text-primary);
+  padding: 4px 10px;
+  background: var(--bg-surface-raised);
+  border-radius: 10px;
+  border: 1px solid var(--border-subtle);
+}
+
+.drawer-cents-bar {
+  flex: 1;
+  min-width: 140px;
+  height: 8px;
+  background: rgba(0,0,0,0.25);
+  border-radius: 4px;
+  position: relative;
+  overflow: hidden;
+}
+
+.drawer-advice-snippet {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
