@@ -1,0 +1,39 @@
+name: Quality and desktop build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  web-quality:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps msedge || npx playwright install chromium
+
+      - name: Verify offline cache assets
+        run: node scripts/verify-offline-assets.mjs
+
+      - name: Build static bundle
+        run: node scripts/build-static.mjs
+
+      - name: Run E2E Test Suite
+        run: npx playwright test tests/iron-man.spec.js tests/smart-band-arcade.spec.js tests/neural-dsp-looper.spec.js tests/transcription-analytics.spec.js tests/vocal-coach.spec.js
