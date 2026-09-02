@@ -58,10 +58,17 @@ class ToastManager {
       error: '❌',
     };
 
-    toast.innerHTML = `
-      <span class="toast-icon" aria-hidden="true">${icons[type] || '🔔'}</span>
-      <span class="toast-message">${message}</span>
-    `;
+    const iconSpan = document.createElement('span');
+    iconSpan.className = 'toast-icon';
+    iconSpan.setAttribute('aria-hidden', 'true');
+    iconSpan.textContent = icons[type] || '🔔';
+
+    const msgSpan = document.createElement('span');
+    msgSpan.className = 'toast-message';
+    msgSpan.textContent = String(message ?? '');
+
+    toast.appendChild(iconSpan);
+    toast.appendChild(msgSpan);
 
     this.container.appendChild(toast);
 

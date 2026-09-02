@@ -40,6 +40,11 @@
   --radius-xs: 4px;
   --radius-sm: 6px;
   --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 24px;
+  --radius-pill: 9999px;
+  --radius-full: 50%;
   --space-1: 4px;
   --space-2: 8px;
   --space-3: 12px;

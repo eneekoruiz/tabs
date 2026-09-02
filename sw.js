@@ -154,7 +154,8 @@ const ASSETS_TO_CACHE = [
   './src/ui/tools/StageAutomationTool.js',
   './src/ui/tools/StemSeparatorTool.js',
   './src/ui/tools/TunerTool.js',
-  './src/ui/tools/VocalCoachTool.js'
+  './src/ui/tools/VocalCoachTool.js',
+  './src/utils/sanitize.js'
 ];
 
 self.addEventListener('install', (e) => {
@@ -196,7 +197,7 @@ self.addEventListener('fetch', (e) => {
   if (isAsset) {
     // Cache-First: responde inmediatamente desde caché, si falla → red
     e.respondWith(
-      caches.match(e.request).then((cached) => {
+      caches.match(e.request, { ignoreSearch: true }).then((cached) => {
         if (cached) return cached;
         return fetch(e.request).then((res) => {
           if (res && res.ok) {
@@ -217,10 +218,10 @@ self.addEventListener('fetch', (e) => {
         }
         return res;
       }).catch(() =>
-        caches.match(e.request).then((cached) => {
+        caches.match(e.request, { ignoreSearch: true }).then((cached) => {
           if (cached) return cached;
           // Fallback SPA: devolver index.html para navegación offline
-          return caches.match('./index.html').then((fallback) =>
+          return caches.match('./index.html', { ignoreSearch: true }).then((fallback) =>
             fallback || new Response('<h1>Sin conexión</h1>', {
               status: 503,
               headers: { 'Content-Type': 'text/html' }

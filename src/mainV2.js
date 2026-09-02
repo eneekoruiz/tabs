@@ -235,11 +235,47 @@ class AppV2 {
   }
 }
 
+function showCrashRecovery() {
+  const container = document.getElementById('app-shell') || document.body;
+  if (document.querySelector('.crash-recovery-overlay')) return;
+  const card = document.createElement('div');
+  card.className = 'crash-recovery-overlay';
+  card.style.cssText = 'position:fixed;inset:0;background:#0d0e12;color:#fff;display:flex;align-items:center;justify-content:center;z-index:999999;padding:24px;font-family:sans-serif;text-align:center;';
+  card.innerHTML = `
+    <div style="max-width:420px;background:#181a20;border:1px solid rgba(255,255,255,0.1);padding:32px;border-radius:20px;box-shadow:0 20px 50px rgba(0,0,0,0.5);">
+      <div style="font-size:3rem;margin-bottom:12px;">🎸</div>
+      <h2 style="font-size:1.3rem;margin:0 0 8px 0;font-weight:800;">Tabs & Chords PRO</h2>
+      <p style="font-size:0.9rem;color:#a0a5b0;margin:0 0 24px 0;line-height:1.4;">Hubo un problema temporal al cargar la aplicación. Puedes reiniciar o restablecer la caché.</p>
+      <div style="display:flex;gap:12px;justify-content:center;flex-direction:column;">
+        <button id="btnCrashReload" style="background:#ff5722;color:#fff;border:none;padding:12px 20px;border-radius:12px;font-weight:700;font-size:0.95rem;cursor:pointer;">Reiniciar aplicación</button>
+        <button id="btnCrashReset" style="background:rgba(255,255,255,0.08);color:#fff;border:1px solid rgba(255,255,255,0.15);padding:10px 16px;border-radius:12px;font-weight:600;font-size:0.85rem;cursor:pointer;">Limpiar caché y reintentar</button>
+      </div>
+    </div>
+  `;
+  container.appendChild(card);
+  card.querySelector('#btnCrashReload')?.addEventListener('click', () => window.location.reload());
+  card.querySelector('#btnCrashReset')?.addEventListener('click', async () => {
+    try {
+      if ('caches' in window) {
+        const keys = await caches.keys();
+        await Promise.all(keys.map(k => caches.delete(k)));
+      }
+      localStorage.clear();
+    } catch {}
+    window.location.reload();
+  });
+}
+
 function bootstrapApp() {
-  applyStoredTheme();
-  const app = new AppV2();
-  app.setupGestureControls();
-  app.start();
+  try {
+    applyStoredTheme();
+    const app = new AppV2();
+    app.setupGestureControls();
+    app.start();
+  } catch (err) {
+    console.error('[Bootstrap] Error crítico:', err);
+    showCrashRecovery();
+  }
 }
 
 if (document.readyState === 'loading') {

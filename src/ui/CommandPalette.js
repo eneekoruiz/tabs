@@ -1,6 +1,7 @@
 import { Component } from './Component.js';
 import { events } from '../core/EventBus.js';
 import { db } from '../data/Database.js';
+import { escapeHTML } from '../utils/sanitize.js';
 
 export class CommandPalette extends Component {
   constructor() {
@@ -135,10 +136,10 @@ export class CommandPalette extends Component {
 
     listEl.innerHTML = this.results.map((cmd, idx) => `
       <div class="cmd-item ${idx === this.selectedIndex ? 'active' : ''}" data-idx="${idx}">
-        <span class="cmd-icon">${cmd.icon}</span>
+        <span class="cmd-icon">${escapeHTML(cmd.icon)}</span>
         <div class="cmd-info">
-          <span class="cmd-title">${cmd.title}</span>
-          <span class="cmd-type">${cmd.type}</span>
+          <span class="cmd-title">${escapeHTML(cmd.title)}</span>
+          <span class="cmd-type">${escapeHTML(cmd.type)}</span>
         </div>
         ${idx === this.selectedIndex ? '<span class="cmd-enter">↵</span>' : ''}
       </div>

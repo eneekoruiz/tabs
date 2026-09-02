@@ -18,6 +18,7 @@ import { ChordDiagramRenderer } from './lyrics/ChordDiagramRenderer.js';
 import { SongAutoScroller } from './lyrics/SongAutoScroller.js';
 import { SongAudioRecorder } from './lyrics/SongAudioRecorder.js';
 import { ChordPopoverModal } from './lyrics/ChordPopoverModal.js';
+import { escapeHTML } from '../utils/sanitize.js';
 
 export class LyricsChordsView extends Component {
   constructor(container) {
@@ -149,6 +150,13 @@ export class LyricsChordsView extends Component {
 
     this.registerUnsub(events.on('song:exitStageMode', () => {
       this.exitStageMode();
+    }));
+
+    this.registerUnsub(events.on('ui:closeAllOverlays', () => {
+      if (this.isOptionsMenuOpen) {
+        this.isOptionsMenuOpen = false;
+        this.render();
+      }
     }));
 
     this.registerUnsub(events.on('tuner:pitch', (pitch) => {
@@ -383,6 +391,9 @@ export class LyricsChordsView extends Component {
     const title = this.currentSong?.title || 'Selecciona una canción';
     const artist = this.currentSong?.artist || 'Tabs & Chords PRO';
     const tuning = this.currentSong?.tuning || 'Standard E';
+    const safeTitle = escapeHTML(title);
+    const safeArtist = escapeHTML(artist);
+    const safeTuning = escapeHTML(tuning);
     const rawLyrics = this.currentSong?.lyricsChords || '';
     this.visualTheme = localStorage.getItem('app_visual_theme') || 'paper';
 
@@ -395,7 +406,7 @@ export class LyricsChordsView extends Component {
     });
 
     this.container.innerHTML = `
-      <div class="lyrics-chords-container theme-${this.visualTheme} ${this.isStageMode ? 'stage-mode-view' : ''}" role="region" aria-label="Letra y acordes de ${title}">
+      <div class="lyrics-chords-container theme-${this.visualTheme} ${this.isStageMode ? 'stage-mode-view' : ''}" role="region" aria-label="Letra y acordes de ${safeTitle}">
         
         <!-- BARRA FLOTANTE MODO ATRIL -->
         ${this.isStageMode ? `
@@ -452,8 +463,8 @@ export class LyricsChordsView extends Component {
               </button>
 
               <div class="lyrics-title-group" style="flex: 1; min-width: 200px;">
-                <h1 class="lyrics-song-title">${title}</h1>
-                <span class="lyrics-song-artist">— ${artist} (${tuning}${this.capoFret > 0 ? ` · Capo ${this.capoFret}` : ''})</span>
+                <h1 class="lyrics-song-title">${safeTitle}</h1>
+                <span class="lyrics-song-artist">— ${safeArtist} (${safeTuning}${this.capoFret > 0 ? ` · Capo ${this.capoFret}` : ''})</span>
               </div>
 
               <div style="display: flex; align-items: center; gap: 12px; margin-left: auto;">
