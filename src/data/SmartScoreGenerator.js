@@ -48,11 +48,9 @@ export class SmartScoreGenerator {
       let cleanChord = chord.replace(/7|maj7|sus4|sus2|add9/g, '');
       let tChord = cmap[cleanChord] || cmap[chord] || cmap['C'];
       
-      let annotation = lyric ? `*${lyric}* ` : '';
-      
       if (is34) {
         // Patrón 3/4: D DU DU
-        tex += `${annotation}:4 (${tChord}) :8 (${tChord}) :8 (${tChord}) :8 (${tChord}) :8 (${tChord}) |\n`;
+        tex += `:4 (${tChord}) :8 (${tChord}) :8 (${tChord}) :8 (${tChord}) :8 (${tChord}) |\n`;
       } else {
         // Patrón 4/4: D DU D DU (Rock/Pop clásico)
         if (song.genre === 'Acoustic') {
@@ -60,9 +58,9 @@ export class SmartScoreGenerator {
           const notes = tChord.split(' ');
           const root = notes[0];
           const rest = notes.slice(1).join(' ');
-          tex += `${annotation}:4 ${root} :8 (${rest}) :8 (${rest}) :4 ${root} :4 (${rest}) |\n`;
+          tex += `:4 ${root} :8 (${rest}) :8 (${rest}) :4 ${root} :4 (${rest}) |\n`;
         } else {
-          tex += `${annotation}:4 (${tChord}) :8 (${tChord}) :8 (${tChord}) :4 (${tChord}) :8 (${tChord}) :8 (${tChord}) |\n`;
+          tex += `:4 (${tChord}) :8 (${tChord}) :8 (${tChord}) :4 (${tChord}) :8 (${tChord}) :8 (${tChord}) |\n`;
         }
       }
     }

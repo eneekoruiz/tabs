@@ -603,7 +603,6 @@ export class LyricsChordsView extends Component {
               </button>
             </div>
           ` : ''}
-        </div>
 
         <!-- TOMA RECIENTE -->
         ${this.audioRecorder.recordedUrl && !this.audioRecorder.isRecording ? `
