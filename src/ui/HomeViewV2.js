@@ -249,8 +249,9 @@ export class HomeViewV2 extends Component {
       <div class="explore-view" role="region" aria-label="Explorar catálogo">
         <header class="explore-hero discovery-header">
           <div class="explore-badge-chromatic">CATÁLOGO LOCAL · ${catalogStats.songs.toLocaleString('es-ES')} TÍTULOS · OFFLINE</div>
-          <h1 class="explore-hero-title">Tabs & Chords PRO</h1>
+          <h1 class="explore-hero-title" style="background: linear-gradient(90deg, #00e5ff, #b388ff, #00e5ff); background-size: 200% auto; color: transparent; -webkit-background-clip: text; background-clip: text; animation: gradient-text-pan 4s linear infinite; font-weight: 800; letter-spacing: -1px;">Tabs & Chords PRO</h1>
           <p class="explore-hero-subtitle">Encuentra canciones, compara versiones y abre la adecuada sin perder el contexto.</p>
+          <style>@keyframes gradient-text-pan { to { background-position: 200% center; } }</style>
 
           <div class="explore-search-container-row discovery-search-row">
             <div class="explore-search-box" id="exploreSearchBoxWrapper" style="position: relative; display: flex; align-items: center;">
@@ -488,7 +489,6 @@ export class HomeViewV2 extends Component {
       version.difficulty ? `<div><dt>Dificultad</dt><dd>${this.escapeHTML(version.difficulty)}</dd></div>` : '',
       version.tuning ? `<div><dt>Afinación</dt><dd>${this.escapeHTML(version.tuning)}</dd></div>` : '',
       Number.isFinite(numericTempo) && numericTempo > 0 ? `<div><dt>Tempo</dt><dd>${numericTempo} BPM</dd></div>` : '',
-      `<div><dt>Contenido</dt><dd>${this.escapeHTML(this.getSourceLabel(version.contentSource))}</dd></div>`,
       `<div><dt>Versiones</dt><dd>${group.versionCount}</dd></div>`,
     ].filter(Boolean).join('');
 
@@ -506,7 +506,7 @@ export class HomeViewV2 extends Component {
         </label>
         <ol class="discovery-version-list" aria-label="Versiones disponibles">
           ${group.versions.map((item, index) => {
-            const summary = [this.getSourceLabel(item.contentSource), item.tuning].filter(Boolean).join(' · ');
+            const summary = item.tuning || '';
             return `
               <li class="${index === selectedIndex ? 'is-current' : ''}">
                 <span>${this.escapeHTML(item.versionLabel)}</span>
@@ -773,7 +773,7 @@ export class HomeViewV2 extends Component {
         this.selectGroup(groupKey, false);
       });
       card.addEventListener('dblclick', () => {
-        this.openGroupVersion(groupKey);
+        this.openGroupVersion(groupKey, undefined, true);
       });
     });
     // Botón "Abrir" de las tarjetas del catálogo: sin índice forzado → activa el picker si hay >1 versiones
