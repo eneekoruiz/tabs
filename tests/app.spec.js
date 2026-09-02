@@ -118,7 +118,7 @@ test.describe('🎸 Tabs & Chords PRO - Suite E2E Modo Letras & Acordes Multi-In
     await expect(heroSearch).toBeVisible();
 
     await heroSearch.fill('Blackbird');
-    const songCard = page.locator('.btn-load-explore-song', { hasText: /Blackbird/i }).first();
+    const songCard = page.locator('.song-card', { hasText: /Blackbird/i }).locator('.btn-load-explore-song').first();
     await expect(songCard).toBeVisible({ timeout: 10000 });
     await songCard.click();
 
@@ -141,7 +141,7 @@ test.describe('🎸 Tabs & Chords PRO - Suite E2E Modo Letras & Acordes Multi-In
   test('4. Modo Multi-Instrumento, Notas Exactas de Piano y Botón [X]', async ({ page }) => {
     const heroSearch = page.locator('#exploreSearchInput');
     await heroSearch.fill('Wonderwall');
-    const songCard = page.locator('.btn-load-explore-song', { hasText: /Wonderwall/i }).first();
+    const songCard = page.locator('.song-card', { hasText: /Wonderwall/i }).locator('.btn-load-explore-song').first();
     await expect(songCard).toBeVisible({ timeout: 10000 });
     await songCard.click();
 
@@ -192,7 +192,7 @@ test.describe('🎸 Tabs & Chords PRO - Suite E2E Modo Letras & Acordes Multi-In
 
     const heroSearch = page.locator('#exploreSearchInput');
     await heroSearch.fill('Let It Be');
-    const songCard = page.locator('.btn-load-explore-song', { hasText: /Let It Be/i }).first();
+    const songCard = page.locator('.song-card', { hasText: /Let It Be/i }).locator('.btn-load-explore-song').first();
     await expect(songCard).toBeVisible({ timeout: 10000 });
     await songCard.click();
 
@@ -203,7 +203,7 @@ test.describe('🎸 Tabs & Chords PRO - Suite E2E Modo Letras & Acordes Multi-In
   test('6. Auto-Scroll de Precisión (1% a 100%) con Medidor Porcentual', async ({ page }) => {
     const heroSearch = page.locator('#exploreSearchInput');
     await heroSearch.fill('Hallelujah');
-    const songCard = page.locator('.btn-load-explore-song', { hasText: /Hallelujah/i }).first();
+    const songCard = page.locator('.song-card', { hasText: /Hallelujah/i }).locator('.btn-load-explore-song').first();
     await expect(songCard).toBeVisible({ timeout: 10000 });
     await songCard.click();
 
@@ -240,7 +240,7 @@ test.describe('🎸 Tabs & Chords PRO - Suite E2E Modo Letras & Acordes Multi-In
   test('7. Afinador Cromático Profesional con Clavijeros Reales y Menú de Opciones', async ({ page }) => {
     const heroSearch = page.locator('#exploreSearchInput');
     await heroSearch.fill('Dust in the Wind');
-    const songCard = page.locator('.btn-load-explore-song', { hasText: /Dust in the Wind/i }).first();
+    const songCard = page.locator('.song-card', { hasText: /Dust in the Wind/i }).locator('.btn-load-explore-song').first();
     await expect(songCard).toBeVisible({ timeout: 10000 });
     await songCard.click();
 
@@ -295,7 +295,7 @@ test.describe('🎸 Tabs & Chords PRO - Suite E2E Modo Letras & Acordes Multi-In
     await heroSearch.fill('katy');
 
     // Comprobar que aparecen canciones de Katy Perry al instante
-    const songCard = page.locator('.btn-load-explore-song', { hasText: /Katy Perry|Roar|Firework/i }).first();
+    const songCard = page.locator('.song-card', { hasText: /Katy Perry|Roar|Firework/i }).locator('.btn-load-explore-song').first();
     await expect(songCard).toBeVisible({ timeout: 10000 });
 
     // Comprobar que NUNCA aparece el mensaje erróneo de "No tienes katy guardada localmente"
@@ -336,7 +336,7 @@ test.describe('🎸 Tabs & Chords PRO - Suite E2E Modo Letras & Acordes Multi-In
     // 1. Abrir canción
     const heroSearch = page.locator('#exploreSearchInput');
     await heroSearch.fill('Imagine Dragons');
-    const songCard = page.locator('.btn-load-explore-song', { hasText: /Imagine Dragons|Believer/i }).first();
+    const songCard = page.locator('.song-card', { hasText: /Imagine Dragons|Believer/i }).locator('.btn-load-explore-song').first();
     await expect(songCard).toBeVisible({ timeout: 10000 });
     await songCard.click();
 
@@ -412,7 +412,7 @@ test.describe('🎸 Tabs & Chords PRO - Suite E2E Modo Letras & Acordes Multi-In
     const heroSearch = page.locator('#exploreSearchInput');
     await heroSearch.fill('Dark Horse');
 
-    const songCard = page.locator('.btn-load-explore-song', { hasText: /Dark Horse/i }).first();
+    const songCard = page.locator('.song-card', { hasText: /Dark Horse/i }).locator('.btn-load-explore-song').first();
     await expect(songCard).toBeVisible({ timeout: 10000 });
     await songCard.click();
 
@@ -433,7 +433,7 @@ test.describe('🎸 Tabs & Chords PRO - Suite E2E Modo Letras & Acordes Multi-In
   test('13. Modo Atril de Escenario (Ocultación Total de Barra Inferior y HUD Flotante Activo)', async ({ page }) => {
     const heroSearch = page.locator('#exploreSearchInput');
     await heroSearch.fill('Hotel California');
-    const songCard = page.locator('.btn-load-explore-song', { hasText: /Hotel California/i }).first();
+    const songCard = page.locator('.song-card', { hasText: /Hotel California/i }).locator('.btn-load-explore-song').first();
     await expect(songCard).toBeVisible({ timeout: 10000 });
     await songCard.click();
 
@@ -467,7 +467,7 @@ test.describe('🎸 Tabs & Chords PRO - Suite E2E Modo Letras & Acordes Multi-In
   test('14. Cifrado Latino (Do, Re, Mi) y Selección de Notación', async ({ page }) => {
     const heroSearch = page.locator('#exploreSearchInput');
     await heroSearch.fill('Let It Be');
-    const songCard = page.locator('.btn-load-explore-song', { hasText: /Let It Be/i }).first();
+    const songCard = page.locator('.song-card', { hasText: /Let It Be/i }).locator('.btn-load-explore-song').first();
     await expect(songCard).toBeVisible({ timeout: 10000 });
     await songCard.click();
 
@@ -495,7 +495,7 @@ test.describe('🎸 Tabs & Chords PRO - Suite E2E Modo Letras & Acordes Multi-In
   test('15. Patrón de Rasgueo Prominente y Acordes Utilizados Interactivos con Diagramas Desplegables', async ({ page }) => {
     const heroSearch = page.locator('#exploreSearchInput');
     await heroSearch.fill('Wonderwall');
-    const songCard = page.locator('.btn-load-explore-song', { hasText: /Wonderwall/i }).first();
+    const songCard = page.locator('.song-card', { hasText: /Wonderwall/i }).locator('.btn-load-explore-song').first();
     await expect(songCard).toBeVisible({ timeout: 10000 });
     await songCard.click();
 
@@ -528,7 +528,7 @@ test.describe('🎸 Tabs & Chords PRO - Suite E2E Modo Letras & Acordes Multi-In
   test('16. Grabador de Audio de Ensayos / Directos (Grabación, Temporizador y Descarga de Toma)', async ({ page }) => {
     const heroSearch = page.locator('#exploreSearchInput');
     await heroSearch.fill('Perfect');
-    const songCard = page.locator('.btn-load-explore-song', { hasText: /Perfect/i }).first();
+    const songCard = page.locator('.song-card', { hasText: /Perfect/i }).locator('.btn-load-explore-song').first();
     await expect(songCard).toBeVisible({ timeout: 10000 });
     await songCard.click();
 
@@ -555,10 +555,10 @@ test.describe('🎸 Tabs & Chords PRO - Suite E2E Modo Letras & Acordes Multi-In
     await page.waitForTimeout(500);
 
     // 2. Verificar que se muestran canciones de Ariana Grande
-    const arianaCard = page.locator('.btn-load-explore-song', { hasText: /7 rings/i }).first();
+    const arianaCard = page.locator('.song-card', { hasText: /7 rings/i }).locator('.btn-load-explore-song').first();
     await expect(arianaCard).toBeVisible({ timeout: 10000 });
 
-    const thankUCard = page.locator('.btn-load-explore-song', { hasText: /thank u, next/i }).first();
+    const thankUCard = page.locator('.song-card', { hasText: /thank u, next/i }).locator('.btn-load-explore-song').first();
     await expect(thankUCard).toBeVisible({ timeout: 10000 });
 
     // 3. Abrir "7 rings" y verificar modo letra con acordes y barra contextual
@@ -581,7 +581,7 @@ test.describe('🎸 Tabs & Chords PRO - Suite E2E Modo Letras & Acordes Multi-In
 
     await heroSearch.fill('Olivia Rodrigo');
     await page.waitForTimeout(500);
-    const oliviaCard = page.locator('.btn-load-explore-song', { hasText: /drivers license|vampire/i }).first();
+    const oliviaCard = page.locator('.song-card', { hasText: /drivers license|vampire/i }).locator('.btn-load-explore-song').first();
     await expect(oliviaCard).toBeVisible({ timeout: 10000 });
   });
 
@@ -592,7 +592,7 @@ test.describe('🎸 Tabs & Chords PRO - Suite E2E Modo Letras & Acordes Multi-In
     await heroSearch.fill('Imagine Dragons');
     await page.waitForTimeout(400);
 
-    const believerCard = page.locator('.btn-load-explore-song', { hasText: /Believer/i }).first();
+    const believerCard = page.locator('.song-card', { hasText: /Believer/i }).locator('.btn-load-explore-song').first();
     await expect(believerCard).toBeVisible({ timeout: 10000 });
     await believerCard.click();
 
@@ -608,7 +608,7 @@ test.describe('🎸 Tabs & Chords PRO - Suite E2E Modo Letras & Acordes Multi-In
 
     await heroSearch.fill('Radioactive');
     await page.waitForTimeout(400);
-    const radioCard = page.locator('.btn-load-explore-song', { hasText: /Radioactive/i }).first();
+    const radioCard = page.locator('.song-card', { hasText: /Radioactive/i }).locator('.btn-load-explore-song').first();
     await expect(radioCard).toBeVisible({ timeout: 10000 });
     await radioCard.click();
 
@@ -686,7 +686,7 @@ test.describe('🎸 Tabs & Chords PRO - Suite E2E Modo Letras & Acordes Multi-In
 
   test('22. Reproductor original de YouTube seguro y persistente por canción', async ({ page }) => {
     await page.locator('#exploreSearchInput').fill('Blackbird');
-    const songCard = page.locator('.btn-load-explore-song', { hasText: /Blackbird/i }).first();
+    const songCard = page.locator('.song-card', { hasText: /Blackbird/i }).locator('.btn-load-explore-song').first();
     await expect(songCard).toBeVisible({ timeout: 10000 });
     await songCard.click();
     await expect(page.locator('.lyrics-chords-container')).toBeVisible({ timeout: 10000 });
@@ -726,7 +726,7 @@ test.describe('🎸 Tabs & Chords PRO - Suite E2E Modo Letras & Acordes Multi-In
 
   test('24. Metrónomo integrado en visor de canciones: control compacto, ajustes y count-in', async ({ page }) => {
     await page.locator('#exploreSearchInput').fill('Blackbird');
-    const songCard = page.locator('.btn-load-explore-song', { hasText: /Blackbird/i }).first();
+    const songCard = page.locator('.song-card', { hasText: /Blackbird/i }).locator('.btn-load-explore-song').first();
     await expect(songCard).toBeVisible({ timeout: 10000 });
     await songCard.click();
     await expect(page.locator('.lyrics-chords-container')).toBeVisible({ timeout: 10000 });
@@ -790,7 +790,7 @@ test.describe('🎸 Tabs & Chords PRO - Suite E2E Modo Letras & Acordes Multi-In
 
   test('25. Reproducción simultánea: Metrónomo + YouTube + Auto-scroll + Grabación + Modo Atril', async ({ page }) => {
     await page.locator('#exploreSearchInput').fill('Blackbird');
-    const songCard = page.locator('.btn-load-explore-song', { hasText: /Blackbird/i }).first();
+    const songCard = page.locator('.song-card', { hasText: /Blackbird/i }).locator('.btn-load-explore-song').first();
     await expect(songCard).toBeVisible({ timeout: 10000 });
     await songCard.click();
     await expect(page.locator('.lyrics-chords-container')).toBeVisible({ timeout: 10000 });
@@ -843,7 +843,7 @@ test.describe('🎸 Tabs & Chords PRO - Suite E2E Modo Letras & Acordes Multi-In
 
     // 2. Cargar Killer Queen de Queen
     await page.locator('#exploreSearchInput').fill('Killer Queen');
-    const songCard = page.locator('.btn-load-explore-song', { hasText: /Killer Queen/i }).first();
+    const songCard = page.locator('.song-card', { hasText: /Killer Queen/i }).locator('.btn-load-explore-song').first();
     await expect(songCard).toBeVisible({ timeout: 10000 });
     await songCard.click();
     await expect(page.locator('.lyrics-chords-container')).toBeVisible({ timeout: 10000 });

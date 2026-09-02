@@ -96,7 +96,7 @@ test.describe('📱 Auditoría E2E de Responsividad Multidispositivo (Cero Desbo
         const searchInput = page.locator('#exploreSearchInput');
         await searchInput.fill('Blackbird');
 
-        const songCard = page.locator('.btn-load-explore-song', { hasText: /Blackbird/i }).first();
+        const songCard = page.locator('.song-card', { hasText: /Blackbird/i }).locator('.btn-load-explore-song').first();
         await songCard.waitFor({ state: 'visible', timeout: 10000 });
         await songCard.click();
 
