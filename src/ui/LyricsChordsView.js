@@ -657,9 +657,10 @@ export class LyricsChordsView extends Component {
 
     // Sincronizar estado visual (PitchLane) SIEMPRE después del render
     const globalBottomNav = document.getElementById('bottom-nav-container');
+    const isPlayerActive = document.getElementById('score-viewport')?.classList.contains('active-view');
 
     if (this.performanceMode === 'sing') {
-      if (globalBottomNav) globalBottomNav.style.display = 'none';
+      if (globalBottomNav && isPlayerActive) globalBottomNav.style.display = 'none';
 
       const canvasEl = this.container.querySelector('#pitchLaneCanvas');
       if (canvasEl) {
@@ -678,7 +679,7 @@ export class LyricsChordsView extends Component {
         });
       }
     } else {
-      if (globalBottomNav) globalBottomNav.style.display = 'block';
+      if (globalBottomNav) globalBottomNav.style.display = '';
 
       if (this.pitchLane) {
         this.pitchLane.stop();
@@ -716,6 +717,8 @@ export class LyricsChordsView extends Component {
     });
 
     this.container.querySelector('#btnBackToExplore')?.addEventListener('click', () => {
+      const globalBottomNav = document.getElementById('bottom-nav-container');
+      if (globalBottomNav) globalBottomNav.style.display = '';
       events.emit('ui:switchTab', 'explore');
     });
 

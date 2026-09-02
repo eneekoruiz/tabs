@@ -360,6 +360,9 @@ export class BottomNav extends Component {
 
   setActiveTab(tabName) {
     this.activeTab = tabName;
+    if (this.container) {
+      this.container.style.display = '';
+    }
     this.updateDOMVisibility();
     this.render();
   }
@@ -372,6 +375,10 @@ export class BottomNav extends Component {
     const scoreViewport = document.getElementById('score-viewport');
     const songInfoStrip = document.getElementById('songInfoStrip');
     const transportHeader = document.getElementById('transport-container');
+
+    if (this.container && this.activeTab !== 'player') {
+      this.container.style.display = '';
+    }
 
     // Ocultar todas las vistas principales
     if (exploreView) exploreView.classList.remove('active-view');
