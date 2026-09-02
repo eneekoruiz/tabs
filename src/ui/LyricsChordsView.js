@@ -442,93 +442,118 @@ export class LyricsChordsView extends Component {
 
           <!-- Cabecera Principal -->
           <div class="lyrics-header-main">
-            <div class="lyrics-title-nav-row">
+            <!-- Fila 1: Volver, Título, Modo (Tocar/Cantar), Opciones -->
+            <div class="lyrics-title-nav-row" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
               <button class="btn-back-to-explore" id="btnBackToExplore" aria-label="Volver a explorar">
                 <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
                   <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
                 </svg>
                 <span>Volver</span>
               </button>
-              <div class="lyrics-title-group">
+
+              <div class="lyrics-title-group" style="flex: 1; min-width: 200px;">
                 <h1 class="lyrics-song-title">${title}</h1>
                 <span class="lyrics-song-artist">— ${artist} (${tuning}${this.capoFret > 0 ? ` · Capo ${this.capoFret}` : ''})</span>
               </div>
-              <div style="margin-left: auto; display: flex; align-items: center;">
-                <button id="btnOpenToolsSheet" style="background: transparent; border: none; color: var(--text-primary); cursor: pointer; display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 50%;">
-                  <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>
+
+              <div style="display: flex; align-items: center; gap: 12px; margin-left: auto;">
+                <!-- Mode Toggle (Tocar/Cantar) -->
+                <div class="performance-mode-toggle" style="display: flex; background: var(--bg-surface-raised); border: 1px solid var(--border-subtle); border-radius: 20px; padding: 2px;">
+                  <button class="btn-mode-toggle ${this.performanceMode === 'play' ? 'active' : ''}" data-mode="play" style="padding: 6px 16px; border: none; border-radius: 18px; background: ${this.performanceMode === 'play' ? 'var(--accent-primary)' : 'transparent'}; color: ${this.performanceMode === 'play' ? '#fff' : 'var(--text-primary)'}; font-weight: 700; font-size: 0.85rem; cursor: pointer; transition: all 0.2s;">🎸 Tocar</button>
+                  <button class="btn-mode-toggle ${this.performanceMode === 'sing' ? 'active' : ''}" data-mode="sing" style="padding: 6px 16px; border: none; border-radius: 18px; background: ${this.performanceMode === 'sing' ? 'var(--accent-primary)' : 'transparent'}; color: ${this.performanceMode === 'sing' ? '#fff' : 'var(--text-primary)'}; font-weight: 700; font-size: 0.85rem; cursor: pointer; transition: all 0.2s;">🎤 Cantar</button>
+                </div>
+
+                <button id="btnOpenToolsSheet" style="background: var(--bg-surface-raised); border: 1px solid var(--border-subtle); color: var(--text-primary); cursor: pointer; display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 50%;">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>
                 </button>
               </div>
             </div>
+
+            <!-- Fila 2: Herramientas Frecuentes (solo si estamos en modo tocar) -->
+            ${this.performanceMode === 'play' ? `
+            <div class="lyrics-quick-tools-row" style="display: flex; align-items: center; gap: 8px; margin-top: 12px; padding: 10px 14px; background: rgba(0,0,0,0.02); border-radius: 12px; border: 1px solid var(--border-subtle); overflow-x: auto; flex-wrap: nowrap;">
+              
+              <!-- Instrumento -->
+              <div class="quick-tool-pill" style="display: flex; align-items: center; gap: 6px; background: var(--bg-surface-solid); border: 1px solid var(--border-subtle); padding: 4px 12px; border-radius: 20px; white-space: nowrap;">
+                <span style="font-size: 1rem;">🎸</span>
+                <select id="selInstrumentQuick" style="background: transparent; border: none; color: var(--text-primary); font-size: 0.85rem; font-weight: 700; cursor: pointer; outline: none; padding-right: 4px;">
+                  <option value="guitar" ${this.currentInstrument === 'guitar' ? 'selected' : ''}>Guitarra</option>
+                  <option value="piano" ${this.currentInstrument === 'piano' ? 'selected' : ''}>Piano</option>
+                  <option value="ukulele" ${this.currentInstrument === 'ukulele' ? 'selected' : ''}>Ukelele</option>
+                </select>
+              </div>
+
+              <!-- Cejilla -->
+              <div class="quick-tool-pill" style="display: flex; align-items: center; gap: 6px; background: var(--bg-surface-solid); border: 1px solid var(--border-subtle); padding: 4px 12px; border-radius: 20px; white-space: nowrap;">
+                <span style="font-size: 1rem;">🎵</span>
+                <select id="selCapoQuick" style="background: transparent; border: none; color: var(--text-primary); font-size: 0.85rem; font-weight: 700; cursor: pointer; outline: none;">
+                  <option value="0" ${this.capoFret === 0 ? 'selected' : ''}>Capo: Off</option>
+                  <option value="1" ${this.capoFret === 1 ? 'selected' : ''}>Capo: Traste 1</option>
+                  <option value="2" ${this.capoFret === 2 ? 'selected' : ''}>Capo: Traste 2</option>
+                  <option value="3" ${this.capoFret === 3 ? 'selected' : ''}>Capo: Traste 3</option>
+                  <option value="4" ${this.capoFret === 4 ? 'selected' : ''}>Capo: Traste 4</option>
+                  <option value="5" ${this.capoFret === 5 ? 'selected' : ''}>Capo: Traste 5</option>
+                </select>
+              </div>
+
+              <!-- Tamaño Letra -->
+              <div class="quick-tool-pill" style="display: flex; align-items: center; gap: 6px; background: var(--bg-surface-solid); border: 1px solid var(--border-subtle); padding: 4px 12px; border-radius: 20px; white-space: nowrap; margin-left: auto;">
+                <button id="btnQuickFontDecr" style="background: transparent; border: none; cursor: pointer; color: var(--text-primary); font-weight: 700; padding: 2px 6px;">A-</button>
+                <span style="font-size: 0.85rem; font-weight: 700; min-width: 36px; text-align: center;">${this.fontSizeScale}%</span>
+                <button id="btnQuickFontIncr" style="background: transparent; border: none; cursor: pointer; color: var(--text-primary); font-weight: 700; padding: 2px 6px;">A+</button>
+              </div>
+            </div>
+            ` : ''}
           </div>
 
-          <!-- BOTTOM SHEET ESTILO iOS (Herramientas) -->
+          <!-- BOTTOM SHEET ESTILO iOS (Herramientas avanzadas) -->
           <div id="lyricsToolsBottomSheetOverlay" style="display: ${this.isOptionsMenuOpen ? 'flex' : 'none'}; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); z-index: 9999; justify-content: center; align-items: flex-end; animation: fadeIn 0.2s;">
-            <div class="bottom-sheet-content" style="background: var(--bg-surface-solid, #1c1c1e); width: 100%; max-width: 600px; max-height: 85vh; border-radius: 24px 24px 0 0; padding: 24px; overflow-y: auto; box-shadow: 0 -4px 32px rgba(0,0,0,0.5); animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1); border: 1px solid rgba(255,255,255,0.1); border-bottom: none;">
+            <div class="bottom-sheet-content" style="background: var(--bg-surface-solid, #1c1c1e); width: 100%; max-width: 600px; max-height: 80vh; border-radius: 24px 24px 0 0; padding: 20px 24px 32px; overflow-y: auto; box-shadow: 0 -4px 32px rgba(0,0,0,0.5); animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1); border: 1px solid rgba(255,255,255,0.1); border-bottom: none;">
               
-              <div style="width: 40px; height: 5px; background: rgba(255,255,255,0.2); border-radius: 3px; margin: 0 auto 20px;"></div>
+              <div style="width: 40px; height: 5px; background: rgba(255,255,255,0.2); border-radius: 3px; margin: 0 auto 16px;"></div>
               
-              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
-                <h3 style="margin: 0; font-size: 1.2rem; color: var(--text-primary);">Opciones y Herramientas</h3>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3 style="margin: 0; font-size: 1.1rem; color: var(--text-primary); font-weight: 800;">Más opciones</h3>
                 <button id="btnCloseToolsSheet" style="background: rgba(255,255,255,0.1); border: none; color: var(--text-primary); border-radius: 50%; width: 32px; height: 32px; cursor: pointer; display: flex; justify-content: center; align-items: center; font-size: 1.2rem; line-height: 1;">&times;</button>
               </div>
 
-              <!-- Vista -->
-              <div style="display: flex; background: var(--bg-surface-raised); border: 1px solid var(--border-subtle); border-radius: 12px; overflow: hidden; margin-bottom: 20px;">
-                <button id="btnModeLyrics" style="flex: 1; padding: 10px 12px; border: none; background: ${this.viewMode === 'lyrics' ? 'var(--accent-primary)' : 'transparent'}; color: ${this.viewMode === 'lyrics' ? '#fff' : 'var(--text-primary)'}; cursor: pointer; font-weight: 600; font-size: 0.9rem; transition: background 0.2s;">Letra & Acordes</button>
-                ${this.currentSong?.data ? `<button id="btnModeScore" style="flex: 1; padding: 10px 12px; border: none; background: ${this.viewMode === 'score' ? 'var(--accent-primary)' : 'transparent'}; color: ${this.viewMode === 'score' ? '#fff' : 'var(--text-primary)'}; cursor: pointer; font-weight: 600; font-size: 0.9rem; transition: background 0.2s;">Partitura Musical</button>` : ''}
+              <!-- Vista (Letra / Partitura) — solo si hay partitura -->
+              ${this.currentSong?.data ? `
+              <div style="display: flex; background: var(--bg-surface-raised); border: 1px solid var(--border-subtle); border-radius: 12px; overflow: hidden; margin-bottom: 16px;">
+                <button id="btnModeLyrics" style="flex: 1; padding: 10px 12px; border: none; background: ${this.viewMode === 'lyrics' ? 'var(--accent-primary)' : 'transparent'}; color: ${this.viewMode === 'lyrics' ? '#fff' : 'var(--text-primary)'}; cursor: pointer; font-weight: 700; font-size: 0.9rem; transition: background 0.2s;">🎵 Letra & Acordes</button>
+                <button id="btnModeScore" style="flex: 1; padding: 10px 12px; border: none; background: ${this.viewMode === 'score' ? 'var(--accent-primary)' : 'transparent'}; color: ${this.viewMode === 'score' ? '#fff' : 'var(--text-primary)'}; cursor: pointer; font-weight: 700; font-size: 0.9rem; transition: background 0.2s;">🎼 Partitura</button>
+              </div>
+              ` : ''}
+
+              <!-- Acciones rápidas en fila -->
+              <div style="display: flex; flex-direction: column; gap: 6px; margin-bottom: 20px;">
+                <button id="btnEnterStageMode" class="btn-menu-action" style="justify-content: flex-start; padding: 12px 16px;">🎭 Modo Atril (Pantalla Completa)</button>
+                <button id="btnPrintPDF" class="btn-menu-action" style="justify-content: flex-start; padding: 12px 16px;">🖨️ Exportar PDF / Imprimir</button>
+                <button id="btnOpenTunerQuick" class="btn-menu-action" style="justify-content: flex-start; padding: 12px 16px;">🎼 Afinador Cromático</button>
               </div>
 
-              <!-- Controles Esenciales -->
-              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px;">
-                <!-- Instrumento -->
-                <div style="background: var(--bg-surface-raised); border: 1px solid var(--border-subtle); border-radius: 12px; padding: 12px; display: flex; flex-direction: column; gap: 8px;">
-                  <span style="font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase; font-weight: 700;">Instrumento</span>
-                  <select id="selInstrumentSheet" style="background: transparent; border: none; color: var(--text-primary); font-size: 0.95rem; font-weight: 600; cursor: pointer; outline: none; padding: 4px 0;">
-                    <option value="guitar" ${this.currentInstrument === 'guitar' ? 'selected' : ''}>Guitarra</option>
-                    <option value="piano" ${this.currentInstrument === 'piano' ? 'selected' : ''}>Piano</option>
-                    <option value="ukulele" ${this.currentInstrument === 'ukulele' ? 'selected' : ''}>Ukelele</option>
+              <!-- Ajustes de notación y acordes -->
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px;">
+                <div style="background: var(--bg-surface-raised); border: 1px solid var(--border-subtle); border-radius: 12px; padding: 12px;">
+                  <span style="display: block; font-size: 0.7rem; color: var(--text-secondary); text-transform: uppercase; font-weight: 800; margin-bottom: 6px;">Cifrado</span>
+                  <select id="selSongNotation" style="background: transparent; border: none; color: var(--text-primary); font-size: 0.9rem; font-weight: 600; cursor: pointer; outline: none; width: 100%;">
+                    <option value="anglo" ${this.notationSystem === 'anglo' ? 'selected' : ''}>C, D, E (Anglo)</option>
+                    <option value="latin" ${this.notationSystem === 'latin' ? 'selected' : ''}>Do, Re, Mi (Latino)</option>
                   </select>
                 </div>
-
-                <!-- Zoom -->
-                <div style="background: var(--bg-surface-raised); border: 1px solid var(--border-subtle); border-radius: 12px; padding: 12px; display: flex; flex-direction: column; gap: 8px;">
-                  <span style="font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase; font-weight: 700;">Tamaño Letra</span>
-                  <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px;">
-                    <button id="btnFontDecr" style="background: rgba(255,255,255,0.1); border: none; color: var(--text-primary); width: 28px; height: 28px; border-radius: 6px; cursor: pointer; font-weight: bold;">-</button>
-                    <span style="font-weight: 600; font-size: 0.95rem;">${this.fontSizeScale}%</span>
-                    <button id="btnFontIncr" style="background: rgba(255,255,255,0.1); border: none; color: var(--text-primary); width: 28px; height: 28px; border-radius: 6px; cursor: pointer; font-weight: bold;">+</button>
+                <div style="background: var(--bg-surface-raised); border: 1px solid var(--border-subtle); border-radius: 12px; padding: 12px;">
+                  <span style="display: block; font-size: 0.7rem; color: var(--text-secondary); text-transform: uppercase; font-weight: 800; margin-bottom: 6px;">Transponer</span>
+                  <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 4px;">
+                    <button id="btnTransposeDown" style="background: rgba(255,255,255,0.1); border: none; color: var(--text-primary); width: 28px; height: 28px; border-radius: 6px; cursor: pointer; font-size: 1rem;">↓</button>
+                    <span style="font-weight: 700; font-size: 0.9rem;">${this.transposeSemitones > 0 ? '+' : ''}${this.transposeSemitones} st</span>
+                    <button id="btnTransposeUp" style="background: rgba(255,255,255,0.1); border: none; color: var(--text-primary); width: 28px; height: 28px; border-radius: 6px; cursor: pointer; font-size: 1rem;">↑</button>
                   </div>
-                </div>
-              </div>
-
-              <!-- Lista de Opciones Extras -->
-              <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 24px;">
-                <button id="btnPrintPDF" class="btn-menu-action" style="justify-content: flex-start; padding: 12px 16px; font-size: 0.95rem;">🖨️ Exportar a PDF / Imprimir</button>
-                <button class="btn-menu-action btn-menu-stage-highlight" id="btnEnterStageMode" style="justify-content: flex-start; padding: 12px 16px; font-size: 0.95rem;">🎭 Modo Atril (Pantalla Completa)</button>
-                <button class="btn-menu-action ${this.isLiveListening ? 'active' : ''}" id="btnToggleLiveListen" style="justify-content: flex-start; padding: 12px 16px; font-size: 0.95rem;">🎤 ${this.isLiveListening ? 'Pausar Escucha Activa' : 'Activar Escucha Activa (Micro)'}</button>
-                <button class="btn-menu-action" id="btnOpenTunerQuick" style="justify-content: flex-start; padding: 12px 16px; font-size: 0.95rem;">🎼 Afinador Cromático</button>
-              </div>
-
-              <!-- Ajustes de Notación -->
-              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px;">
-                <div style="display: flex; flex-direction: column; gap: 4px;">
-                  <span style="font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase; font-weight: 700;">Cejilla</span>
-                  <select id="selSongCapo" style="background: var(--bg-surface-raised); border: 1px solid var(--border-subtle); color: var(--text-primary); padding: 8px; border-radius: 8px; font-size: 0.9rem;">
-                    ${[0, 1, 2, 3, 4, 5, 6, 7].map(f => `<option value="${f}" ${this.capoFret === f ? 'selected' : ''}>${f === 0 ? 'Off' : `Traste ${f}`}</option>`).join('')}
-                  </select>
-                </div>
-                <div style="display: flex; flex-direction: column; gap: 4px;">
-                  <span style="font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase; font-weight: 700;">Cifrado</span>
-                  <select id="selSongNotation" style="background: var(--bg-surface-raised); border: 1px solid var(--border-subtle); color: var(--text-primary); padding: 8px; border-radius: 8px; font-size: 0.9rem;">
-                    <option value="anglo" ${this.notationSystem === 'anglo' ? 'selected' : ''}>C, D, E</option>
-                    <option value="latin" ${this.notationSystem === 'latin' ? 'selected' : ''}>Do, Re, Mi</option>
-                  </select>
                 </div>
               </div>
               
               <div style="display: flex; gap: 8px;">
-                <button class="btn-menu-action ${this.isSimplified ? 'active' : ''}" id="btnToggleSimplified" style="flex:1; justify-content: center;">Simplificar</button>
-                <button class="btn-menu-action ${this.hideChordsMode ? 'active' : ''}" id="btnToggleHideChords" style="flex:1; justify-content: center;">Ocultar Acordes</button>
+                <button class="btn-menu-action ${this.isSimplified ? 'active' : ''}" id="btnToggleSimplified" style="flex:1; justify-content: center;">Simplificar acordes</button>
+                <button class="btn-menu-action ${this.hideChordsMode ? 'active' : ''}" id="btnToggleHideChords" style="flex:1; justify-content: center;">Ocultar acordes</button>
               </div>
 
             </div>
@@ -539,30 +564,6 @@ export class LyricsChordsView extends Component {
             @keyframes slideUp { from { transform: translateY(100%); opacity: 0.6; } to { transform: translateY(0); opacity: 1; } }
           </style>
 
-          <!-- Selector Guía de Modo: ¿La quieres TOCAR o CANTAR? -->
-          <div class="song-interpretation-guider">
-            <div class="guider-prompt">
-              <span class="guider-badge">MODO GUÍA</span>
-              <strong class="guider-title">¿Cómo quieres interpretar esta canción hoy?</strong>
-            </div>
-            <div class="guider-buttons">
-              <button class="btn-guider-choice ${this.performanceMode === 'play' ? 'active' : ''}" id="btnGuiderPlay">
-                <span class="guider-icon">🎸</span>
-                <div class="guider-text">
-                  <strong>Quiero TOCARLA</strong>
-                  <span>Guitarra, Piano, Ukelele, Tablatura & Acordes</span>
-                </div>
-              </button>
-
-              <button class="btn-guider-choice ${this.performanceMode === 'sing' ? 'active' : ''}" id="btnGuiderSing">
-                <span class="guider-icon">🎤</span>
-                <div class="guider-text">
-                  <strong>Quiero CANTARLA</strong>
-                  <span>Letra gigante, Vocal Coach & Afinación por micro</span>
-                </div>
-              </button>
-            </div>
-          </div>
 
           <!-- Singer Live Pitch Ribbon Overlay (Modo Cantar) -->
           <!-- Singer Live Pitch Ribbon Overlay (Modo Cantar) -->
@@ -750,6 +751,52 @@ export class LyricsChordsView extends Component {
     this.container.querySelector('#btnModeLyrics')?.addEventListener('click', () => this.setViewMode('lyrics'));
     this.container.querySelector('#btnModeScore')?.addEventListener('click', () => this.setViewMode('score'));
 
+    // --- Nueva barra de herramientas del header ---
+    this.container.querySelectorAll('.btn-mode-toggle').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const mode = btn.dataset.mode;
+        if (mode === 'play') {
+          this.performanceMode = 'play';
+          localStorage.setItem('app_performance_mode', 'play');
+          this.fontSizeScale = 100;
+          localStorage.setItem('lyrics_font_scale', 100);
+          pitchDetector.stop();
+          vocalCoachEngine.stop();
+          this.render();
+          toast.show('🎸 Modo Tocar: Acordes y tablatura listos', 'info', 1500);
+        } else if (mode === 'sing') {
+          this.performanceMode = 'sing';
+          localStorage.setItem('app_performance_mode', 'sing');
+          this.fontSizeScale = 135;
+          localStorage.setItem('lyrics_font_scale', 135);
+          this.render();
+          const [pitchOk] = await Promise.allSettled([pitchDetector.start(), vocalCoachEngine.start()]);
+          if (pitchOk?.status !== 'fulfilled' || !pitchOk.value) {
+            const warningEl = this.container?.querySelector('#micPermissionWarning');
+            if (warningEl) warningEl.style.display = 'flex';
+            toast.show('⚠️ Permiso de micrófono requerido para afinación vocal', 'warning', 3000);
+          } else {
+            toast.show('🎤 Modo Cantar: Micrófono activo. ¡Canta en directo!', 'success', 2500);
+          }
+        }
+      });
+    });
+
+    this.container.querySelector('#selInstrumentQuick')?.addEventListener('change', (e) => {
+      this.setInstrument(e.target.value);
+    });
+
+    this.container.querySelector('#selCapoQuick')?.addEventListener('change', (e) => {
+      this.setCapo(Number(e.target.value));
+    });
+
+    this.container.querySelector('#btnQuickFontDecr')?.addEventListener('click', () => {
+      this.setFontSizeScale(-10);
+    });
+    this.container.querySelector('#btnQuickFontIncr')?.addEventListener('click', () => {
+      this.setFontSizeScale(10);
+    });
+
     this.container.querySelector('#btnQuickRecordAction')?.addEventListener('click', () => this.toggleRecording());
     this.container.querySelector('#btnStageRecord')?.addEventListener('click', () => this.toggleRecording());
     this.container.querySelector('#btnDownloadRecording')?.addEventListener('click', () => this.audioRecorder.download(this.currentSong?.title));
@@ -871,6 +918,8 @@ export class LyricsChordsView extends Component {
     this.container.querySelector('#btnTransposeMinus')?.addEventListener('click', () => this.setTranspose(this.transposeSemitones - 1));
     this.container.querySelector('#btnTransposePlus')?.addEventListener('click', () => this.setTranspose(this.transposeSemitones + 1));
     this.container.querySelector('#btnTransposeReset')?.addEventListener('click', () => this.setTranspose(0));
+    this.container.querySelector('#btnTransposeDown')?.addEventListener('click', () => this.setTranspose(this.transposeSemitones - 1));
+    this.container.querySelector('#btnTransposeUp')?.addEventListener('click', () => this.setTranspose(this.transposeSemitones + 1));
 
     this.container.querySelector('#btnFontDecr')?.addEventListener('click', () => this.setFontSizeScale(-10));
     this.container.querySelector('#btnFontIncr')?.addEventListener('click', () => this.setFontSizeScale(10));
