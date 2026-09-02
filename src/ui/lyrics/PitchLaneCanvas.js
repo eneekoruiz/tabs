@@ -300,7 +300,7 @@ export class PitchLaneCanvas {
           ctx.shadowBlur = 15;
           
           if (block.hitFrames === 15) {
-             import('./Toast.js').then(({ toast }) => toast.show('¡Perfecto! 🎤', 'success', 1000));
+             import('../Toast.js').then(({ toast }) => toast.show('¡Perfecto! 🎤', 'success', 1000));
           }
         } else {
           ctx.fillStyle = 'rgba(0, 122, 255, 0.4)'; // Azul normal
