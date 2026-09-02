@@ -3,7 +3,7 @@
  * @description Service Worker para funcionamiento 100% Offline y PWA Installable.
  */
 
-const CACHE_NAME = 'tabs-chords-pro-v2';
+const CACHE_NAME = 'tabs-chords-pro-v3';
 const ASSETS_TO_CACHE = [
   './index.html',
   './manifest.json',
@@ -152,37 +152,76 @@ const ASSETS_TO_CACHE = [
 ];
 
 self.addEventListener('install', (e) => {
+  self.skipWaiting();
   e.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS_TO_CACHE).catch(err => {
-        console.warn('[ServiceWorker] Caché parcial instalada:', err);
-      });
+      // addAll falla si un recurso 404 → usamos add individual con catch
+      return Promise.allSettled(
+        ASSETS_TO_CACHE.map((url) =>
+          cache.add(url).catch(() => {
+            console.warn('[SW] No se pudo cachear:', url);
+          })
+        )
+      );
     })
   );
-  self.skipWaiting();
 });
 
 self.addEventListener('activate', (e) => {
   e.waitUntil(
-    caches.keys().then((keys) => {
-      return Promise.all(
+    caches.keys().then((keys) =>
+      Promise.all(
         keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key))
-      );
-    })
+      )
+    ).then(() => self.clients.claim())
   );
-  self.clients.claim();
 });
 
 self.addEventListener('fetch', (e) => {
+  // Solo interceptar GET. Ignorar chrome-extension, data URIs, etc.
   if (e.request.method !== 'GET') return;
-  e.respondWith(
-    caches.match(e.request).then((cachedResponse) => {
-      if (cachedResponse) return cachedResponse;
-      return fetch(e.request).then((networkResponse) => {
-        return networkResponse;
-      }).catch(() => {
-        return caches.match('./index.html');
-      });
-    })
-  );
+  const url = new URL(e.request.url);
+  if (url.protocol !== 'http:' && url.protocol !== 'https:') return;
+
+  // Estrategia: Network-First para HTML y JS (siempre frescos),
+  //             Cache-First para assets estáticos (CSS, fonts, woff2, sf2)
+  const isAsset = /\.(css|woff2?|ttf|eot|png|jpg|jpeg|svg|ico|sf2|mjs)(\?.*)?$/.test(url.pathname);
+
+  if (isAsset) {
+    // Cache-First: responde inmediatamente desde caché, si falla → red
+    e.respondWith(
+      caches.match(e.request).then((cached) => {
+        if (cached) return cached;
+        return fetch(e.request).then((res) => {
+          if (res && res.ok) {
+            const clone = res.clone();
+            caches.open(CACHE_NAME).then((c) => c.put(e.request, clone));
+          }
+          return res;
+        }).catch(() => new Response('', { status: 408, statusText: 'Offline' }));
+      })
+    );
+  } else {
+    // Network-First: intenta red, si falla usa caché, si tampoco → fallback HTML
+    e.respondWith(
+      fetch(e.request).then((res) => {
+        if (res && res.ok) {
+          const clone = res.clone();
+          caches.open(CACHE_NAME).then((c) => c.put(e.request, clone));
+        }
+        return res;
+      }).catch(() =>
+        caches.match(e.request).then((cached) => {
+          if (cached) return cached;
+          // Fallback SPA: devolver index.html para navegación offline
+          return caches.match('./index.html').then((fallback) =>
+            fallback || new Response('<h1>Sin conexión</h1>', {
+              status: 503,
+              headers: { 'Content-Type': 'text/html' }
+            })
+          );
+        })
+      )
+    );
+  }
 });
