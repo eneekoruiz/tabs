@@ -411,14 +411,7 @@ export class BottomNav extends Component {
     if (this.activeTab === 'player') {
       // BARRA CONTEXTUAL DE CANCIÓN
       this.container.innerHTML = `
-        <nav class="bottom-nav-bar bottom-player-bar" role="toolbar" aria-label="Controles de canción">
-          <button class="nav-player-btn btn-player-exit" id="btnBottomExitSong" aria-label="Volver a explorar">
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
-              <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
-            </svg>
-            <span>Volver</span>
-          </button>
-
+        <nav class="bottom-nav-bar bottom-player-bar" role="toolbar" aria-label="Controles principales de canción">
           <!-- Transpositor rápido de Tono -->
           <div class="nav-player-transpose-cluster" role="group" aria-label="Transponer tono">
             <button class="nav-player-step-btn" id="btnBottomTransposeDown" aria-label="Bajar semitono">-1</button>

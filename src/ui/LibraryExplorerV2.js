@@ -7,6 +7,8 @@ import { Component } from './Component.js';
 import { events } from '../core/EventBus.js';
 import { state } from '../core/State.js';
 import { db } from '../data/Database.js';
+import onlineSongProvider from '../data/OnlineSongProvider.js';
+import { SmartScoreGenerator } from '../data/SmartScoreGenerator.js';
 import { searchEngine } from '../data/SearchEngine.js';
 import { metadataParser } from '../data/MetadataParser.js';
 import { setlistManager } from '../data/SetlistManager.js';
@@ -860,9 +862,23 @@ export class LibraryExplorerV2 extends Component {
       const stopButton = document.getElementById('btnStop');
       if (playButton) playButton.disabled = false;
       if (stopButton) stopButton.disabled = false;
+      // Validación de partituras dummy cortas
+      let finalData = song.data;
+      if (typeof finalData === 'string' && finalData.length < 350 && finalData.includes('\\title')) {
+        finalData = null;
+      }
+      
+      if (!finalData && song.lyricsChords) {
+        finalData = SmartScoreGenerator.generate(song);
+      }
+
       if (switchToPlayer) events.emit('ui:switchTab', 'player');
-      events.emit('ui:loadLyricsSong', song);
-      audioEngine.loadScoreToAlphaTab(song.data);
+      
+      const loadedSong = { ...song, data: finalData || song.data };
+      events.emit('ui:loadLyricsSong', loadedSong);
+      if (finalData) audioEngine.loadScoreToAlphaTab(finalData);
+      else if (song.data) audioEngine.loadScoreToAlphaTab(song.data);
+      
       this.render();
       return true;
     } catch (error) {

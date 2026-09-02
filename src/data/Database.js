@@ -154,26 +154,12 @@ class Database {
               }
             }
 
-            // Insertar canciones faltantes del catálogo
-            for (const item of MEGA_CATALOG) {
-              if (!existingByTitle.has(item.title.toLowerCase())) {
-                const record = {
-                  title: item.title,
-                  artist: item.artist,
-                  genre: item.genre || 'Rock',
-                  difficulty: item.difficulty || 'Intermedio',
-                  tuning: item.tuning || 'Standard E',
-                  fileName: `${item.title}.alphatex`,
-                  tempo: item.tempo || 120,
-                  timeSignature: item.timeSignature || '4/4',
-                  tracksCount: item.tracksCount || 1,
-                  data: item.data,
-                  lyricsChords: item.lyricsChords || '',
-                  contentSource: item.contentSource || (item.lyricsChords ? 'curated_lyrics' : 'generated_chord_guide'),
-                  isFavorite: false,
-                  addedAt: Date.now(),
-                };
-                store.add(record);
+            // Eliminar canciones que fueron inyectadas automáticamente (no importadas por el usuario).
+            // Las reconocemos porque no tienen 'fileSize' o tienen un source de sistema sin haber sido importadas activamente.
+            for (const song of existingSongs) {
+              const isSeeded = song.fileSize === undefined;
+              if (isSeeded && !song.isFavorite) {
+                store.delete(song.id);
               }
             }
           } catch (error) {

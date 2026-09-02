@@ -543,9 +543,9 @@ body.theme-ivory .singer-vocal-ribbon {
   background: #10b981;
   color: white;
   border: none;
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   font-weight: 800;
-  padding: 10px 16px;
+  padding: 9px 14px;
   border-radius: 12px;
   cursor: pointer;
   box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
@@ -555,6 +555,120 @@ body.theme-ivory .singer-vocal-ribbon {
 .btn-ribbon-vocal-coach:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 18px rgba(16, 185, 129, 0.45);
+}
+
+/* Botón rango vocal */
+.btn-ribbon-range-finder {
+  background: rgba(167, 139, 250, 0.18);
+  border: 1px solid rgba(167, 139, 250, 0.4);
+  color: #a78bfa;
+  font-size: 0.82rem;
+  font-weight: 800;
+  padding: 9px 14px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.btn-ribbon-range-finder:hover {
+  background: rgba(167, 139, 250, 0.28);
+  transform: translateY(-1px);
+}
+
+/* ribbon-right flexbox */
+.ribbon-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+/* ==========================================================================
+   Colores de afinación en la cinta cantante (in-tune / near-tune / out-tune)
+   ========================================================================== */
+.singer-vocal-ribbon {
+  transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Verde: dentro de ±15 cents */
+.singer-vocal-ribbon.in-tune {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.18) 0%, rgba(52, 211, 153, 0.12) 100%);
+  border-color: rgba(16, 185, 129, 0.5);
+  box-shadow: 0 4px 20px rgba(16, 185, 129, 0.2);
+}
+
+/* Naranja: 16-35 cents de desviación */
+.singer-vocal-ribbon.near-tune {
+  background: linear-gradient(135deg, rgba(251, 146, 60, 0.18) 0%, rgba(245, 158, 11, 0.12) 100%);
+  border-color: rgba(251, 146, 60, 0.5);
+  box-shadow: 0 4px 20px rgba(251, 146, 60, 0.2);
+}
+
+/* Rojo: >35 cents */
+.singer-vocal-ribbon.out-tune {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.18) 0%, rgba(248, 113, 113, 0.10) 100%);
+  border-color: rgba(239, 68, 68, 0.5);
+  box-shadow: 0 4px 20px rgba(239, 68, 68, 0.18);
+}
+
+/* Color de la nota grande según afinación */
+.ribbon-note-big { transition: color 0.25s ease; }
+.ribbon-note-big.in-tune { color: #10b981; text-shadow: 0 0 16px rgba(16, 185, 129, 0.5); }
+.ribbon-note-big.near-tune { color: #f59e0b; text-shadow: 0 0 16px rgba(245, 158, 11, 0.45); }
+.ribbon-note-big.out-tune { color: #ef4444; text-shadow: 0 0 16px rgba(239, 68, 68, 0.4); }
+
+/* ==========================================================================
+   Escala Vertical de Notas (Singer Pitch Scale)
+   ========================================================================== */
+.singer-pitch-scale {
+  position: relative;
+  width: 44px;
+  height: 72px;
+  flex-shrink: 0;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  overflow: visible;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 2px 0;
+}
+
+.scale-label {
+  font-size: 0.52rem;
+  font-weight: 800;
+  color: rgba(255, 255, 255, 0.45);
+  text-align: center;
+  user-select: none;
+  letter-spacing: 0;
+  line-height: 1;
+}
+
+/* Cursor animado dentro de la escala */
+.singer-scale-cursor {
+  position: absolute;
+  left: 2px;
+  right: 2px;
+  height: 5px;
+  border-radius: 3px;
+  background: #10b981;
+  box-shadow: 0 0 8px #10b981;
+  transition: top 0.12s cubic-bezier(0.16, 1, 0.3, 1), background 0.25s ease, box-shadow 0.25s ease;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.singer-scale-cursor.in-tune {
+  background: #10b981;
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.7);
+}
+.singer-scale-cursor.near-tune {
+  background: #f59e0b;
+  box-shadow: 0 0 10px rgba(245, 158, 11, 0.65);
+}
+.singer-scale-cursor.out-tune {
+  background: #ef4444;
+  box-shadow: 0 0 10px rgba(239, 68, 68, 0.6);
 }
 
 .mic-permission-warning-banner {
@@ -716,19 +830,26 @@ body.theme-ivory .singer-vocal-ribbon {
 .lyrics-top-hud {
   position: sticky;
   top: 0;
-  z-index: 100;
+  z-index: 500;
   display: flex;
   align-items: center;
   gap: 10px;
-  background: var(--bg-surface);
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
+  background: var(--bg-surface-solid, #14141e);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border-bottom: 1px solid var(--border-subtle);
   padding: 10px 14px;
   margin: -16px -16px 16px -16px;
   border-top-left-radius: 14px;
   border-top-right-radius: 14px;
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+body.theme-ivory .lyrics-top-hud,
+.lyrics-chords-container.theme-paper .lyrics-top-hud {
+  background: rgba(255, 255, 255, 0.95);
+  border-bottom-color: rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
 }
 
 .lyrics-hud-actions-scrollable {
@@ -2164,3 +2285,50 @@ body.theme-ivory .top-metro-bpm-badge {
     scroll-snap-stop: always;
   }
 }
+
+ / *   V o i c i n g s   D i c t i o n a r y   S t y l e s   * / 
+ . c h o r d - p o p o v e r - v o i c i n g s   { 
+     p a d d i n g :   8 p x   1 6 p x ; 
+     d i s p l a y :   f l e x ; 
+     f l e x - d i r e c t i o n :   c o l u m n ; 
+     g a p :   8 p x ; 
+     b a c k g r o u n d :   r g b a ( 0 , 0 , 0 , 0 . 2 ) ; 
+     b o r d e r - t o p :   1 p x   s o l i d   r g b a ( 2 5 5 , 2 5 5 , 2 5 5 , 0 . 0 5 ) ; 
+ } 
+ . v o i c i n g s - l a b e l   { 
+     f o n t - s i z e :   0 . 7 5 r e m ; 
+     c o l o r :   r g b a ( 2 5 5 , 2 5 5 , 2 5 5 , 0 . 5 ) ; 
+     f o n t - w e i g h t :   7 0 0 ; 
+ } 
+ . v o i c i n g s - s c r o l l   { 
+     d i s p l a y :   f l e x ; 
+     g a p :   8 p x ; 
+     o v e r f l o w - x :   a u t o ; 
+     p a d d i n g - b o t t o m :   4 p x ; 
+ } 
+ . b t n - v o i c i n g   { 
+     b a c k g r o u n d :   r g b a ( 2 5 5 , 2 5 5 , 2 5 5 , 0 . 0 5 ) ; 
+     b o r d e r :   1 p x   s o l i d   r g b a ( 2 5 5 , 2 5 5 , 2 5 5 , 0 . 1 ) ; 
+     c o l o r :   r g b a ( 2 5 5 , 2 5 5 , 2 5 5 , 0 . 7 ) ; 
+     p a d d i n g :   6 p x   1 2 p x ; 
+     b o r d e r - r a d i u s :   1 2 p x ; 
+     f o n t - s i z e :   0 . 8 r e m ; 
+     f o n t - w e i g h t :   6 0 0 ; 
+     c u r s o r :   p o i n t e r ; 
+     w h i t e - s p a c e :   n o w r a p ; 
+     t r a n s i t i o n :   a l l   0 . 2 s   e a s e ; 
+ } 
+ . b t n - v o i c i n g : h o v e r   { 
+     b a c k g r o u n d :   r g b a ( 2 5 5 , 2 5 5 , 2 5 5 , 0 . 1 ) ; 
+ } 
+ . b t n - v o i c i n g . a c t i v e   { 
+     b a c k g r o u n d :   v a r ( - - a c c e n t - p r i m a r y ,   # 0 0 e 5 f f ) ; 
+     c o l o r :   # 0 0 0 ; 
+     b o r d e r - c o l o r :   v a r ( - - a c c e n t - p r i m a r y ,   # 0 0 e 5 f f ) ; 
+     f o n t - w e i g h t :   8 0 0 ; 
+ } 
+ # p o p o v e r D i a g r a m B o x   { 
+     t r a n s i t i o n :   o p a c i t y   0 . 2 s   e a s e ; 
+ } 
+  
+ 

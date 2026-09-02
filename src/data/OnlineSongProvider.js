@@ -18,10 +18,6 @@ export class OnlineSongProvider {
    * Búsqueda instantánea sobre el catálogo incluido en la aplicación
    */
   async searchOnline(query, limit = 30) {
-    return this.searchSongs(query, limit);
-  }
-
-  async searchSongs(query, limit = 30) {
     if (!query || !query.trim()) return [];
     const cleanQuery = query.trim();
     const cacheKey = `search_${cleanQuery.toLowerCase()}`;
@@ -60,12 +56,17 @@ export class OnlineSongProvider {
 
     // 1. Obtener partitura completa desde el motor offline universal
     const offlineSheet = offlineUniversalLibrary.getSongSheet(title, artist);
-    if (offlineSheet) {
+    const hasValidText = offlineSheet && 
+      typeof offlineSheet.chordpro === 'string' && 
+      offlineSheet.chordpro.trim().length > 10 && 
+      !/^\s*(\[\w+\]|\.|\s)*$/.test(offlineSheet.chordpro);
+
+    if (hasValidText) {
       this.lyricsCache.set(cacheKey, offlineSheet);
       return offlineSheet;
     }
 
-    // 2. Si no estuviera (fallback seguro), armonizar algoritmo offline
+    // 2. Si no estuviera (fallback seguro), armonizar algoritmo offline con letra legible en español
     const fallbackSheet = LyricsHarmonizer.createDynamicSongSheet(title, artist);
     this.lyricsCache.set(cacheKey, fallbackSheet);
     return fallbackSheet;

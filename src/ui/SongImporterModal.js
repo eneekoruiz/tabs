@@ -119,9 +119,6 @@ export class SongImporterModal extends Component {
         return;
       }
 
-      // Crear transcripción AlphaTex mínima para el motor de audio
-      const alphaTexData = `\\title "${title}" \\artist "${artist}" \\tempo ${tempo} . :4 (3.6 2.5 0.4 0.3) :4 (0.4 2.3 3.2) :4 (0.5 2.4 2.3) :4 (3.5 2.4 0.3 1.2) |`;
-
       const newSong = {
         title,
         artist,
@@ -132,7 +129,7 @@ export class SongImporterModal extends Component {
         timeSignature: '4/4',
         tracksCount: 3,
         lyricsChords,
-        data: alphaTexData,
+        data: null,
         isFavorite: false,
         addedAt: Date.now(),
       };

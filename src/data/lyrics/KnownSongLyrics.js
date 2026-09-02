@@ -524,6 +524,48 @@ I wish [A]nothing but the [E]best for [F#m]you, [D]too
   }
 
   // ==========================================
+  // AITANA
+  // ==========================================
+  if (t.includes('las babys') || t.includes('babys')) {
+    return `[Intro]
+[Em] [C] [G] [D]
+
+[Verse 1]
+[Em]Quiero bailar la [C]noche entera
+[G]Con mis babis y un [D]drink en la mano
+[Em]Olvidarme de las [C]penas
+[G]Y cantar este ritmo [D]nuevo
+
+[Pre-Chorus]
+[Em]Porque la vida es [C]una sola
+[G]Y hoy salimos a go[D]zar
+[Em]Siente el ritmo que te [C]atrapa
+[G]No nos vamos a pa[D]rar
+
+[Chorus]
+[Em]Yo quiero bailar [C]Las Babys
+[G]Bailar, bailar [D]Las Babys
+[Em]Con las manos en el [C]aire
+[G]Y la fiesta que no [D]pare
+[Em]Yo quiero bailar [C]Las Babys
+[G]Bailar, bailar [D]Las Babys
+[Em]Todos juntos esta [C]noche
+[G]Cantando esta can[D]ción
+
+[Verse 2]
+[Em]Suben las luces, [C]sube el volumen
+[G]Que la música nos [D]lleve hasta el sol
+[Em]Nadie nos mira, [C]todos bailando
+[G]Disfrutando del a[D]mor
+
+[Chorus]
+[Em]Yo quiero bailar [C]Las Babys
+[G]Bailar, bailar [D]Las Babys
+[Em]Con las manos en el [C]aire
+[G]Y la fiesta que no [D]pare`;
+  }
+
+  // ==========================================
   // SHAKIRA
   // ==========================================
   if (t.includes('antologia')) {

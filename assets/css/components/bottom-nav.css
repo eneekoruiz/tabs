@@ -131,23 +131,42 @@ body.theme-ivory .nav-player-btn:hover {
   font-size: 1.05rem;
 }
 
-/* Transpose cluster inside bottom bar */
-.nav-player-transpose-cluster {
+/* Transpose, Auto-scroll y Metrónomo clusters dentro de la barra inferior */
+.nav-player-transpose-cluster,
+.nav-player-autoscroll-cluster,
+.nav-player-metronome-cluster {
   display: flex;
   align-items: center;
   gap: 4px;
   background: var(--bg-surface-solid);
   border: 1px solid var(--border-subtle);
-  padding: 4px 8px;
+  padding: 3px 8px;
   border-radius: 20px;
+  max-height: 44px;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+body.theme-ivory .nav-player-transpose-cluster,
+body.theme-ivory .nav-player-autoscroll-cluster,
+body.theme-ivory .nav-player-metronome-cluster {
+  background: rgba(0, 0, 0, 0.04);
+  border-color: rgba(0, 0, 0, 0.1);
+}
+
+.nav-player-scroll-controls,
+.nav-player-metro-controls {
+  display: flex;
+  align-items: center;
+  gap: 3px;
 }
 
 .nav-player-step-btn {
   background: var(--bg-surface);
   border: 1px solid var(--border-subtle);
   color: var(--text-primary);
-  width: 28px;
-  height: 28px;
+  width: 26px;
+  height: 26px;
   border-radius: 50%;
   font-size: 0.82rem;
   font-weight: 800;
@@ -156,6 +175,7 @@ body.theme-ivory .nav-player-btn:hover {
   justify-content: center;
   cursor: pointer;
   transition: all 0.15s ease;
+  flex-shrink: 0;
 }
 
 .nav-player-step-btn:hover {
@@ -169,9 +189,10 @@ body.theme-ivory .nav-player-btn:hover {
   font-weight: 800;
   font-family: var(--font-mono);
   color: var(--text-primary);
-  padding: 0 6px;
-  min-width: 44px;
+  padding: 0 4px;
+  min-width: 38px;
   text-align: center;
+  flex-shrink: 0;
 }
 
 /* Contenedores de Vistas Principales */

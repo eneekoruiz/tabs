@@ -104,8 +104,22 @@ export class VocalCoachEngine {
         await this.audioContext.resume();
       }
 
-      if (mockStream) {
+      if (window.__IS_TESTING__) {
+        console.log('[VocalCoachEngine] TESTING MODE: Inyectando OscillatorNode (440Hz -> 523.25Hz)');
+        this.testOscillator = this.audioContext.createOscillator();
+        this.testOscillator.type = 'sine';
+        this.testOscillator.frequency.value = 440; // A4
+        this.testOscillator.start();
+        
+        // Simular cambio a C5 (523.25Hz) a los 2 segundos
+        setTimeout(() => {
+          if (this.testOscillator) this.testOscillator.frequency.value = 523.25;
+        }, 2000);
+
+        this.sourceNode = this.testOscillator;
+      } else if (mockStream) {
         this.mediaStream = mockStream;
+        this.sourceNode = this.audioContext.createMediaStreamSource(this.mediaStream);
       } else {
         this.mediaStream = await navigator.mediaDevices.getUserMedia({
           audio: {
@@ -115,9 +129,9 @@ export class VocalCoachEngine {
             latency: 0,
           },
         });
+        this.sourceNode = this.audioContext.createMediaStreamSource(this.mediaStream);
       }
 
-      this.sourceNode = this.audioContext.createMediaStreamSource(this.mediaStream);
       this.analyser = this.audioContext.createAnalyser();
       this.analyser.fftSize = 2048;
       this.analyser.smoothingTimeConstant = 0.25;
@@ -150,6 +164,12 @@ export class VocalCoachEngine {
       this.mediaStream = null;
     }
 
+    if (this.testOscillator) {
+      this.testOscillator.stop();
+      this.testOscillator.disconnect();
+      this.testOscillator = null;
+    }
+
     if (this.sourceNode) {
       this.sourceNode.disconnect();
       this.sourceNode = null;
@@ -173,79 +193,113 @@ export class VocalCoachEngine {
     const detection = this.detectVocalPitch(this.buffer, this.audioContext.sampleRate);
 
     if (detection && detection.clarity > 0.82) {
-      this.consecutiveSilenceFrames = 0;
-      this.singingDurationFrames++;
-
-      const noteInfo = this.frequencyToNote(detection.frequency);
-      
-      // Actualizar historial
-      this.pitchHistory.push(detection.frequency);
-      if (this.pitchHistory.length > 20) this.pitchHistory.shift();
-
-      this.rmsHistory.push(detection.rms);
-      if (this.rmsHistory.length > 20) this.rmsHistory.shift();
-
-      // Métricas de estabilidad y aliento
-      const stability = this.calculateStability();
-      const breathSupport = this.calculateBreathSupport();
-
-      // Seguimiento de tessitura / rango
-      this.updateTessitura(noteInfo);
-
-      // Evaluación respecto a nota objetivo (si existe) o afinación cromática libre
-      const targetMidi = this.targetNote ? this.targetNote.midi : noteInfo.midi;
-      const targetFreq = this.targetNote ? this.targetNote.freq : this.midiToFrequency(noteInfo.midi);
-      
-      // Desviación en cents respecto a la nota objetivo más cercana
-      const centsOffset = Math.round(1200 * Math.log2(detection.frequency / targetFreq));
-      
-      let accuracyStatus = 'in-tune'; // 'in-tune' | 'flat' | 'sharp'
-      if (centsOffset < -this.centsTolerance) accuracyStatus = 'flat';
-      else if (centsOffset > this.centsTolerance) accuracyStatus = 'sharp';
-
-      // Actualizar estadísticas de sesión
-      this.sessionStats.totalSingingFrames++;
-      if (accuracyStatus === 'in-tune') this.sessionStats.inTuneFrames++;
-      this.sessionStats.stabilityScore = stability;
-      this.sessionStats.breathSupportScore = breathSupport;
-
-      // Evaluar consejo didáctico
-      this.evaluateDidacticTips({
-        accuracyStatus,
-        centsOffset,
-        stability,
-        breathSupport,
-        noteInfo,
-        duration: this.singingDurationFrames,
-      });
-
-      this.lastPitch = {
-        ...detection,
-        ...noteInfo,
-        centsOffset,
-        accuracyStatus,
-        stability,
-        breathSupport,
-        targetNote: this.targetNote,
-        tip: this.currentTip,
-        sessionStats: { ...this.sessionStats },
-      };
-
-      events.emit('vocalCoach:pitch', this.lastPitch);
+      this._handleVocalDetection(detection);
     } else {
-      this.consecutiveSilenceFrames++;
-      if (this.consecutiveSilenceFrames > 8) {
-        this.singingDurationFrames = 0;
-        this.pitchHistory = [];
-        this.rmsHistory = [];
-        events.emit('vocalCoach:silence', {
-          tip: this.currentTip,
-          sessionStats: { ...this.sessionStats },
-        });
-      }
+      this._handleSilence();
     }
 
     this.animationFrameId = requestAnimationFrame(() => this.loop());
+  }
+
+  /**
+   * Procesa un frame de audio donde se ha detectado voz humana.
+   * @param {{frequency: number, clarity: number, rms: number}} detection - Datos de pitch detectados.
+   * @private
+   */
+  _handleVocalDetection(detection) {
+    this.consecutiveSilenceFrames = 0;
+    this.singingDurationFrames++;
+
+    const noteInfo = this.frequencyToNote(detection.frequency);
+    this._updateHistoryBuffers(detection);
+
+    const stability = this.calculateStability();
+    const breathSupport = this.calculateBreathSupport();
+    this.updateTessitura(noteInfo);
+
+    const { targetMidi, targetFreq } = this._resolveTargetFrequency(noteInfo);
+    const centsOffset = Math.round(1200 * Math.log2(detection.frequency / targetFreq));
+    const accuracyStatus = this._determineAccuracy(centsOffset);
+
+    this._updateSessionStats(accuracyStatus, stability, breathSupport);
+
+    this.evaluateDidacticTips({
+      accuracyStatus, centsOffset, stability, breathSupport, noteInfo, duration: this.singingDurationFrames,
+    });
+
+    this.lastPitch = {
+      ...detection, ...noteInfo, centsOffset, accuracyStatus, stability, breathSupport,
+      targetNote: this.targetNote, tip: this.currentTip, sessionStats: { ...this.sessionStats }
+    };
+
+    events.emit('vocalCoach:pitch', this.lastPitch);
+  }
+
+  /**
+   * Actualiza los buffers circulares de historial de pitch y volumen.
+   * @param {{frequency: number, rms: number}} detection 
+   * @private
+   */
+  _updateHistoryBuffers(detection) {
+    this.pitchHistory.push(detection.frequency);
+    if (this.pitchHistory.length > 20) this.pitchHistory.shift();
+    this.rmsHistory.push(detection.rms);
+    if (this.rmsHistory.length > 20) this.rmsHistory.shift();
+  }
+
+  /**
+   * Resuelve la nota objetivo contra la que comparar la afinación.
+   * @param {{midi: number}} noteInfo - Nota detectada libremente.
+   * @returns {{targetMidi: number, targetFreq: number}}
+   * @private
+   */
+  _resolveTargetFrequency(noteInfo) {
+    const targetMidi = this.targetNote ? this.targetNote.midi : noteInfo.midi;
+    const targetFreq = this.targetNote ? this.targetNote.freq : this.midiToFrequency(noteInfo.midi);
+    return { targetMidi, targetFreq };
+  }
+
+  /**
+   * Evalúa la precisión en base a la tolerancia en cents.
+   * @param {number} centsOffset 
+   * @returns {'in-tune'|'flat'|'sharp'}
+   * @private
+   */
+  _determineAccuracy(centsOffset) {
+    if (centsOffset < -this.centsTolerance) return 'flat';
+    if (centsOffset > this.centsTolerance) return 'sharp';
+    return 'in-tune';
+  }
+
+  /**
+   * Actualiza estadísticas de sesión (puntuación, aciertos).
+   * @param {'in-tune'|'flat'|'sharp'} accuracyStatus 
+   * @param {number} stability 
+   * @param {number} breathSupport 
+   * @private
+   */
+  _updateSessionStats(accuracyStatus, stability, breathSupport) {
+    this.sessionStats.totalSingingFrames++;
+    if (accuracyStatus === 'in-tune') this.sessionStats.inTuneFrames++;
+    this.sessionStats.stabilityScore = stability;
+    this.sessionStats.breathSupportScore = breathSupport;
+  }
+
+  /**
+   * Procesa un frame de silencio o señal no vocal.
+   * @private
+   */
+  _handleSilence() {
+    this.consecutiveSilenceFrames++;
+    if (this.consecutiveSilenceFrames > 8) {
+      this.singingDurationFrames = 0;
+      this.pitchHistory = [];
+      this.rmsHistory = [];
+      events.emit('vocalCoach:silence', {
+        tip: this.currentTip,
+        sessionStats: { ...this.sessionStats },
+      });
+    }
   }
 
   /**

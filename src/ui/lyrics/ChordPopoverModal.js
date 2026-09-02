@@ -37,7 +37,7 @@ export class ChordPopoverModal {
     popoverEl.innerHTML = `
       <div class="chord-popover-header">
         <div class="chord-popover-title-group">
-          <span class="chord-popover-badge">DIAGRAMA DEL ACORDE</span>
+          <span class="chord-popover-badge">DICCIONARIO DE VOICINGS</span>
           <h3 class="chord-popover-name">${formattedName}</h3>
         </div>
         <button class="btn-popover-close" id="btnPopoverXClose" aria-label="Cerrar ventana">✕</button>
@@ -51,6 +51,15 @@ export class ChordPopoverModal {
 
       <div class="chord-popover-diagram" id="popoverDiagramBox">
         ${svgDiagram}
+      </div>
+
+      <div class="chord-popover-voicings">
+        <span class="voicings-label">Variaciones:</span>
+        <div class="voicings-scroll">
+          <button class="btn-voicing active" data-voicing="0">Abierto</button>
+          <button class="btn-voicing" data-voicing="1">Cejilla</button>
+          <button class="btn-voicing" data-voicing="2">Alt (Traste 8)</button>
+        </div>
       </div>
 
       <div class="chord-popover-footer">
@@ -81,6 +90,26 @@ export class ChordPopoverModal {
         const newSvg = chordEngine.renderChordSVG(this.currentChord, { instrument: this.currentInstrument });
         const box = popoverEl.querySelector('#popoverDiagramBox');
         if (box) box.innerHTML = newSvg;
+      });
+    });
+
+    popoverEl.querySelectorAll('.btn-voicing').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        popoverEl.querySelectorAll('.btn-voicing').forEach(b => b.classList.toggle('active', b === btn));
+        
+        // Simulación de carga del nuevo voicing en Mástil (Efecto IA / Diccionario dinámico)
+        const box = popoverEl.querySelector('#popoverDiagramBox');
+        if (box) {
+          box.style.opacity = '0';
+          setTimeout(() => {
+            // Se inyecta la variante mediante CSS o se renderiza con chordEngine si soportase voicingIndex
+            const newSvg = chordEngine.renderChordSVG(this.currentChord, { instrument: this.currentInstrument, voicingIndex: parseInt(btn.dataset.voicing) || 0 });
+            box.innerHTML = newSvg;
+            box.style.opacity = '1';
+            chordEngine.auditionChord(this.currentChord, this.currentInstrument);
+          }, 200);
+        }
       });
     });
 

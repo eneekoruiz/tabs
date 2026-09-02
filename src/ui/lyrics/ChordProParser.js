@@ -35,6 +35,7 @@ export class ChordProParser {
       return index < 0 ? match : notes[index];
     })).join('/');
   }
+
   /**
    * Transpone un acorde un número de semitonos teniendo en cuenta la cejilla.
    * @param {string} chordName 
@@ -163,8 +164,12 @@ export class ChordProParser {
           const textPart = match[2];
           const words = textPart.split(/(\s+)/);
           for (const w of words) {
-            if (w.trim() === '') {
+            const trimmedWord = w.trim();
+            if (trimmedWord === '') {
               html += `<span class="lyrics-space" style="display: inline-block; width: 6px;"></span>`;
+            } else if (/^\.+$/.test(trimmedWord)) {
+              // Filtrar puntos de ritmo o compás para que no se muestren como letras sueltas
+              html += `<span class="lyrics-space" style="display: inline-block; width: 8px;"></span>`;
             } else {
               const displayChord = currentChord ? this.formatChordDisplay(currentChord, notation) : '';
               html += `

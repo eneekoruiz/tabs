@@ -12,6 +12,8 @@ import { audioEngine } from '../core/AudioEngineV2.js';
 import { searchEngine } from '../data/SearchEngine.js';
 import { onlineSongProvider } from '../data/OnlineSongProvider.js';
 import { toast } from './Toast.js';
+import { VersionPickerModal } from './lyrics/VersionPickerModal.js';
+import { SmartScoreGenerator } from '../data/SmartScoreGenerator.js';
 
 export class HomeViewV2 extends Component {
   constructor(container) {
@@ -251,16 +253,24 @@ export class HomeViewV2 extends Component {
           <p class="explore-hero-subtitle">Encuentra canciones, compara versiones y abre la adecuada sin perder el contexto.</p>
 
           <div class="explore-search-container-row discovery-search-row">
-            <div class="explore-search-box" id="exploreSearchBoxWrapper">
+            <div class="explore-search-box" id="exploreSearchBoxWrapper" style="position: relative; display: flex; align-items: center;">
               <svg class="search-svg-icon" viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true">
                 <path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0-2.27 6.23l.27.28v.79l5 4.99L20.49 19l-4.99-5ZM9.5 14A4.5 4.5 0 1 1 14 9.5 4.51 4.51 0 0 1 9.5 14Z"/>
               </svg>
-              <input type="search" id="exploreSearchInput" class="explore-search-input" placeholder="Busca por canción, artista, género o versión" value="${this.escapeHTML(this.searchQuery)}" aria-label="Buscar en el catálogo" aria-controls="discoveryResults" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
-              <button class="btn-clear-search" id="btnClearExploreSearch" type="button" aria-label="Limpiar búsqueda" ${this.searchQuery ? '' : 'hidden'}>×</button>
+              <input type="search" id="exploreSearchInput" class="explore-search-input" placeholder="Canción, artista o URL de YouTube" value="${this.escapeHTML(this.searchQuery)}" aria-label="Buscar en el catálogo" aria-controls="discoveryResults" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" style="padding-right: 80px;">
+              
+              <div style="position: absolute; right: 12px; display: flex; align-items: center; gap: 4px;">
+                <button class="btn-clear-search" id="btnClearExploreSearch" type="button" aria-label="Limpiar búsqueda" style="position: static;" ${this.searchQuery ? '' : 'hidden'}>×</button>
+                <button class="btn-icon-minimal" id="btnImportYouTubeAI" type="button" aria-label="Importar Acordes con IA de YouTube" title="Importar con IA (YouTube)" style="background: transparent; border: none; color: var(--text-secondary); cursor: pointer; display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 50%; transition: all 0.2s;">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M21.58 7.19c-.23-.86-.91-1.54-1.77-1.77C18.25 5 12 5 12 5s-6.25 0-7.81.42c-.86.23-1.54.91-1.77 1.77C2 8.75 2 12 2 12s0 3.25.42 4.81c.23.86.91 1.54 1.77 1.77C5.75 19 12 19 12 19s6.25 0 7.81-.42c.86-.23 1.54-.91 1.77-1.77C22 15.25 22 12 22 12s0-3.25-.42-4.81zM10 15V9l5.2 3-5.2 3z"/></svg>
+                </button>
+              </div>
+
               <div class="explore-recents-dropdown" id="exploreRecentsDropdown" hidden>
                 ${this.renderRecentsContent()}
               </div>
             </div>
+
             <button class="btn-genre-filter-toggle ${this.selectedGenre !== 'all' ? 'active-filter' : ''}" id="btnToggleGenreFilter" type="button" aria-label="Filtrar por género" aria-controls="exploreGenreDropdownFilter" aria-expanded="false">
               <span class="filter-button-label">${this.escapeHTML(selectedGenre?.name || 'Todos los géneros')}</span>
               <span class="dropdown-caret" aria-hidden="true">▾</span>
@@ -278,29 +288,7 @@ export class HomeViewV2 extends Component {
             </div>
           </div>
 
-          <div class="discovery-filter-bar" aria-label="Filtros de catálogo">
-            <label class="discovery-select-field" for="exploreSourceFilter">
-              <span>Contenido</span>
-              <select id="exploreSourceFilter">
-                <option value="all">Todo</option>
-                <option value="curated_lyrics">Letra curada</option>
-                <option value="generated_chord_guide">Guía generada</option>
-              </select>
-            </label>
-            <button class="discovery-filter-button ${this.favoritesOnly ? 'is-active' : ''}" id="btnFavoritesFilter" type="button" aria-pressed="${this.favoritesOnly}" ${this.facets.favoriteCount === 0 && !this.favoritesOnly ? 'hidden' : ''}>Favoritos</button>
-            <button class="discovery-reset-button" id="btnResetExploreFilters" type="button" ${this.selectedGenre === 'all' && this.selectedContentSource === 'all' && !this.favoritesOnly ? 'hidden' : ''}>Restablecer</button>
-          </div>
-          <details class="explore-trending-accordion">
-            <summary class="trending-summary-btn">
-              <span>Sugerencias populares</span>
-              <span class="summary-caret" aria-hidden="true">▾</span>
-            </summary>
-            <div class="explore-quick-chips" role="group" aria-label="Artistas sugeridos">
-              ${['Imagine Dragons', 'Ariana Grande', 'The Beatles', 'Katy Perry', 'Queen', 'Taylor Swift', 'Metallica']
-                .map((query) => `<button class="quick-chip-btn" type="button" data-query="${this.encodeData(query)}">${this.escapeHTML(query)}</button>`)
-                .join('')}
-            </div>
-          </details>
+
         </header>
 
         <section class="explore-songs-section" aria-labelledby="discoveryResultStatus">
@@ -418,44 +406,64 @@ export class HomeViewV2 extends Component {
     }).join('');
   }
 
+  normalizeGenre(genre) {
+    if (!genre) return '';
+    const g = genre.toLowerCase().trim();
+    const map = {
+      'latin': 'Pop Latino',
+      'latin pop': 'Pop Latino',
+      'latín': 'Pop Latino',
+      'rock': 'Rock',
+      'pop': 'Pop',
+      'indie': 'Indie',
+      'indie rock': 'Indie Rock',
+      'metal': 'Metal',
+      'blues': 'Blues',
+      'jazz': 'Jazz',
+      'folk': 'Folk',
+      'country': 'Country'
+    };
+    if (map[g]) return map[g];
+    // Capitalizar primera letra como fallback
+    return g.charAt(0).toUpperCase() + g.slice(1);
+  }
+
+  formatContentType(source) {
+    if (source === 'curated_lyrics') return '🎸 Acordes PRO';
+    if (source === 'youtube_ai') return '🤖 Acordes por IA';
+    return '🎸 Tab & Acordes';
+  }
+
   renderSongCard(group) {
     const selectedIndex = this.getSelectedVersionIndex(group);
     const version = group.versions[selectedIndex] || group.primaryVersion;
     const isSelected = group.groupKey === this.selectedGroupKey;
+    
+    // Si no hay dificultad, no mostramos badge, pero mantenemos el espacio con CSS (justify-content: space-between en flexbox)
     const difficultyClass = version.difficulty === 'Principiante' ? 'diff-easy'
       : (version.difficulty === 'Avanzado' || version.difficulty === 'Experto' ? 'diff-hard' : 'diff-med');
+      
     const encodedGroup = this.encodeData(group.groupKey);
-    const versionDescriptionId = `versions-${this.hashForDom(group.groupKey)}`;
     const numericTempo = Number(version.tempo);
     const hasTempo = Number.isFinite(numericTempo) && numericTempo > 0;
+    const cleanGenre = this.normalizeGenre(version.genre);
 
     return `
       <article class="song-card home-song-card discovery-song-card ${isSelected ? 'is-selected' : ''}" data-group-key="${encodedGroup}">
         <button class="song-card-main btn-select-song" type="button" data-group-key="${encodedGroup}" aria-label="Previsualizar ${this.escapeHTML(version.title)} de ${this.escapeHTML(version.artist)}" aria-controls="discoveryDetailPanel" aria-pressed="${isSelected}">
-          <div class="song-card-header-line">
+          <div class="song-card-header-line" style="display: flex; justify-content: space-between; align-items: flex-start; width: 100%;">
             <span class="song-card-title">${this.escapeHTML(group.title)}</span>
-            ${version.difficulty ? `<span class="song-badge-diff ${difficultyClass}">${this.escapeHTML(version.difficulty)}</span>` : ''}
+            ${version.difficulty ? `<span class="song-badge-diff ${difficultyClass}">${this.escapeHTML(version.difficulty)}</span>` : `<span class="song-badge-diff" style="visibility: hidden;">-</span>`}
           </div>
           <span class="song-card-artist">${this.escapeHTML(group.artist)}</span>
           <div class="song-card-meta">
-            ${version.genre ? `<span class="genre-badge">${this.escapeHTML(version.genre)}</span>` : ''}
+            ${cleanGenre ? `<span class="genre-badge">${this.escapeHTML(cleanGenre)}</span>` : ''}
             ${hasTempo ? `<span class="meta-pill">${numericTempo} BPM</span>` : ''}
-            <span class="meta-pill">${this.escapeHTML(this.getSourceLabel(version.contentSource))}</span>
-            ${group.versionCount > 1 ? `<span class="meta-pill version-count-badge">${group.versionCount} versiones</span>` : ''}
           </div>
         </button>
-        <div class="catalog-version-row" id="${versionDescriptionId}">
-          ${group.versionCount > 1 ? `
-            <label>
-              <span>Versión</span>
-              <select class="catalog-version-select" data-group-key="${encodedGroup}">
-                ${group.versions.map((item, index) => `<option value="${index}" ${index === selectedIndex ? 'selected' : ''}>${this.escapeHTML(item.versionLabel)}</option>`).join('')}
-              </select>
-            </label>
-          ` : `<span class="single-version-label">${this.escapeHTML(version.versionLabel)}</span>`}
-          <button class="btn-load-explore-song" type="button" data-group-key="${encodedGroup}" data-version-index="${selectedIndex}" data-id="${this.escapeHTML(version.id || '')}" data-title="${this.encodeData(version.title)}" data-artist="${this.encodeData(version.artist)}" aria-label="Abrir ${this.escapeHTML(version.title)} de ${this.escapeHTML(version.artist)}, ${this.escapeHTML(version.versionLabel)}">
-            <span>Abrir</span>
-            <span class="sr-only">${this.escapeHTML(version.title)}</span>
+        <div class="catalog-version-row" style="justify-content: flex-end;">
+          <button class="btn-load-explore-song" style="width: 100%; border-radius: 8px; margin-top: 8px;" type="button" data-group-key="${encodedGroup}" data-version-index="${selectedIndex}" data-id="${this.escapeHTML(version.id || '')}" data-title="${this.encodeData(version.title)}" data-artist="${this.encodeData(version.artist)}" aria-label="Abrir ${this.escapeHTML(version.title)} de ${this.escapeHTML(version.artist)}">
+            <span>Abrir Partitura</span>
           </button>
         </div>
       </article>
@@ -569,11 +577,88 @@ export class HomeViewV2 extends Component {
         this.loadExploreData({ showSkeleton: true });
       });
     });
-    genreButton?.addEventListener('click', (event) => {
-      event.stopPropagation();
-      genreDropdown.hidden = !genreDropdown.hidden;
-      genreButton.setAttribute('aria-expanded', String(!genreDropdown.hidden));
+    this.container.querySelector('#btnToggleGenreFilter')?.addEventListener('click', (e) => {
+      const btn = e.currentTarget;
+      const expanded = btn.getAttribute('aria-expanded') === 'true';
+      btn.setAttribute('aria-expanded', String(!expanded));
+      const dropdown = this.container.querySelector('#exploreGenreDropdownFilter');
+      if (dropdown) dropdown.hidden = expanded;
     });
+
+    this.container.querySelector('#btnImportYouTubeAI')?.addEventListener('click', () => {
+      // Remover modal previo si existe
+      let existingModal = document.getElementById('ytImportModalOverlay');
+      if (existingModal) existingModal.remove();
+
+      const modalHtml = `
+        <div id="ytImportModalOverlay" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; z-index: 9999; animation: fadeIn 0.2s;">
+          <div style="background: var(--bg-surface-solid, #1e1e24); border: 1px solid var(--border-strong, #333); border-radius: 16px; width: 90%; max-width: 440px; padding: 24px; box-shadow: 0 12px 32px rgba(0,0,0,0.5); transform: translateY(10px); animation: slideUp 0.3s forwards;">
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="#ff0000"><path d="M21.58 7.19c-.23-.86-.91-1.54-1.77-1.77C18.25 5 12 5 12 5s-6.25 0-7.81.42c-.86.23-1.54.91-1.77 1.77C2 8.75 2 12 2 12s0 3.25.42 4.81c.23.86.91 1.54 1.77 1.77C5.75 19 12 19 12 19s6.25 0 7.81-.42c.86-.23 1.54-.91 1.77-1.77C22 15.25 22 12 22 12s0-3.25-.42-4.81zM10 15V9l5.2 3-5.2 3z"/></svg>
+              <h3 style="margin: 0; font-size: 1.1rem; color: var(--text-primary, #fff);">Importar acordes con IA</h3>
+            </div>
+            <p style="margin: 0 0 20px 0; font-size: 0.85rem; color: var(--text-secondary, #aaa);">Pega el enlace del vídeo de YouTube. La Inteligencia Artificial analizará el audio y sincronizará los acordes automáticamente.</p>
+            <input type="text" id="ytImportInput" placeholder="Ej: https://youtube.com/watch?v=..." style="width: 100%; box-sizing: border-box; background: var(--bg-surface-raised, #2a2a30); border: 1px solid var(--border-subtle, #444); color: var(--text-primary, #fff); padding: 12px 16px; border-radius: 8px; font-size: 0.95rem; margin-bottom: 24px; outline: none;">
+            <div style="display: flex; justify-content: flex-end; gap: 12px;">
+              <button id="btnCancelYtImport" style="background: transparent; border: none; color: var(--text-secondary, #aaa); padding: 10px 16px; font-weight: 600; cursor: pointer; border-radius: 6px;">Cancelar</button>
+              <button id="btnConfirmYtImport" style="background: var(--accent-primary, #007aff); border: none; color: #fff; padding: 10px 24px; font-weight: 600; cursor: pointer; border-radius: 6px; box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);">Procesar</button>
+            </div>
+          </div>
+        </div>
+        <style>
+          @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+          @keyframes slideUp { to { transform: translateY(0); } }
+        </style>
+      `;
+      document.body.insertAdjacentHTML('beforeend', modalHtml);
+
+      const overlay = document.getElementById('ytImportModalOverlay');
+      const input = document.getElementById('ytImportInput');
+            input.focus();
+
+      const closeModal = () => overlay.remove();
+
+      document.getElementById('btnCancelYtImport').addEventListener('click', closeModal);
+      overlay.addEventListener('click', (e) => { if (e.target === overlay) closeModal(); });
+      
+      const processUrl = async () => {
+        const url = input.value.trim();
+        if (!url) return;
+        closeModal();
+        import('./lyrics/YouTubeCompanion.js').then(async ({ extractYouTubeVideoId }) => {
+          const videoId = extractYouTubeVideoId(url);
+          if (!videoId) {
+            import('./Toast.js').then(({ toast }) => toast.show('❌ URL de YouTube no válida', 'error', 3000));
+            return;
+          }
+          
+          import('./Toast.js').then(({ toast }) => toast.show('🤖 Iniciando Motor de IA Local...', 'info', 2500));
+          
+          try {
+            const { aiTranscriber } = await import('../ai/LocalPolyphonicTranscriber.js');
+            const chordProResult = await aiTranscriber.transcribeAudio(null);
+            
+            import('../core/EventBus.js').then(({ events }) => {
+              events.emit('ui:loadLyricsSong', {
+                id: 'yt_' + videoId,
+                title: 'Importado de YouTube',
+                artist: 'IA Local (Wasm)',
+                youtubeVideoId: videoId,
+                contentSource: 'youtube_ai',
+                lyricsChords: chordProResult
+              });
+            });
+            import('./Toast.js').then(({ toast }) => toast.show('✨ Transcripción Completada con Éxito', 'success', 2000));
+          } catch (e) {
+            import('./Toast.js').then(({ toast }) => toast.show('❌ Falló la IA Local', 'error', 3000));
+          }
+        });
+      };
+
+      document.getElementById('btnConfirmYtImport').addEventListener('click', processUrl);
+      input.addEventListener('keydown', (e) => { if (e.key === 'Enter') processUrl(); });
+    });
+
     this.container.querySelector('#exploreSourceFilter')?.addEventListener('change', (event) => {
       this.selectedContentSource = event.target.value;
       this.visibleLimit = 60;
@@ -600,10 +685,25 @@ export class HomeViewV2 extends Component {
         this.loadExploreData({ showSkeleton: true });
       });
     });
-    this.container.querySelector('#btnLoadMoreSongs')?.addEventListener('click', () => {
-      this.visibleLimit += 60;
-      this.loadExploreData({ showSkeleton: true });
-    });
+    const btnLoadMore = this.container.querySelector('#btnLoadMoreSongs');
+    if (btnLoadMore) {
+      btnLoadMore.addEventListener('click', () => {
+        this.visibleLimit += 60;
+        this.loadExploreData({ showSkeleton: true });
+      });
+
+      // Paginación infinita fluida
+      if ('IntersectionObserver' in window) {
+        const observer = new IntersectionObserver((entries) => {
+          if (entries[0].isIntersecting && !btnLoadMore.hidden) {
+            this.visibleLimit += 60;
+            // Quitamos showSkeleton para que sea invisible al usuario
+            this.loadExploreData(); 
+          }
+        }, { rootMargin: '400px' }); // Cargar antes de que el usuario llegue al final
+        observer.observe(btnLoadMore);
+      }
+    }
     this.container.querySelector('#btnOpenSongImporterHero')?.addEventListener('click', () => events.emit('ui:openSongImporter', this.searchQuery));
     this.bindRecentEvents();
     this.bindDynamicEvents();
@@ -672,9 +772,17 @@ export class HomeViewV2 extends Component {
         if (event.target.closest('.btn-load-explore-song, .catalog-version-select')) return;
         this.selectGroup(groupKey, false);
       });
+      card.addEventListener('dblclick', () => {
+        this.openGroupVersion(groupKey);
+      });
     });
-    this.container.querySelectorAll('.btn-load-explore-song, .btn-load-detail-song').forEach((button) => {
-      button.addEventListener('click', () => this.openGroupVersion(this.decodeData(button.dataset.groupKey), Number(button.dataset.versionIndex)));
+    // Botón "Abrir" de las tarjetas del catálogo: sin índice forzado → activa el picker si hay >1 versiones
+    this.container.querySelectorAll('.btn-load-explore-song').forEach((button) => {
+      button.addEventListener('click', () => this.openGroupVersion(this.decodeData(button.dataset.groupKey)));
+    });
+    // Botón "Abrir" del panel detalle: el usuario ya eligió versión explícitamente → entrada directa
+    this.container.querySelectorAll('.btn-load-detail-song').forEach((button) => {
+      button.addEventListener('click', () => this.openGroupVersion(this.decodeData(button.dataset.groupKey), Number(button.dataset.versionIndex), true));
     });
   }
 
@@ -727,10 +835,7 @@ export class HomeViewV2 extends Component {
   }
 
   buildFallbackAlphaTex(version) {
-    const title = String(version.title || 'Sin título').replace(/"/g, '\\"');
-    const artist = String(version.artist || 'Artista desconocido').replace(/"/g, '\\"');
-    const tempo = Number(version.tempo) || 120;
-    return `\\title "${title}" \\artist "${artist}" \\tempo ${tempo} . :4 (3.6 2.5 0.4 0.3) :4 (0.4 2.3 3.2) :4 (0.5 2.4 2.3) :4 (3.5 2.4 0.3 1.2) |`;
+    return SmartScoreGenerator.generate(version);
   }
 
   cleanVersionObject(version, versionIndex, versionGroup) {
@@ -759,11 +864,17 @@ export class HomeViewV2 extends Component {
         lyricsChords = typeof songSheet === 'string' ? songSheet : (songSheet?.chordpro || songSheet?.lyrics || '');
         contentSource = typeof songSheet === 'string' ? 'curated_lyrics' : (songSheet?.source || contentSource);
       }
+      
+      let finalData = version.data;
+      if (typeof finalData === 'string' && finalData.length < 350 && finalData.includes('\\title')) {
+        finalData = null; // Ignorar partituras dummy/placeholder hardcodeadas en catálogos
+      }
+
       fullVersion = {
         ...version,
         lyricsChords,
         contentSource,
-        data: version.data || this.buildFallbackAlphaTex(version),
+        data: finalData || this.buildFallbackAlphaTex({ ...version, lyricsChords }),
       };
     }
 
@@ -783,9 +894,23 @@ export class HomeViewV2 extends Component {
     };
   }
 
-  async openGroupVersion(groupKey, requestedIndex) {
+  async openGroupVersion(groupKey, requestedIndex, forceDirect = false) {
     const group = this.songGroups.find((item) => item.groupKey === groupKey);
     if (!group) return;
+
+    if (group.versions.length > 1 && !forceDirect && requestedIndex === undefined) {
+      const fullContext = await this.getVersionContext(group, 0);
+      VersionPickerModal.open({
+        title: group.title,
+        artist: group.artist,
+        versions: fullContext.versions,
+        onSelect: (selectedVer, idx) => {
+          this.openGroupVersion(groupKey, idx, true);
+        }
+      });
+      return;
+    }
+
     const versionIndex = Number.isFinite(requestedIndex)
       ? Math.min(Math.max(0, requestedIndex), group.versions.length - 1)
       : this.getSelectedVersionIndex(group);
@@ -807,6 +932,11 @@ export class HomeViewV2 extends Component {
       contentSource = typeof songSheet === 'string' ? 'curated_lyrics' : (songSheet?.source || contentSource);
     }
     const tempo = Number(sourceVersion.tempo) || 120;
+    let finalData = sourceVersion.data;
+    if (typeof finalData === 'string' && finalData.length < 350 && finalData.includes('\\title')) {
+      finalData = null;
+    }
+
     const newSong = {
       title,
       artist,
@@ -818,7 +948,7 @@ export class HomeViewV2 extends Component {
       tracksCount: sourceVersion.tracksCount || 1,
       lyricsChords,
       contentSource,
-      data: sourceVersion.data || this.buildFallbackAlphaTex({ title, artist, tempo }),
+      data: finalData || this.buildFallbackAlphaTex({ title, artist, tempo, lyricsChords }),
       fileName: sourceVersion.fileName,
       isFavorite: Boolean(sourceVersion.isFavorite),
       addedAt: Date.now(),
@@ -861,11 +991,18 @@ export class HomeViewV2 extends Component {
       };
       const safeIndex = Math.min(Math.max(0, baseContext.versionIndex || 0), baseContext.versions.length - 1);
       const contextVersion = baseContext.versions[safeIndex] || fallbackVersion;
+      let finalSongData = song.data ?? contextVersion.data;
+      if (typeof finalSongData === 'string' && finalSongData.length < 350 && finalSongData.includes('\\title')) {
+        finalSongData = this.buildFallbackAlphaTex({ ...song, lyricsChords });
+      } else if (!finalSongData) {
+        finalSongData = this.buildFallbackAlphaTex({ ...song, lyricsChords });
+      }
+
       const selectedVersion = this.cleanVersionObject({
         ...contextVersion,
         ...song,
         lyricsChords,
-        data: song.data ?? contextVersion.data,
+        data: finalSongData,
         tempo: Number(song.tempo ?? contextVersion.tempo) || 120,
         versionLabel: contextVersion.versionLabel,
         contentSource: song.contentSource || contextVersion.contentSource,

@@ -208,16 +208,32 @@ export class LibraryExplorer extends Component {
     }
 
     return this.songs.map(song => {
-      const diffClass = `diff-${(song.difficulty || 'Intermedio').toLowerCase()}`;
+      const normalizeGenre = (genre) => {
+        if (!genre) return '';
+        const g = genre.toLowerCase().trim();
+        const map = {
+          'latin': 'Pop Latino', 'latin pop': 'Pop Latino', 'latín': 'Pop Latino',
+          'rock': 'Rock', 'pop': 'Pop', 'indie': 'Indie', 'indie rock': 'Indie Rock',
+          'metal': 'Metal', 'blues': 'Blues', 'jazz': 'Jazz', 'folk': 'Folk', 'country': 'Country'
+        };
+        if (map[g]) return map[g];
+        return g.charAt(0).toUpperCase() + g.slice(1);
+      };
+
+      const diffClass = song.difficulty === 'Principiante' ? 'diff-easy' : (song.difficulty === 'Avanzado' || song.difficulty === 'Experto' ? 'diff-hard' : 'diff-med');
+      const cleanGenre = normalizeGenre(song.genre);
+
       return `
         <div class="song-card ${state.get('activeSong').id === song.id ? 'song-card-active' : ''}" data-id="${song.id}">
           <button class="song-card-main" data-id="${song.id}" aria-label="Cargar ${song.title} de ${song.artist}">
-            <span class="song-card-title">${song.title}</span>
+            <div class="song-card-header-line" style="display: flex; justify-content: space-between; align-items: flex-start; width: 100%;">
+              <span class="song-card-title">${song.title}</span>
+              ${song.difficulty ? `<span class="diff-badge ${diffClass}">${song.difficulty}</span>` : `<span class="diff-badge" style="visibility: hidden;">-</span>`}
+            </div>
             <span class="song-card-artist">${song.artist}</span>
             <span class="song-card-meta">
-              <span class="genre-badge">${song.genre || 'Rock'}</span>
-              <span class="diff-badge ${diffClass}">${song.difficulty || 'Intermedio'}</span>
-              <span>♩ ${song.tempo || 120} BPM</span>
+              ${cleanGenre ? `<span class="genre-badge">${cleanGenre}</span>` : ''}
+              ${song.tempo ? `<span>♩ ${song.tempo} BPM</span>` : ''}
             </span>
           </button>
 
