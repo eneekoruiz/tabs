@@ -123,9 +123,9 @@ export class VocalCoachEngine {
       } else {
         this.mediaStream = await navigator.mediaDevices.getUserMedia({
           audio: {
-            echoCancellation: false,
-            autoGainControl: false,
-            noiseSuppression: false,
+            echoCancellation: true,
+            autoGainControl: true,
+            noiseSuppression: true,
             latency: 0,
           },
         });
@@ -319,7 +319,7 @@ export class VocalCoachEngine {
     rms = Math.sqrt(rms / SIZE);
 
     // Umbral de volumen para descartar ruido ambiente
-    if (rms < 0.012) return null;
+    if (rms < 0.007) return null;
 
     const minPeriod = Math.floor(sampleRate / 1200); // ~1200Hz (D6)
     const maxPeriod = Math.floor(sampleRate / 65);   // ~65Hz (C2)

@@ -178,8 +178,7 @@ export class LyricsChordsView extends Component {
 
     // Suscripción a eventos de audio para Smart Pause
     this.registerUnsub(events.on('vocalCoach:silence', () => {
-      if (this.smartPauseEnabled && this.performanceMode === 'sing' && this.autoScroller.isRunning) {
-        this.autoScroller.stop();
+      if (this.smartPauseEnabled && this.performanceMode === 'sing' && this.pitchLane?.isPlaying) {
         this.pitchLane?.pause();
         const btn = this.container?.querySelector('#btnSingPlayPause');
         if (btn) btn.innerHTML = '<svg viewBox="0 0 24 24" width="36" height="36" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
@@ -188,8 +187,7 @@ export class LyricsChordsView extends Component {
     }));
 
     this.registerUnsub(events.on('vocalCoach:pitch', (pitchData) => {
-      if (this.smartPauseEnabled && this.performanceMode === 'sing' && !this.autoScroller.isRunning) {
-        this.autoScroller.start();
+      if (this.smartPauseEnabled && this.performanceMode === 'sing' && !this.pitchLane?.isPlaying) {
         this.pitchLane?.play();
         const btn = this.container?.querySelector('#btnSingPlayPause');
         if (btn) btn.innerHTML = '<svg viewBox="0 0 24 24" width="36" height="36" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
@@ -619,12 +617,12 @@ export class LyricsChordsView extends Component {
         ` : ''}
 
         <!-- GALERÍA DE DIAGRAMAS SVG -->
-        ${ChordDiagramRenderer.renderGallery(uniqueChords, {
+        ${this.performanceMode !== 'sing' ? ChordDiagramRenderer.renderGallery(uniqueChords, {
           instrument: this.currentInstrument,
           notation: this.notationSystem,
           tempo: this.currentSong?.tempo || 120,
           timeSignature: this.currentSong?.timeSignature || '4/4'
-        })}
+        }) : ''}
 
           <!-- CUERPO DE LETRA (Oculto en modo cantar) -->
         <div id="lyricsBodyContent" style="display: ${this.viewMode === 'score' || this.performanceMode === 'sing' ? 'none' : 'block'};">
@@ -765,12 +763,11 @@ export class LyricsChordsView extends Component {
       if (vocalCoachEngine.audioContext && vocalCoachEngine.audioContext.state === 'suspended') {
         vocalCoachEngine.audioContext.resume();
       }
-      this.autoScroller.toggle();
-      const isRunning = this.autoScroller.isRunning;
       if (this.pitchLane) {
-        if (isRunning) this.pitchLane.play();
-        else this.pitchLane.pause();
+        if (this.pitchLane.isPlaying) this.pitchLane.pause();
+        else this.pitchLane.play();
       }
+      const isRunning = this.pitchLane ? this.pitchLane.isPlaying : false;
       const btn = this.container.querySelector('#btnSingPlayPause');
       if (btn) btn.innerHTML = isRunning 
         ? '<svg viewBox="0 0 24 24" width="36" height="36" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>' // Pause
@@ -778,8 +775,10 @@ export class LyricsChordsView extends Component {
     });
 
     this.container.querySelector('#btnSingRestart')?.addEventListener('click', () => {
-      this.autoScroller.stop();
-      this.autoScroller.scrollTo(0, true);
+      if (this.pitchLane) {
+        this.pitchLane.pause();
+        this.pitchLane.seek(0);
+      }
       const btn = this.container.querySelector('#btnSingPlayPause');
       if (btn) btn.innerHTML = '<svg viewBox="0 0 24 24" width="36" height="36" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>'; // Play
     });
