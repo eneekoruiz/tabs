@@ -49,9 +49,7 @@ class SearchEngine {
       for (const item of offlineUniversalLibrary.searchIndex.values()) {
         const groupKey = this.getGroupKey(item);
         if (localGroups.has(groupKey)) continue;
-        const hasCuratedLyrics = Boolean(getKnownSongLyrics(item.title, item.artist));
-        // Solo indexar canciones con letra real curada. Si no hay letra verificada, no se muestra.
-        if (!hasCuratedLyrics) continue;
+        const hasCuratedLyrics = true;
 
         const mega = megaMap.get(`${(item.title || '').toLowerCase()} --- ${(item.artist || '').toLowerCase()}`);
         const meta = resolveSongMetadata(item.title, item.artist, item.genre, (s) => this.hash(s));
