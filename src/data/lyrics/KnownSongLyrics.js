@@ -3,9 +3,18 @@
  * @description Base de datos exhaustiva de letras REALES y acordes EXACTOS oficiales.
  */
 
+import { getEnglishSongLyrics } from './KnownSongLyricsEnglish.js';
+import { getSpanishSongLyrics } from './KnownSongLyricsSpanish.js';
+
 export function getKnownSongLyrics(title, artist) {
   const t = (title || '').toLowerCase().trim();
   const a = (artist || '').toLowerCase().trim();
+
+  const englishMatch = getEnglishSongLyrics(title, artist);
+  if (englishMatch) return englishMatch;
+
+  const spanishMatch = getSpanishSongLyrics(title, artist);
+  if (spanishMatch) return spanishMatch;
 
   // ==========================================
   // RIHANNA (100% Letras y Acordes Oficiales Reales)

@@ -154,6 +154,8 @@ export class OfflineUniversalLibraryEngine {
         if (!seenTitles.has(uniqueKey)) {
           seenTitles.add(uniqueKey);
           const hasCuratedLyrics = Boolean(getKnownSongLyrics(item.title, item.artist));
+          // Solo devolver canciones con letra real curada
+          if (!hasCuratedLyrics) continue;
           results.push({
             id: 'offline_' + Math.abs(this._hashString(uniqueKey)),
             title: item.title,
@@ -162,8 +164,8 @@ export class OfflineUniversalLibraryEngine {
             capo: 0,
             genre: item.genre,
             source: item.source,
-            contentKind: hasCuratedLyrics ? 'curated_lyrics' : 'generated_chord_guide',
-            hasCuratedLyrics,
+            contentKind: 'curated_lyrics',
+            hasCuratedLyrics: true,
             isOfflineReady: true
           });
           if (results.length >= maxResults) break;
@@ -176,11 +178,11 @@ export class OfflineUniversalLibraryEngine {
 
 
   /**
-   * Obtiene una letra curada o una guía armónica generada sin conexión
+   * Obtiene una letra curada o null si no hay letra real disponible
    */
   getSongSheet(title, artist) {
     const meta = resolveSongMetadata(title, artist, 'rock', (s) => Math.abs(this._hashString(s)));
-    // 1. Comprobar si existe en letras exactas curadas
+    // Comprobar si existe en letras exactas curadas
     const exactLyrics = getKnownSongLyrics(title, artist);
     if (exactLyrics) {
       return {
@@ -198,8 +200,8 @@ export class OfflineUniversalLibraryEngine {
       };
     }
 
-    // 2. Crear una guía armónica generada y claramente identificada como tal
-    return this.synthesizeSongSheet(title, artist);
+    // Sin letra curada: no fabricar nada
+    return null;
   }
 
   /**

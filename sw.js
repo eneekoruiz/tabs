@@ -3,7 +3,7 @@
  * @description Service Worker para funcionamiento 100% Offline y PWA Installable.
  */
 
-const CACHE_NAME = 'tabs-chords-pro-v4.8';
+const CACHE_NAME = 'tabs-chords-pro-v4.9';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -95,6 +95,8 @@ const ASSETS_TO_CACHE = [
   './src/data/catalog/RockCatalog.js',
   './src/data/catalog/SongMetadataResolver.js',
   './src/data/lyrics/KnownSongLyrics.js',
+  './src/data/lyrics/KnownSongLyricsEnglish.js',
+  './src/data/lyrics/KnownSongLyricsSpanish.js',
   './src/data/lyrics/LyricsHarmonizer.js',
   './src/hardware/StageAutomationEngine.js',
   './src/net/BandRoomEngine.js',

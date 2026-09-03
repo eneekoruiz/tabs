@@ -13,7 +13,7 @@ export class LyricsHarmonizer {
    */
   static harmonize(rawText, title = '', artist = '') {
     if (!rawText || rawText.trim().length === 0) {
-      return this.generateFallback(title, artist);
+      return '';
     }
 
     const lines = rawText.split('\n');

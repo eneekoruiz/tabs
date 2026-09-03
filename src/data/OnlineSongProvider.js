@@ -54,22 +54,17 @@ export class OnlineSongProvider {
       return this.lyricsCache.get(cacheKey);
     }
 
-    // 1. Obtener partitura completa desde el motor offline universal
+    // Obtener partitura completa desde el motor offline universal (solo letras reales curadas)
     const offlineSheet = offlineUniversalLibrary.getSongSheet(title, artist);
-    const hasValidText = offlineSheet && 
-      typeof offlineSheet.chordpro === 'string' && 
-      offlineSheet.chordpro.trim().length > 10 && 
-      !/^\s*(\[\w+\]|\.|\s)*$/.test(offlineSheet.chordpro);
 
-    if (hasValidText) {
-      this.lyricsCache.set(cacheKey, offlineSheet);
-      return offlineSheet;
+    // Si no hay letra real curada, no fabricar nada
+    if (!offlineSheet) {
+      this.lyricsCache.set(cacheKey, null);
+      return null;
     }
 
-    // 2. Si no estuviera (fallback seguro), armonizar algoritmo offline con letra legible en español
-    const fallbackSheet = LyricsHarmonizer.createDynamicSongSheet(title, artist);
-    this.lyricsCache.set(cacheKey, fallbackSheet);
-    return fallbackSheet;
+    this.lyricsCache.set(cacheKey, offlineSheet);
+    return offlineSheet;
   }
 
   getCatalogStats() {
