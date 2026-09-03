@@ -3,7 +3,7 @@
  * @description Service Worker para funcionamiento 100% Offline y PWA Installable.
  */
 
-const CACHE_NAME = 'tabs-chords-pro-v5.0';
+const CACHE_NAME = 'tabs-chords-pro-v5.2';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -97,7 +97,21 @@ const ASSETS_TO_CACHE = [
   './src/data/lyrics/KnownSongLyrics.js',
   './src/data/lyrics/KnownSongLyricsEnglish.js',
   './src/data/lyrics/KnownSongLyricsSpanish.js',
+  './src/data/lyrics/KnownSongLyricsAcousticFolk.js',
+  './src/data/lyrics/KnownSongLyricsPopIcons.js',
+  './src/data/lyrics/KnownSongLyricsUrbanLatin.js',
+  './src/data/lyrics/KnownSongLyricsRockClassics.js',
+  './src/data/lyrics/rock/beatles.js',
+  './src/data/lyrics/rock/queen.js',
+  './src/data/lyrics/rock/pinkFloydLedZep.js',
+  './src/data/lyrics/rock/nirvanaMetallica.js',
+  './src/data/lyrics/rock/rhcpGreenDay.js',
+  './src/data/lyrics/rock/blinkLinkin.js',
+  './src/data/lyrics/rock/arcticACDC.js',
+  './src/data/lyrics/rock/oasisRadioheadFoo.js',
+  './src/data/lyrics/rock/stonesBowieKillersStrokes.js',
   './src/data/lyrics/LyricsHarmonizer.js',
+  './src/data/lyrics/UniversalSongDatabase.js',
   './src/hardware/StageAutomationEngine.js',
   './src/net/BandRoomEngine.js',
   './src/network/BandRoomClient.js',

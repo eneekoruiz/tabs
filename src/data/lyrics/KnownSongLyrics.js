@@ -5,16 +5,34 @@
 
 import { getEnglishSongLyrics } from './KnownSongLyricsEnglish.js';
 import { getSpanishSongLyrics } from './KnownSongLyricsSpanish.js';
+import { getUrbanLatinSongLyrics } from './KnownSongLyricsUrbanLatin.js';
+import { getAcousticFolkSongLyrics } from './KnownSongLyricsAcousticFolk.js';
+import { getPopIconsSongLyrics } from './KnownSongLyricsPopIcons.js';
+import { getRockClassicsSongLyrics } from './KnownSongLyricsRockClassics.js';
+import { UNIVERSAL_SONG_DATABASE } from './UniversalSongDatabase.js';
+import { LyricsHarmonizer } from './LyricsHarmonizer.js';
 
 export function getKnownSongLyrics(title, artist) {
   const t = (title || '').toLowerCase().trim();
   const a = (artist || '').toLowerCase().trim();
+
+  const rockClassicsMatch = getRockClassicsSongLyrics(title, artist);
+  if (rockClassicsMatch) return rockClassicsMatch;
 
   const englishMatch = getEnglishSongLyrics(title, artist);
   if (englishMatch) return englishMatch;
 
   const spanishMatch = getSpanishSongLyrics(title, artist);
   if (spanishMatch) return spanishMatch;
+
+  const popIconsMatch = getPopIconsSongLyrics(title, artist);
+  if (popIconsMatch) return popIconsMatch;
+
+  const urbanLatinMatch = getUrbanLatinSongLyrics(title, artist);
+  if (urbanLatinMatch) return urbanLatinMatch;
+
+  const acousticFolkMatch = getAcousticFolkSongLyrics(title, artist);
+  if (acousticFolkMatch) return acousticFolkMatch;
 
   // ==========================================
   // RIHANNA (100% Letras y Acordes Oficiales Reales)
@@ -3533,6 +3551,22 @@ Woah-[D]oh, whoa, [Em]oh [C]
 And the whole world fades [D]
 I'll always remember [Em]us
 This [C]way [G] [D] [Em] [C] [G]`;
+  }
+
+  // ==========================================
+  // BASE DE DATOS UNIVERSAL (1.000+ canciones reales del catálogo)
+  // ==========================================
+  const normKey = `${t} --- ${a}`;
+  const directUni = UNIVERSAL_SONG_DATABASE[normKey];
+  if (directUni && directUni.lyrics) {
+    return LyricsHarmonizer.harmonize(directUni.lyrics, directUni.title, directUni.artist, directUni.genre);
+  }
+
+  // Búsqueda por coincidencia en base universal
+  for (const [k, entry] of Object.entries(UNIVERSAL_SONG_DATABASE)) {
+    if (k.startsWith(`${t} ---`) || (k.includes(t) && (k.includes(a) || !a))) {
+      return LyricsHarmonizer.harmonize(entry.lyrics, entry.title, entry.artist, entry.genre);
+    }
   }
 
   return null;

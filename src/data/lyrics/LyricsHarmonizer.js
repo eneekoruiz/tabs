@@ -1,6 +1,6 @@
 /**
  * @file LyricsHarmonizer.js
- * @description Motor armónico inteligente que formatea y añade acordes interactivos [Chord] sobre letras.
+ * @description Motor armónico inteligente que formatea y añade acordes interactivos [Chord] sobre letras reales.
  */
 
 export class LyricsHarmonizer {
@@ -9,17 +9,42 @@ export class LyricsHarmonizer {
    * @param {string} rawText 
    * @param {string} [title=''] 
    * @param {string} [artist=''] 
+   * @param {string} [genre=''] 
    * @returns {string} Letra en formato ChordPro interactivo
    */
-  static harmonize(rawText, title = '', artist = '') {
+  static harmonize(rawText, title = '', artist = '', genre = '') {
     if (!rawText || rawText.trim().length === 0) {
       return '';
     }
 
-    const lines = rawText.split('\n');
-    const chordProgression = ['[C]', '[G]', '[Am]', '[F]', '[Em]', '[Dm]', '[G7]'];
+    const t = (title || '').toLowerCase();
+    const a = (artist || '').toLowerCase();
+    const g = (genre || '').toLowerCase();
+
+    // Seleccionar progresión tonal adecuada según artista / género
+    let progression = ['[C]', '[G]', '[Am]', '[F]'];
+    let intro = '[C] [G] [Am] [F]';
+
+    if (g.includes('rock') || g.includes('metal') || a.match(/rock|metal|metallica|ac\/dc|guns|nirvana|beatles|queen|stones|bowie/)) {
+      progression = ['[E]', '[D]', '[A]', '[E]', '[G]', '[D]', '[A]'];
+      intro = '[E] [D] [A] [E]';
+    } else if (g.includes('acoustic') || g.includes('folk') || a.match(/acoustic|folk|mayer|dylan|cash|johnson|mraz|chapman/)) {
+      progression = ['[G]', '[D]', '[Em]', '[C]', '[Am7]', '[D7]'];
+      intro = '[G] [D] [Em] [C]';
+    } else if (g.includes('latin') || a.match(/bad bunny|rosalia|tangana|quevedo|calamaro|sabina|fito|estopa|mana|shakira|karol/)) {
+      progression = ['[Am]', '[F]', '[C]', '[G]', '[Dm]', '[E7]'];
+      intro = '[Am] [F] [C] [G]';
+    } else if (g.includes('r&b') || a.match(/weeknd|ocean|sza|caesar|keys|legend/)) {
+      progression = ['[Dm7]', '[G7]', '[Cmaj7]', '[Am7]', '[Fmaj7]'];
+      intro = '[Dm7] [G7] [Cmaj7] [Am7]';
+    } else if (t.includes('ballad') || a.match(/adele|sam smith|lewis/)) {
+      progression = ['[Am]', '[F]', '[C]', '[G]'];
+      intro = '[Am] [F] [C] [G]';
+    }
+
+    const lines = rawText.split(/\r?\n/);
     let chordIdx = 0;
-    let result = `[Intro]\n[C] [G] [Am] [F]\n\n`;
+    let result = `[Intro]\n${intro}\n\n`;
 
     let inSection = false;
     let sectionCount = 0;
@@ -32,12 +57,15 @@ export class LyricsHarmonizer {
         continue;
       }
 
-      if (line.startsWith('[') && line.endsWith(']')) {
-        result += `${line}\n`;
+      // Si la línea ya define una sección [Chorus], [Verse 1], etc.
+      if (line.match(/^\[(.*)\]$/i) || line.match(/^(verse|chorus|bridge|intro|outro|pre-chorus|hook)/i)) {
+        const cleanTag = line.startsWith('[') ? line : `[${line}]`;
+        result += `${cleanTag}\n`;
         inSection = true;
         continue;
       }
 
+      // Si no estamos en sección, añadir una etiqueta natural
       if (!inSection && (i === 0 || lines[i - 1]?.trim() === '')) {
         sectionCount++;
         const tag = sectionCount === 1 ? '[Verse 1]' : (sectionCount % 2 === 0 ? '[Chorus]' : `[Verse ${Math.ceil(sectionCount / 2)}]`);
@@ -45,14 +73,14 @@ export class LyricsHarmonizer {
         inSection = true;
       }
 
-      const words = line.split(' ');
-      if (words.length <= 2) {
-        result += `${chordProgression[chordIdx % chordProgression.length]}${line}\n`;
+      const words = line.split(/\s+/);
+      if (words.length <= 3) {
+        result += `${progression[chordIdx % progression.length]}${line}\n`;
         chordIdx++;
       } else {
         const mid = Math.floor(words.length / 2);
-        const c1 = chordProgression[chordIdx % chordProgression.length];
-        const c2 = chordProgression[(chordIdx + 1) % chordProgression.length];
+        const c1 = progression[chordIdx % progression.length];
+        const c2 = progression[(chordIdx + 1) % progression.length];
         chordIdx += 2;
 
         const firstHalf = words.slice(0, mid).join(' ');
@@ -62,44 +90,6 @@ export class LyricsHarmonizer {
     }
 
     return result.trim();
-  }
-
-  /**
-   * Genera una partitura con letra y acordes estándar de acompañamiento.
-   * @param {string} title 
-   * @param {string} artist 
-   * @returns {string}
-   */
-  static generateFallback(title, artist) {
-    return `[Intro]
-[C] [G] [Am] [F]
-
-[Verse 1]
-[C] ${title} — [G] ${artist}
-[Am] Tocando acordes en [F] tonalidad de Do Mayor
-[C] Sigue el compás y la [G] armonía interactiva
-[Am] Ajusta el tono con el [F] transpositor rápido
-
-[Chorus]
-[C] ${title}, [G] siente el ritmo
-[Am] Practica con auto-scroll [F] y el grabador
-[C] ${title}, [G] en tu instrumento
-[Am] Domina cada cambio [F] de acorde [C]`;
-  }
-
-  static createDynamicSongSheet(title, artist) {
-    return {
-      title: title || 'Canción',
-      artist: artist || 'Artista Universal',
-      key: 'C',
-      capo: 0,
-      tuning: 'Standard (E A D G B E)',
-      tempo: 120,
-      strumming: '↓ ↓↑ ↑↓↑ (Pop Ballad Standard)',
-      chords: ['C', 'G', 'Am', 'F'],
-      chordpro: this.generateFallback(title, artist),
-      source: 'offline_fallback'
-    };
   }
 }
 
