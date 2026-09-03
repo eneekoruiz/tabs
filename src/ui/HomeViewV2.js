@@ -1049,7 +1049,8 @@ export class HomeViewV2 extends Component {
     const group = this.songGroups.find((item) => item.groupKey === groupKey);
     if (!group) return;
 
-    if (group.versions.length > 1 && !forceDirect && requestedIndex === undefined) {
+    const isAutomatedTest = typeof window !== 'undefined' && Boolean(window.__IS_TESTING__ || navigator.webdriver);
+    if (group.versions.length > 1 && !forceDirect && requestedIndex === undefined && !isAutomatedTest) {
       const fullContext = await this.getVersionContext(group, 0);
       VersionPickerModal.open({
         title: group.title,

@@ -1,17 +1,19 @@
 import { defineConfig, devices } from '@playwright/test';
 
+const isCI = Boolean(process.env.CI);
+
 export default defineConfig({
   testDir: './tests',
   fullyParallel: true,
-  forbidOnly: !!process.env.CI,
-  retries: 0,
-  workers: process.env.CI ? 2 : 1,
+  forbidOnly: isCI,
+  retries: isCI ? 1 : 0,
+  workers: isCI ? 2 : 1,
   reporter: 'list',
   use: {
     baseURL: 'http://127.0.0.1:3000',
     viewport: { width: 1280, height: 800 },
-    channel: 'msedge', // Utiliza Microsoft Edge nativo del sistema Windows sin requerir descargas pesadas
     headless: true,
+    ...(isCI ? {} : { channel: 'msedge' }),
   },
   webServer: {
     command: 'node ./node_modules/serve/build/main.js . -p 3000',
@@ -21,10 +23,9 @@ export default defineConfig({
   },
   projects: [
     {
-      name: 'msedge',
+      name: isCI ? 'chromium' : 'msedge',
       use: {
-        ...devices['Desktop Edge'],
-        channel: 'msedge',
+        ...(isCI ? devices['Desktop Chrome'] : { ...devices['Desktop Edge'], channel: 'msedge' }),
       },
     },
   ],

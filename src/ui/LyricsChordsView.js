@@ -611,7 +611,7 @@ export class LyricsChordsView extends Component {
                 </div>
 
                 <!-- Menú de opciones (Tres puntos) -->
-                <button id="btnOpenToolsSheet" class="btn-more-options-circle" aria-label="Más opciones" type="button">
+                <button id="btnMoreOptions" class="btn-more-options-circle" aria-label="Más opciones" type="button">
                   <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>
                 </button>
               </div>
@@ -700,6 +700,17 @@ export class LyricsChordsView extends Component {
               <!-- Acciones rápidas en fila -->
               <div style="display: flex; flex-direction: column; gap: 6px; margin-bottom: 20px;">
                 <button id="btnEnterStageMode" class="btn-menu-action" style="justify-content: flex-start; padding: 12px 16px;">🎭 Modo Atril (Pantalla Completa)</button>
+                <button id="btnOpenBandRoomQuick" class="btn-menu-action" style="justify-content: flex-start; padding: 12px 16px;">🌐 BandRoom Multijugador P2P</button>
+                <button id="btnOpenStageQuick" class="btn-menu-action" style="justify-content: flex-start; padding: 12px 16px;">🎹 Stage Automation & MIDI</button>
+                <button id="btnOpenSpatialQuick" class="btn-menu-action" style="justify-content: flex-start; padding: 12px 16px;">🥽 HUD Spatial Computing (XR)</button>
+                <button id="btnOpenPedalboardQuick" class="btn-menu-action" style="justify-content: flex-start; padding: 12px 16px;">🎛️ Pedalera Virtual & Smart Tone</button>
+                <button id="btnOpenStemsQuick" class="btn-menu-action" style="justify-content: flex-start; padding: 12px 16px;">🎚️ Separador de Pistas (Stems)</button>
+                <button id="btnOpenLooperQuick" class="btn-menu-action" style="justify-content: flex-start; padding: 12px 16px;">🔁 Smart Looper & Speed Trainer</button>
+                <button id="btnOpenSmartBandQuick" class="btn-menu-action" style="justify-content: flex-start; padding: 12px 16px;">🥁 The Smart Band (Acompañamiento AI)</button>
+                <button id="btnOpenArcadeQuick" class="btn-menu-action" style="justify-content: flex-start; padding: 12px 16px;">🎮 Modo Arcade / Jam Session</button>
+                <button id="btnOpenVocalCoachQuick" class="btn-menu-action" style="justify-content: flex-start; padding: 12px 16px;">🎤 Entrenador Vocal (Pitch Lane)</button>
+                <button id="btnOpenTranscriberQuick" class="btn-menu-action" style="justify-content: flex-start; padding: 12px 16px;">🎼 Transcriptor de Audio / YouTube</button>
+                <button id="btnOpenAnalyticsQuick" class="btn-menu-action" style="justify-content: flex-start; padding: 12px 16px;">📊 Analíticas de Práctica Musical</button>
                 <button id="btnPrintPDF" class="btn-menu-action" style="justify-content: flex-start; padding: 12px 16px;">🖨️ Exportar Canción (PDF / Imprimir)</button>
                 <button id="btnExportSongbookPDF" class="btn-menu-action" style="justify-content: flex-start; padding: 12px 16px;">📚 Exportar Cancionero Completo (PDF con Índice)</button>
                 <button id="btnOpenShortcutsGuide" class="btn-menu-action" style="justify-content: flex-start; padding: 12px 16px;">⌨️ Pedales Bluetooth y Atajos de Escenario</button>
@@ -1292,39 +1303,21 @@ export class LyricsChordsView extends Component {
     });
 
     this.container.querySelector('#btnOpenBandRoomQuick')?.addEventListener('click', () => {
-      import('../network/BandRoomClient.js').then(({ bandRoomClient }) => {
-        if (!bandRoomClient.isConnected) {
-          bandRoomClient.createRoom().then(id => {
-            import('./Toast.js').then(({ toast }) => toast.show(`🌐 Sala P2P Creada. Código: ${id.substring(0,8)}...`, 'success', 3000));
-          });
-        } else {
-          bandRoomClient.disconnect();
-          import('./Toast.js').then(({ toast }) => toast.show(`Desconectado de la sala.`, 'info', 2000));
-        }
-      });
       this.isOptionsMenuOpen = false;
       this.render();
+      events.emit('bandRoom:open');
     });
 
     this.container.querySelector('#btnOpenStageQuick')?.addEventListener('click', () => {
-      import('../audio/MidiController.js').then(({ midiController }) => {
-        if (!midiController.isActive) {
-          midiController.initialize().then(success => {
-            import('./Toast.js').then(({ toast }) => toast.show(success ? '🎹 Stage Automation: Controlador MIDI USB conectado.' : '❌ Error MIDI', success ? 'success' : 'error', 3000));
-          });
-        } else {
-          midiController.destroy();
-          import('./Toast.js').then(({ toast }) => toast.show('🎹 Stage Automation: Desconectado.', 'info', 2000));
-        }
-      });
       this.isOptionsMenuOpen = false;
       this.render();
+      events.emit('stageAutomation:open');
     });
 
     this.container.querySelector('#btnOpenSpatialQuick')?.addEventListener('click', () => {
       this.isOptionsMenuOpen = false;
       this.render();
-      import('./Toast.js').then(({ toast }) => toast.show('🥽 HUD de Spatial Computing: Requiere gafas de Realidad Mixta (AR/VR)', 'warning', 3500));
+      events.emit('spatialXR:open');
     });
 
     this.container.querySelector('#btnOpenSmartBandQuick')?.addEventListener('click', () => {

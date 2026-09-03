@@ -27,7 +27,7 @@ jobs:
         run: npm ci
 
       - name: Install Playwright Browsers
-        run: npx playwright install --with-deps msedge || npx playwright install chromium
+        run: npx playwright install --with-deps chromium
 
       - name: Verify offline cache assets
         run: node scripts/verify-offline-assets.mjs
