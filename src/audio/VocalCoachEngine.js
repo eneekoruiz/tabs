@@ -254,8 +254,14 @@ export class VocalCoachEngine {
    * @private
    */
   _resolveTargetFrequency(noteInfo) {
-    const targetMidi = this.targetNote ? this.targetNote.midi : noteInfo.midi;
-    const targetFreq = this.targetNote ? this.targetNote.freq : this.midiToFrequency(noteInfo.midi);
+    if (!this.targetNote) {
+      return { targetMidi: noteInfo.midi, targetFreq: this.midiToFrequency(noteInfo.midi) };
+    }
+    // Ajustar la nota objetivo a la octava más cercana del cantante (evita penalizar registro masculino vs femenino)
+    let targetMidi = this.targetNote.midi;
+    while (targetMidi - noteInfo.midi > 6) targetMidi -= 12;
+    while (noteInfo.midi - targetMidi > 6) targetMidi += 12;
+    const targetFreq = this.midiToFrequency(targetMidi);
     return { targetMidi, targetFreq };
   }
 

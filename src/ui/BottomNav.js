@@ -436,7 +436,7 @@ export class BottomNav extends Component {
               <button type="button" class="nav-player-step-btn" id="btnBottomScrollSpeedDecr" aria-label="Reducir velocidad">−</button>
               <span class="nav-player-val-badge nav-player-speed-badge font-mono" id="lblBottomScrollSpeed" title="Velocidad de auto-scroll">${this.autoScrollSpeed || 50}%</span>
               <button type="button" class="nav-player-step-btn" id="btnBottomScrollSpeedIncr" aria-label="Aumentar velocidad">+</button>
-              <input type="range" id="rngAutoScrollSpeed" min="1" max="100" value="${this.autoScrollSpeed || 50}" class="sr-only" aria-label="Velocidad de desplazamiento automático">
+              <input type="range" id="rngBottomNavAutoScrollSpeed" min="1" max="100" value="${this.autoScrollSpeed || 50}" class="sr-only" aria-label="Velocidad de desplazamiento automático">
             </div>
           </div>
 
@@ -538,7 +538,7 @@ export class BottomNav extends Component {
         events.emit('song:stepAutoScrollSpeed', 1);
       });
 
-      this.container.querySelector('#rngAutoScrollSpeed')?.addEventListener('input', (event) => {
+      this.container.querySelector('#rngBottomNavAutoScrollSpeed')?.addEventListener('input', (event) => {
         events.emit('song:setAutoScrollSpeed', Number(event.target.value));
       });
 

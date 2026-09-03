@@ -99,7 +99,26 @@ export const KNOWN_SONG_METADATA = {
   'estadio azteca andres calamaro': { tempo: 85, difficulty: 'Principiante' },
   'rayando el sol mana': { tempo: 74, difficulty: 'Principiante' },
   'clandestino manu chao': { tempo: 92, difficulty: 'Principiante' },
-  'la camisa negra juanes': { tempo: 97, difficulty: 'Principiante' }
+  'la camisa negra juanes': { tempo: 97, difficulty: 'Principiante' },
+  'stay rihanna': { tempo: 56, difficulty: 'Principiante' },
+  'diamonds rihanna': { tempo: 92, difficulty: 'Principiante' },
+  'umbrella rihanna': { tempo: 87, difficulty: 'Principiante' },
+  'love on the brain rihanna': { tempo: 57, difficulty: 'Intermedio' },
+  'stay with me sam smith': { tempo: 84, difficulty: 'Principiante' },
+  'love yourself justin bieber': { tempo: 100, difficulty: 'Principiante' },
+  'ghost justin bieber': { tempo: 154, difficulty: 'Principiante' },
+  'when i was your man bruno mars': { tempo: 73, difficulty: 'Intermedio' },
+  'falling harry styles': { tempo: 54, difficulty: 'Principiante' },
+  'sign of the times harry styles': { tempo: 60, difficulty: 'Intermedio' },
+  'easy on me adele': { tempo: 70, difficulty: 'Principiante' },
+  'all of me john legend': { tempo: 63, difficulty: 'Principiante' },
+  '19 dias y 500 noches joaquin sabina': { tempo: 112, difficulty: 'Intermedio' },
+  'y nos dieron las diez joaquin sabina': { tempo: 90, difficulty: 'Principiante' },
+  'por la boca vive el pez fito & fitipaldis': { tempo: 128, difficulty: 'Intermedio' },
+  'la casa por el tejado fito & fitipaldis': { tempo: 130, difficulty: 'Intermedio' },
+  'mil horas andres calamaro': { tempo: 116, difficulty: 'Principiante' },
+  'lamento boliviano los enanitos verdes': { tempo: 124, difficulty: 'Principiante' },
+  'she will be loved maroon 5': { tempo: 102, difficulty: 'Principiante' }
 };
 
 export const POPURRI_PRIORITY = [

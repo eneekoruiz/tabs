@@ -116,6 +116,12 @@ export class LyricsChordsView extends Component {
         if (this.currentSong && (!this.currentSong.lyricsChords || this.currentSong.lyricsChords.trim().length === 0)) {
           this.currentSong.lyricsChords = await onlineSongProvider.fetchLyricsAndChords(this.currentSong.title, this.currentSong.artist);
         }
+        if (this.currentSong) {
+          const { resolveSongMetadata } = await import('../data/catalog/SongMetadataResolver.js');
+          const meta = resolveSongMetadata(this.currentSong.title, this.currentSong.artist, this.currentSong.genre);
+          if (meta?.tempo) this.currentSong.tempo = meta.tempo;
+          if (meta?.difficulty) this.currentSong.difficulty = meta.difficulty;
+        }
       } catch (e) {
         console.warn('[LyricsChordsView] Error obteniendo acordes online:', e);
         import('./Toast.js').then(({ toast }) => toast.show('Error al descargar acordes', 'error', 3000)).catch(console.error);
@@ -202,43 +208,94 @@ export class LyricsChordsView extends Component {
     }));
 
     // Suscripción a eventos de audio para Smart Pause
+    // Suscripción a eventos de audio para Smart Pause (solo cuando el usuario lo active y tras silencio prolongado)
+    this._smartPauseTimer = null;
     this.registerUnsub(events.on('vocalCoach:silence', () => {
-      if (this.smartPauseEnabled && this.performanceMode === 'sing' && this.pitchLane?.isPlaying) {
-        this.pitchLane?.pause();
-        const btn = this.container?.querySelector('#btnSingPlayPause');
-        if (btn) btn.innerHTML = '<svg viewBox="0 0 24 24" width="36" height="36" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
-        import('./Toast.js').then(({ toast }) => toast.show('Pausa Inteligente: Canción pausada por silencio', 'info', 1500));
+      if (this.smartPauseEnabled && this.isSingingPlaying()) {
+        if (!this._smartPauseTimer) {
+          this._smartPauseTimer = setTimeout(() => {
+            this._smartPauseTimer = null;
+            if (this.smartPauseEnabled && this.isSingingPlaying()) {
+              this.pitchLane?.pause();
+              this._setSingerRibbonPausedState();
+              const btn = this.container?.querySelector('#btnSingPlayPause');
+              if (btn) btn.innerHTML = '<svg viewBox="0 0 24 24" width="36" height="36" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
+              import('./Toast.js').then(({ toast }) => toast.show('Pausa Inteligente: Canción en pausa por inactividad', 'info', 1500));
+            }
+          }, 4500); // 4.5 segundos continuos para respetar pausas musicales naturales
+        }
       }
     }));
 
     this.registerUnsub(events.on('vocalCoach:pitch', (pitchData) => {
-      if (this.smartPauseEnabled && this.performanceMode === 'sing' && !this.pitchLane?.isPlaying) {
-        this.pitchLane?.play();
-        const btn = this.container?.querySelector('#btnSingPlayPause');
-        if (btn) btn.innerHTML = '<svg viewBox="0 0 24 24" width="36" height="36" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
+      if (this._smartPauseTimer) {
+        clearTimeout(this._smartPauseTimer);
+        this._smartPauseTimer = null;
       }
-      // Actualizar medidor de volumen (RMS) en la UI
+      // Actualizar medidor de volumen (RMS) en la UI solo si la canción está reproduciendo
       const bar = this.container?.querySelector('#singMicMeterBar');
       if (bar) {
-        const rms = pitchData.rms || 0;
-        const percent = Math.min(100, (rms / 0.1) * 100);
-        bar.style.width = `${percent}%`;
-        bar.style.background = percent > 80 ? '#ef4444' : '#22c55e';
+        if (!this.isSingingPlaying()) {
+          bar.style.width = '0%';
+        } else {
+          const rms = pitchData.rms || 0;
+          const percent = Math.min(100, (rms / 0.1) * 100);
+          bar.style.width = `${percent}%`;
+          bar.style.background = percent > 80 ? '#ef4444' : '#22c55e';
+        }
       }
     }));
 
-    // Vocal Coach Engine: actualizar colores y escala de notas en modo cantante
+    // Vocal Coach Engine: actualizar colores y afinación SOLO cuando la canción está reproduciendo
     this.registerUnsub(events.on('vocalCoach:pitch', (pitch) => {
       if (this.performanceMode !== 'sing' || !pitch) return;
+      if (!this.isSingingPlaying()) {
+        this._setSingerRibbonPausedState();
+        return;
+      }
       this._updateSingerRibbonColor(pitch);
     }));
 
     this.registerUnsub(events.on('vocalCoach:silence', () => {
+      if (!this.isSingingPlaying()) {
+        this._setSingerRibbonPausedState();
+        return;
+      }
       const ribbon = this.container?.querySelector('#singerVocalRibbon');
       if (ribbon) {
         ribbon.classList.remove('in-tune', 'near-tune', 'out-tune');
       }
     }));
+  }
+
+  isSingingPlaying() {
+    return Boolean(this.performanceMode === 'sing' && this.pitchLane && this.pitchLane.isPlaying);
+  }
+
+  _setSingerRibbonPausedState() {
+    const ribbon = this.container?.querySelector('#singerVocalRibbon');
+    const noteEl = this.container?.querySelector('#singerNoteBig');
+    const labelEl = this.container?.querySelector('#singerPitchNoteLabel');
+    const freqEl = this.container?.querySelector('#singerFreqBadge');
+    const scaleCursor = this.container?.querySelector('#singerScaleCursor');
+
+    if (ribbon) {
+      ribbon.classList.remove('in-tune', 'near-tune', 'out-tune');
+    }
+    if (noteEl) {
+      noteEl.textContent = '—';
+      noteEl.className = 'ribbon-note-big';
+    }
+    if (labelEl) {
+      labelEl.textContent = '⏸️ Canción en pausa · Pulsa ▶ para empezar a cantar';
+    }
+    if (freqEl) {
+      freqEl.textContent = '0 Hz';
+    }
+    if (scaleCursor) {
+      scaleCursor.style.top = '50%';
+      scaleCursor.className = 'singer-scale-cursor';
+    }
   }
 
   /**
@@ -513,6 +570,45 @@ export class LyricsChordsView extends Component {
                   <button id="btnFontIncr" class="btn-quick-font-incr" type="button" aria-label="Aumentar letra">A+</button>
                 </div>
 
+                <!-- AutoScroll: botón + panel flotante de velocidad -->
+                <div class="autoscroll-toolbar-cluster" style="position: relative; display: flex; align-items: center; gap: 6px;">
+                  <button class="quick-tool-pill ${this.autoScroller.isRunning ? 'active' : ''}" id="btnToggleAutoScroll" aria-label="AutoScroll" type="button" style="display:flex;align-items:center;gap:5px;">
+                    ⚡ <span>${this.autoScroller.isRunning ? 'Parar' : 'Scroll'}</span>
+                  </button>
+                  <button class="btn-font-scale-step" id="btnOpenSpeedPanel" aria-label="Ajustar velocidad" type="button" style="font-size:0.75rem;padding:4px 8px;border-radius:16px;">
+                    ${this.autoScroller.speedPercent}% ▾
+                  </button>
+                  <!-- Panel flotante de velocidad -->
+                  <div id="autoScrollSpeedPanel" style="
+                    display: none;
+                    position: absolute;
+                    top: calc(100% + 8px);
+                    right: 0;
+                    z-index: 200;
+                    background: var(--bg-surface-solid, #1c1c1e);
+                    border: 1px solid var(--border-subtle, rgba(255,255,255,0.15));
+                    border-radius: 16px;
+                    padding: 14px 16px;
+                    box-shadow: 0 8px 32px rgba(0,0,0,0.45);
+                    min-width: 220px;
+                    flex-direction: column;
+                    gap: 10px;
+                  ">
+                    <div style="display:flex;justify-content:space-between;align-items:center;font-size:0.8rem;font-weight:700;">
+                      <span>Velocidad de Scroll</span>
+                      <span id="lblAutoScrollPercent" style="color:var(--accent-primary, #007aff);font-size:0.9rem;">${this.autoScroller.speedPercent}%</span>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:8px;">
+                      <button id="btnAutoScrollDecr" class="btn-font-scale-step" style="width:28px;height:28px;padding:0;border-radius:50%;font-size:0.85rem;" aria-label="Bajar velocidad">-5</button>
+                      <input type="range" id="rngAutoScrollSpeed" min="1" max="100" value="${this.autoScroller.speedPercent}" style="flex:1;accent-color:var(--accent-primary, #007aff);" aria-label="Velocidad de scroll">
+                      <button id="btnAutoScrollIncr" class="btn-font-scale-step" style="width:28px;height:28px;padding:0;border-radius:50%;font-size:0.85rem;" aria-label="Subir velocidad">+5</button>
+                    </div>
+                    <button id="btnToggleAutoScrollPanel" class="btn-top-action-pill ${this.autoScroller.isRunning ? 'active' : ''}" style="width:100%;justify-content:center;padding:6px;font-size:0.8rem;">
+                      ${this.autoScroller.isRunning ? '⏸ Parar' : '▶ Iniciar'}
+                    </button>
+                  </div>
+                </div>
+
                 <!-- Menú de opciones (Tres puntos) -->
                 <button id="btnOpenToolsSheet" class="btn-more-options-circle" aria-label="Más opciones" type="button">
                   <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>
@@ -646,7 +742,7 @@ export class LyricsChordsView extends Component {
             <div class="singer-vocal-ribbon" id="singerVocalRibbon" style="margin-top: 12px;">
               <div class="ribbon-left">
                 <span class="ribbon-live-dot"></span>
-                <span class="ribbon-status-label" id="singerPitchNoteLabel">🎤 Cantando en vivo...</span>
+                <span class="ribbon-status-label" id="singerPitchNoteLabel">⏸️ En pausa · Pulsa ▶ para cantar</span>
               </div>
               <div class="ribbon-center">
                 <span class="ribbon-note-big" id="singerNoteBig">—</span>
@@ -730,9 +826,11 @@ export class LyricsChordsView extends Component {
         import('./lyrics/PitchLaneCanvas.js').then(({ PitchLaneCanvas }) => {
           this.pitchLane = new PitchLaneCanvas(canvasEl);
           if (this.currentSong?.lyricsChords) {
-            this.pitchLane.setTargetLyrics(this.currentSong.lyricsChords);
+            const songTempo = Number(this.currentSong.tempo) || 72;
+            this.pitchLane.setTargetLyrics(this.currentSong.lyricsChords, songTempo);
           }
           this.pitchLane.start();
+          this._setSingerRibbonPausedState();
           if (this.autoScroller && this.autoScroller.isRunning) {
             this.pitchLane.play();
           }
@@ -943,8 +1041,16 @@ export class LyricsChordsView extends Component {
         vocalCoachEngine.audioContext.resume();
       }
       if (this.pitchLane) {
-        if (this.pitchLane.isPlaying) this.pitchLane.pause();
-        else this.pitchLane.play();
+        if (this.pitchLane.isPlaying) {
+          this.pitchLane.pause();
+          this._setSingerRibbonPausedState();
+          if (this.autoScroller && this.autoScroller.isRunning) this.autoScroller.stop('explicit');
+        } else {
+          this.pitchLane.play();
+          const labelEl = this.container?.querySelector('#singerPitchNoteLabel');
+          if (labelEl) labelEl.textContent = '🎤 Escuchando tu voz... ¡Canta!';
+          if (this.autoScroller && !this.autoScroller.isRunning) this.autoScroller.start();
+        }
       }
       const isRunning = this.pitchLane ? this.pitchLane.isPlaying : false;
       const btn = this.container.querySelector('#btnSingPlayPause');
@@ -957,6 +1063,12 @@ export class LyricsChordsView extends Component {
       if (this.pitchLane) {
         this.pitchLane.pause();
         this.pitchLane.seek(0);
+        this._setSingerRibbonPausedState();
+      }
+      if (this.autoScroller) {
+        this.autoScroller.stop('explicit');
+        const el = this.container?.querySelector('#lyricsBodyScroll');
+        if (el) el.scrollTop = 0;
       }
       const btn = this.container.querySelector('#btnSingPlayPause');
       if (btn) btn.innerHTML = '<svg viewBox="0 0 24 24" width="36" height="36" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>'; // Play

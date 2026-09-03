@@ -60,49 +60,145 @@ export class PitchLaneCanvas {
     this._bindResize();
   }
 
-  setTargetLyrics(chordProText, tempo = 120) {
+  setTargetLyrics(chordProText, tempo = 72) {
     if (!chordProText) return;
     this.targetBlocks = [];
-    
-    // Parseo avanzado: Extraer la estructura real de acordes y letra
-    // Usaremos el acorde activo más reciente como referencia armónica (Fundamental/Root)
-    const tokens = chordProText.split(/(\[.*?\]|\s+)/).filter(Boolean);
-    
-    let currentMidi = 60; // Por defecto C4 (Midi 60)
-    let currentNoteName = 'C';
-    let timeCursor = 2000; // Empezar en 2 segundos relativos a currentTime
-    const msPerBeat = (60 / tempo) * 1000;
-    
-    // Diccionario de conversión de nombre de nota a MIDI (Octava 4)
-    const baseMidi = { 'C': 60, 'C#': 61, 'Db': 61, 'D': 62, 'D#': 63, 'Eb': 63, 'E': 64, 'F': 65, 'F#': 66, 'Gb': 66, 'G': 67, 'G#': 68, 'Ab': 68, 'A': 69, 'A#': 70, 'Bb': 70, 'B': 71 };
 
-    tokens.forEach(token => {
-      const t = token.trim();
-      if (!t) return;
-      
-      if (t.startsWith('[') && t.endsWith(']')) {
-        // Es un acorde real de la canción
-        const chordName = t.slice(1, -1);
-        const rootMatch = chordName.match(/^[A-G][#b]?/);
-        if (rootMatch && baseMidi[rootMatch[0]]) {
-          currentMidi = baseMidi[rootMatch[0]];
-          currentNoteName = rootMatch[0];
+    const cleanTempo = Number(tempo) && Number(tempo) >= 35 && Number(tempo) <= 240 ? Number(tempo) : 72;
+    const msPerBeat = (60 / cleanTempo) * 1000;
+
+    const NOTE_TO_SEMITONE = {
+      'C': 0, 'C#': 1, 'Db': 1, 'D': 2, 'D#': 3, 'Eb': 3,
+      'E': 4, 'F': 5, 'F#': 6, 'Gb': 6, 'G': 7, 'G#': 8,
+      'Ab': 8, 'A': 9, 'A#': 10, 'Bb': 10, 'B': 11
+    };
+    const SEMITONE_TO_NAME = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+
+    // Selección armónica con mínima distancia de conducción de voces (evita saltos bruscos antinaturales)
+    const getNearestChordTone = (chordName, prevMidi = 60) => {
+      const match = chordName.match(/^([A-G][#b]?)(m|min|maj|7|sus|dim|aug)?/i);
+      if (!match) return prevMidi;
+      const rootStr = match[1].charAt(0).toUpperCase() + (match[1].slice(1) || '');
+      const quality = (match[2] || '').toLowerCase();
+      const semitone = NOTE_TO_SEMITONE[rootStr] ?? 0;
+      const isMinor = quality.startsWith('m') && !quality.startsWith('maj');
+      const third = (semitone + (isMinor ? 3 : 4)) % 12;
+      const fifth = (semitone + 7) % 12;
+
+      const pitchClasses = [semitone, third, fifth];
+      let bestMidi = prevMidi;
+      let minDistance = Infinity;
+
+      // Mantener en el registro vocal natural (C3 a C5 aprox, centrado en 60)
+      for (let oct = 3; oct <= 4; oct++) {
+        for (const pc of pitchClasses) {
+          const candidateMidi = (oct + 1) * 12 + pc;
+          if (candidateMidi < 48 || candidateMidi > 74) continue;
+          const dist = Math.abs(candidateMidi - prevMidi);
+          if (dist < minDistance) {
+            minDistance = dist;
+            bestMidi = candidateMidi;
+          }
         }
-      } else {
-        // Es una palabra o sílaba real
-        const duration = msPerBeat * (t.length > 4 ? 1 : 0.5);
-        const gap = msPerBeat * 0.25;
-        
+      }
+      return bestMidi;
+    };
+
+    let currentMidi = 60; // C4 inicial
+    let currentNoteName = 'C';
+    let timeCursor = 0; // Iniciar en 0
+    let inIntro = false;
+
+    const lines = chordProText.split(/\r?\n/);
+
+    for (let l = 0; l < lines.length; l++) {
+      const line = lines[l].trim();
+      if (!line) {
+        if (!inIntro) timeCursor += msPerBeat * 1.5;
+        continue;
+      }
+
+      // Detectar secciones como [Intro], [Verse], [Chorus], [Bridge], [Outro]
+      if (/^\[(intro|verse|estribillo|chorus|coro|bridge|puente|outro|pre-chorus|pre-coro)[^\]]*\]$/i.test(line)) {
+        const isIntro = /intro/i.test(line);
+        if (isIntro) {
+          inIntro = true;
+          // Intro instrumental: 8 tiempos (2 compases a tempo real)
+          const introDur = msPerBeat * 8;
+          this.targetBlocks.push({
+            startTime: timeCursor,
+            duration: introDur,
+            midi: 60,
+            noteName: 'Intro',
+            text: '🎹 Intro Instrumental',
+            isInterlude: true
+          });
+          timeCursor += introDur;
+        } else {
+          inIntro = false;
+          // Pausa entre estrofas: 1 compás (4 tiempos) de descanso
+          timeCursor += msPerBeat * 2.5;
+        }
+        continue;
+      }
+
+      // Línea de solo acordes instrumentales (ej: "[C] [Dm] [Am] [F]")
+      const isOnlyChords = /^(\s*\[[^\]]+\]\s*)+$/.test(line);
+      if (isOnlyChords) {
+        if (inIntro) {
+          // Dentro de la intro ya está contabilizado en el bloque Intro
+          continue;
+        }
+        const chordMatches = line.match(/\[[^\]]+\]/g) || [];
+        timeCursor += chordMatches.length * msPerBeat * 1;
+        continue;
+      }
+
+      inIntro = false;
+
+      // Línea cantada con acordes y letra
+      const tokens = line.split(/(\[[^\]]+\]|\s+)/).filter(Boolean);
+      const wordsInLine = [];
+
+      for (let i = 0; i < tokens.length; i++) {
+        const tok = tokens[i].trim();
+        if (!tok) continue;
+        if (tok.startsWith('[') && tok.endsWith(']')) {
+          const chordName = tok.slice(1, -1);
+          currentMidi = getNearestChordTone(chordName, currentMidi);
+          currentNoteName = SEMITONE_TO_NAME[currentMidi % 12];
+        } else {
+          wordsInLine.push(tok);
+        }
+      }
+
+      for (let w = 0; w < wordsInLine.length; w++) {
+        const word = wordsInLine[w];
+        const isLastWord = w === wordsInLine.length - 1;
+        const hasPunctuation = /[,.?!:;]$/.test(word);
+
+        let durationBeats = 0.85;
+        if (word.length > 5) durationBeats = 1.25;
+        if (hasPunctuation) durationBeats = 1.6;
+        if (isLastWord) durationBeats = 2.0;
+
+        const duration = msPerBeat * durationBeats;
+        const gap = msPerBeat * (hasPunctuation ? 0.5 : 0.2);
+
         this.targetBlocks.push({
           startTime: timeCursor,
           duration: duration,
           midi: currentMidi,
           noteName: currentNoteName,
-          text: t
+          text: word
         });
+
         timeCursor += duration + gap;
       }
-    });
+
+      // Pausa natural de respiración al final de cada verso (1.5 a 2.5 segundos)
+      timeCursor += msPerBeat * 2.0;
+    }
   }
 
   play() {
@@ -282,45 +378,59 @@ export class PitchLaneCanvas {
       let hitSuccess = false;
       let isCurrentBlock = (startX <= cursorX && endX >= cursorX);
       
-      if (isCurrentBlock && this.trail.length > 0) {
+      if (isCurrentBlock && !block.isInterlude && this.trail.length > 0) {
         const lastPt = this.trail[this.trail.length - 1];
-        // Tolerancia de 1 semitono para detectar el "Hit"
-        if (!lastPt.silence && Math.abs(lastPt.midi - block.midi) <= 1.0) {
-          hitSuccess = true;
-          block.hitFrames = (block.hitFrames || 0) + 1;
+        if (!lastPt.silence) {
+          // Evaluar afinación considerando octavas naturales (ej. voz masculina octava 3 vs objetivo octava 4)
+          const absDiff = Math.abs(lastPt.midi - block.midi);
+          const pitchClassDiff = Math.abs((Math.round(lastPt.midi) % 12) - (block.midi % 12));
+          const isNoteMatch = (absDiff <= 1.2) || (pitchClassDiff === 0 || pitchClassDiff === 11 || pitchClassDiff === 1);
+          if (isNoteMatch) {
+            hitSuccess = true;
+            block.hitFrames = (block.hitFrames || 0) + 1;
+          }
         }
       }
       
       // Dibujar "Píldora"
-      ctx.fillStyle = 'rgba(255,255,255,0.1)';
-      if (isCurrentBlock) {
-        if (hitSuccess) {
-          ctx.fillStyle = 'rgba(0, 255, 128, 0.7)'; // Neón Verde "Hit"
-          ctx.shadowColor = 'rgba(0, 255, 128, 0.8)';
-          ctx.shadowBlur = 15;
-          
-          if (block.hitFrames === 15) {
-             import('../Toast.js').then(({ toast }) => toast.show('¡Perfecto! 🎤', 'success', 1000));
+      if (block.isInterlude) {
+        // Interludio instrumental (Intro)
+        ctx.fillStyle = 'rgba(147, 51, 234, 0.25)'; // Púrpura elegante
+        ctx.fillRect(startX, y - blockHeight/2, endX - startX, blockHeight);
+        ctx.fillStyle = 'rgba(216, 180, 254, 0.9)';
+        const centerX = startX + (endX - startX) / 2;
+        ctx.fillText(block.text, centerX, y);
+      } else {
+        ctx.fillStyle = 'rgba(255,255,255,0.1)';
+        if (isCurrentBlock) {
+          if (hitSuccess) {
+            ctx.fillStyle = 'rgba(0, 255, 128, 0.7)'; // Neón Verde "Hit"
+            ctx.shadowColor = 'rgba(0, 255, 128, 0.8)';
+            ctx.shadowBlur = 15;
+            
+            if (block.hitFrames === 15) {
+               import('../Toast.js').then(({ toast }) => toast.show('¡Perfecto! 🎤', 'success', 1000));
+            }
+          } else {
+            ctx.fillStyle = 'rgba(0, 122, 255, 0.4)'; // Azul normal
           }
-        } else {
-          ctx.fillStyle = 'rgba(0, 122, 255, 0.4)'; // Azul normal
         }
-      }
-      
-      ctx.fillRect(startX, y - blockHeight/2, endX - startX, blockHeight);
-      ctx.shadowBlur = 0; // Resetear sombra para los textos
-      
-      // Dibujar Letra encima
-      ctx.fillStyle = startX <= cursorX && endX >= cursorX ? '#fff' : 'rgba(255,255,255,0.8)';
-      const centerX = startX + (endX - startX) / 2;
-      ctx.fillText(block.text, centerX, y);
+        
+        ctx.fillRect(startX, y - blockHeight/2, endX - startX, blockHeight);
+        ctx.shadowBlur = 0; // Resetear sombra para los textos
+        
+        // Dibujar Letra encima
+        ctx.fillStyle = startX <= cursorX && endX >= cursorX ? '#fff' : 'rgba(255,255,255,0.8)';
+        const centerX = startX + (endX - startX) / 2;
+        ctx.fillText(block.text, centerX, y);
 
-      // Dibujar Nota (Ej: 'C#')
-      if (block.noteName) {
-        ctx.font = '700 12px system-ui, sans-serif';
-        ctx.fillStyle = 'rgba(255, 215, 0, 0.9)'; // Dorado
-        ctx.fillText(block.noteName, centerX, y - blockHeight/2 - 10);
-        ctx.font = '800 24px system-ui, sans-serif'; // Restaurar font original
+        // Dibujar Nota (Ej: 'C#')
+        if (block.noteName && block.noteName !== 'Intro') {
+          ctx.font = '700 12px system-ui, sans-serif';
+          ctx.fillStyle = 'rgba(255, 215, 0, 0.9)'; // Dorado
+          ctx.fillText(block.noteName, centerX, y - blockHeight/2 - 10);
+          ctx.font = '800 24px system-ui, sans-serif'; // Restaurar font original
+        }
       }
     }
 

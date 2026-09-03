@@ -3,7 +3,7 @@
  * @description Service Worker para funcionamiento 100% Offline y PWA Installable.
  */
 
-const CACHE_NAME = 'tabs-chords-pro-v4.9';
+const CACHE_NAME = 'tabs-chords-pro-v5.0';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
