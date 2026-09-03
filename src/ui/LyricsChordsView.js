@@ -531,32 +531,44 @@ export class LyricsChordsView extends Component {
                 </div>
               </div>
 
-              <!-- Cluster Derecho: Toggle Real Deslizante e Instrumento Integrado -->
+              <!-- Cluster Derecho: Toggle Real Deslizante con Sub-opciones de Instrumento Conectadas -->
               <div class="hero-right-controls" role="toolbar" aria-label="Modo de ejecución e instrumento">
-                <!-- Toggle Deslizante Físico (Switch Real) -->
-                <div class="performance-mode-segmented-control">
-                  <button id="btnPlaySingToggle" class="ui-toggle-switch ${this.performanceMode === 'sing' ? 'is-sing' : 'is-play'}" type="button" role="switch" aria-checked="${this.performanceMode === 'sing'}" title="Alternar entre Modo Tocar y Modo Cantar">
-                    <span class="toggle-slider-thumb"></span>
-                    <span class="toggle-label opt-play btn-mode-toggle ${this.performanceMode === 'play' ? 'active' : ''}" data-mode="play">🎸 Tocar</span>
-                    <span class="toggle-label opt-sing btn-mode-toggle ${this.performanceMode === 'sing' ? 'active' : ''}" data-mode="sing">🎤 Cantar</span>
-                  </button>
-                </div>
+                <div class="hero-mode-cluster" id="heroModeCluster">
+                  <!-- Toggle Deslizante Físico (Switch Real) -->
+                  <div class="performance-mode-segmented-control">
+                    <button id="btnPlaySingToggle" class="ui-toggle-switch ${this.performanceMode === 'sing' ? 'is-sing' : 'is-play'}" type="button" role="switch" aria-checked="${this.performanceMode === 'sing'}" title="Alternar entre Modo Tocar y Modo Cantar">
+                      <span class="toggle-slider-thumb"></span>
+                      <span class="toggle-label opt-play btn-mode-toggle ${this.performanceMode === 'play' ? 'active' : ''}" data-mode="play">🎸 Tocar</span>
+                      <span class="toggle-label opt-sing btn-mode-toggle ${this.performanceMode === 'sing' ? 'active' : ''}" data-mode="sing">🎤 Cantar</span>
+                    </button>
+                  </div>
 
-                <!-- Extensión de Instrumento Integrada en la misma barra (Solo en Modo Tocar) -->
-                <div class="hero-instrument-extension ${this.performanceMode === 'play' ? 'is-expanded' : 'is-collapsed'}" id="heroInstrumentExtension" aria-label="Seleccionar instrumento">
-                  <div class="hero-instrument-selector" role="radiogroup" aria-label="Instrumento de interpretación">
-                    <button class="btn-hero-inst-pill ${this.currentInstrument === 'guitar' ? 'active' : ''}" data-inst="guitar" type="button" title="Guitarra">
-                      <span class="inst-pill-icon">🎸</span>
-                      <span class="inst-pill-label">Guitarra</span>
-                    </button>
-                    <button class="btn-hero-inst-pill ${this.currentInstrument === 'ukulele' ? 'active' : ''}" data-inst="ukulele" type="button" title="Ukelele">
-                      <span class="inst-pill-icon">🏝️</span>
-                      <span class="inst-pill-label">Ukelele</span>
-                    </button>
-                    <button class="btn-hero-inst-pill ${this.currentInstrument === 'piano' ? 'active' : ''}" data-inst="piano" type="button" title="Piano">
-                      <span class="inst-pill-icon">🎹</span>
-                      <span class="inst-pill-label">Piano</span>
-                    </button>
+                  <!-- Sub-opción que nace directamente de "Tocar" (Oculta automáticamente en Modo Cantar) -->
+                  <div class="hero-instrument-extension ${this.performanceMode === 'play' ? 'is-expanded' : 'is-collapsed'}" id="heroInstrumentExtension" aria-label="Seleccionar instrumento">
+                    <div class="hero-suboption-bridge" title="Instrumento para el modo Tocar">
+                      <span class="suboption-bridge-arrow">↳</span>
+                      <span class="suboption-bridge-text">Instrumento:</span>
+                    </div>
+                    <div class="hero-instrument-selector" role="radiogroup" aria-label="Instrumento de interpretación">
+                      <button class="btn-hero-inst-pill ${this.currentInstrument === 'guitar' ? 'active' : ''}" data-inst="guitar" type="button" title="Guitarra">
+                        <span class="inst-pill-icon">🎸</span>
+                        <span class="inst-pill-label">Guitarra</span>
+                      </button>
+                      <button class="btn-hero-inst-pill ${this.currentInstrument === 'ukulele' ? 'active' : ''}" data-inst="ukulele" type="button" title="Ukelele">
+                        <span class="inst-pill-icon">🏝️</span>
+                        <span class="inst-pill-label">Ukelele</span>
+                      </button>
+                      <button class="btn-hero-inst-pill ${this.currentInstrument === 'piano' ? 'active' : ''}" data-inst="piano" type="button" title="Piano">
+                        <span class="inst-pill-icon">🎹</span>
+                        <span class="inst-pill-label">Piano</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Indicador sutil para Modo Cantar cuando está activo -->
+                  <div class="hero-sing-indicator ${this.performanceMode === 'sing' ? 'is-active' : 'is-hidden'}" id="heroSingIndicator" aria-hidden="${this.performanceMode !== 'sing'}">
+                    <span class="sing-mic-icon">🎙️</span>
+                    <span class="sing-mic-label">Voz Activa</span>
                   </div>
                 </div>
               </div>
@@ -968,9 +980,9 @@ export class LyricsChordsView extends Component {
 
     btnStrumPreview?.addEventListener('click', () => {
       const isPlaying = btnStrumPreview.classList.contains('playing');
-      const pills = this.container.querySelectorAll('.strum-beat-pill');
+      const arrows = this.container.querySelectorAll('.strum-pattern-arrows .strum-arrow');
       const tempo = parseInt(btnStrumPreview.dataset.tempo, 10) || 120;
-      const beatMs = Math.round((60 / tempo) * 1000 / 2); // Corchea
+      const beatMs = Math.round((60 / tempo) * 1000 / 2); // Corchea (eighth note)
 
       if (isPlaying) {
         clearInterval(strumTimer);
@@ -978,8 +990,8 @@ export class LyricsChordsView extends Component {
         const icon = btnStrumPreview.querySelector('.strum-play-icon');
         const label = btnStrumPreview.querySelector('.strum-play-label');
         if (icon) icon.textContent = '▶';
-        if (label) label.textContent = 'Escuchar Rasgueo';
-        pills.forEach(p => p.classList.remove('pulse-active'));
+        if (label) label.textContent = 'Escuchar';
+        arrows.forEach(p => p.classList.remove('pulse-active'));
         return;
       }
 
@@ -987,29 +999,23 @@ export class LyricsChordsView extends Component {
       const icon = btnStrumPreview.querySelector('.strum-play-icon');
       const label = btnStrumPreview.querySelector('.strum-play-label');
       if (icon) icon.textContent = '⏹';
-      if (label) label.textContent = 'Pausar Ritmo';
+      if (label) label.textContent = 'Pausar';
 
-      const pattern = [
-        { type: 'down', accent: true },
-        { type: 'rest' },
-        { type: 'down', accent: false },
-        { type: 'up', accent: false },
-        { type: 'rest' },
-        { type: 'up', accent: false },
-        { type: 'down', accent: false },
-        { type: 'up', accent: false }
-      ];
+      // Mapeo rítmico de 8 corcheas a las 6 flechas: [arrow0, null, arrow1, arrow2, null, arrow3, arrow4, arrow5]
+      const stepToArrow = [0, null, 1, 2, null, 3, 4, 5];
+      const strokeTypes = ['down', null, 'down', 'up', null, 'up', 'down', 'up'];
 
       strumIndex = 0;
       const playStep = () => {
-        pills.forEach((p, idx) => p.classList.toggle('pulse-active', idx === strumIndex));
-        const step = pattern[strumIndex];
-        if (step && step.type !== 'rest') {
+        const arrowIdx = stepToArrow[strumIndex];
+        arrows.forEach((arr, idx) => arr.classList.toggle('pulse-active', idx === arrowIdx));
+        const stroke = strokeTypes[strumIndex];
+        if (stroke) {
           try {
             const ctx = chordEngine.getAudioContext();
             if (ctx && ctx.state === 'suspended') ctx.resume();
             const now = ctx.currentTime;
-            const freqs = step.type === 'down' 
+            const freqs = stroke === 'down' 
               ? [164.81, 196.00, 246.94, 329.63] 
               : [329.63, 246.94, 196.00];
             freqs.forEach((freq, fIdx) => {
@@ -1017,7 +1023,7 @@ export class LyricsChordsView extends Component {
               const gain = ctx.createGain();
               osc.type = 'triangle';
               osc.frequency.setValueAtTime(freq, now + fIdx * 0.008);
-              gain.gain.setValueAtTime(step.accent ? 0.26 : 0.15, now + fIdx * 0.008);
+              gain.gain.setValueAtTime(strumIndex === 0 ? 0.26 : 0.15, now + fIdx * 0.008);
               gain.gain.exponentialRampToValueAtTime(0.001, now + fIdx * 0.008 + 0.14);
               osc.connect(gain);
               gain.connect(ctx.destination);
@@ -1028,7 +1034,7 @@ export class LyricsChordsView extends Component {
             console.warn('[StrumPreview] Audio error:', e);
           }
         }
-        strumIndex = (strumIndex + 1) % pattern.length;
+        strumIndex = (strumIndex + 1) % stepToArrow.length;
       };
 
       playStep();

@@ -40,72 +40,31 @@ export class ChordDiagramRenderer {
 
     return `
       <div class="song-meta-rhythm-strip" role="region" aria-label="Ritmo y acordes de la canción">
-        <!-- 1. Patrón de Rasgueo Principal (Destacado y Rítmico) -->
-        <div class="strumming-pattern-card prominent-strum-card">
-          <div class="strum-card-header">
-            <div class="strum-title-wrap">
-              <span class="strum-icon">🥁</span>
-              <span class="strum-badge">PATRÓN DE RASGUEO</span>
-              <span class="strum-subtitle">Ritmo sugerido de acompañamiento</span>
-            </div>
-            <div class="strum-tempo-badge">
-              <span class="tempo-val">♩ ${tempo} BPM</span>
-              <span class="strum-dot-sep">•</span>
-              <span class="meter-val">${timeSignature}</span>
+        <!-- 1. Patrón de Rasgueo Principal (Horizontal, Limpio y Elegante) -->
+        <div class="strumming-pattern-card" role="region" aria-label="Patrón de rasgueo">
+          <div class="strum-left-group">
+            <span class="strum-badge">PATRÓN DE RASGUEO</span>
+            <div class="strum-pattern-arrows" aria-label="Secuencia de rasgueo: abajo abajo arriba, arriba abajo arriba">
+              <span class="strum-arrow down" title="Golpe abajo">↓</span>
+              <span class="strum-arrow down" title="Golpe abajo">↓</span>
+              <span class="strum-arrow up" title="Golpe arriba">↑</span>
+              <span class="strum-gap-spacer"></span>
+              <span class="strum-arrow up" title="Golpe arriba">↑</span>
+              <span class="strum-arrow down" title="Golpe abajo">↓</span>
+              <span class="strum-arrow up" title="Golpe arriba">↑</span>
             </div>
           </div>
 
-          <div class="strum-rhythm-display">
-            <!-- Secuencia visual de compás con pulsos y flechas -->
-            <div class="strum-beat-sequence">
-              <div class="strum-beat-slot">
-                <span class="strum-beat-num">1</span>
-                <span class="strum-beat-pill down strum-arrow" title="Golpe abajo (fuerte)">↓</span>
-              </div>
-              <div class="strum-beat-slot">
-                <span class="strum-beat-num">&</span>
-                <span class="strum-beat-pill rest">—</span>
-              </div>
-              <div class="strum-beat-slot">
-                <span class="strum-beat-num">2</span>
-                <span class="strum-beat-pill down strum-arrow" title="Golpe abajo">↓</span>
-              </div>
-              <div class="strum-beat-slot">
-                <span class="strum-beat-num">&</span>
-                <span class="strum-beat-pill up strum-arrow" title="Golpe arriba">↑</span>
-              </div>
-              <div class="strum-beat-slot">
-                <span class="strum-beat-num">3</span>
-                <span class="strum-beat-pill rest">—</span>
-              </div>
-              <div class="strum-beat-slot">
-                <span class="strum-beat-num">&</span>
-                <span class="strum-beat-pill up strum-arrow" title="Golpe arriba">↑</span>
-              </div>
-              <div class="strum-beat-slot">
-                <span class="strum-beat-num">4</span>
-                <span class="strum-beat-pill down strum-arrow" title="Golpe abajo">↓</span>
-              </div>
-              <div class="strum-beat-slot">
-                <span class="strum-beat-num">&</span>
-                <span class="strum-beat-pill up strum-arrow" title="Golpe arriba">↑</span>
-              </div>
+          <div class="strum-right-group">
+            <div class="strum-tempo-badge">
+              <span>♩ ${tempo} BPM</span>
+              <span class="strum-dot-sep">•</span>
+              <span>${timeSignature}</span>
             </div>
-
             <button class="btn-audition-strumming" id="btnPreviewStrumming" data-tempo="${tempo}" type="button" aria-label="Escuchar patrón de rasgueo">
               <span class="strum-play-icon">▶</span>
-              <span class="strum-play-label">Escuchar Rasgueo</span>
+              <span class="strum-play-label">Escuchar</span>
             </button>
-          </div>
-
-          <!-- Metadatos de compatibilidad para lectores y tests -->
-          <div class="strum-pattern-arrows" style="display: none;" aria-hidden="true">
-            <span class="strum-arrow down">↓</span>
-            <span class="strum-arrow down">↓</span>
-            <span class="strum-arrow up">↑</span>
-            <span class="strum-arrow up">↑</span>
-            <span class="strum-arrow down">↓</span>
-            <span class="strum-arrow up">↑</span>
           </div>
         </div>
 
