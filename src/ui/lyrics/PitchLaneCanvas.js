@@ -199,6 +199,22 @@ export class PitchLaneCanvas {
       // Pausa natural de respiración al final de cada verso (1.5 a 2.5 segundos)
       timeCursor += msPerBeat * 2.0;
     }
+
+    // Garantizar que el 100% de las canciones tengan cuenta atrás / intro instrumental previo
+    if (this.targetBlocks.length > 0 && !this.targetBlocks[0].isInterlude) {
+      const prepDur = msPerBeat * 4;
+      for (const block of this.targetBlocks) {
+        block.startTime += prepDur;
+      }
+      this.targetBlocks.unshift({
+        startTime: 0,
+        duration: prepDur,
+        midi: 60,
+        noteName: 'Intro',
+        text: '🎹 Cuenta Atrás',
+        isInterlude: true
+      });
+    }
   }
 
   play() {

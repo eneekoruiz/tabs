@@ -2172,6 +2172,8 @@ She's a [G]Killer [Bm]Queen, [Em]gunpowder, [Bm]gelatine
 
   if (t.includes('bohemian rhapsody')) {
     return `[Intro]
+[Bb] [Gm7] [C7] [F7]
+
 [Bb6]Is this the real life? [C7]Is this just fantasy?
 [F7]Caught in a land[Cm7]slide, no es[F7]cape from re[Bb]ality
 [Gm]Open your eyes, look [Bb7]up to the skies and [Eb]see
