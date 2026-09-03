@@ -292,3 +292,114 @@
   background: rgba(167, 139, 250, 0.25);
   color: #fff;
 }
+
+/* ==========================================================================
+   Selector de Género Vocal & Métricas de Ciencia Acústica (Fach)
+   ========================================================================== */
+
+.vrf-gender-selector,
+.vrf-result-gender-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 9999px;
+  padding: 4px;
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+.btn-vrf-gender,
+.btn-res-gender {
+  flex: 1;
+  padding: 8px 14px;
+  border-radius: 9999px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.85rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.btn-vrf-gender:hover,
+.btn-res-gender:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.btn-vrf-gender.active,
+.btn-res-gender.active {
+  background: linear-gradient(135deg, #7c3aed, #a78bfa);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.4);
+}
+
+/* Grid de Métricas Vocales (Tesitura, Passaggi) */
+.vrf-metrics-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  width: 100%;
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.vrf-metric-card {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.vrf-metric-card .metric-title {
+  font-size: 0.68rem;
+  font-weight: 900;
+  color: #a78bfa;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.vrf-metric-card .metric-val {
+  font-size: 0.88rem;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.vrf-metric-card .metric-sub {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+/* Nota de Privacidad y Cumplimiento RGPD */
+.vrf-privacy-footnote {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 10px 14px;
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  border-radius: 12px;
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.75);
+  line-height: 1.4;
+  text-align: left;
+  margin-top: 18px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.vrf-privacy-footnote .privacy-icon {
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.vrf-privacy-footnote strong {
+  color: #34d399;
+}

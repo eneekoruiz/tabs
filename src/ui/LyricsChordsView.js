@@ -108,6 +108,8 @@ export class LyricsChordsView extends Component {
       this.transposeSemitones = 0;
       this.capoFret = 0;
       this.visualTheme = localStorage.getItem('app_visual_theme') || 'paper';
+      this.performanceMode = 'play';
+      localStorage.setItem('app_performance_mode', 'play');
       this.audioRecorder.dismiss();
 
       try {
@@ -138,6 +140,21 @@ export class LyricsChordsView extends Component {
 
     this.registerUnsub(events.on('song:toggleAutoScroll', () => {
       this.toggleAutoScroll();
+    }));
+
+    this.registerUnsub(events.on('song:stepAutoScroll', (delta) => {
+      if (this.autoScroller) {
+        this.autoScroller.stepSpeed(delta);
+        toast.show(`Velocidad Auto-Scroll: ${this.autoScroller.speedPercent}%`, 'info', 700);
+      }
+    }));
+
+    this.registerUnsub(events.on('ui:closeAllOverlays', () => {
+      this.isOptionsMenuOpen = false;
+      const sheet = this.container?.querySelector('#lyricsToolsBottomSheetOverlay');
+      if (sheet) sheet.style.display = 'none';
+      const scoreModal = document.getElementById('vocalScorecardModal');
+      if (scoreModal) scoreModal.remove();
     }));
 
     this.registerUnsub(events.on('song:toggleRecording', (opts) => {
@@ -442,6 +459,7 @@ export class LyricsChordsView extends Component {
             <button id="btnSingPlayPause" style="background: var(--accent-primary, #007aff); border: none; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 64px; height: 64px; border-radius: 50%; box-shadow: 0 4px 16px rgba(0, 122, 255, 0.4); transition: all 0.2s;">
               <svg viewBox="0 0 24 24" width="36" height="36" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
             </button>
+            <button id="btnFinishVocalSession" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 50%; transition: all 0.2s; font-size: 1.25rem;" title="Finalizar Ensayo y Ver Puntuación">🏆</button>
             <div style="display: flex; flex-direction: column; align-items: center; width: 60px;">
               <span style="font-size: 0.65rem; color: #aaa; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; margin-bottom: 4px;">Micrófono</span>
               <div style="width: 100%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden;">
@@ -451,10 +469,10 @@ export class LyricsChordsView extends Component {
           </div>
         ` : ''}
 
-          <!-- Cabecera Principal -->
-          <div class="lyrics-header-main">
-            <!-- Fila 1: Volver, Título, Modo (Tocar/Cantar), Opciones -->
-            <div class="lyrics-title-nav-row" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+          <!-- Cabecera Principal Reestructurada: Jerarquía Visual de 2 Filas Lógicas -->
+          <header class="lyrics-header-main">
+            <!-- Fila 1 (Superior): Navigation & Tools -->
+            <div class="lyrics-nav-tools-row">
               <button class="btn-back-to-explore" id="btnBackToExplore" aria-label="Volver a explorar">
                 <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
                   <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
@@ -462,60 +480,88 @@ export class LyricsChordsView extends Component {
                 <span>Volver</span>
               </button>
 
-              <div class="lyrics-title-group" style="flex: 1; min-width: 200px;">
-                <h1 class="lyrics-song-title">${safeTitle}</h1>
-                <span class="lyrics-song-artist">— ${safeArtist} (${safeTuning}${this.capoFret > 0 ? ` · Capo ${this.capoFret}` : ''})</span>
-              </div>
+              <div class="lyrics-header-tools-group">
+                <!-- Toggle Directo: Partitura / Letra (Toggle Switch) -->
+                <button id="btnToggleScoreView" class="quick-tool-pill tool-score-toggle ${this.viewMode === 'score' ? 'active' : ''}" type="button" aria-pressed="${this.viewMode === 'score'}" title="${this.viewMode === 'score' ? 'Volver a Letra y Acordes' : 'Ver Partitura Interactiva'}">
+                  <span class="tool-btn-icon">🎼</span>
+                  <span class="tool-btn-label">Partitura</span>
+                </button>
 
-              <div style="display: flex; align-items: center; gap: 12px; margin-left: auto;">
-                <!-- Mode Toggle (Tocar/Cantar) -->
-                <div class="performance-mode-toggle" style="display: flex; background: var(--bg-surface-raised); border: 1px solid var(--border-subtle); border-radius: 20px; padding: 2px;">
-                  <button class="btn-mode-toggle ${this.performanceMode === 'play' ? 'active' : ''}" data-mode="play" style="padding: 6px 16px; border: none; border-radius: 18px; background: ${this.performanceMode === 'play' ? 'var(--accent-primary)' : 'transparent'}; color: ${this.performanceMode === 'play' ? '#fff' : 'var(--text-primary)'}; font-weight: 700; font-size: 0.85rem; cursor: pointer; transition: all 0.2s;">🎸 Tocar</button>
-                  <button class="btn-mode-toggle ${this.performanceMode === 'sing' ? 'active' : ''}" data-mode="sing" style="padding: 6px 16px; border: none; border-radius: 18px; background: ${this.performanceMode === 'sing' ? 'var(--accent-primary)' : 'transparent'}; color: ${this.performanceMode === 'sing' ? '#fff' : 'var(--text-primary)'}; font-weight: 700; font-size: 0.85rem; cursor: pointer; transition: all 0.2s;">🎤 Cantar</button>
+                <!-- Botón Directo: Exportar PDF / Imprimir -->
+                <button id="btnQuickExportPdf" class="quick-tool-pill tool-pdf-pill" type="button" aria-label="Exportar PDF o Imprimir" title="Exportar o Imprimir PDF">
+                  <span class="tool-btn-icon">📄</span>
+                  <span class="tool-btn-label">PDF</span>
+                </button>
+
+                <!-- Cejilla / Capo -->
+                <div class="quick-tool-pill tool-capo">
+                  <span class="tool-label">Capo</span>
+                  <select id="selCapoQuick" aria-label="Seleccionar cejilla">
+                    <option value="0" ${this.capoFret === 0 ? 'selected' : ''}>Off</option>
+                    <option value="1" ${this.capoFret === 1 ? 'selected' : ''}>1</option>
+                    <option value="2" ${this.capoFret === 2 ? 'selected' : ''}>2</option>
+                    <option value="3" ${this.capoFret === 3 ? 'selected' : ''}>3</option>
+                    <option value="4" ${this.capoFret === 4 ? 'selected' : ''}>4</option>
+                    <option value="5" ${this.capoFret === 5 ? 'selected' : ''}>5</option>
+                  </select>
                 </div>
 
-                <button id="btnOpenToolsSheet" style="background: var(--bg-surface-raised); border: 1px solid var(--border-subtle); color: var(--text-primary); cursor: pointer; display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 50%;">
+                <!-- Zoom de Letra -->
+                <div class="quick-tool-pill tool-font">
+                  <button id="btnFontDecr" class="btn-quick-font-decr" type="button" aria-label="Reducir letra">A-</button>
+                  <span id="lblFontScalePercent" class="font-scale-text">${this.fontSizeScale}%</span>
+                  <button id="btnFontIncr" class="btn-quick-font-incr" type="button" aria-label="Aumentar letra">A+</button>
+                </div>
+
+                <!-- Menú de opciones (Tres puntos) -->
+                <button id="btnOpenToolsSheet" class="btn-more-options-circle" aria-label="Más opciones" type="button">
                   <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>
                 </button>
               </div>
             </div>
 
-            <!-- Fila 2: Herramientas Frecuentes (solo si estamos en modo tocar) -->
-            ${this.performanceMode === 'play' ? `
-            <div class="lyrics-quick-tools-row" style="display: flex; align-items: center; gap: 8px; margin-top: 12px; padding: 10px 14px; background: rgba(0,0,0,0.02); border-radius: 12px; border: 1px solid var(--border-subtle); overflow-x: auto; flex-wrap: nowrap;">
-              
-              <!-- Instrumento -->
-              <div class="quick-tool-pill" style="display: flex; align-items: center; gap: 6px; background: var(--bg-surface-solid); border: 1px solid var(--border-subtle); padding: 4px 12px; border-radius: 20px; white-space: nowrap;">
-                <span style="font-size: 1rem;">🎸</span>
-                <select id="selInstrumentQuick" style="background: transparent; border: none; color: var(--text-primary); font-size: 0.85rem; font-weight: 700; cursor: pointer; outline: none; padding-right: 4px;">
-                  <option value="guitar" ${this.currentInstrument === 'guitar' ? 'selected' : ''}>Guitarra</option>
-                  <option value="piano" ${this.currentInstrument === 'piano' ? 'selected' : ''}>Piano</option>
-                  <option value="ukulele" ${this.currentInstrument === 'ukulele' ? 'selected' : ''}>Ukelele</option>
-                </select>
+            <!-- Fila 2 (Inferior): Hero Title y Barra Unificada de Modo e Instrumento -->
+            <div class="lyrics-hero-row">
+              <div class="lyrics-hero-title-group">
+                <h1 class="lyrics-song-title">${safeTitle}</h1>
+                <div class="lyrics-song-meta-line">
+                  <span class="lyrics-song-artist">${safeArtist}</span>
+                  <span class="meta-dot-sep">•</span>
+                  <span class="lyrics-song-tuning">Afinación: ${safeTuning}${this.capoFret > 0 ? ` · Capo ${this.capoFret}` : ''}</span>
+                </div>
               </div>
 
-              <!-- Cejilla -->
-              <div class="quick-tool-pill" style="display: flex; align-items: center; gap: 6px; background: var(--bg-surface-solid); border: 1px solid var(--border-subtle); padding: 4px 12px; border-radius: 20px; white-space: nowrap;">
-                <span style="font-size: 1rem;">🎵</span>
-                <select id="selCapoQuick" style="background: transparent; border: none; color: var(--text-primary); font-size: 0.85rem; font-weight: 700; cursor: pointer; outline: none;">
-                  <option value="0" ${this.capoFret === 0 ? 'selected' : ''}>Capo: Off</option>
-                  <option value="1" ${this.capoFret === 1 ? 'selected' : ''}>Capo: Traste 1</option>
-                  <option value="2" ${this.capoFret === 2 ? 'selected' : ''}>Capo: Traste 2</option>
-                  <option value="3" ${this.capoFret === 3 ? 'selected' : ''}>Capo: Traste 3</option>
-                  <option value="4" ${this.capoFret === 4 ? 'selected' : ''}>Capo: Traste 4</option>
-                  <option value="5" ${this.capoFret === 5 ? 'selected' : ''}>Capo: Traste 5</option>
-                </select>
-              </div>
+              <!-- Cluster Derecho: Toggle Real Deslizante e Instrumento Integrado -->
+              <div class="hero-right-controls" role="toolbar" aria-label="Modo de ejecución e instrumento">
+                <!-- Toggle Deslizante Físico (Switch Real) -->
+                <div class="performance-mode-segmented-control">
+                  <button id="btnPlaySingToggle" class="ui-toggle-switch ${this.performanceMode === 'sing' ? 'is-sing' : 'is-play'}" type="button" role="switch" aria-checked="${this.performanceMode === 'sing'}" title="Alternar entre Modo Tocar y Modo Cantar">
+                    <span class="toggle-slider-thumb"></span>
+                    <span class="toggle-label opt-play btn-mode-toggle ${this.performanceMode === 'play' ? 'active' : ''}" data-mode="play">🎸 Tocar</span>
+                    <span class="toggle-label opt-sing btn-mode-toggle ${this.performanceMode === 'sing' ? 'active' : ''}" data-mode="sing">🎤 Cantar</span>
+                  </button>
+                </div>
 
-              <!-- Tamaño Letra -->
-              <div class="quick-tool-pill" style="display: flex; align-items: center; gap: 6px; background: var(--bg-surface-solid); border: 1px solid var(--border-subtle); padding: 4px 12px; border-radius: 20px; white-space: nowrap; margin-left: auto;">
-                <button id="btnQuickFontDecr" style="background: transparent; border: none; cursor: pointer; color: var(--text-primary); font-weight: 700; padding: 2px 6px;">A-</button>
-                <span style="font-size: 0.85rem; font-weight: 700; min-width: 36px; text-align: center;">${this.fontSizeScale}%</span>
-                <button id="btnQuickFontIncr" style="background: transparent; border: none; cursor: pointer; color: var(--text-primary); font-weight: 700; padding: 2px 6px;">A+</button>
+                <!-- Extensión de Instrumento Integrada en la misma barra (Solo en Modo Tocar) -->
+                <div class="hero-instrument-extension ${this.performanceMode === 'play' ? 'is-expanded' : 'is-collapsed'}" id="heroInstrumentExtension" aria-label="Seleccionar instrumento">
+                  <div class="hero-instrument-selector" role="radiogroup" aria-label="Instrumento de interpretación">
+                    <button class="btn-hero-inst-pill ${this.currentInstrument === 'guitar' ? 'active' : ''}" data-inst="guitar" type="button" title="Guitarra">
+                      <span class="inst-pill-icon">🎸</span>
+                      <span class="inst-pill-label">Guitarra</span>
+                    </button>
+                    <button class="btn-hero-inst-pill ${this.currentInstrument === 'ukulele' ? 'active' : ''}" data-inst="ukulele" type="button" title="Ukelele">
+                      <span class="inst-pill-icon">🏝️</span>
+                      <span class="inst-pill-label">Ukelele</span>
+                    </button>
+                    <button class="btn-hero-inst-pill ${this.currentInstrument === 'piano' ? 'active' : ''}" data-inst="piano" type="button" title="Piano">
+                      <span class="inst-pill-icon">🎹</span>
+                      <span class="inst-pill-label">Piano</span>
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
-            ` : ''}
-          </div>
+          </header>
 
           <!-- BOTTOM SHEET ESTILO iOS (Herramientas avanzadas) -->
           <div id="lyricsToolsBottomSheetOverlay" style="display: ${this.isOptionsMenuOpen ? 'flex' : 'none'}; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); z-index: 9999; justify-content: center; align-items: flex-end; animation: fadeIn 0.2s;">
@@ -539,7 +585,9 @@ export class LyricsChordsView extends Component {
               <!-- Acciones rápidas en fila -->
               <div style="display: flex; flex-direction: column; gap: 6px; margin-bottom: 20px;">
                 <button id="btnEnterStageMode" class="btn-menu-action" style="justify-content: flex-start; padding: 12px 16px;">🎭 Modo Atril (Pantalla Completa)</button>
-                <button id="btnPrintPDF" class="btn-menu-action" style="justify-content: flex-start; padding: 12px 16px;">🖨️ Exportar PDF / Imprimir</button>
+                <button id="btnPrintPDF" class="btn-menu-action" style="justify-content: flex-start; padding: 12px 16px;">🖨️ Exportar Canción (PDF / Imprimir)</button>
+                <button id="btnExportSongbookPDF" class="btn-menu-action" style="justify-content: flex-start; padding: 12px 16px;">📚 Exportar Cancionero Completo (PDF con Índice)</button>
+                <button id="btnOpenShortcutsGuide" class="btn-menu-action" style="justify-content: flex-start; padding: 12px 16px;">⌨️ Pedales Bluetooth y Atajos de Escenario</button>
                 <button id="btnOpenTunerQuick" class="btn-menu-action" style="justify-content: flex-start; padding: 12px 16px;">🎼 Afinador Cromático</button>
               </div>
 
@@ -716,6 +764,29 @@ export class LyricsChordsView extends Component {
       window.print();
     });
 
+    this.container.querySelector('#btnExportSongbookPDF')?.addEventListener('click', () => {
+      this.isOptionsMenuOpen = false;
+      const sheet = this.container?.querySelector('#lyricsToolsBottomSheetOverlay');
+      if (sheet) sheet.style.display = 'none';
+
+      import('../data/Exporter.js').then(({ exporter }) => {
+        import('../data/SetlistManager.js').then(({ setlistManager }) => {
+          const setlistSongs = (typeof setlistManager.getActiveSetlistSongs === 'function')
+            ? setlistManager.getActiveSetlistSongs()
+            : [];
+          const songsToExport = (setlistSongs && setlistSongs.length > 0)
+            ? setlistSongs
+            : [this.currentSong].filter(Boolean);
+
+          exporter.exportSongbookPDF({
+            title: setlistManager.getActiveSetlist?.()?.name || 'Cancionero y Repertorio',
+            songs: songsToExport,
+            instrument: this.currentInstrument
+          });
+        });
+      });
+    });
+
     this.container.querySelector('#btnBackToExplore')?.addEventListener('click', () => {
       const globalBottomNav = document.getElementById('bottom-nav-container');
       if (globalBottomNav) globalBottomNav.style.display = '';
@@ -765,33 +836,73 @@ export class LyricsChordsView extends Component {
     this.container.querySelector('#btnModeLyrics')?.addEventListener('click', () => this.setViewMode('lyrics'));
     this.container.querySelector('#btnModeScore')?.addEventListener('click', () => this.setViewMode('score'));
 
-    // --- Nueva barra de herramientas del header ---
-    this.container.querySelectorAll('.btn-mode-toggle').forEach(btn => {
-      btn.addEventListener('click', async () => {
-        const mode = btn.dataset.mode;
-        if (mode === 'play') {
-          this.performanceMode = 'play';
-          localStorage.setItem('app_performance_mode', 'play');
-          this.fontSizeScale = 100;
-          localStorage.setItem('lyrics_font_scale', 100);
-          pitchDetector.stop();
-          vocalCoachEngine.stop();
-          this.render();
-          toast.show('🎸 Modo Tocar: Acordes y tablatura listos', 'info', 1500);
-        } else if (mode === 'sing') {
-          this.performanceMode = 'sing';
-          localStorage.setItem('app_performance_mode', 'sing');
-          this.fontSizeScale = 135;
-          localStorage.setItem('lyrics_font_scale', 135);
-          this.render();
-          const [pitchOk] = await Promise.allSettled([pitchDetector.start(), vocalCoachEngine.start()]);
-          if (pitchOk?.status !== 'fulfilled' || !pitchOk.value) {
-            const warningEl = this.container?.querySelector('#micPermissionWarning');
-            if (warningEl) warningEl.style.display = 'flex';
-            toast.show('⚠️ Permiso de micrófono requerido para afinación vocal', 'warning', 3000);
-          } else {
-            toast.show('🎤 Modo Cantar: Micrófono activo. ¡Canta en directo!', 'success', 2500);
-          }
+    // --- Toggle Real Deslizante Tocar / Cantar ---
+    const handleToggleMode = async (targetMode) => {
+      if (targetMode === this.performanceMode) return;
+      if (targetMode === 'play') {
+        this.performanceMode = 'play';
+        localStorage.setItem('app_performance_mode', 'play');
+        this.fontSizeScale = 100;
+        localStorage.setItem('lyrics_font_scale', 100);
+        pitchDetector.stop();
+        vocalCoachEngine.stop();
+        this.render();
+        toast.show('🎸 Modo Tocar: Acordes y tablatura listos', 'info', 1500);
+      } else if (targetMode === 'sing') {
+        this.performanceMode = 'sing';
+        localStorage.setItem('app_performance_mode', 'sing');
+        this.fontSizeScale = 135;
+        localStorage.setItem('lyrics_font_scale', 135);
+        this.render();
+        const [pitchOk] = await Promise.allSettled([pitchDetector.start(), vocalCoachEngine.start()]);
+        if (pitchOk?.status !== 'fulfilled' || !pitchOk.value) {
+          const warningEl = this.container?.querySelector('#micPermissionWarning');
+          if (warningEl) warningEl.style.display = 'flex';
+          toast.show('⚠️ Permiso de micrófono requerido para afinación vocal', 'warning', 3000);
+        } else {
+          toast.show('🎤 Modo Cantar: Micrófono activo. ¡Canta en directo!', 'success', 2500);
+        }
+      }
+    };
+
+    const playSingToggle = this.container.querySelector('#btnPlaySingToggle');
+    playSingToggle?.addEventListener('click', (e) => {
+      const labelClicked = e.target.closest('[data-mode]');
+      let nextMode;
+      if (labelClicked) {
+        const clickedMode = labelClicked.dataset.mode;
+        // If clicking the currently active mode, toggle to the other mode
+        nextMode = clickedMode === this.performanceMode 
+          ? (this.performanceMode === 'play' ? 'sing' : 'play')
+          : clickedMode;
+      } else {
+        nextMode = this.performanceMode === 'play' ? 'sing' : 'play';
+      }
+      handleToggleMode(nextMode);
+    });
+
+
+    // --- Toggle Directo Partitura / Letra (Activar / Desactivar) ---
+    const handleScoreToggle = () => {
+      const nextMode = this.viewMode === 'score' ? 'lyrics' : 'score';
+      this.setViewMode(nextMode);
+      toast.show(nextMode === 'score' ? '🎼 Vista Partitura activada' : '📄 Vista Letra y Acordes activada', 'info', 1000);
+    };
+    this.container.querySelector('#btnToggleScoreView')?.addEventListener('click', handleScoreToggle);
+    this.container.querySelector('#btnQuickScoreView')?.addEventListener('click', handleScoreToggle);
+
+    this.container.querySelector('#btnQuickExportPdf')?.addEventListener('click', () => {
+      window.print();
+    });
+
+    // --- Selector de Instrumento Integrado en Hero Cluster ---
+    this.container.querySelectorAll('.btn-hero-inst-pill').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const inst = btn.dataset.inst;
+        if (inst && inst !== this.currentInstrument) {
+          this.setInstrument(inst);
+          const name = inst === 'ukulele' ? 'Ukelele 🏝️' : (inst === 'piano' ? 'Piano 🎹' : 'Guitarra 🎸');
+          toast.show(`Instrumento activo: ${name}`, 'info', 1200);
         }
       });
     });
@@ -804,12 +915,7 @@ export class LyricsChordsView extends Component {
       this.setCapo(Number(e.target.value));
     });
 
-    this.container.querySelector('#btnQuickFontDecr')?.addEventListener('click', () => {
-      this.setFontSizeScale(-10);
-    });
-    this.container.querySelector('#btnQuickFontIncr')?.addEventListener('click', () => {
-      this.setFontSizeScale(10);
-    });
+
 
     this.container.querySelector('#btnQuickRecordAction')?.addEventListener('click', () => this.toggleRecording());
     this.container.querySelector('#btnStageRecord')?.addEventListener('click', () => this.toggleRecording());
@@ -849,6 +955,84 @@ export class LyricsChordsView extends Component {
       const btn = e.currentTarget;
       btn.style.color = this.smartPauseEnabled ? '#22c55e' : '#aaa';
       import('./Toast.js').then(({ toast }) => toast.show(this.smartPauseEnabled ? 'Pausa Inteligente Activada' : 'Pausa Inteligente Desactivada', 'info', 2000));
+    });
+
+    this.container.querySelector('#btnFinishVocalSession')?.addEventListener('click', () => {
+      this.showVocalScorecard();
+    });
+
+    // --- Patrón de Rasgueo: Escuchar Ritmo Acústico ---
+    const btnStrumPreview = this.container.querySelector('#btnPreviewStrumming');
+    let strumTimer = null;
+    let strumIndex = 0;
+
+    btnStrumPreview?.addEventListener('click', () => {
+      const isPlaying = btnStrumPreview.classList.contains('playing');
+      const pills = this.container.querySelectorAll('.strum-beat-pill');
+      const tempo = parseInt(btnStrumPreview.dataset.tempo, 10) || 120;
+      const beatMs = Math.round((60 / tempo) * 1000 / 2); // Corchea
+
+      if (isPlaying) {
+        clearInterval(strumTimer);
+        btnStrumPreview.classList.remove('playing');
+        const icon = btnStrumPreview.querySelector('.strum-play-icon');
+        const label = btnStrumPreview.querySelector('.strum-play-label');
+        if (icon) icon.textContent = '▶';
+        if (label) label.textContent = 'Escuchar Rasgueo';
+        pills.forEach(p => p.classList.remove('pulse-active'));
+        return;
+      }
+
+      btnStrumPreview.classList.add('playing');
+      const icon = btnStrumPreview.querySelector('.strum-play-icon');
+      const label = btnStrumPreview.querySelector('.strum-play-label');
+      if (icon) icon.textContent = '⏹';
+      if (label) label.textContent = 'Pausar Ritmo';
+
+      const pattern = [
+        { type: 'down', accent: true },
+        { type: 'rest' },
+        { type: 'down', accent: false },
+        { type: 'up', accent: false },
+        { type: 'rest' },
+        { type: 'up', accent: false },
+        { type: 'down', accent: false },
+        { type: 'up', accent: false }
+      ];
+
+      strumIndex = 0;
+      const playStep = () => {
+        pills.forEach((p, idx) => p.classList.toggle('pulse-active', idx === strumIndex));
+        const step = pattern[strumIndex];
+        if (step && step.type !== 'rest') {
+          try {
+            const ctx = chordEngine.getAudioContext();
+            if (ctx && ctx.state === 'suspended') ctx.resume();
+            const now = ctx.currentTime;
+            const freqs = step.type === 'down' 
+              ? [164.81, 196.00, 246.94, 329.63] 
+              : [329.63, 246.94, 196.00];
+            freqs.forEach((freq, fIdx) => {
+              const osc = ctx.createOscillator();
+              const gain = ctx.createGain();
+              osc.type = 'triangle';
+              osc.frequency.setValueAtTime(freq, now + fIdx * 0.008);
+              gain.gain.setValueAtTime(step.accent ? 0.26 : 0.15, now + fIdx * 0.008);
+              gain.gain.exponentialRampToValueAtTime(0.001, now + fIdx * 0.008 + 0.14);
+              osc.connect(gain);
+              gain.connect(ctx.destination);
+              osc.start(now + fIdx * 0.008);
+              osc.stop(now + fIdx * 0.008 + 0.15);
+            });
+          } catch (e) {
+            console.warn('[StrumPreview] Audio error:', e);
+          }
+        }
+        strumIndex = (strumIndex + 1) % pattern.length;
+      };
+
+      playStep();
+      strumTimer = setInterval(playStep, beatMs);
     });
 
     // --- AutoScroll: panel flotante de velocidad ---
@@ -1155,6 +1339,36 @@ export class LyricsChordsView extends Component {
           const displayName = ChordProParser.formatChordDisplay(chordName, this.notationSystem);
           toast.show(`Sonando ${displayName}`, 'info', 600);
         }
+      });
+    });
+  }
+
+  showVocalScorecard() {
+    import('./lyrics/VocalScorecardModal.js').then(({ VocalScorecardModal }) => {
+      import('../audio/VocalCoachEngine.js').then(({ vocalCoachEngine }) => {
+        VocalScorecardModal.show({
+          songTitle: this.currentSong?.title || 'Canción Actual',
+          artist: this.currentSong?.artist || '',
+          sessionStats: vocalCoachEngine.sessionStats,
+          onRetry: () => {
+            if (typeof vocalCoachEngine.resetSessionStats === 'function') {
+              vocalCoachEngine.resetSessionStats();
+            } else {
+              vocalCoachEngine.sessionStats = {
+                lowestPitch: null,
+                highestPitch: null,
+                inTuneFrames: 0,
+                totalSingingFrames: 0,
+                stabilityScore: 100,
+                breathSupportScore: 100,
+              };
+            }
+            if (this.pitchLane) {
+              this.pitchLane.stop();
+              this.pitchLane.start();
+            }
+          }
+        });
       });
     });
   }

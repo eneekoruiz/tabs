@@ -32,6 +32,8 @@ export class HomeViewV2 extends Component {
     this.visibleLimit = 60;
     this.isSearching = false;
     this.searchRequest = 0;
+    this.exploreMode = 'songs'; // 'songs' | 'artists'
+    this.activeArtistFilter = null;
     this.debounceTimer = null;
     this.documentClickHandler = this.handleDocumentClick.bind(this);
 
@@ -115,7 +117,7 @@ export class HomeViewV2 extends Component {
       filter: this.favoritesOnly ? 'favorites' : 'all',
       genre: this.selectedGenre,
       contentSource: this.selectedContentSource,
-      sortBy: this.searchQuery.trim() ? 'title' : 'artist',
+      sortBy: this.searchQuery.trim() ? 'title' : 'popular',
       groupBySong: true,
       includeCatalog: true,
       pageSize: this.visibleLimit,
@@ -151,9 +153,28 @@ export class HomeViewV2 extends Component {
       results.innerHTML = this.renderSongCards();
     }
     if (detail) detail.innerHTML = this.renderDetailPanel();
-    if (status) status.textContent = this.getResultSummary();
-    if (loadMore) loadMore.hidden = this.songGroups.length >= this.totalCount;
+    if (status) {
+      status.textContent = this.exploreMode === 'artists'
+        ? 'Explorando artistas y repertorios completos'
+        : this.getResultSummary();
+    }
+    if (loadMore) {
+      loadMore.hidden = this.exploreMode === 'artists' || this.songGroups.length >= this.totalCount;
+    }
     if (clearButton) clearButton.hidden = !this.searchQuery;
+
+    const btnSongs = this.container.querySelector('#btnModeSongs');
+    const btnArtists = this.container.querySelector('#btnModeArtists');
+    if (btnSongs && btnArtists) {
+      const isSongs = this.exploreMode === 'songs';
+      btnSongs.style.background = isSongs ? 'var(--accent-primary)' : 'var(--bg-surface-solid)';
+      btnSongs.style.borderColor = isSongs ? 'var(--accent-primary)' : 'var(--border-subtle)';
+      btnSongs.style.color = isSongs ? '#ffffff' : 'var(--text-secondary)';
+      btnArtists.style.background = !isSongs ? 'var(--accent-primary)' : 'var(--bg-surface-solid)';
+      btnArtists.style.borderColor = !isSongs ? 'var(--accent-primary)' : 'var(--border-subtle)';
+      btnArtists.style.color = !isSongs ? '#ffffff' : 'var(--text-secondary)';
+    }
+
     this.updateFilterControls();
     this.bindDynamicEvents();
   }
@@ -289,7 +310,14 @@ export class HomeViewV2 extends Component {
             </div>
           </div>
 
-
+          <div class="explore-mode-toggle-row" style="display: flex; gap: 10px; margin-top: 14px; justify-content: center; flex-wrap: wrap;">
+            <button type="button" class="btn-explore-mode ${this.exploreMode === 'songs' ? 'active-mode' : ''}" id="btnModeSongs" data-mode="songs" style="padding: 8px 18px; border-radius: 20px; border: 1px solid ${this.exploreMode === 'songs' ? 'var(--accent-primary)' : 'var(--border-subtle)'}; background: ${this.exploreMode === 'songs' ? 'var(--accent-primary)' : 'var(--bg-surface-solid)'}; color: ${this.exploreMode === 'songs' ? '#ffffff' : 'var(--text-secondary)'}; font-weight: 700; font-size: 0.86rem; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s;">
+              <span>🎵</span> Popurrí de Éxitos
+            </button>
+            <button type="button" class="btn-explore-mode ${this.exploreMode === 'artists' ? 'active-mode' : ''}" id="btnModeArtists" data-mode="artists" style="padding: 8px 18px; border-radius: 20px; border: 1px solid ${this.exploreMode === 'artists' ? 'var(--accent-primary)' : 'var(--border-subtle)'}; background: ${this.exploreMode === 'artists' ? 'var(--accent-primary)' : 'var(--bg-surface-solid)'}; color: ${this.exploreMode === 'artists' ? '#ffffff' : 'var(--text-secondary)'}; font-weight: 700; font-size: 0.86rem; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s;">
+              <span>🎙️</span> Explorar por Artista
+            </button>
+          </div>
         </header>
 
         <section class="explore-songs-section" aria-labelledby="discoveryResultStatus">
@@ -373,9 +401,29 @@ export class HomeViewV2 extends Component {
   }
 
   renderSongCards() {
+    if (this.exploreMode === 'artists') {
+      return this.renderArtistDirectory();
+    }
+
+    let headerBanner = '';
+    if (this.activeArtistFilter) {
+      headerBanner = `
+        <div class="active-artist-banner" style="display: flex; align-items: center; justify-content: space-between; background: rgba(0, 229, 255, 0.08); border: 1px solid rgba(0, 229, 255, 0.25); border-radius: 12px; padding: 12px 18px; margin-bottom: 16px;">
+          <div>
+            <span style="font-size: 0.72rem; text-transform: uppercase; font-weight: 800; color: var(--accent-primary); letter-spacing: 0.05em;">Artista seleccionado</span>
+            <h3 style="margin: 2px 0 0 0; font-size: 1.15rem; font-weight: 800; color: var(--text-primary);">${this.escapeHTML(this.activeArtistFilter)}</h3>
+          </div>
+          <button type="button" class="btn-clear-artist-filter" id="btnClearArtistFilter" style="background: var(--bg-surface-solid); border: 1px solid var(--border-subtle); color: var(--text-primary); font-size: 0.82rem; font-weight: 700; padding: 6px 14px; border-radius: 20px; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+            <span>✕</span> Volver a Artistas
+          </button>
+        </div>
+      `;
+    }
+
     if (this.songGroups.length === 0) {
       const queryLabel = this.searchQuery.trim() ? ` para “${this.escapeHTML(this.searchQuery.trim())}”` : '';
       return `
+        ${headerBanner}
         <div class="library-empty-state discovery-empty-state">
           <h2>Sin coincidencias${queryLabel}</h2>
           <p>Prueba otra escritura o restablece los filtros activos.</p>
@@ -384,27 +432,106 @@ export class HomeViewV2 extends Component {
       `;
     }
 
-    const artists = new Map();
-    for (const group of this.songGroups) {
-      const artistKey = searchEngine.normalize(group.artist || 'Artista desconocido');
-      if (!artists.has(artistKey)) artists.set(artistKey, { artist: group.artist || 'Artista desconocido', groups: [] });
-      artists.get(artistKey).groups.push(group);
+    return `
+      ${headerBanner}
+      <div class="artist-song-grid">
+        ${this.songGroups.map((group) => this.renderSongCard(group)).join('')}
+      </div>
+    `;
+  }
+
+  selectArtist(artistName) {
+    this.activeArtistFilter = artistName;
+    this.searchQuery = artistName;
+    this.exploreMode = 'songs';
+    const input = this.container.querySelector('#exploreSearchInput');
+    if (input) input.value = artistName;
+    this.loadExploreData({ showSkeleton: true });
+  }
+
+  renderArtistDirectory() {
+    const artistMap = new Map();
+    const source = (searchEngine.catalogIndex && searchEngine.catalogIndex.length)
+      ? [...searchEngine.index, ...searchEngine.catalogIndex]
+      : searchEngine.index;
+
+    for (const song of source) {
+      const a = (song.artist || '').trim();
+      if (!a) continue;
+      const key = a.toLowerCase();
+      if (!artistMap.has(key)) {
+        artistMap.set(key, { name: a, genre: song.genre || 'Pop', songs: [] });
+      }
+      const entry = artistMap.get(key);
+      if (entry.songs.length < 4 && !entry.songs.includes(song.title)) {
+        entry.songs.push(song.title);
+      }
     }
 
-    return Array.from(artists.values()).map(({ artist, groups }, artistIndex) => {
-      const headingId = `artist-group-${artistIndex}`;
-      return `
-        <section class="discovery-artist-section" aria-labelledby="${headingId}">
-          <div class="discovery-artist-heading">
-            <h3 id="${headingId}">${this.escapeHTML(artist)}</h3>
-            <span>${groups.length} ${groups.length === 1 ? 'canción' : 'canciones'}</span>
-          </div>
-          <div class="artist-song-grid">
-            ${groups.map((group) => this.renderSongCard(group)).join('')}
-          </div>
-        </section>
-      `;
-    }).join('');
+    const priority = [
+      'queen', 'the beatles', 'ac/dc', 'coldplay', 'nirvana', 'metallica',
+      'ed sheeran', 'oasis', 'adele', 'michael jackson', 'pink floyd',
+      'guns n\' roses', 'red hot chili peppers', 'radiohead', 'the cranberries',
+      'bob dylan', 'led zeppelin', 'eagles', 'the weeknd', 'harry styles',
+      'soda stereo', 'andres calamaro', 'mana', 'juanes', 'eric clapton',
+      'green day', 'arctic monkeys', 'bon jovi', 'taylor swift', 'billie eilish',
+      'bruno mars', 'dua lipa', 'fleetwood mac', 'u2', 'kansas'
+    ];
+
+    const curatedList = [];
+    const remainingList = [];
+
+    for (const [key, val] of artistMap.entries()) {
+      const prioIdx = priority.indexOf(key);
+      if (prioIdx !== -1) {
+        curatedList.push({ ...val, prio: prioIdx });
+      } else {
+        remainingList.push(val);
+      }
+    }
+
+    curatedList.sort((a, b) => a.prio - b.prio);
+    remainingList.sort((a, b) => a.name.localeCompare(b.name, 'es'));
+
+    const allArtists = [...curatedList, ...remainingList];
+
+    return `
+      <div class="artist-directory-view" style="width: 100%;">
+        <div style="margin-bottom: 18px;">
+          <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--text-primary); margin: 0 0 4px 0;">Artistas y Grupos Legendarios</h3>
+          <p style="font-size: 0.84rem; color: var(--text-secondary); margin: 0;">Elige un artista para ver sus canciones y acordes disponibles:</p>
+        </div>
+        <div class="artist-directory-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px;">
+          ${allArtists.slice(0, 50).map((artist) => {
+            const hits = artist.songs.slice(0, 3).map(s => this.escapeHTML(s)).join(' · ');
+            const cleanGenre = this.normalizeGenre(artist.genre);
+            return `
+              <article class="artist-card-item" data-artist="${this.encodeData(artist.name)}" style="background: var(--bg-surface-solid); border: 1px solid var(--border-subtle); border-radius: 14px; padding: 16px; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s; display: flex; flex-direction: column; justify-content: space-between; gap: 10px;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                  <div style="width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, rgba(255,87,34,0.18), rgba(0,229,255,0.18)); border: 1px solid rgba(255,87,34,0.3); display: flex; align-items: center; justify-content: center; font-size: 1.3rem; flex-shrink: 0;">
+                    🎙️
+                  </div>
+                  <div style="min-width: 0;">
+                    <h4 style="margin: 0; font-size: 1.05rem; font-weight: 800; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${this.escapeHTML(artist.name)}</h4>
+                    <span style="font-size: 0.74rem; font-weight: 700; color: var(--accent-primary); text-transform: uppercase;">${this.escapeHTML(cleanGenre)}</span>
+                  </div>
+                </div>
+                ${hits ? `
+                  <div style="font-size: 0.78rem; color: var(--text-secondary); line-height: 1.35;">
+                    <span style="color: var(--text-muted); font-size: 0.7rem; text-transform: uppercase; font-weight: 700; display: block; margin-bottom: 2px;">Éxitos:</span>
+                    ${hits}
+                  </div>
+                ` : ''}
+                <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 8px; border-top: 1px solid var(--border-subtle);">
+                  <span style="font-size: 0.76rem; font-weight: 700; color: var(--text-secondary);">Ver repertorio</span>
+                  <span style="font-size: 0.8rem; font-weight: 800; color: var(--accent-primary);">Explorar →</span>
+                </div>
+              </article>
+            `;
+          }).join('')}
+        </div>
+      </div>
+    `;
   }
 
   normalizeGenre(genre) {
@@ -440,21 +567,21 @@ export class HomeViewV2 extends Component {
     const version = group.versions[selectedIndex] || group.primaryVersion;
     const isSelected = group.groupKey === this.selectedGroupKey;
     
-    // Si no hay dificultad, no mostramos badge, pero mantenemos el espacio con CSS (justify-content: space-between en flexbox)
-    const difficultyClass = version.difficulty === 'Principiante' ? 'diff-easy'
-      : (version.difficulty === 'Avanzado' || version.difficulty === 'Experto' ? 'diff-hard' : 'diff-med');
+    const diff = version.difficulty || group.difficulty || 'Intermedio';
+    const difficultyClass = diff === 'Principiante' ? 'diff-easy'
+      : (diff === 'Avanzado' || diff === 'Experto' ? 'diff-hard' : 'diff-med');
       
     const encodedGroup = this.encodeData(group.groupKey);
-    const numericTempo = Number(version.tempo);
+    const numericTempo = Number(version.tempo || group.tempo);
     const hasTempo = Number.isFinite(numericTempo) && numericTempo > 0;
-    const cleanGenre = this.normalizeGenre(version.genre);
+    const cleanGenre = this.normalizeGenre(version.genre || group.genre);
 
     return `
       <article class="song-card home-song-card discovery-song-card ${isSelected ? 'is-selected' : ''}" data-group-key="${encodedGroup}">
         <button class="song-card-main btn-select-song" type="button" data-group-key="${encodedGroup}" aria-label="Previsualizar ${this.escapeHTML(version.title)} de ${this.escapeHTML(version.artist)}" aria-controls="discoveryDetailPanel" aria-pressed="${isSelected}">
-          <div class="song-card-header-line" style="display: flex; justify-content: space-between; align-items: flex-start; width: 100%;">
+          <div class="song-card-header-line" style="display: flex; justify-content: space-between; align-items: flex-start; width: 100%; gap: 8px;">
             <span class="song-card-title">${this.escapeHTML(group.title)}</span>
-            ${version.difficulty ? `<span class="song-badge-diff ${difficultyClass}">${this.escapeHTML(version.difficulty)}</span>` : `<span class="song-badge-diff" style="visibility: hidden;">-</span>`}
+            <span class="song-badge-diff ${difficultyClass}">${this.escapeHTML(diff)}</span>
           </div>
           <span class="song-card-artist">${this.escapeHTML(group.artist)}</span>
           <div class="song-card-meta">
@@ -464,7 +591,8 @@ export class HomeViewV2 extends Component {
         </button>
         <div class="catalog-version-row" style="justify-content: flex-end;">
           <button class="btn-load-explore-song" style="width: 100%; border-radius: 8px; margin-top: 8px;" type="button" data-group-key="${encodedGroup}" data-version-index="${selectedIndex}" data-id="${this.escapeHTML(version.id || '')}" data-title="${this.encodeData(version.title)}" data-artist="${this.encodeData(version.artist)}" aria-label="Abrir ${this.escapeHTML(version.title)} de ${this.escapeHTML(version.artist)}">
-            <span>Abrir Partitura</span>
+            <span>Abrir</span>
+            <span class="sr-only">${this.escapeHTML(version.title)}</span>
           </button>
         </div>
       </article>
@@ -482,11 +610,12 @@ export class HomeViewV2 extends Component {
     }
     const selectedIndex = this.getSelectedVersionIndex(group);
     const version = this.getSelectedVersion(group);
+    const diff = version.difficulty || group.difficulty || 'Intermedio';
     const encodedGroup = this.encodeData(group.groupKey);
-    const numericTempo = Number(version.tempo);
+    const numericTempo = Number(version.tempo || group.tempo);
     const metadataRows = [
       version.genre ? `<div><dt>Género</dt><dd>${this.escapeHTML(version.genre)}</dd></div>` : '',
-      version.difficulty ? `<div><dt>Dificultad</dt><dd>${this.escapeHTML(version.difficulty)}</dd></div>` : '',
+      `<div><dt>Dificultad</dt><dd>${this.escapeHTML(diff)}</dd></div>`,
       version.tuning ? `<div><dt>Afinación</dt><dd>${this.escapeHTML(version.tuning)}</dd></div>` : '',
       Number.isFinite(numericTempo) && numericTempo > 0 ? `<div><dt>Tempo</dt><dd>${numericTempo} BPM</dd></div>` : '',
       `<div><dt>Versiones</dt><dd>${group.versionCount}</dd></div>`,
@@ -705,6 +834,14 @@ export class HomeViewV2 extends Component {
       }
     }
     this.container.querySelector('#btnOpenSongImporterHero')?.addEventListener('click', () => events.emit('ui:openSongImporter', this.searchQuery));
+    this.container.querySelector('#btnModeSongs')?.addEventListener('click', () => {
+      this.exploreMode = 'songs';
+      this.updateWorkspace();
+    });
+    this.container.querySelector('#btnModeArtists')?.addEventListener('click', () => {
+      this.exploreMode = 'artists';
+      this.updateWorkspace();
+    });
     this.bindRecentEvents();
     this.bindDynamicEvents();
   }
@@ -739,6 +876,20 @@ export class HomeViewV2 extends Component {
 
   bindDynamicEvents() {
     this.container.querySelector('#btnCreateMissingSong')?.addEventListener('click', () => events.emit('ui:openSongImporter', this.searchQuery));
+    this.container.querySelector('#btnClearArtistFilter')?.addEventListener('click', () => {
+      this.activeArtistFilter = null;
+      this.searchQuery = '';
+      const input = this.container.querySelector('#exploreSearchInput');
+      if (input) input.value = '';
+      this.exploreMode = 'artists';
+      this.loadExploreData();
+    });
+    this.container.querySelectorAll('.artist-card-item').forEach((card) => {
+      card.addEventListener('click', () => {
+        const artistName = this.decodeData(card.dataset.artist);
+        this.selectArtist(artistName);
+      });
+    });
     this.container.querySelectorAll('.catalog-version-select').forEach((select) => {
       select.addEventListener('change', () => this.selectVersion(this.decodeData(select.dataset.groupKey), Number(select.value)));
     });

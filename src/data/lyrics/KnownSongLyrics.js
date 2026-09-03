@@ -409,10 +409,33 @@ Take you to every [F]party, 'cause all you [G]wanted to do was [Am]dance
 [D]All [C#dim]your [C]life [Cm]
 [G/B]You were only [A7]waiting for this [D7sus4]moment to [G]arise
 
+[Verse 2]
+[G]Blackbird [Am7]singing in the [G/B]dead of night [G]
+[C]Take these [C#dim]sunken eyes and [D]learn to [D#dim]see [Em] [Eb]
+[D]All [C#dim]your [C]life [Cm]
+[G/B]You were only [A7]waiting for this [D7sus4]moment to be [G]free
+
 [Chorus]
 [F]Black[C/E]bird, [Dm]fly [C] [Bb]
 [C]Black[F]bird, [C/E]fly [Dm] [C] [Bb]
-[A7]Into the light of the [D7sus4]dark black [G]night`;
+[A7]Into the light of the [D7sus4]dark black [G]night
+
+[Instrumental Interlude]
+[G] [Am7] [G/B] [C] [G/B] [A7] [D7sus4]
+[G] [Am7] [G/B] [C] [C#dim] [D] [D#dim] [Em] [Eb] [D] [C#dim] [C] [Cm] [G/B] [A7] [D7sus4] [G]
+
+[Chorus]
+[F]Black[C/E]bird, [Dm]fly [C] [Bb]
+[C]Black[F]bird, [C/E]fly [Dm] [C] [Bb]
+[A7]Into the light of the [D7sus4]dark black [G]night
+
+[Verse 3 / Outro]
+[G]Blackbird [Am7]singing in the [G/B]dead of night [G]
+[C]Take these [C#dim]broken wings and [D]learn to [D#dim]fly [Em] [Eb]
+[D]All [C#dim]your [C]life [Cm]
+[G/B]You were only [A7]waiting for this [D7sus4]moment to [G]arise
+[G/B]You were only [A7]waiting for this [D7sus4]moment to [G]arise
+[G/B]You were only [A7]waiting for this [D7sus4]moment to [G]arise`;
   }
 
   if (t.includes('let it be')) {
@@ -422,29 +445,41 @@ Take you to every [F]party, 'cause all you [G]wanted to do was [Am]dance
 [Verse 1]
 When I [C]find myself in [G]times of trouble, [Am]Mother Mary [F]comes to me
 [C]Speaking words of [G]wisdom, let it [F]be [C]
+And in my [C]hour of darkness, [G]she is standing [Am]right in front of [F]me
+[C]Speaking words of [G]wisdom, let it [F]be [C]
 
 [Chorus]
 Let it [Am]be, let it [G]be, let it [F]be, let it [C]be
-[C]Whisper words of [G]wisdom, let it [F]be [C]`;
-  }
+[C]Whisper words of [G]wisdom, let it [F]be [C]
 
-  // ==========================================
-  // QUEEN
-  // ==========================================
-  if (t.includes('bohemian rhapsody')) {
-    return `[Intro]
-[Bb6] [C7] [F] [Gm7] [C7] [F]
-
-[Verse 1]
-[Bb]Mama, [Gm]just killed a man
-Put a [Cm]gun against his head, pulled my [F]trigger, now he's dead
-[Bb]Mama, [Gm]life had just begun
-But [Cm]now I've gone and [G+]thrown it [Eb]all away
+[Verse 2]
+And when the [C]broken-hearted [G]people living [Am]in the world a[F]gree
+[C]There will be an [G]answer, let it [F]be [C]
+For though they [C]may be parted, there is [G]still a chance that [Am]they will [F]see
+[C]There will be an [G]answer, let it [F]be [C]
 
 [Chorus]
-[Eb]Mama, [Bb/D]ooh, [Cm]didn't mean to make you cry
-[F]If I'm not back again this time tomorrow
-[Bb]Carry on, [Bb/A]carry on, [Gm]as if [Eb]nothing really [Ebm]matters [Bb]`;
+Let it [Am]be, let it [G]be, let it [F]be, let it [C]be
+[C]There will be an [G]answer, let it [F]be [C]
+Let it [Am]be, let it [G]be, let it [F]be, let it [C]be
+[C]Whisper words of [G]wisdom, let it [F]be [C]
+
+[Solo de Guitarra]
+[F] [C] [G] [F] [C]
+[C] [G] [Am] [F] [C] [G] [F] [C]
+
+[Verse 3]
+And when the [C]night is cloudy, there is [G]still a light that [Am]shines on [F]me
+[C]Shine until to[G]morrow, let it [F]be [C]
+I wake up [C]to the sound of [G]music, Mother [Am]Mary comes to [F]me
+[C]Speaking words of [G]wisdom, let it [F]be [C]
+
+[Chorus / Outro]
+Let it [Am]be, let it [G]be, let it [F]be, let it [C]be
+[C]There will be an [G]answer, let it [F]be [C]
+Let it [Am]be, let it [G]be, let it [F]be, let it [C]be
+[C]Whisper words of [G]wisdom, let it [F]be [C]
+[F] [Em] [Dm] [C] [Bb] [F/A] [G] [F] [C]`;
   }
 
   // ==========================================
@@ -453,15 +488,47 @@ But [Cm]now I've gone and [G+]thrown it [Eb]all away
   if (t.includes('wonderwall')) {
     return `[Intro]
 [Em7] [G] [Dsus4] [A7sus4]
+[Em7] [G] [Dsus4] [A7sus4]
 
 [Verse 1]
 [Em7]Today is [G]gonna be the day that they're [Dsus4]gonna throw it back to [A7sus4]you
 [Em7]By now you [G]should've somehow rea[Dsus4]lized what you gotta [A7sus4]do
 [Em7]I don't believe that [G]anybody [Dsus4]feels the way I [A7sus4]do about you [Cadd9]now [Dsus4] [A7sus4]
 
+[Verse 2]
+[Em7]Backbeat, the [G]word is on the street that the [Dsus4]fire in your heart is [A7sus4]out
+[Em7]I'm sure you've [G]heard it all before, but you [Dsus4]never really had a [A7sus4]doubt
+[Em7]I don't believe that [G]anybody [Dsus4]feels the way I [A7sus4]do about you [Em7]now [G] [Dsus4] [A7sus4]
+
+[Pre-Chorus]
+And [C]all the roads we [D]have to walk are [Em7]winding
+And [C]all the lights that [D]lead us there are [Em7]blinding
+[C]There are many [D]things that I would [G]like to [D/F#]say to [Em7]you, but I [D]don't know [A7sus4]how
+
 [Chorus]
 Because [Cadd9]maybe, [Em7] [G]you're gonna be the one that [Em7]saves me
-And [Cadd9]after [Em7]all, [G]you're my [Em7]wonder[Cadd9]wall [Em7] [G] [Em7]`;
+And [Cadd9]after [Em7]all, [G]you're my [Em7]wonder[Cadd9]wall [Em7] [G] [Em7]
+
+[Verse 3]
+[Em7]Today was [G]gonna be the day, but they'll [Dsus4]never throw it back to [A7sus4]you
+[Em7]By now you [G]should've somehow rea[Dsus4]lized what you're not to [A7sus4]do
+[Em7]I don't believe that [G]anybody [Dsus4]feels the way I [A7sus4]do about you [Cadd9]now [Dsus4] [A7sus4]
+
+[Pre-Chorus]
+And [C]all the roads that [D]lead you there were [Em7]winding
+And [C]all the lights that [D]light the way are [Em7]blinding
+[C]There are many [D]things that I would [G]like to [D/F#]say to [Em7]you, but I [D]don't know [A7sus4]how
+
+[Chorus]
+I said [Cadd9]maybe, [Em7] [G]you're gonna be the one that [Em7]saves me
+And [Cadd9]after [Em7]all, [G]you're my [Em7]wonder[Cadd9]wall [Em7] [G] [Em7]
+I said [Cadd9]maybe, [Em7] [G]you're gonna be the one that [Em7]saves me
+And [Cadd9]after [Em7]all, [G]you're my [Em7]wonder[Cadd9]wall [Em7] [G] [Em7]
+
+[Outro]
+I said [Cadd9]maybe, [Em7] [G]you're gonna be the one that [Em7]saves me [Cadd9] [Em7] [G]
+You're gonna be the one that [Em7]saves me [Cadd9] [Em7] [G]
+You're gonna be the one that [Em7]saves me [Cadd9] [Em7] [G] [Em7]`;
   }
 
   // ==========================================
@@ -469,7 +536,8 @@ And [Cadd9]after [Em7]all, [G]you're my [Em7]wonder[Cadd9]wall [Em7] [G] [Em7]`;
   // ==========================================
   if (t.includes('nothing else matters')) {
     return `[Intro]
-[Em] [D] [C] [Em] [D] [C] [Em] [D] [C] [G] [B7] [Em]
+[Em] [D] [C] [Em] [D] [C]
+[Em] [D] [C] [G] [B7] [Em]
 
 [Verse 1]
 [Em]So close, no matter [D]how far [C]
@@ -477,10 +545,39 @@ And [Cadd9]after [Em7]all, [G]you're my [Em7]wonder[Cadd9]wall [Em7] [G] [Em7]`;
 [Em]Forever trusting [D]who we are [C]
 [G]And [B7]nothing else [Em]matters
 
+[Verse 2]
+[Em]Never opened myself [D]this way [C]
+[Em]Life is ours, we live it [D]our way [C]
+[Em]All these words I don't [D]just say [C]
+[G]And [B7]nothing else [Em]matters
+
 [Chorus]
-[C]Never cared for what they [A]do
-[D]Never cared for what they [C]know
-[C]And I [Em]know`;
+[C]Never cared for what they [A]do [D]
+Never cared for what they [C]know
+[C]And I [Em]know
+
+[Verse 3]
+[Em]Trust I seek and I [D]find in you [C]
+[Em]Every day for us [D]something new [C]
+[Em]Open mind for a [D]different view [C]
+[G]And [B7]nothing else [Em]matters
+
+[Chorus]
+[C]Never cared for what they [A]say [D]
+Never cared for games they [C]play
+[C]Never cared for what they [A]do [D]
+Never cared for what they [C]know
+[C]And I [Em]know
+
+[Guitar Solo]
+[Em] [D] [C] [Em] [D] [C]
+[Em] [D] [C] [G] [B7] [Em]
+
+[Verse 4 / Outro]
+[Em]So close, no matter [D]how far [C]
+[Em]Couldn't be much more [D]from the heart [C]
+[Em]Forever trusting [D]who we are [C]
+[G]No, [B7]nothing else [Em]matters`;
   }
 
   // ==========================================
@@ -495,12 +592,51 @@ And [Cadd9]after [Em7]all, [G]you're my [Em7]wonder[Cadd9]wall [Em7] [G] [Em7]`;
 That you [F#m]found a girl and you're [D]married now
 [A]I heard that your [A/G#]dreams came true
 Guess she [F#m]gave you things I didn't [D]give to you
+[A]Old friend, why are you [A/G#]so shy?
+Ain't like [F#m]you to hold back or [D]hide from the light
+
+[Pre-Chorus]
+I [E]hate to turn up out of the [F#m]blue, uninvited
+But I [D]couldn't stay away, I couldn't fight it
+I had [E]hoped you'd see my face and [F#m]that you'd be reminded
+That for [D]me, it isn't over [Dmaj7] [D]
 
 [Chorus]
 Never [A]mind, I'll find [E]someone like [F#m]you [D]
 I wish [A]nothing but the [E]best for [F#m]you, [D]too
 "Don't [A]forget me, I [E]beg," I remember [F#m]you [D]said
-"Sometimes it [A]lasts in love, but [E]sometimes it hurts in[F#m]stead" [D]`;
+"Sometimes it [A]lasts in love, but [E]sometimes it hurts in[F#m]stead" [D]
+"Sometimes it [A]lasts in love, but [E]sometimes it hurts in[F#m]stead" [D]
+
+[Verse 2]
+[A]You know how the [A/G#]time flies
+Only [F#m]yesterday was the [D]time of our lives
+We were [A]born and raised in a [A/G#]summer haze
+Bound [F#m]by the surprise of our [D]glory days
+
+[Pre-Chorus]
+I [E]hate to turn up out of the [F#m]blue, uninvited
+But I [D]couldn't stay away, I couldn't fight it
+I had [E]hoped you'd see my face and [F#m]that you'd be reminded
+That for [D]me, it isn't over [Dmaj7] [D]
+
+[Chorus]
+Never [A]mind, I'll find [E]someone like [F#m]you [D]
+I wish [A]nothing but the [E]best for [F#m]you, [D]too
+"Don't [A]forget me, I [E]beg," I remember [F#m]you [D]said
+"Sometimes it [A]lasts in love, but [E]sometimes it hurts in[F#m]stead" [D]
+
+[Bridge]
+[E]Nothing compares, no worries or cares
+[F#m]Regrets and mistakes, they're memories made
+[D]Who would have known how bittersweet this would [Bm]taste? [C#m] [D]
+
+[Chorus / Outro]
+Never [A]mind, I'll find [E]someone like [F#m]you [D]
+I wish [A]nothing but the [E]best for [F#m]you, [D]too
+"Don't [A]forget me, I [E]beg," I remember [F#m]you [D]said
+"Sometimes it [A]lasts in love, but [E]sometimes it hurts in[F#m]stead" [D]
+"Sometimes it [A]lasts in love, but [E]sometimes it hurts in[F#m]stead" [D] [A]`;
   }
 
   // ==========================================
@@ -894,6 +1030,7 @@ There's [Am]sharks in the water!
   if (t.includes('hotel california')) {
     return `[Intro]
 [Bm] [F#7] [A] [E] [G] [D] [Em] [F#7]
+[Bm] [F#7] [A] [E] [G] [D] [Em] [F#7]
 
 [Verse 1]
 [Bm]On a dark desert highway, [F#7]cool wind in my hair
@@ -901,11 +1038,52 @@ There's [Am]sharks in the water!
 [G]Up ahead in the distance, [D]I saw a shimmering light
 [Em]My head grew heavy and my sight grew dim, [F#7]I had to stop for the night
 
+[Verse 2]
+[Bm]There she stood in the doorway, [F#7]I heard the mission bell
+[A]And I was thinkin' to myself: 'This could be [E]heaven or this could be hell'
+[G]Then she lit up a candle, [D]and she showed me the way
+[Em]There were voices down the corridor, [F#7]I thought I heard them say
+
 [Chorus]
 [G]Welcome to the Hotel Cali[D]fornia
 Such a [F#7]lovely place (such a lovely place), such a [Bm]lovely face
 [G]Plenty of room at the Hotel Cali[D]fornia
-Any [Em]time of year (any time of year), you can [F#7]find it here`;
+Any [Em]time of year (any time of year), you can [F#7]find it here
+
+[Verse 3]
+[Bm]Her mind is Tiffany-twisted, [F#7]she got the Mercedes bends
+[A]She got a lot of pretty, pretty boys [E]she calls friends
+[G]How they dance in the courtyard, [D]sweet summer sweat
+[Em]Some dance to remember, [F#7]some dance to forget
+
+[Verse 4]
+[Bm]So I called up the Captain, [F#7]'Please bring me my wine'
+He said, [A]'We haven't had that spirit here since [E]nineteen sixty-nine'
+[G]And still those voices are calling from [D]far away
+[Em]Wake you up in the middle of the night [F#7]just to hear them say
+
+[Chorus]
+[G]Welcome to the Hotel Cali[D]fornia
+Such a [F#7]lovely place (such a lovely place), such a [Bm]lovely face
+They [G]livin' it up at the Hotel Cali[D]fornia
+What a [Em]nice surprise (what a nice surprise), bring your [F#7]alibis
+
+[Verse 5]
+[Bm]Mirrors on the ceiling, [F#7]the pink champagne on ice
+And she said: [A]'We are all just prisoners here [E]of our own device'
+[G]And in the master's chambers, [D]they gathered for the feast
+[Em]They stab it with their steely knives, but they [F#7]just can't kill the beast
+
+[Verse 6]
+[Bm]Last thing I remember, I was [F#7]running for the door
+[A]I had to find the passage back to the [E]place I was before
+[G]'Relax,' said the night man, 'We are [D]programmed to receive
+[Em]You can check out any time you like, [F#7]but you can never leave!'
+
+[Guitar Solo Outro]
+[Bm] [F#7] [A] [E] [G] [D] [Em] [F#7]
+[Bm] [F#7] [A] [E] [G] [D] [Em] [F#7]
+[Bm] [F#7] [A] [E] [G] [D] [Em] [F#7] [Bm]`;
   }
 
   if (t.includes('creep')) {
@@ -921,7 +1099,30 @@ I wish I was [C]special, you're so fucking [Cm]special
 [Chorus]
 But I'm a [G]creep, I'm a [B]weirdo
 What the hell am I doing [C]here?
-I don't be[Cm]long here`;
+I don't be[Cm]long here
+
+[Verse 2]
+I don't care if it [G]hurts, I wanna have con[B]trol
+I want a perfect [C]body, I want a perfect [Cm]soul
+I want you to [G]notice when I'm not a[B]round
+You're so fucking [C]special, I wish I was [Cm]special
+
+[Chorus]
+But I'm a [G]creep, I'm a [B]weirdo
+What the hell am I doing [C]here?
+I don't be[Cm]long here
+
+[Bridge]
+[G]She's running out the [B]door
+[C]She's running out, she [Cm]run, run, run, [G]run
+[B]Run... [C] [Cm]
+
+[Verse 3 / Outro]
+Whatever makes you [G]happy, whatever you [B]want
+You're so fucking [C]special, I wish I was [Cm]special
+But I'm a [G]creep, I'm a [B]weirdo
+What the hell am I doing [C]here?
+I don't be[Cm]long here, I don't belong [G]here`;
   }
 
   if (t.includes('hallelujah')) {
@@ -938,6 +1139,44 @@ The [G]baffled king com[E7]posing Halle[Am]lujah
 
 [Chorus]
 Halle[F]lujah, Halle[Am]lujah
+Halle[F]lujah, Halle[C]lu---[G]jah [C] [Am] [C] [Am]
+
+[Verse 2]
+Your [C]faith was strong but you [Am]needed proof
+You [C]saw her bathing [Am]on the roof
+Her [F]beauty and the [G]moonlight over[C]threw ya [G]
+She [C]tied you to a [F]kitchen [G]chair
+She [Am]broke your throne, and she [F]cut your hair
+And [G]from your lips she [E7]drew the Halle[Am]lujah
+
+[Chorus]
+Halle[F]lujah, Halle[Am]lujah
+Halle[F]lujah, Halle[C]lu---[G]jah [C] [Am] [C] [Am]
+
+[Verse 3]
+Well, [C]baby, I've been [Am]here before
+I've [C]seen this room and I've [Am]walked this floor
+I [F]used to live a[G]lone before I [C]knew ya [G]
+And I've [C]seen your flag on the [F]marble [G]arch
+And [Am]love is not a victory [F]march
+It's a [G]cold and it's a [E7]broken Halle[Am]lujah
+
+[Chorus]
+Halle[F]lujah, Halle[Am]lujah
+Halle[F]lujah, Halle[C]lu---[G]jah [C] [Am] [C] [Am]
+
+[Verse 4]
+There [C]was a time you [Am]let me know
+What's [C]really going [Am]on below
+But [F]now you never [G]show that to me, [C]do ya? [G]
+But re[C]member when I [F]moved in [G]you
+And the [Am]holy dove was [F]moving too
+And [G]every breath we [E7]drew was Halle[Am]lujah
+
+[Chorus / Outro]
+Halle[F]lujah, Halle[Am]lujah
+Halle[F]lujah, Halle[C]lu---[G]jah [C]
+Halle[F]lujah, Halle[Am]lujah
 Halle[F]lujah, Halle[C]lu---[G]jah [C]`;
   }
 
@@ -951,11 +1190,45 @@ Darling, just [C]dive right in and follow my [D]lead
 Well, I found a [G]girl, beautiful and [Em]sweet
 Oh, I never [C]knew you were the someone waiting for [D]me
 
+[Pre-Chorus]
+'Cause we were just kids when we [G]fell in love, not knowing [Em]what it was
+I will not [C]give you up this [G]ti-[D]ime
+But darling, just [G]kiss me slow, your heart is [Em]all I own
+And in your [C]eyes you're holding [D]mine
+
 [Chorus]
 Baby, I'm [G]dancing in the [Em]dark with you between my [C]arms
 Barefoot on the [G]grass, listening to our [D]favorite song
 When you said you looked a [G]mess, I whispered under[Em]neath my breath
-But you [C]heard it, darling, you look [D]perfect to[G]night`;
+But you [C]heard it, darling, you look [D]perfect to[G]night
+
+[Verse 2]
+Well, I found a [G]woman, stronger than [Em]anyone I know
+She shares my [C]dreams, I hope that someday I'll share her [D]home
+I found a [G]lover, to carry more than [Em]just my secrets
+To carry [C]love, to carry children of our [D]own
+
+[Pre-Chorus]
+We are still kids, but we're [G]so in love, fighting a[Em]gainst all odds
+I know we'll [C]be alright this [G]ti-[D]ime
+Darling, just [G]hold my hand, be my girl, I'll [Em]be your man
+I see my [C]future in your [D]eyes
+
+[Chorus]
+Baby, I'm [G]dancing in the [Em]dark with you between my [C]arms
+Barefoot on the [G]grass, listening to our [D]favorite song
+When I saw you in that [G]dress, looking so [Em]beautiful
+I don't de[C]serve this, darling, you look [D]perfect to[G]night
+
+[Solo]
+[G] [Em] [C] [D]
+
+[Chorus / Outro]
+Baby, I'm [G]dancing in the [Em]dark with you between my [C]arms
+Barefoot on the [G]grass, listening to our [D]favorite song
+I have faith in what I [G]see, now I know I have [Em]met an angel in [C]person
+And she looks [D]perfect
+No, I don't [C]deserve this, [D]you look perfect to[G]night`;
   }
 
   if (t.includes('shape of you')) {
@@ -1040,7 +1313,26 @@ Oh, [Dm]I be[G7]lieve in [Bb]yester[F]day
 [Verse 2]
 [F]Suddenly, [Em7]I'm not [A7]half the man I [Dm]used to be [Dm/C]
 [Bb]There's a [C7]shadow hanging [F]over me [F/E]
-Oh, [Dm]yester[G7]day came [Bb]sudden[F]ly`;
+Oh, [Dm]yester[G7]day came [Bb]sudden[F]ly
+
+[Chorus 1]
+[Em7]Why [A7]she [Dm]had [C]to [Bb]go, I don't [Gm6]know, she [C7]wouldn't [F]say
+[Em7]I [A7]said [Dm]some[C]thing [Bb]wrong, now I [Gm6]long for [C7]yester[F]day
+
+[Verse 3]
+[F]Yesterday, [Em7]love was [A7]such an easy [Dm]game to play [Dm/C]
+[Bb]Now I [C7]need a place to [F]hide away [F/E]
+Oh, [Dm]I be[G7]lieve in [Bb]yester[F]day
+
+[Chorus 2]
+[Em7]Why [A7]she [Dm]had [C]to [Bb]go, I don't [Gm6]know, she [C7]wouldn't [F]say
+[Em7]I [A7]said [Dm]some[C]thing [Bb]wrong, now I [Gm6]long for [C7]yester[F]day
+
+[Verse 4 / Outro]
+[F]Yesterday, [Em7]love was [A7]such an easy [Dm]game to play [Dm/C]
+[Bb]Now I [C7]need a place to [F]hide away [F/E]
+Oh, [Dm]I be[G7]lieve in [Bb]yester[F]day
+[Dm]Mm-mm-mm-[G7]mm, [Bb]mm-[F]mm`;
   }
 
   if (t.includes('hey jude')) {
@@ -1051,11 +1343,50 @@ Oh, [Dm]yester[G7]day came [Bb]sudden[F]ly`;
 Hey [F]Jude, don't make it [C]bad
 Take a [C7]sad song and make it [F]better
 Re[Bb]member to let her into your [F]heart
-Then you can [C7]start to make it [F]better`;
+Then you can [C7]start to make it [F]better
+
+[Verse 2]
+Hey [F]Jude, don't be a[C]fraid
+You were [C7]made to go out and [F]get her
+The [Bb]minute you let her under your [F]skin
+Then you be[C7]gin to make it [F]better
+
+[Chorus 1]
+[F7]And anytime you feel the [Bb]pain, hey Jude, re[Gm]frain
+Don't carry the [C7]world upon your [F]shoulders
+[F7]For well you know that it's a [Bb]fool who plays it [Gm]cool
+By making his [C7]world a little [F]colder
+[F]Da da da [F7]da da [C7]da da da da
+
+[Verse 3]
+Hey [F]Jude, don't let me [C]down
+You have [C7]found her, now go and [F]get her
+Re[Bb]member to let her into your [F]heart
+Then you can [C7]start to make it [F]better
+
+[Chorus 2]
+[F7]So let it out and let it [Bb]in, hey Jude, be[Gm]gin
+You're waiting for [C7]someone to per[F]form with
+[F7]And don't you know that it's just [Bb]you, hey Jude, you'll [Gm]do
+The movement you [C7]need is on your [F]shoulder
+[F]Da da da [F7]da da [C7]da da da da
+
+[Verse 4]
+Hey [F]Jude, don't make it [C]bad
+Take a [C7]sad song and make it [F]better
+Re[Bb]member to let her under your [F]skin
+Then you'll be[C7]gin to make it [F]better, better, better, better, better, yeah!
+
+[Outro]
+[F]Na na na, [Eb]na-na-na na, [Bb]na-na-na na, hey [F]Jude
+[F]Na na na, [Eb]na-na-na na, [Bb]na-na-na na, hey [F]Jude
+[F]Na na na, [Eb]na-na-na na, [Bb]na-na-na na, hey [F]Jude
+[F]Na na na, [Eb]na-na-na na, [Bb]na-na-na na, hey [F]Jude`;
   }
 
   if (t.includes('wish you were here')) {
     return `[Intro]
+[Em7] [G] [Em7] [G] [Em7] [A7sus4] [Em7] [A7sus4] [G]
 [Em7] [G] [Em7] [G] [Em7] [A7sus4] [Em7] [A7sus4] [G]
 
 [Verse 1]
@@ -1064,40 +1395,104 @@ Heaven from [Am]hell, blue skies from [G]pain
 Can you tell a green [D/F#]field from a cold steel [C]rail?
 A smile from a [Am]veil? Do you think you can [G]tell?
 
+[Verse 2]
+Did they get you to [C]trade your heroes for [D/F#]ghosts?
+Hot ashes for [Am]trees? Hot air for a [G]cool breeze?
+Cold comfort for [D/F#]change? Did you ex[C]change
+A walk-on part in the [Am]war for a lead role in a [G]cage?
+
 [Chorus]
 How I [C]wish, how I wish you were [D/F#]here
 We're just [Am]two lost souls swimming in a fish bowl, [G]year after year
 [D/F#]Running over the same old ground, [C]what have we found?
-The same old [Am]fears, wish you were [G]here`;
+The same old [Am]fears, wish you were [G]here
+
+[Guitar Solo Outro]
+[Em7] [G] [Em7] [G] [Em7] [A7sus4] [Em7] [A7sus4] [G]
+[Em7] [G] [Em7] [G] [Em7] [A7sus4] [Em7] [A7sus4] [G]`;
   }
 
   if (t.includes('boulevard of broken dreams')) {
     return `[Intro]
 [Em] [G] [D] [A]
+[Em] [G] [D] [A]
 
 [Verse 1]
 I [Em]walk a [G]lonely road, the [D]only one that [A]I have ever [Em]known
 Don't know [G]where it goes, [D]but it's home to [A]me and I walk a[Em]lone
+I walk this [G]empty street, [D]on the Boulevard of [A]Broken [Em]Dreams
+Where the [G]city sleeps, and [D]I'm the only [A]one and I walk a[Em]lone
 
 [Chorus]
 My [C]shadow's the [G]only one that [D]walks be[Em]side me
 My [C]shallow [G]heart's the only [D]thing that's [Em]beating
 Some[C]times I [G]wish someone out [D]there will [Em]find me
-'Til [C]then I walk a[B7]lone`;
+'Til [C]then I walk a[B7]lone
+Ah-ah, [Em]ah-ah, [G]ah-ah, [D]ah-ah, [A]ah-ah
+
+[Verse 2]
+I'm [Em]walking down the [G]line that di[D]vides me somewhere [A]in my [Em]mind
+On the [G]border line [D]of the edge and [A]where I walk a[Em]lone
+Read be[G]tween the lines, [D]what's fucked up and [A]everything's al[Em]right
+Check my [G]vital signs to [D]know I'm still a[A]live and I walk a[Em]lone
+
+[Chorus]
+My [C]shadow's the [G]only one that [D]walks be[Em]side me
+My [C]shallow [G]heart's the only [D]thing that's [Em]beating
+Some[C]times I [G]wish someone out [D]there will [Em]find me
+'Til [C]then I walk a[B7]lone
+Ah-ah, [Em]ah-ah, [G]ah-ah, [D]ah-ah, [A]ah-ah
+
+[Guitar Solo]
+[C] [G] [D] [Em]
+[C] [G] [D] [Em]
+[C] [G] [B7]
+
+[Verse 3 / Outro]
+I [Em]walk a [G]lonely road, the [D]only one that [A]I have ever [Em]known
+Don't know [G]where it goes, [D]but it's home to [A]me and I walk a[Em]lone`;
   }
 
   if (t.includes('sweet child o\' mine') || t.includes('sweet child o mine')) {
     return `[Intro]
+[D] [C] [G] [D]
 [D] [C] [G] [D]
 
 [Verse 1]
 [D]She's got a smile that it seems to me
 Re[C]minds me of childhood memories
 Where [G]everything was as fresh as the bright blue [D]sky
+[D]Now and then when I see her face
+She [C]takes me away to that special place
+And if I [G]stare too long, I'd probably break down and [D]cry
 
 [Chorus]
 [A]Whoa, [B]oh, [C]oh, sweet child o' [D]mine
-[A]Whoa, [B]oh, [C]oh, [C]sweet love of [D]mine`;
+[A]Whoa, [B]oh, [C]oh, sweet love of [D]mine
+
+[Verse 2]
+[D]She's got eyes of the bluest skies
+As [C]if they thought of rain
+I [G]hate to look into those eyes and see an ounce of [D]pain
+[D]Her hair reminds me of a warm safe place
+Where [C]as a child I'd hide
+And [G]pray for the thunder and the rain to quietly pass me [D]by
+
+[Chorus]
+[A]Whoa, [B]oh, [C]oh, sweet child o' [D]mine
+[A]Whoa, [B]oh, [C]oh, sweet love of [D]mine
+[A]Whoa, [B]oh, [C]oh, sweet child o' [D]mine
+[A]Whoa, [B]oh, [C]oh, sweet love of [D]mine
+
+[Guitar Solo]
+[Em] [C] [B7] [Am]
+[Em] [C] [B7] [Am]
+
+[Breakdown Section]
+[Em]Where do we go? [G]Where do we go now? [A]Where do we [C]go?
+[Em]Where do we go? [G]Where do we go now? [A]Where do we [C]go now?
+[Em]Where do we go? [G]Sweet child, [A]where do we [C]go now?
+[Em]No, no, no, no, [G]no, no! [A]Sweet child, [C]sweet child of mine! [D]`;
   }
 
   if (t.includes('count on me')) {
@@ -1136,18 +1531,50 @@ Taken away to the [Am]dark side
   if (t.includes('highway to hell')) {
     return `[Intro]
 [A] [D/F#] [G] [D/F#] [G] [D/F#] [G] [D/F#] [A]
+[A] [D/F#] [G] [D/F#] [G] [D/F#] [G] [D/F#] [A]
 
 [Verse 1]
 [A]Living easy, [D/F#]living [G]free
 [D/F#]Season [G]ticket on a [D/F#]one-way [A]ride
 [A]Asking nothing, [D/F#]leave me [G]be
 [D/F#]Taking [G]everything [D/F#]in my [A]stride
+[A]Don't need reason, [D/F#]don't need [G]rhyme
+[D/F#]Ain't nothing [G]that I'd [D/F#]rather [A]do
+[A]Going down, [D/F#]party [G]time
+My [E]friends are gonna be there too, yeah!
 
 [Chorus]
 I'm on the [A]highway to [D]hell [G] [D]
 [A]Highway to [D]hell [G] [D]
 [A]Highway to [D]hell [G] [D]
-[A]Highway to [D]hell`;
+[A]Highway to [D]hell
+
+[Verse 2]
+[A]No stop signs, [D/F#]speed [G]limit
+[D/F#]Nobody's gonna [G]slow me [D/F#]down [A]
+[A]Like a wheel, [D/F#]gonna spin [G]it
+[D/F#]Nobody's gonna [G]mess me [D/F#]round [A]
+[A]Hey Satan, [D/F#]payin' my [G]dues
+[D/F#]Playing in a [G]rocking [D/F#]band [A]
+[A]Hey mama, [D/F#]look at [G]me
+I'm on my [E]way to the promised land, whoo!
+
+[Chorus]
+I'm on the [A]highway to [D]hell [G] [D]
+[A]Highway to [D]hell [G] [D]
+[A]Highway to [D]hell [G] [D]
+[A]Highway to [D]hell
+
+[Guitar Solo]
+[D] [G] [D] [A] [D] [G] [D] [A]
+[D] [G] [D] [A] [D] [G] [D] [E]
+
+[Chorus / Outro]
+I'm on the [A]highway to [D]hell [G] [D]
+[A]Highway to [D]hell [G] [D]
+[A]Highway to [D]hell [G] [D]
+[A]Highway to [D]hell
+And I'm going down, all the way down! [A]`;
   }
 
   if (t.includes('dust in the wind')) {
@@ -1267,7 +1694,12 @@ She's a [G]Killer [Bm]Queen, [Em]gunpowder, [Bm]gelatine
 
   if (t.includes('bohemian rhapsody')) {
     return `[Intro]
-[Bb6] [C7] [Bb6] [C7]
+[Bb6]Is this the real life? [C7]Is this just fantasy?
+[F7]Caught in a land[Cm7]slide, no es[F7]cape from re[Bb]ality
+[Gm]Open your eyes, look [Bb7]up to the skies and [Eb]see
+[Cm7]I'm just a poor boy, [F7]I need no sympathy
+Because I'm [B]easy [Bb]come, [A]easy [Bb]go, [B]little [Bb]high, [A]little [Bb]low
+[Eb]Any way the [Bb/D]wind blows [C#dim]doesn't really [F7/C]matter to [F7]me, to [Bb]me
 
 [Verse 1]
 [Bb]Mama, just [Gm]killed a man
@@ -1276,7 +1708,7 @@ Put a [Cm]gun against his head, pulled my [F7]trigger, now he's dead
 But [Cm]now I've gone and [G+]thrown it [Eb/G]all a[F#dim]way
 [Eb]Mama, [Bb/D]ooh, [Cm]didn't mean to make you cry
 If [F7]I'm not back again this time to[Bb]morrow
-Carry [Gm]on, carry [Cm]on as if [Ebm]nothing really [Bb]matters
+Carry [Gm]on, carry [Cm]on as if [Ebm]nothing really [Bb]matters [Eb] [Bb]
 
 [Verse 2]
 [Bb]Too late, my [Gm]time has come
@@ -1286,12 +1718,29 @@ Gotta [Cm]leave you all be[G+]hind and [Eb/G]face the [F#dim]truth
 [Eb]Mama, [Bb/D]ooh, [Cm]I don't wanna die
 I [F7]sometimes wish I'd never been born at [Bb]all
 
+[Guitar Solo]
+[Bb] [Gm] [Cm] [F7]
+[Bb] [Gm] [Cm] [G+] [Eb/G] [F#dim]
+[Eb] [Bb/D] [Cm] [F7]
+
 [Opera Section]
 [D/A] [A] [D/A] [A]
 [D]I see a little [A]silhouetto of a man
 [D]Scaramouche, [A]Scaramouche, will you [D]do the Fan[A]dango?
 [C#m]Thunderbolt and lightning, [G#7]very, very [C#m]frightening me
-[N.C.]Galileo, Galileo, Galileo, Galileo, Galileo, Figaro, magnifico-o-o
+[N.C.](Galileo) Galileo, (Galileo) Galileo, Galileo Figaro, magnifico-o-o
+[B]I'm just a poor boy nobody loves me
+[Ab]He's just a poor boy from a poor family
+[Eb]Spare him his life from this [Ab]monstrosi[G]ty
+[Ab]Easy [Eb]come, [Fm]easy [Eb]go, will you let me go?
+[Bb]Bismillah! [Eb]No, we will not let you go! (Let him go!)
+[Bb]Bismillah! We will not let you go! (Let him go!)
+[Bb]Bismillah! We will not let you go! (Let me go!)
+Will not let you go! (Let me go!)
+Never, never let you go! (Never let me go!)
+[F#7]No, no, no, no, no, no, no!
+[Bm]Oh, [A]mama [D]mia, [C#m]mama [F#m]mia, [D]mama [A]mia, let me [D]go
+[D#dim]Beelzebub has a [Eb]devil put aside for [Bb]me, for [Bb7]me, for [Eb]me!
 
 [Rock Section]
 [Eb]So you think you can stone me and [Bb]spit in my [Eb]eye?
@@ -1301,8 +1750,10 @@ I [F7]sometimes wish I'd never been born at [Bb]all
 
 [Outro]
 [Cm] [Gm] [Cm] [Gm] [Ab] [Bb] [Eb]
-[Eb]Nothing really [Bb/D]matters, [Cm]anyone can [G/B]see
-[Ab]Nothing really matters, [Bb7]nothing really matters to [Eb]me
+[Eb]Oh, [Bb/D]yeah, oh [Cm]yeah [G/B]
+[Ab]Nothing really matters, [Bb7]anyone can [Eb]see
+[Eb]Nothing really [Bb/D]matters, [Cm]nothing really matters to [G/B]me
+[Ab] [Bb7] [Eb]
 [Bb/D] [Cm] [Bb] [Ab] [Eb/G] [Fm7] [Eb]
 [N.C.]Any way the wind blows`;
   }
@@ -1368,7 +1819,25 @@ You got [G]blood on your face, you big disgrace
 [Bb]We are the [Dm]champions, my [Gm]friends [Eb] [F]
 [Bb]And we'll keep on [Dm]fighting 'til the [Eb]end [F#dim]
 [Gm]We are the [C7]champions, [Ebm]we are the [Ab7]champions
-[Bb]No time for [Db]losers, 'cause [Eb]we are the [F7]champions of the [Bb]world`;
+[Bb]No time for [Db]losers, 'cause [Eb]we are the [F7]champions of the [Bb]world
+
+[Verse 2]
+[Cm]I've taken my [Gm]bows and my [Cm]curtain [Gm]calls
+[Cm]You brought me fame and fortune and [Gm]everything that goes with it
+[Cm]I thank you [Gm]all
+[Eb]But it's been no bed of [Ab]roses, [Eb]no pleasure [Ab]cruise
+[Eb]I consider it a challenge before the [Bb/D]whole human race
+[Cm]And I ain't gonna [F7]lose
+
+[Chorus]
+[Bb]We are the [Dm]champions, my [Gm]friends [Eb] [F]
+[Bb]And we'll keep on [Dm]fighting 'til the [Eb]end [F#dim]
+[Gm]We are the [C7]champions, [Ebm]we are the [Ab7]champions
+[Bb]No time for [Db]losers, 'cause [Eb]we are the [F7]champions of the [Bb]world
+[Bb]We are the [Dm]champions, my [Gm]friends [Eb] [F]
+[Bb]And we'll keep on [Dm]fighting 'til the [Eb]end [F#dim]
+[Gm]We are the [C7]champions, [Ebm]we are the [Ab7]champions
+[Bb]No time for [Db]losers, 'cause [Eb]we are the [F7]champions... [Bb]`;
   }
 
   if (t.includes('somebody to love')) {
@@ -1389,7 +1858,24 @@ But I [Bb7]just can't get no re[Eb]lief, Lord!
 
 [Chorus]
 [Ab]Somebody, (somebody), ooh [Eb/G]somebody, (somebody)
-Can [Db]anybody find me [Eb]somebody to [Ab]love?`;
+Can [Db]anybody find me [Eb]somebody to [Ab]love?
+
+[Verse 2]
+I work [Ab]hard (he works hard) every [Eb/G]day of my life
+I work 'til I [Fm]ache in my [Bb7]bones
+At the [Eb]end (at the end of the day)
+I take [Ab]home my hard earned [Eb]pay all on my own
+I get [Ab]down on my knees and I [Eb/G]start to pray
+'Til the [Fm]tears run down from my [Bb7]eyes
+Lord, [Eb]somebody, (somebody), ooh somebody
+Can [Db]anybody find me [Eb]somebody to [Ab]love?
+
+[Guitar Solo]
+[Db] [Ab] [Db] [Ab] [Db] [Bbm7] [Eb]
+
+[Outro]
+Can [Ab]anybody find me [Db]somebody to [Eb]love?
+Find me somebody to [Ab]love!`;
   }
 
   if (t.includes('i want to break free')) {
@@ -1406,7 +1892,28 @@ God [B]knows, [A]God knows I want to break [E]free
 I've fallen in [E]love, I've fallen in love for the first time
 And this time I know it's for [A]real
 I've fallen in [E]love, yeah
-God [B]knows, [A]God knows I've fallen in [E]love`;
+God [B]knows, [A]God knows I've fallen in [E]love
+
+[Bridge]
+It's [B]strange but it's [A]true, yeah
+[B]I can't get over the way you [A]love me like you do
+But I [C#m]have to be sure when I [F#sus4]walk out that [F#]door
+[A]Oh, how I [B]want to be [C#m]free, baby
+[A]Oh, how I [B]want to be [C#m]free
+[A]Oh, how I [B]want to break [E]free
+
+[Synthesizer Solo]
+[E] [A] [B] [A] [E]
+[E] [A] [B] [A] [E]
+
+[Verse 3 / Outro]
+But life still goes [E]on, I can't get used to living without, living without
+Living without you by my [A]side
+I don't want to live a[E]lone, hey
+God [B]knows, [A]got to make it on my [E]own
+So baby, can't you see, I've got to break [E]free
+I want to break free, yeah [A] [E]
+I want to break [E]free`;
   }
 
   if (t.includes('the show must go on')) {
@@ -1418,12 +1925,42 @@ God [B]knows, [A]God knows I've fallen in [E]love`;
 [Em]Abandoned places, I guess we know the [F#sus4]score, [F#]on and on
 [Bm]Does anybody know what we are [G]looking for?
 [Em]Another hero, another mindless [F#sus4]crime [F#]
+Behind the [Bm]curtain, in the pantomime
+[G]Hold the line, [Em]does anybody want to take it [F#sus4]anymore? [F#]
+
+[Chorus]
+The [Bm]show must go on! [G]
+The [Em]show must go on, yeah! [F#sus4] [F#]
+Inside my [Bm]heart is breaking, my [G]make-up may be flaking
+But my [Em]smile still stays [F#]on
+
+[Verse 2]
+[C#m]Whatever happens, I'll leave it all to [A]chance
+[F#m]Another heartache, another failed ro[G#sus4]mance, [G#]on and on
+[C#m]Does anybody know what we are [A]living for?
+I guess I'm [F#m]learning, I must be warmer [G#sus4]now [G#]
+I'll soon be [C#m]turning, round the corner now
+[A]Outside the dawn is breaking, [F#m]but inside in the dark I'm aching to be [G#sus4]free! [G#]
 
 [Chorus]
 The [Bm]show must go on! [G]
 The [Em]show must go on! [F#sus4] [F#]
 Inside my [Bm]heart is breaking, my [G]make-up may be flaking
-But my [Em]smile still stays [F#]on`;
+But my [Em]smile still stays [F#]on
+
+[Guitar Solo]
+[Bm] [G] [Em] [F#sus4] [F#]
+[Bm] [G] [Em] [F#sus4] [F#]
+
+[Bridge / Outro]
+My [G]soul is painted like the wings of [A]butterflies
+[F#m]Fairytales of yesterday will [Bm]grow but never die
+[Em]I can fly, my friends!
+The [Bm]show must go on! [G]
+I'll [Em]face it with a grin, I'm never giving in
+On with the [F#sus4]show! [F#]
+I'll [Bm]top the bill, I'll overkill, I have to find the [G]will to carry on
+[Em]On with the show, [F#]on with the [Bm]show!`;
   }
 
   if (t.includes('starboy')) {
@@ -2001,22 +2538,6 @@ Well, I'm [E]back, back
 [D]Back in black, yes, [A]I'm back in [E]black`;
   }
 
-  if (t.includes('highway to hell')) {
-    return `[Intro]
-[A] [D/F#] [G] [D/F#] [G] [D/F#] [A]
-
-[Verse 1]
-[A]Living easy, [D/F#]living [G]free
-[D/F#]Season [G]ticket on a [D/F#]one-way [A]ride
-[A]Asking nothing, [D/F#]leave me [G]be
-[D/F#]Taking [G]everything [D/F#]in my [A]stride
-
-[Chorus]
-I'm on the [A]highway to [D]hell [G] [D]
-[A]Highway to [D]hell [G] [D]
-I'm on the [A]highway to [D]hell [G] [D]
-[A]Highway to [D]hell`;
-  }
 
   if (t.includes('enter sandman')) {
     return `[Intro]

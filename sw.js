@@ -3,8 +3,9 @@
  * @description Service Worker para funcionamiento 100% Offline y PWA Installable.
  */
 
-const CACHE_NAME = 'tabs-chords-pro-v3';
+const CACHE_NAME = 'tabs-chords-pro-v4.6';
 const ASSETS_TO_CACHE = [
+  './',
   './index.html',
   './manifest.json',
   './assets/icons/icon-192.png',
@@ -92,6 +93,7 @@ const ASSETS_TO_CACHE = [
   './src/data/catalog/OfflineUniversalLibraryEngine.js',
   './src/data/catalog/PopCatalog.js',
   './src/data/catalog/RockCatalog.js',
+  './src/data/catalog/SongMetadataResolver.js',
   './src/data/lyrics/KnownSongLyrics.js',
   './src/data/lyrics/LyricsHarmonizer.js',
   './src/hardware/StageAutomationEngine.js',
@@ -138,6 +140,7 @@ const ASSETS_TO_CACHE = [
   './src/ui/lyrics/VFXEngine.js',
   './src/ui/lyrics/VersionPickerModal.js',
   './src/ui/lyrics/VocalRangeFinder.js',
+  './src/ui/lyrics/VocalScorecardModal.js',
   './src/ui/lyrics/YouTubeCompanion.js',
   './src/ui/tools/ArcadeHighwayVisualizer.js',
   './src/ui/tools/AudioTranscriberTool.js',
@@ -158,20 +161,18 @@ const ASSETS_TO_CACHE = [
   './src/utils/sanitize.js'
 ];
 
+async function precacheAssets() {
+  const cache = await caches.open(CACHE_NAME);
+  try {
+    await cache.addAll(ASSETS_TO_CACHE);
+  } catch (err) {
+    console.warn('[SW] Precache addAll fallo, intentando individualmente:', err);
+    await Promise.allSettled(ASSETS_TO_CACHE.map((url) => cache.add(url).catch(() => {})));
+  }
+}
+
 self.addEventListener('install', (e) => {
-  self.skipWaiting();
-  e.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      // addAll falla si un recurso 404 → usamos add individual con catch
-      return Promise.allSettled(
-        ASSETS_TO_CACHE.map((url) =>
-          cache.add(url).catch(() => {
-            console.warn('[SW] No se pudo cachear:', url);
-          })
-        )
-      );
-    })
-  );
+  e.waitUntil(precacheAssets().then(() => self.skipWaiting()));
 });
 
 self.addEventListener('activate', (e) => {
@@ -182,6 +183,31 @@ self.addEventListener('activate', (e) => {
       )
     ).then(() => self.clients.claim())
   );
+});
+
+self.addEventListener('message', (event) => {
+  if (event.data?.type !== 'OFFLINE_DIAGNOSTICS') return;
+  const replyPort = event.ports?.[0];
+  if (!replyPort) return;
+
+  event.waitUntil((async () => {
+    const cache = await caches.open(CACHE_NAME);
+    const resources = await Promise.all(ASSETS_TO_CACHE.map(async (path) => ({
+      path,
+      available: Boolean(await cache.match(path, { ignoreSearch: true }))
+    })));
+    replyPort.postMessage({
+      type: 'OFFLINE_DIAGNOSTICS_RESULT',
+      cacheName: CACHE_NAME,
+      resources
+    });
+  })().catch((error) => {
+    replyPort.postMessage({
+      type: 'OFFLINE_DIAGNOSTICS_RESULT',
+      error: String(error?.message || error),
+      resources: []
+    });
+  }));
 });
 
 self.addEventListener('fetch', (e) => {
@@ -220,13 +246,15 @@ self.addEventListener('fetch', (e) => {
       }).catch(() =>
         caches.match(e.request, { ignoreSearch: true }).then((cached) => {
           if (cached) return cached;
-          // Fallback SPA: devolver index.html para navegación offline
-          return caches.match('./index.html', { ignoreSearch: true }).then((fallback) =>
-            fallback || new Response('<h1>Sin conexión</h1>', {
-              status: 503,
-              headers: { 'Content-Type': 'text/html' }
-            })
-          );
+          return caches.match('./index.html', { ignoreSearch: true })
+            .then((fb) => fb || caches.match('./', { ignoreSearch: true }))
+            .then((fb) => fb || caches.match('/index.html', { ignoreSearch: true }))
+            .then((fallback) =>
+              fallback || new Response('<h1>Sin conexión</h1>', {
+                status: 503,
+                headers: { 'Content-Type': 'text/html' }
+              })
+            );
         })
       )
     );

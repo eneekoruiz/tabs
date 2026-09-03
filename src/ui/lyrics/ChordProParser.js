@@ -130,10 +130,13 @@ export class ChordProParser {
     for (const rawLine of lines) {
       const line = rawLine.trim();
 
-      if (/^\[(Intro|Verse|Chorus|Bridge|Outro|Solo|Pre-Chorus|Estribillo|Verso)[^\]]*\]$/i.test(line)) {
-        const sectionName = line.replace(/[\[\]]/g, '');
-        html += `<div class="lyrics-section-header">${sectionName}</div>`;
-        continue;
+      if (/^\[[^\[\]]+\]$/.test(line)) {
+        const inner = line.slice(1, -1).trim();
+        const isSingleChord = /^[A-G][#b]?(m|maj|min|dim|aug|sus|add|\d|\+)*(\/[A-G][#b]?)?$/i.test(inner);
+        if (!isSingleChord) {
+          html += `<div class="lyrics-section-header">${inner}</div>`;
+          continue;
+        }
       }
 
       if (line === '') {

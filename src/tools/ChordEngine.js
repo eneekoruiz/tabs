@@ -75,25 +75,39 @@ class ChordEngine {
     return `${newRoot}${suffix}`;
   }
 
-  getChordSvg(chordName, instrument = this.currentInstrument) {
-    return this.renderChordSVG(chordName, { instrument });
+  getVoicings(chordName, instrument = this.currentInstrument) {
+    return ChordSvgRenderer.getVoicings(chordName, instrument);
   }
 
-  renderChordSVG(chordName, { instrument = this.currentInstrument, isLeftHanded = this.isLeftHanded } = {}) {
+  getChordSvg(chordName, instrument = this.currentInstrument, voicingIndex = 0) {
+    return this.renderChordSVG(chordName, { instrument, voicingIndex });
+  }
+
+  renderChordSVG(chordName, { instrument = this.currentInstrument, isLeftHanded = this.isLeftHanded, voicingIndex = 0 } = {}) {
     if (instrument === 'piano') {
-      return ChordSvgRenderer.renderPiano(chordName);
+      return ChordSvgRenderer.renderPiano(chordName, voicingIndex);
     } else if (instrument === 'ukulele') {
-      return ChordSvgRenderer.renderUkulele(chordName, isLeftHanded);
+      return ChordSvgRenderer.renderUkulele(chordName, isLeftHanded, voicingIndex);
     }
-    return ChordSvgRenderer.renderGuitar(chordName, isLeftHanded);
+    return ChordSvgRenderer.renderGuitar(chordName, isLeftHanded, voicingIndex);
   }
 
-  auditionChord(chordName, instrument = this.currentInstrument) {
+  auditionChord(chordName, instrument = this.currentInstrument, voicingIndex = 0) {
     try {
       const ctx = this.getAudioContext();
-      ChordAudioSynthesizer.audition(ctx, chordName, instrument);
+      ChordAudioSynthesizer.audition(ctx, chordName, instrument, voicingIndex);
     } catch (err) {
       console.warn('[ChordEngine] Error reproduciendo audio:', err);
+    }
+  }
+
+  pluckString(stringIndex, chordName = this.currentChord, instrument = this.currentInstrument, voicingIndex = 0) {
+    try {
+      const ctx = this.getAudioContext();
+      return ChordAudioSynthesizer.pluckString(ctx, stringIndex, chordName, instrument, voicingIndex);
+    } catch (err) {
+      console.warn('[ChordEngine] Error pulsando cuerda aislada:', err);
+      return null;
     }
   }
 }

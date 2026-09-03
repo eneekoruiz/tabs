@@ -80,6 +80,12 @@ class KeyboardShortcuts {
       // 1. Soporte de Pedales Bluetooth y Navegación de Página (Page Down / Page Up)
       if (e.code === 'PageDown') {
         e.preventDefault();
+        const lyricsContainer = document.querySelector('.lyrics-chords-container');
+        if (lyricsContainer) {
+          window.scrollBy({ top: 420, behavior: 'smooth' });
+          toast.show('Pedal: Página Abajo 📄', 'info', 600);
+          return;
+        }
         const viewport = document.getElementById('score-viewport');
         if (viewport) {
           viewport.scrollBy({ top: 350, behavior: 'smooth' });
@@ -88,6 +94,12 @@ class KeyboardShortcuts {
       }
       if (e.code === 'PageUp') {
         e.preventDefault();
+        const lyricsContainer = document.querySelector('.lyrics-chords-container');
+        if (lyricsContainer) {
+          window.scrollBy({ top: -420, behavior: 'smooth' });
+          toast.show('Pedal: Página Arriba 📄', 'info', 600);
+          return;
+        }
         const viewport = document.getElementById('score-viewport');
         if (viewport) {
           viewport.scrollBy({ top: -350, behavior: 'smooth' });
@@ -95,10 +107,15 @@ class KeyboardShortcuts {
         return;
       }
 
-      // 2. Play / Pause -> Barra espaciadora (solo fuera de inputs)
+      // 2. Play / Pause / Auto-Scroll -> Barra espaciadora (solo fuera de inputs)
       if (e.code === 'Space' || e.key === ' ') {
         e.preventDefault();
-        audioEngine.playPause();
+        const isLyricsView = !!document.querySelector('.lyrics-chords-container');
+        if (isLyricsView) {
+          events.emit('song:toggleAutoScroll');
+        } else {
+          audioEngine.playPause();
+        }
         return;
       }
 
@@ -124,15 +141,25 @@ class KeyboardShortcuts {
         return;
       }
 
-      // 5. Cambiar Pista Visual -> Flecha Arriba / Abajo
+      // 5. Ajustar Velocidad de Auto-Scroll en Letras o Pista en Partitura -> Flecha Arriba / Abajo
       if (e.code === 'ArrowUp') {
         e.preventDefault();
+        const isLyricsView = !!document.querySelector('.lyrics-chords-container');
+        if (isLyricsView) {
+          events.emit('song:stepAutoScroll', 5);
+          return;
+        }
         const curTrack = state.get('activeTrackIndex') || 0;
         audioEngine.selectVisualTrack(Math.max(0, curTrack - 1));
         return;
       }
       if (e.code === 'ArrowDown') {
         e.preventDefault();
+        const isLyricsView = !!document.querySelector('.lyrics-chords-container');
+        if (isLyricsView) {
+          events.emit('song:stepAutoScroll', -5);
+          return;
+        }
         const curTrack = state.get('activeTrackIndex') || 0;
         const total = (state.get('tracksState') || []).length;
         audioEngine.selectVisualTrack(Math.min(total - 1, curTrack + 1));

@@ -891,4 +891,83 @@ test.describe('🎸 Tabs & Chords PRO - Suite E2E Modo Letras & Acordes Multi-In
     await expect(btnToggleScroll).not.toHaveClass(/active/);
   });
 
+  test('24. Verificación de Jerarquía Header y Diccionario de Voicings Moderno', async ({ page }) => {
+    // Abrir Blackbird
+    const heroSearch = page.locator('#exploreSearchInput');
+    await heroSearch.fill('Blackbird');
+    const songCard = page.locator('.song-card', { hasText: /Blackbird/i }).locator('.btn-load-explore-song').first();
+    await songCard.click();
+
+    await expect(page.locator('.lyrics-chords-container')).toBeVisible({ timeout: 10000 });
+
+    // 1. Verificar que el Toggle Tocar / Cantar está en la fila del título (lyrics-hero-row)
+    const heroRow = page.locator('.lyrics-hero-row');
+    await expect(heroRow).toBeVisible();
+    const heroModeToggle = heroRow.locator('.performance-mode-segmented-control');
+    await expect(heroModeToggle).toBeVisible();
+    const btnPlayMode = heroModeToggle.locator('.btn-mode-toggle[data-mode="play"]');
+    const btnSingMode = heroModeToggle.locator('.btn-mode-toggle[data-mode="sing"]');
+    await expect(btnPlayMode).toBeVisible();
+    await expect(btnSingMode).toBeVisible();
+    await expect(btnPlayMode).toHaveText(/Tocar/i);
+    await expect(btnSingMode).toHaveText(/Cantar/i);
+
+    // 2. Verificar que la extensión de instrumento está acoplada al modo tocar
+    const instExtension = heroRow.locator('#heroInstrumentExtension');
+    await expect(instExtension).toBeVisible();
+    await expect(instExtension).toHaveClass(/is-expanded/);
+    const instPills = instExtension.locator('.btn-hero-inst-pill');
+    await expect(instPills).toHaveCount(3);
+
+    // 3. Verificar botones directos en la barra superior (Partitura y PDF)
+    const navToolsRow = page.locator('.lyrics-nav-tools-row');
+    await expect(navToolsRow.locator('#btnToggleScoreView')).toBeVisible();
+    await expect(navToolsRow.locator('#btnQuickExportPdf')).toBeVisible();
+
+    // 4. Abrir Popover de Acorde
+    const chordBadge = page.locator('.chord-badge').first();
+    await chordBadge.click();
+
+    const popover = page.locator('#chordPopoverCard');
+    await expect(popover).toBeVisible();
+
+    // 4. Verificar encabezado y botón [X]
+    await expect(popover.locator('.chord-popover-badge')).toHaveText(/DICCIONARIO DE VOICINGS/i);
+    const btnCloseX = popover.locator('#btnPopoverXClose');
+    await expect(btnCloseX).toBeVisible();
+
+    // 5. Verificar sección de Posiciones en el Mástil (Plegable por defecto)
+    const voicingsSection = popover.locator('.chord-popover-voicings-section');
+    await expect(voicingsSection).toBeVisible();
+    
+    // Desplegar más opciones si está plegado
+    const btnFold = voicingsSection.locator('#btnToggleVoicingsFold');
+    if (await btnFold.isVisible()) {
+      await btnFold.click();
+    }
+
+    const voicingCards = voicingsSection.locator('.btn-voicing-card');
+    const count = await voicingCards.count();
+    expect(count).toBeGreaterThanOrEqual(1);
+
+    // Primera posición activa por defecto
+    await expect(voicingCards.first()).toHaveClass(/active/);
+
+    // Si hay más de una posición, hacer clic en la segunda y verificar cambio de estado
+    if (count > 1) {
+      await voicingCards.nth(1).click();
+      await expect(voicingCards.nth(1)).toHaveClass(/active/);
+      await expect(voicingCards.first()).not.toHaveClass(/active/);
+    }
+
+    // 6. Cambiar a Piano y verificar que las posiciones cambian a Inversiones
+    const btnPiano = popover.locator('.btn-popover-inst[data-popinst="piano"]');
+    await btnPiano.click();
+    await expect(popover.locator('.voicings-section-title')).toContainText(/Inversiones/i);
+
+    // 7. Cerrar con [X]
+    await btnCloseX.click();
+    await expect(popover).toBeHidden();
+  });
+
 });

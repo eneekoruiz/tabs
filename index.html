@@ -12,13 +12,15 @@
   <!-- Script de registro oficial de Service Worker PWA Offline -->
   <script>
     if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
+      const registerSW = () => {
         navigator.serviceWorker.register('./sw.js').then((reg) => {
           console.log('🚀 [PWA] Service Worker activo y listo para instalación offline:', reg.scope);
         }).catch((err) => {
           console.warn('[PWA] Error al registrar Service Worker:', err);
         });
-      });
+      };
+      if (document.readyState !== 'loading') registerSW();
+      else window.addEventListener('DOMContentLoaded', registerSW);
     }
   </script>
 
@@ -39,7 +41,7 @@
   <link rel="stylesheet" href="assets/css/components/audio-sync.css?v=20260815">
   <link rel="stylesheet" href="assets/css/components/multi-instrument.css?v=20260815">
   <link rel="stylesheet" href="assets/css/components/export-modal.css?v=20260815">
-  <link rel="stylesheet" href="assets/css/components/lyrics-chords.css?v=20260815">
+  <link rel="stylesheet" href="assets/css/components/lyrics-chords.css?v=20260903-6">
   <link rel="stylesheet" href="assets/css/components/song-importer.css?v=20260815">
   <link rel="stylesheet" href="assets/css/components/settings.css?v=20260815">
   <link rel="stylesheet" href="assets/css/components/bottom-nav.css?v=20260816">

@@ -6,6 +6,7 @@
 
 import { ARTIST_DISCOGRAPHIES } from './ArtistDiscographies.js';
 import { getKnownSongLyrics } from '../lyrics/KnownSongLyrics.js';
+import { resolveSongMetadata } from './SongMetadataResolver.js';
 
 // Base de datos de géneros, progresiones armónicas de éxito mundial y estilos líricos
 const GENRE_HARMONY_PATTERNS = {
@@ -178,6 +179,7 @@ export class OfflineUniversalLibraryEngine {
    * Obtiene una letra curada o una guía armónica generada sin conexión
    */
   getSongSheet(title, artist) {
+    const meta = resolveSongMetadata(title, artist, 'rock', (s) => Math.abs(this._hashString(s)));
     // 1. Comprobar si existe en letras exactas curadas
     const exactLyrics = getKnownSongLyrics(title, artist);
     if (exactLyrics) {
@@ -187,7 +189,8 @@ export class OfflineUniversalLibraryEngine {
         key: 'C',
         capo: 0,
         tuning: 'Standard (E A D G B E)',
-        tempo: 120,
+        tempo: meta.tempo,
+        difficulty: meta.difficulty,
         strumming: '↓ ↓↑ ↑↓↑ (Pop Ballad Standard)',
         chords: ['C', 'G', 'Am', 'F', 'Em', 'D'],
         chordpro: exactLyrics,
@@ -262,13 +265,16 @@ export class OfflineUniversalLibraryEngine {
 [${c1}] [${c2}] [${c3}] [${c4}]
 [${c1}]`;
 
+    const meta = resolveSongMetadata(title, artist, genre, (s) => Math.abs(this._hashString(s)));
+
     return {
       title,
       artist,
       key: selectedKey,
       capo: (selectedKey === 'Eb' || selectedKey === 'Ab') ? 1 : 0,
       tuning: pattern.tuning,
-      tempo: pattern.tempo,
+      tempo: meta.tempo || pattern.tempo,
+      difficulty: meta.difficulty,
       strumming: pattern.strumming,
       chords: Array.from(new Set([c1, c2, c3, c4])),
       chordpro,

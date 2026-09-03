@@ -103,6 +103,14 @@ body, body.theme-charcoal {
   --status-warning: #ffbf47;
   --status-danger: #ff6b61;
 
+  /* Diagramas de Acordes y Voicings (Alto Contraste Modo Oscuro) */
+  --chord-fret-color: rgba(255, 255, 255, 0.45);
+  --chord-string-color: rgba(255, 255, 255, 0.85);
+  --chord-nut-color: #ffffff;
+  --piano-white-key: #ffffff;
+  --piano-black-key: #141420;
+  --chord-diagram-bg: rgba(255, 255, 255, 0.04);
+
   background-color: var(--bg-app);
   color: var(--text-primary);
 }
@@ -150,6 +158,14 @@ body.theme-ivory {
   --status-warning: #8a5a00;
   --status-danger: #a92f27;
 
+  /* Diagramas en Ivory */
+  --chord-fret-color: rgba(0, 0, 0, 0.3);
+  --chord-string-color: rgba(0, 0, 0, 0.75);
+  --chord-nut-color: #2d2b29;
+  --piano-white-key: #ffffff;
+  --piano-black-key: #2d2b29;
+  --chord-diagram-bg: rgba(0, 0, 0, 0.03);
+
   background-color: var(--bg-app);
   color: var(--text-primary);
 }
@@ -196,6 +212,14 @@ body.theme-amber {
   --status-success: #9ed9a4;
   --status-warning: #ffd166;
   --status-danger: #ff8b7f;
+
+  /* Diagramas en Amber */
+  --chord-fret-color: rgba(255, 183, 77, 0.45);
+  --chord-string-color: rgba(255, 248, 225, 0.85);
+  --chord-nut-color: #fff8e1;
+  --piano-white-key: #2d2419;
+  --piano-black-key: #0f0c08;
+  --chord-diagram-bg: rgba(255, 183, 77, 0.05);
 
   background-color: var(--bg-app);
   color: var(--text-primary);

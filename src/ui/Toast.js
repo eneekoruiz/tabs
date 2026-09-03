@@ -13,6 +13,7 @@ class ToastManager {
   }
 
   init() {
+    if (typeof document === 'undefined') return;
     let el = document.getElementById('toast-container');
     if (!el) {
       el = document.createElement('div');

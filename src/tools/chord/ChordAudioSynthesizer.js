@@ -7,7 +7,7 @@ import { GUITAR_CHORDS, UKULELE_CHORDS, PIANO_VOICINGS, NOTE_FREQ } from './Chor
 import { ChordSvgRenderer } from './ChordSvgRenderer.js';
 
 export class ChordAudioSynthesizer {
-  static audition(ctx, chordName, instrument = 'guitar') {
+  static audition(ctx, chordName, instrument = 'guitar', voicingIndex = 0) {
     if (!ctx) return;
     const isPiano = instrument === 'piano';
     const isUkulele = instrument === 'ukulele';
@@ -29,21 +29,33 @@ export class ChordAudioSynthesizer {
 
     if (isPiano) {
       const cleanName = ChordSvgRenderer.simplifyChord(chordName);
-      const voicing = PIANO_VOICINGS[chordName] || PIANO_VOICINGS[cleanName]
+      let voicing = PIANO_VOICINGS[chordName] || PIANO_VOICINGS[cleanName]
         || [{ key: 'C', oct: 4 }, { key: 'E', oct: 4 }, { key: 'G', oct: 4 }];
+
+      // Inversiones armónicas en teclado
+      if (voicingIndex === 1 && voicing.length >= 3) {
+        // 1ª inversión: la nota más baja sube 1 octava
+        voicing = [voicing[1], voicing[2], { key: voicing[0].key, oct: voicing[0].oct + 1 }];
+      } else if (voicingIndex === 2 && voicing.length >= 3) {
+        // 2ª inversión: las 2 notas más bajas suben 1 octava
+        voicing = [voicing[2], { key: voicing[0].key, oct: voicing[0].oct + 1 }, { key: voicing[1].key, oct: voicing[1].oct + 1 }];
+      }
+
       notes = voicing.map((v, i) => ({
         freq: (NOTE_FREQ[v.key] || 261.63) * Math.pow(2, v.oct - 4),
         delay: i * 0.018,
         isLow: v.oct <= 3,
       }));
     } else {
-      const chordData = isUkulele ? ChordSvgRenderer.getUkuleleChord(chordName) : ChordSvgRenderer.getGuitarChord(chordName);
+      const chordData = isUkulele
+        ? ChordSvgRenderer.getUkuleleChord(chordName, voicingIndex)
+        : ChordSvgRenderer.getGuitarChord(chordName, voicingIndex);
       const baseFreqs = isUkulele
         ? [392.00, 261.63, 329.63, 440.00]       // G4 C4 E4 A4
         : [82.41, 110.00, 146.83, 196.00, 246.94, 329.63]; // E2 A2 D3 G3 B3 e4
       const strumGap = isUkulele ? 0.018 : 0.028;
 
-      if (chordData) {
+      if (chordData && Array.isArray(chordData.frets)) {
         chordData.frets.forEach((fret, idx) => {
           if (fret !== -1) {
             notes.push({
@@ -185,6 +197,70 @@ export class ChordAudioSynthesizer {
 
     [osc1, osc2, osc3].forEach(o => { o.start(startTime); o.stop(startTime + duration + 0.05); });
     click.start(startTime);
+  }
+
+  /**
+   * Pulsa de forma aislada una única cuerda del acorde (Pluck interactivo).
+   * @param {AudioContext} ctx
+   * @param {number} stringIndex - Índice de cuerda (0 a 5 en guitarra, 0 a 3 en ukelele)
+   * @param {string} chordName - Nombre del acorde
+   * @param {'guitar'|'ukulele'|'piano'} instrument
+   * @param {number} voicingIndex
+   */
+  static pluckString(ctx, stringIndex, chordName, instrument = 'guitar', voicingIndex = 0) {
+    if (!ctx) return null;
+    const isUkulele = instrument === 'ukulele';
+    if (instrument === 'piano') return null;
+
+    const chordData = isUkulele
+      ? ChordSvgRenderer.getUkuleleChord(chordName, voicingIndex)
+      : ChordSvgRenderer.getGuitarChord(chordName, voicingIndex);
+
+    const baseFreqs = isUkulele
+      ? [392.00, 261.63, 329.63, 440.00]       // G4 C4 E4 A4
+      : [82.41, 110.00, 146.83, 196.00, 246.94, 329.63]; // E2 A2 D3 G3 B3 e4
+
+    if (!chordData || !Array.isArray(chordData.frets)) return null;
+    const fret = chordData.frets[stringIndex];
+
+    if (fret === -1) {
+      this._synthMutedClick(ctx);
+      return { muted: true, stringIndex };
+    }
+
+    const freq = baseFreqs[stringIndex] * Math.pow(2, fret / 12);
+    const isLow = stringIndex < 2;
+    const duration = isUkulele ? 2.2 : 2.8;
+
+    const reverbDelay = ctx.createDelay(0.08);
+    reverbDelay.delayTime.value = 0.045;
+    const reverbFeedback = ctx.createGain();
+    reverbFeedback.gain.value = 0.22;
+    const reverbOut = ctx.createGain();
+    reverbOut.gain.value = 0.15;
+    reverbDelay.connect(reverbFeedback);
+    reverbFeedback.connect(reverbDelay);
+    reverbDelay.connect(reverbOut);
+    reverbOut.connect(ctx.destination);
+
+    this._synthStringNote(ctx, freq, ctx.currentTime, duration, isLow, reverbDelay, isUkulele);
+    return { freq, fret, stringIndex, muted: false };
+  }
+
+  static _synthMutedClick(ctx) {
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(140, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(30, ctx.currentTime + 0.04);
+
+    gain.gain.setValueAtTime(0.25, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.04);
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start();
+    osc.stop(ctx.currentTime + 0.04);
   }
 }
 
