@@ -93,9 +93,14 @@ export class ChordSvgRenderer {
       ];
     }
 
+    const match = key.match(/^([A-G][#b]?)(.*)$/);
+    const enh = match ? this.getEnharmonic(match[1]) : null;
+    const enhKey = enh ? `${enh}${match[2]}` : null;
+
     if (instrument === 'ukulele') {
-      if (ALTERNATE_UKULELE_VOICINGS[key]) {
-        return ALTERNATE_UKULELE_VOICINGS[key].map((v, i) => ({ index: i, ...v }));
+      const ukeVoicings = ALTERNATE_UKULELE_VOICINGS[key] || (enhKey ? ALTERNATE_UKULELE_VOICINGS[enhKey] : null);
+      if (ukeVoicings) {
+        return ukeVoicings.map((v, i) => ({ index: i, ...v }));
       }
       const base = this.getUkuleleChord(chordName);
       return [
@@ -106,12 +111,13 @@ export class ChordSvgRenderer {
     }
 
     // Guitarra
-    if (ALTERNATE_GUITAR_VOICINGS[key]) {
-      return ALTERNATE_GUITAR_VOICINGS[key].map((v, i) => ({ index: i, ...v }));
+    const guitarVoicings = ALTERNATE_GUITAR_VOICINGS[key] || (enhKey ? ALTERNATE_GUITAR_VOICINGS[enhKey] : null);
+    if (guitarVoicings) {
+      return guitarVoicings.map((v, i) => ({ index: i, ...v }));
     }
     const v0 = this.getGuitarChord(chordName, 0);
-    const v1 = this._computeCagedGuitarVoicing(key, 1) || { name: 'Con Cejilla', detail: 'Forma de barra transportable', ...v0, baseFret: (v0.baseFret || 1) + 3 };
-    const v2 = this._computeCagedGuitarVoicing(key, 2) || { name: 'Registro Agudo', detail: 'Tríada alta en agudo', ...v0, baseFret: (v0.baseFret || 1) + 7 };
+    const v1 = this._computeCagedGuitarVoicing(key, 1) || (enhKey ? this._computeCagedGuitarVoicing(enhKey, 1) : null) || { name: 'Con Cejilla', detail: 'Forma de barra transportable', ...v0, baseFret: (v0.baseFret || 1) + 3 };
+    const v2 = this._computeCagedGuitarVoicing(key, 2) || (enhKey ? this._computeCagedGuitarVoicing(enhKey, 2) : null) || { name: 'Registro Agudo', detail: 'Tríada alta en agudo', ...v0, baseFret: (v0.baseFret || 1) + 7 };
     return [
       { index: 0, name: 'Posición Abierta', detail: `Traste ${v0.baseFret > 1 ? v0.baseFret : '0 - 3'} · Sonido estándar`, ...v0 },
       { index: 1, ...v1 },
@@ -180,25 +186,28 @@ export class ChordSvgRenderer {
     if (!chordName) return GUITAR_CHORDS['C'];
     const key = this.normalizeChordKey(chordName);
 
+    const match = key.match(/^([A-G][#b]?)(.*)$/);
+    const enh = match ? this.getEnharmonic(match[1]) : null;
+    const enhKey = enh ? `${enh}${match[2]}` : null;
+
     // Revisar voicings alternativos específicos
     if (ALTERNATE_GUITAR_VOICINGS[key] && ALTERNATE_GUITAR_VOICINGS[key][voicingIndex]) {
       return ALTERNATE_GUITAR_VOICINGS[key][voicingIndex];
     }
+    if (enhKey && ALTERNATE_GUITAR_VOICINGS[enhKey] && ALTERNATE_GUITAR_VOICINGS[enhKey][voicingIndex]) {
+      return ALTERNATE_GUITAR_VOICINGS[enhKey][voicingIndex];
+    }
 
     if (voicingIndex > 0) {
-      const computed = this._computeCagedGuitarVoicing(key, voicingIndex);
+      const computed = this._computeCagedGuitarVoicing(key, voicingIndex) || (enhKey ? this._computeCagedGuitarVoicing(enhKey, voicingIndex) : null);
       if (computed) return computed;
     }
 
     if (GUITAR_CHORDS[key]) return GUITAR_CHORDS[key];
 
     // Búsqueda con enarmónico
-    const match = key.match(/^([A-G][#b]?)(.*)$/);
-    if (match) {
-      const enh = this.getEnharmonic(match[1]);
-      if (enh && GUITAR_CHORDS[`${enh}${match[2]}`]) {
-        return GUITAR_CHORDS[`${enh}${match[2]}`];
-      }
+    if (enhKey && GUITAR_CHORDS[enhKey]) {
+      return GUITAR_CHORDS[enhKey];
     }
 
     // Búsqueda simplificada
@@ -227,20 +236,23 @@ export class ChordSvgRenderer {
     if (!chordName) return UKULELE_CHORDS['C'];
     const key = this.normalizeChordKey(chordName);
 
+    const match = key.match(/^([A-G][#b]?)(.*)$/);
+    const enh = match ? this.getEnharmonic(match[1]) : null;
+    const enhKey = enh ? `${enh}${match[2]}` : null;
+
     // Revisar voicings alternativos específicos
     if (ALTERNATE_UKULELE_VOICINGS[key] && ALTERNATE_UKULELE_VOICINGS[key][voicingIndex]) {
       return ALTERNATE_UKULELE_VOICINGS[key][voicingIndex];
+    }
+    if (enhKey && ALTERNATE_UKULELE_VOICINGS[enhKey] && ALTERNATE_UKULELE_VOICINGS[enhKey][voicingIndex]) {
+      return ALTERNATE_UKULELE_VOICINGS[enhKey][voicingIndex];
     }
 
     if (UKULELE_CHORDS[key]) return UKULELE_CHORDS[key];
 
     // Búsqueda con enarmónico
-    const match = key.match(/^([A-G][#b]?)(.*)$/);
-    if (match) {
-      const enh = this.getEnharmonic(match[1]);
-      if (enh && UKULELE_CHORDS[`${enh}${match[2]}`]) {
-        return UKULELE_CHORDS[`${enh}${match[2]}`];
-      }
+    if (enhKey && UKULELE_CHORDS[enhKey]) {
+      return UKULELE_CHORDS[enhKey];
     }
 
     // Búsqueda simplificada
@@ -265,10 +277,11 @@ export class ChordSvgRenderer {
    * @param {number} voicingIndex
    * @returns {string}
    */
-  static renderGuitar(chordName, isLeftHanded = false, voicingIndex = 0) {
+  static renderGuitar(chordName, isLeftHanded = false, voicingIndex = 0, displayName = null) {
     const chord = this.getGuitarChord(chordName, voicingIndex);
     if (!chord) return `<div class="chord-not-found">Acorde no disponible</div>`;
 
+    const label = displayName || chordName;
     const width = 150;
     const height = 175;
     const startX = 25;
@@ -287,8 +300,8 @@ export class ChordSvgRenderer {
     }
 
     return `
-      <svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" class="chord-diagram-svg guitar-svg" role="img" aria-label="Diagrama de guitarra ${chordName}">
-        <text x="${width / 2}" y="20" text-anchor="middle" class="chord-diagram-title" fill="var(--text-primary, #ffffff)" font-weight="900" font-size="14">${chordName} (Guitarra)</text>
+      <svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" class="chord-diagram-svg guitar-svg" role="img" aria-label="Diagrama de guitarra ${label}">
+        <text x="${width / 2}" y="20" text-anchor="middle" class="chord-diagram-title" fill="var(--text-primary, #ffffff)" font-weight="900" font-size="14">${label} (Guitarra)</text>
 
         ${chord.baseFret > 1 
           ? `<text x="10" y="${startY + 16}" fill="var(--accent-secondary, #00e5ff)" font-size="11" font-weight="bold">${chord.baseFret}fr</text>`
@@ -347,10 +360,11 @@ export class ChordSvgRenderer {
    * @param {number} voicingIndex
    * @returns {string}
    */
-  static renderUkulele(chordName, isLeftHanded = false, voicingIndex = 0) {
+  static renderUkulele(chordName, isLeftHanded = false, voicingIndex = 0, displayName = null) {
     const chord = this.getUkuleleChord(chordName, voicingIndex);
     if (!chord) return `<div class="chord-not-found">Acorde no disponible</div>`;
 
+    const label = displayName || chordName;
     const width = 150;
     const height = 175;
     const startX = 35;
@@ -369,8 +383,8 @@ export class ChordSvgRenderer {
     }
 
     return `
-      <svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" class="chord-diagram-svg ukulele-svg" role="img" aria-label="Diagrama de ukelele ${chordName}">
-        <text x="${width / 2}" y="20" text-anchor="middle" class="chord-diagram-title" fill="var(--text-primary, #ffffff)" font-weight="900" font-size="14">${chordName} (Ukelele)</text>
+      <svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" class="chord-diagram-svg ukulele-svg" role="img" aria-label="Diagrama de ukelele ${label}">
+        <text x="${width / 2}" y="20" text-anchor="middle" class="chord-diagram-title" fill="var(--text-primary, #ffffff)" font-weight="900" font-size="14">${label} (Ukelele)</text>
 
         ${chord.baseFret > 1 
           ? `<text x="18" y="${startY + 16}" fill="var(--accent-secondary, #00e5ff)" font-size="11" font-weight="bold">${chord.baseFret}fr</text>`
@@ -428,9 +442,18 @@ export class ChordSvgRenderer {
    * @param {number} voicingIndex
    * @returns {string}
    */
-  static renderPiano(chordName, voicingIndex = 0) {
+  static renderPiano(chordName, voicingIndex = 0, displayName = null) {
+    const match = chordName.match(/^([A-G][#b]?)(.*)$/);
+    const enh = match ? this.getEnharmonic(match[1]) : null;
+    const enhChordName = enh ? `${enh}${match[2]}` : null;
     const cleanName = this.simplifyChord(chordName);
-    let voicing = PIANO_VOICINGS[chordName] || PIANO_VOICINGS[cleanName] || [{ key: 'C', oct: 4 }, { key: 'E', oct: 4 }, { key: 'G', oct: 4 }];
+    const enhCleanName = enhChordName ? this.simplifyChord(enhChordName) : null;
+
+    let voicing = PIANO_VOICINGS[chordName] || 
+                  (enhChordName ? PIANO_VOICINGS[enhChordName] : null) || 
+                  PIANO_VOICINGS[cleanName] || 
+                  (enhCleanName ? PIANO_VOICINGS[enhCleanName] : null) || 
+                  [{ key: 'C', oct: 4 }, { key: 'E', oct: 4 }, { key: 'G', oct: 4 }];
 
     // Inversiones para piano
     if (voicingIndex === 1 && voicing.length >= 2) {
@@ -439,6 +462,7 @@ export class ChordSvgRenderer {
       voicing = [...voicing.slice(2), { ...voicing[0], oct: (voicing[0].oct || 4) + 1 }, { ...voicing[1], oct: (voicing[1].oct || 4) + 1 }];
     }
 
+    const label = displayName || chordName;
     const width = 210;
     const height = 110;
     const startX = 10;
@@ -469,8 +493,8 @@ export class ChordSvgRenderer {
     });
 
     return `
-      <svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" class="chord-diagram-svg piano-svg" role="img" aria-label="Diagrama de teclado ${chordName}">
-        <text x="${width / 2}" y="15" text-anchor="middle" class="chord-diagram-title" fill="var(--text-primary, #ffffff)" font-weight="900" font-size="12">${chordName} (Piano)</text>
+      <svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" class="chord-diagram-svg piano-svg" role="img" aria-label="Diagrama de teclado ${label}">
+        <text x="${width / 2}" y="15" text-anchor="middle" class="chord-diagram-title" fill="var(--text-primary, #ffffff)" font-weight="900" font-size="12">${label} (Piano)</text>
 
         ${whiteKeys.map((k, i) => {
           const x = startX + i * whiteKeyWidth;

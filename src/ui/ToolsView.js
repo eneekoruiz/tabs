@@ -249,6 +249,16 @@ export class ToolsView extends Component {
       });
     });
 
+    host.querySelectorAll('.btn-dict-accidental').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const pref = btn.dataset.accidental;
+        localStorage.setItem('app_accidental_preference', pref);
+        events.emit('settings:accidentalsChanged', pref);
+        this.openToolModal('dictionary');
+        toast.show(pref === 'flats' ? 'Notas unificadas en bemoles (♭)' : 'Notas unificadas en sostenidos (♯)', 'info', 800);
+      });
+    });
+
     host.querySelectorAll('.dict-pill-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         const type = btn.dataset.type;

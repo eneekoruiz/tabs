@@ -1,7 +1,7 @@
 /**
  * @file VocalScorecardModal.js
  * @description Tarjeta de rendimiento vocal post-interpretación (Simply Sing / Yousician style).
- * Muestra porcentaje de afinación global, medalla, notas extremas y apoyo respiratorio.
+ * Muestra porcentaje de afinación global, medalla, notas extremas y apoyo respiratorio con datos 100% reales.
  */
 
 export class VocalScorecardModal {
@@ -11,27 +11,37 @@ export class VocalScorecardModal {
 
     const total = sessionStats.totalSingingFrames || 0;
     const inTune = sessionStats.inTuneFrames || 0;
-    const accuracy = total > 0 ? Math.round((inTune / total) * 100) : 0;
-    const stability = Math.round(sessionStats.stabilityScore || 100);
-    const breath = Math.round(sessionStats.breathSupportScore || 100);
-    const lowNote = sessionStats.lowestPitch?.noteWithOctave || '—';
-    const highNote = sessionStats.highestPitch?.noteWithOctave || '—';
+    // Se requieren al menos ~25 frames sostenidos (~0.5s) para considerar que el usuario cantó de verdad
+    const hasSufficientData = total >= 25;
 
-    let medalEmoji = '🥉';
-    let medalTitle = 'Buen Calentamiento Vocal';
-    let medalDesc = 'Has completado la interpretación. Mantén el caudal de aire continuo para centrar las notas.';
-    let medalColor = '#f59e0b';
+    const accuracy = hasSufficientData ? Math.max(0, Math.min(100, Math.round((inTune / total) * 100))) : 0;
+    const stability = hasSufficientData && typeof sessionStats.stabilityScore === 'number' ? sessionStats.stabilityScore : null;
+    const breath = hasSufficientData && typeof sessionStats.breathSupportScore === 'number' ? sessionStats.breathSupportScore : null;
+    const lowNote = hasSufficientData && sessionStats.lowestPitch ? sessionStats.lowestPitch.noteWithOctave : '—';
+    const highNote = hasSufficientData && sessionStats.highestPitch ? sessionStats.highestPitch.noteWithOctave : '—';
 
-    if (accuracy >= 80 && stability >= 75) {
-      medalEmoji = '🥇';
-      medalTitle = '¡Afinación Maestra (Oro)!';
-      medalDesc = 'Excelente colocación laríngea, apoyo diafragmático firme y afinación impecable a lo largo de la canción.';
-      medalColor = '#fbbf24';
-    } else if (accuracy >= 65) {
-      medalEmoji = '🥈';
-      medalTitle = 'Gran Control Vocal (Plata)';
-      medalDesc = 'Buen control de la columna de aire y afinación consistente. Solo faltan pequeños ajustes en los cambios de registro.';
-      medalColor = '#cbd5e1';
+    let medalEmoji = '🎤';
+    let medalTitle = 'Sin Canto Detectado';
+    let medalDesc = 'No se ha registrado canto suficiente durante la reproducción. Activa el micrófono y canta las notas de la canción.';
+    let medalColor = '#94a3b8';
+
+    if (hasSufficientData) {
+      if (accuracy >= 80 && (stability == null || stability >= 70)) {
+        medalEmoji = '🥇';
+        medalTitle = '¡Afinación Maestra (Oro)!';
+        medalDesc = 'Excelente colocación laríngea, apoyo diafragmático firme y afinación impecable a lo largo de la canción.';
+        medalColor = '#fbbf24';
+      } else if (accuracy >= 60) {
+        medalEmoji = '🥈';
+        medalTitle = 'Gran Control Vocal (Plata)';
+        medalDesc = 'Buen control de la columna de aire y afinación consistente. Solo faltan pequeños ajustes en los cambios de registro.';
+        medalColor = '#cbd5e1';
+      } else {
+        medalEmoji = '🥉';
+        medalTitle = 'Ensayo Vocal en Proceso (Bronce)';
+        medalDesc = 'Se han registrado notas fuera de tono. Mantén el caudal de aire continuo y apóyate en los tonos guía para centrar las notas.';
+        medalColor = '#f59e0b';
+      }
     }
 
     const modalEl = document.createElement('div');
@@ -52,22 +62,22 @@ export class VocalScorecardModal {
           <div class="scorecard-stat-box">
             <span class="stat-label">Afinación Global</span>
             <span class="stat-number ${accuracy >= 70 ? 'stat-good' : ''}">${accuracy}%</span>
-            <span class="stat-sub">En tono perfecto</span>
+            <span class="stat-sub">${hasSufficientData ? 'En tono perfecto' : 'Sin muestras de voz'}</span>
           </div>
           <div class="scorecard-stat-box">
             <span class="stat-label">Estabilidad de Aire</span>
-            <span class="stat-number">${stability}%</span>
-            <span class="stat-sub">Vibrato controlado</span>
+            <span class="stat-number">${stability != null ? `${stability}%` : '—'}</span>
+            <span class="stat-sub">${stability != null ? 'Vibrato controlado' : 'Sin datos'}</span>
           </div>
           <div class="scorecard-stat-box">
             <span class="stat-label">Apoyo Respiratorio</span>
-            <span class="stat-number">${breath}%</span>
-            <span class="stat-sub">Presión diafragmática</span>
+            <span class="stat-number">${breath != null ? `${breath}%` : '—'}</span>
+            <span class="stat-sub">${breath != null ? 'Presión diafragmática' : 'Sin datos'}</span>
           </div>
           <div class="scorecard-stat-box">
             <span class="stat-label">Rango Empleado</span>
             <span class="stat-number stat-range">${lowNote} – ${highNote}</span>
-            <span class="stat-sub">Tesitura de la toma</span>
+            <span class="stat-sub">${hasSufficientData ? 'Tesitura de la toma' : 'Sin tesitura'}</span>
           </div>
         </div>
 

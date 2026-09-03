@@ -33,9 +33,11 @@ export class ChordPopoverModal {
     this.close();
 
     const formattedName = ChordProParser.formatChordDisplay(chordName, this.notationSystem);
+    this.formattedName = formattedName;
     const svgDiagram = chordEngine.renderChordSVG(chordName, { 
       instrument: this.currentInstrument,
-      voicingIndex: this.selectedVoicingIndex
+      voicingIndex: this.selectedVoicingIndex,
+      displayName: this.formattedName
     });
 
     const popoverEl = document.createElement('div');
@@ -117,7 +119,8 @@ export class ChordPopoverModal {
         
         const newSvg = chordEngine.renderChordSVG(this.currentChord, { 
           instrument: this.currentInstrument,
-          voicingIndex: 0 
+          voicingIndex: 0,
+          displayName: this.formattedName
         });
         const box = popoverEl.querySelector('#popoverDiagramBox');
         if (box) box.innerHTML = newSvg;
@@ -164,10 +167,15 @@ export class ChordPopoverModal {
         if (res && res.muted) {
           toast.show(`Cuerda ${s + 1}: Muteada (✕)`, 'info', 600);
         } else if (res && res.freq) {
-          const names = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+          const preference = ChordProParser.getAccidentalPreference();
+          const names = preference === 'flats'
+            ? ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B']
+            : ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
           const midi = Math.round(69 + 12 * Math.log2(res.freq / 440));
-          const noteName = `${names[midi % 12]}${Math.floor(midi / 12) - 1}`;
-          toast.show(`Cuerda ${s + 1} (${res.fret === 0 ? 'Al aire' : `Traste ${res.fret}`}): ${noteName} · ${Math.round(res.freq)} Hz`, 'info', 700);
+          const rawNote = names[midi % 12];
+          const oct = Math.floor(midi / 12) - 1;
+          const displayNote = ChordProParser.formatChordDisplay(rawNote, this.notationSystem);
+          toast.show(`Cuerda ${s + 1} (${res.fret === 0 ? 'Al aire' : `Traste ${res.fret}`}): ${displayNote}${oct} · ${Math.round(res.freq)} Hz`, 'info', 700);
         }
       });
     });
@@ -249,7 +257,8 @@ export class ChordPopoverModal {
           setTimeout(() => {
             const newSvg = chordEngine.renderChordSVG(this.currentChord, { 
               instrument: this.currentInstrument, 
-              voicingIndex: this.selectedVoicingIndex 
+              voicingIndex: this.selectedVoicingIndex,
+              displayName: this.formattedName
             });
             box.innerHTML = newSvg;
             box.style.opacity = '1';

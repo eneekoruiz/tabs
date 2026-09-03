@@ -72,15 +72,19 @@ export class VocalCoachEngine {
     this.rmsHistory = []; // últimas 20 lecturas de volumen RMS
     this.consecutiveSilenceFrames = 0;
     this.singingDurationFrames = 0;
+    this.consecutiveVocalFrames = 0;
+    this.isPlaybackActive = false;
+    this.stabilitySamples = [];
+    this.breathSamples = [];
 
-    // Tessitura y estadísticas de sesión
+    // Tessitura y estadísticas de sesión genuinas
     this.sessionStats = {
       lowestPitch: null,
       highestPitch: null,
       inTuneFrames: 0,
       totalSingingFrames: 0,
-      stabilityScore: 100,
-      breathSupportScore: 100,
+      stabilityScore: null,
+      breathSupportScore: null,
     };
 
     // Control de tips didácticos
@@ -184,6 +188,35 @@ export class VocalCoachEngine {
   }
 
   /**
+   * Activa o desactiva la captura de estadísticas de interpretación vinculadas al reproductor.
+   * @param {boolean} active 
+   */
+  setPlaybackActive(active) {
+    this.isPlaybackActive = Boolean(active);
+  }
+
+  /**
+   * Reinicia completamente las estadísticas de ensayo vocal a valores limpios.
+   */
+  resetSessionStats() {
+    this.sessionStats = {
+      lowestPitch: null,
+      highestPitch: null,
+      inTuneFrames: 0,
+      totalSingingFrames: 0,
+      stabilityScore: null,
+      breathSupportScore: null,
+    };
+    this.pitchHistory = [];
+    this.rmsHistory = [];
+    this.stabilitySamples = [];
+    this.breathSamples = [];
+    this.consecutiveVocalFrames = 0;
+    this.consecutiveSilenceFrames = 0;
+    this.singingDurationFrames = 0;
+  }
+
+  /**
    * Bucle de análisis continuo por requestAnimationFrame.
    */
   loop() {
@@ -192,7 +225,8 @@ export class VocalCoachEngine {
     this.analyser.getFloatTimeDomainData(this.buffer);
     const detection = this.detectVocalPitch(this.buffer, this.audioContext.sampleRate);
 
-    if (detection && detection.clarity > 0.82) {
+    // Filtrar con umbral de claridad estricto para evitar ruidos de fondo
+    if (detection && detection.clarity > 0.88) {
       this._handleVocalDetection(detection);
     } else {
       this._handleSilence();
@@ -208,6 +242,7 @@ export class VocalCoachEngine {
    */
   _handleVocalDetection(detection) {
     this.consecutiveSilenceFrames = 0;
+    this.consecutiveVocalFrames++;
     this.singingDurationFrames++;
 
     const noteInfo = this.frequencyToNote(detection.frequency);
@@ -215,13 +250,21 @@ export class VocalCoachEngine {
 
     const stability = this.calculateStability();
     const breathSupport = this.calculateBreathSupport();
-    this.updateTessitura(noteInfo);
+
+    // Solo actualizar tesitura si es voz humana sostenida (mínimo 3 frames y volumen vocal real)
+    if (this.consecutiveVocalFrames >= 3 && detection.rms >= 0.020) {
+      this.updateTessitura(noteInfo);
+    }
 
     const { targetMidi, targetFreq } = this._resolveTargetFrequency(noteInfo);
     const centsOffset = Math.round(1200 * Math.log2(detection.frequency / targetFreq));
     const accuracyStatus = this._determineAccuracy(centsOffset);
 
-    this._updateSessionStats(accuracyStatus, stability, breathSupport);
+    // CRÍTICO: Registrar en estadísticas de sesión ÚNICAMENTE cuando la canción se está reproduciendo
+    // y el usuario está cantando de verdad de forma sostenida (evita que el ruido ambiente invente datos)
+    if (this.isPlaybackActive && this.consecutiveVocalFrames >= 3 && detection.rms >= 0.020) {
+      this._updateSessionStats(accuracyStatus, stability, breathSupport);
+    }
 
     this.evaluateDidacticTips({
       accuracyStatus, centsOffset, stability, breathSupport, noteInfo, duration: this.singingDurationFrames,
@@ -280,15 +323,25 @@ export class VocalCoachEngine {
   /**
    * Actualiza estadísticas de sesión (puntuación, aciertos).
    * @param {'in-tune'|'flat'|'sharp'} accuracyStatus 
-   * @param {number} stability 
-   * @param {number} breathSupport 
+   * @param {number|null} stability 
+   * @param {number|null} breathSupport 
    * @private
    */
   _updateSessionStats(accuracyStatus, stability, breathSupport) {
     this.sessionStats.totalSingingFrames++;
     if (accuracyStatus === 'in-tune') this.sessionStats.inTuneFrames++;
-    this.sessionStats.stabilityScore = stability;
-    this.sessionStats.breathSupportScore = breathSupport;
+    if (typeof stability === 'number' && stability > 0) {
+      this.stabilitySamples.push(stability);
+      if (this.stabilitySamples.length > 200) this.stabilitySamples.shift();
+      const avg = this.stabilitySamples.reduce((a, b) => a + b, 0) / this.stabilitySamples.length;
+      this.sessionStats.stabilityScore = Math.round(avg);
+    }
+    if (typeof breathSupport === 'number' && breathSupport > 0) {
+      this.breathSamples.push(breathSupport);
+      if (this.breathSamples.length > 200) this.breathSamples.shift();
+      const avg = this.breathSamples.reduce((a, b) => a + b, 0) / this.breathSamples.length;
+      this.sessionStats.breathSupportScore = Math.round(avg);
+    }
   }
 
   /**
@@ -297,6 +350,7 @@ export class VocalCoachEngine {
    */
   _handleSilence() {
     this.consecutiveSilenceFrames++;
+    this.consecutiveVocalFrames = 0;
     if (this.consecutiveSilenceFrames > 8) {
       this.singingDurationFrames = 0;
       this.pitchHistory = [];
@@ -324,11 +378,11 @@ export class VocalCoachEngine {
     }
     rms = Math.sqrt(rms / SIZE);
 
-    // Umbral de volumen para descartar ruido ambiente
-    if (rms < 0.007) return null;
+    // Umbral de volumen para descartar ruido ambiente (AC, ventiladores, clicks). El canto supera 0.020
+    if (rms < 0.020) return null;
 
-    const minPeriod = Math.floor(sampleRate / 1200); // ~1200Hz (D6)
-    const maxPeriod = Math.floor(sampleRate / 65);   // ~65Hz (C2)
+    const minPeriod = Math.floor(sampleRate / 1100); // ~1100Hz (C6)
+    const maxPeriod = Math.floor(sampleRate / 80);   // ~80Hz (E2) - evita zumbidos de red de 50/60Hz
     const halfSize = Math.floor(SIZE / 2);
     const difference = new Float32Array(maxPeriod + 1);
 
@@ -373,7 +427,7 @@ export class VocalCoachEngine {
           tauEstimate = tau;
         }
       }
-      if (minVal > 0.45) return null; // No es tono periódico claro
+      if (minVal > 0.35) return null; // No es tono periódico claro
     }
 
     if (tauEstimate <= 0 || tauEstimate >= halfSize - 1) return null;
@@ -395,7 +449,7 @@ export class VocalCoachEngine {
     const frequency = sampleRate / betterTau;
     const clarity = Math.max(0, Math.min(1, 1 - cmndf[tauEstimate]));
 
-    if (frequency >= 65 && frequency <= 1200) {
+    if (frequency >= 80 && frequency <= 1100) {
       return { frequency, clarity, rms };
     }
 
@@ -432,41 +486,56 @@ export class VocalCoachEngine {
   }
 
   /**
-   * Calcula la estabilidad del tono (0 - 100%).
+   * Calcula la estabilidad real del tono (0 - 100%).
+   * Mide la varianza de afinación en cents durante frases sostenidas.
    */
   calculateStability() {
-    if (this.pitchHistory.length < 5) return 100;
+    if (this.pitchHistory.length < 6) return null;
     const slice = this.pitchHistory.slice(-10);
     const mean = slice.reduce((a, b) => a + b, 0) / slice.length;
+    if (mean <= 0) return null;
     const variance = slice.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / slice.length;
     const stdDev = Math.sqrt(variance);
 
-    // Si la desviación estándar en Hz es < 2Hz, 100% de estabilidad
-    const score = Math.max(0, Math.min(100, Math.round(100 - (stdDev / mean) * 800)));
+    // Desviación en semitonos/cents
+    const centsStdDev = 1200 * (stdDev / mean);
+    // Un vibrato natural y controlado suele tener 15 - 30 cents de fluctuación suave.
+    // Fluctuaciones erráticas mayores a 50 cents penalizan la estabilidad.
+    if (centsStdDev <= 25) {
+      return Math.min(100, Math.round(85 + (1 - centsStdDev / 25) * 15));
+    }
+    const score = Math.max(15, Math.round(85 - (centsStdDev - 25) * 1.6));
     return score;
   }
 
   /**
-   * Calcula la consistencia del apoyo respiratorio (0 - 100%).
+   * Calcula la consistencia del apoyo respiratorio real (0 - 100%).
+   * Evalúa la curva envolvente de presión SPL a lo largo del verso.
    */
   calculateBreathSupport() {
-    if (this.rmsHistory.length < 8) return 100;
+    if (this.rmsHistory.length < 8) return null;
     const firstHalf = this.rmsHistory.slice(0, 4);
     const secondHalf = this.rmsHistory.slice(-4);
     const avgFirst = firstHalf.reduce((a, b) => a + b, 0) / firstHalf.length;
     const avgSecond = secondHalf.reduce((a, b) => a + b, 0) / secondHalf.length;
 
-    // Si el volumen cae drásticamente (>50% de caída), el apoyo respiratorio está fallando
-    if (avgFirst > 0.03 && avgSecond < avgFirst * 0.45) {
-      return 40;
+    if (avgFirst < 0.02) return null;
+
+    const ratio = avgSecond / avgFirst;
+    if (ratio >= 0.70) {
+      return Math.min(100, Math.round(80 + Math.min(1, ratio) * 20));
+    } else if (ratio >= 0.40) {
+      return Math.round(50 + (ratio - 0.40) * 100);
+    } else {
+      return Math.max(10, Math.round(ratio * 100));
     }
-    return 95;
   }
 
   /**
    * Actualiza el registro de tessitura alcanzado en la sesión.
    */
   updateTessitura(noteInfo) {
+    if (!noteInfo || noteInfo.midi < 36 || noteInfo.midi > 84) return;
     if (!this.sessionStats.lowestPitch || noteInfo.midi < this.sessionStats.lowestPitch.midi) {
       this.sessionStats.lowestPitch = noteInfo;
     }

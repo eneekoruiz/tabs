@@ -222,21 +222,25 @@ export class PitchLaneCanvas {
         isInterlude: true
       });
     }
+    this._hasCompleted = false;
   }
 
   play() {
     this.isPlaying = true;
     this.lastTimestamp = performance.now();
     if (this.vfxEngine) this.vfxEngine.setPlaying(true);
+    try { vocalCoachEngine.setPlaybackActive(true); } catch (_) {}
   }
 
   pause() {
     this.isPlaying = false;
     if (this.vfxEngine) this.vfxEngine.setPlaying(false);
+    try { vocalCoachEngine.setPlaybackActive(false); } catch (_) {}
   }
 
   seek(timeMs) {
     this.currentTime = timeMs;
+    this._hasCompleted = false;
   }
 
   /** Inicia la escucha de eventos y el bucle de renderizado. */
@@ -291,6 +295,8 @@ export class PitchLaneCanvas {
   /** Detiene el bucle y libera los listeners. */
   stop() {
     this.isRunning = false;
+    this.isPlaying = false;
+    try { vocalCoachEngine.setPlaybackActive(false); } catch (_) {}
     if (this.animFrameId) {
       cancelAnimationFrame(this.animFrameId);
       this.animFrameId = null;
@@ -312,6 +318,17 @@ export class PitchLaneCanvas {
 
     if (this.isPlaying) {
       this.currentTime += delta;
+
+      // Detección de finalización de la canción (al superar el último bloque lírico + 1.5s)
+      if (this.targetBlocks.length > 0) {
+        const lastBlock = this.targetBlocks[this.targetBlocks.length - 1];
+        const songEndTime = (lastBlock.startTime + lastBlock.duration) + 1500;
+        if (this.currentTime >= songEndTime && !this._hasCompleted) {
+          this._hasCompleted = true;
+          this.pause();
+          events.emit('pitchLane:songCompleted');
+        }
+      }
 
       // Karaoke Backing Track: reproducir base armónica de fondo al entrar a cada bloque
       if (this.karaokeAccompEnabled && this.targetBlocks.length > 0) {

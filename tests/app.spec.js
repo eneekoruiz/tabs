@@ -892,6 +892,9 @@ test.describe('🎸 Tabs & Chords PRO - Suite E2E Modo Letras & Acordes Multi-In
   });
 
   test('24. Verificación de Jerarquía Header y Diccionario de Voicings Moderno', async ({ page }) => {
+    // Asegurar pestaña explorar
+    await page.locator('.nav-tab-btn[data-tab="explore"]').click();
+
     // Abrir Blackbird
     const heroSearch = page.locator('#exploreSearchInput');
     await heroSearch.fill('Blackbird');
@@ -931,8 +934,12 @@ test.describe('🎸 Tabs & Chords PRO - Suite E2E Modo Letras & Acordes Multi-In
     const popover = page.locator('#chordPopoverCard');
     await expect(popover).toBeVisible();
 
-    // 4. Verificar encabezado y botón [X]
+    // 4. Verificar encabezado, coincidencia exacta de nombre en diagrama y botón [X]
     await expect(popover.locator('.chord-popover-badge')).toHaveText(/DICCIONARIO DE VOICINGS/i);
+    const popoverTitle = await popover.locator('.chord-popover-name').textContent();
+    const diagramTitle = await popover.locator('.chord-diagram-title').textContent();
+    expect(diagramTitle).toContain(popoverTitle.trim());
+
     const btnCloseX = popover.locator('#btnPopoverXClose');
     await expect(btnCloseX).toBeVisible();
 

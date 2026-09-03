@@ -4,6 +4,7 @@
  */
 
 import { chordEngine } from '../../tools/ChordEngine.js';
+import { ChordProParser } from '../lyrics/ChordProParser.js';
 import { toast } from '../Toast.js';
 
 export class ChordDictionaryTool {
@@ -14,7 +15,13 @@ export class ChordDictionaryTool {
   }
 
   renderModal() {
-    const roots = ['C', 'C#', 'D', 'Eb', 'E', 'F', 'F#', 'G', 'Ab', 'A', 'Bb', 'B'];
+    const pref = ChordProParser.getAccidentalPreference();
+    const roots = pref === 'flats'
+      ? ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B']
+      : ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+
+    this.root = ChordProParser.spellAccidentals(this.root, pref);
+
     const qualities = [
       { id: 'maj', label: 'Mayor (M)' },
       { id: 'min', label: 'Menor (m)' },
@@ -27,7 +34,7 @@ export class ChordDictionaryTool {
     ];
 
     const chordName = `${this.root}${this.quality === 'maj' ? '' : (this.quality === 'min' ? 'm' : this.quality)}`;
-    const svgDiagram = chordEngine.renderChordSVG(chordName, { instrument: this.instrument });
+    const svgDiagram = chordEngine.renderChordSVG(chordName, { instrument: this.instrument, displayName: chordName });
 
     return `
       <div class="tool-modal-overlay active" id="toolModalOverlay">
@@ -53,7 +60,13 @@ export class ChordDictionaryTool {
                 </div>
 
                 <div class="dict-group">
-                  <label class="metro-param-label">Tónica / Fundamental</label>
+                  <div class="dict-group-header-row" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                    <label class="metro-param-label" style="margin: 0;">Tónica / Fundamental</label>
+                    <div class="accidental-segmented-control" style="display: inline-flex; background: rgba(255,255,255,0.06); border-radius: 8px; padding: 2px; border: 1px solid var(--border-subtle, rgba(255,255,255,0.12));">
+                      <button class="btn-dict-accidental ${pref === 'sharps' ? 'active' : ''}" data-accidental="sharps" type="button" style="padding: 2px 8px; font-size: 11px; font-weight: 700; border: none; border-radius: 6px; cursor: pointer; background: ${pref === 'sharps' ? 'var(--accent-primary, #ff5722)' : 'transparent'}; color: #fff;">♯ Sostenidos</button>
+                      <button class="btn-dict-accidental ${pref === 'flats' ? 'active' : ''}" data-accidental="flats" type="button" style="padding: 2px 8px; font-size: 11px; font-weight: 700; border: none; border-radius: 6px; cursor: pointer; background: ${pref === 'flats' ? 'var(--accent-primary, #ff5722)' : 'transparent'}; color: #fff;">♭ Bemoles</button>
+                    </div>
+                  </div>
                   <div class="dict-pill-grid">
                     ${roots.map(r => `
                       <button class="dict-pill-btn ${this.root === r ? 'active' : ''}" data-type="root" data-val="${r}">${r}</button>

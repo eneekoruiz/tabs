@@ -66,8 +66,10 @@ export const GUITAR_CHORDS = Object.freeze({
   'F7': { frets: [1, 3, 1, 2, 1, 1], fingers: [1, 3, 1, 2, 1, 1], baseFret: 1, barres: [1] },
   'F#7': { frets: [2, 4, 2, 3, 2, 2], fingers: [1, 3, 1, 2, 1, 1], baseFret: 2, barres: [2] },
   'G7': { frets: [3, 2, 0, 0, 0, 1], fingers: [3, 2, 0, 0, 0, 1], baseFret: 1 },
+  'G#7': { frets: [4, 6, 4, 5, 4, 4], fingers: [1, 3, 1, 2, 1, 1], baseFret: 4, barres: [4] },
   'Ab7': { frets: [4, 6, 4, 5, 4, 4], fingers: [1, 3, 1, 2, 1, 1], baseFret: 4, barres: [4] },
   'A7': { frets: [-1, 0, 2, 0, 2, 0], fingers: [0, 0, 2, 0, 3, 0], baseFret: 1 },
+  'A#7': { frets: [-1, 1, 3, 1, 3, 1], fingers: [0, 1, 3, 1, 4, 1], baseFret: 1, barres: [1] },
   'Bb7': { frets: [-1, 1, 3, 1, 3, 1], fingers: [0, 1, 3, 1, 4, 1], baseFret: 1, barres: [1] },
   'B7': { frets: [-1, 2, 1, 2, 0, 2], fingers: [0, 2, 1, 3, 0, 4], baseFret: 1 },
 
@@ -353,10 +355,15 @@ export const PIANO_VOICINGS = Object.freeze({
   'Bb': [{ key: 'Bb', oct: 4 }, { key: 'D', oct: 5 }, { key: 'F', oct: 5 }],
   'A#m': [{ key: 'A#', oct: 4 }, { key: 'C#', oct: 5 }, { key: 'F', oct: 5 }],
   'Bbm': [{ key: 'Bb', oct: 4 }, { key: 'Db', oct: 5 }, { key: 'F', oct: 5 }],
+  'A#7': [{ key: 'A#', oct: 4 }, { key: 'D', oct: 5 }, { key: 'F', oct: 5 }, { key: 'G#', oct: 5 }],
   'Bb7': [{ key: 'Bb', oct: 4 }, { key: 'D', oct: 5 }, { key: 'F', oct: 5 }, { key: 'Ab', oct: 5 }],
+  'A#m7': [{ key: 'A#', oct: 4 }, { key: 'C#', oct: 5 }, { key: 'F', oct: 5 }, { key: 'G#', oct: 5 }],
   'Bbm7': [{ key: 'Bb', oct: 4 }, { key: 'Db', oct: 5 }, { key: 'F', oct: 5 }, { key: 'Ab', oct: 5 }],
+  'A#maj7': [{ key: 'A#', oct: 4 }, { key: 'D', oct: 5 }, { key: 'F', oct: 5 }, { key: 'A', oct: 5 }],
   'Bbmaj7': [{ key: 'Bb', oct: 4 }, { key: 'D', oct: 5 }, { key: 'F', oct: 5 }, { key: 'A', oct: 5 }],
+  'A#6': [{ key: 'A#', oct: 4 }, { key: 'D', oct: 5 }, { key: 'F', oct: 5 }, { key: 'G', oct: 5 }],
   'Bb6': [{ key: 'Bb', oct: 4 }, { key: 'D', oct: 5 }, { key: 'F', oct: 5 }, { key: 'G', oct: 5 }],
+  'A#5': [{ key: 'A#', oct: 4 }, { key: 'F', oct: 5 }],
   'Bb5': [{ key: 'Bb', oct: 4 }, { key: 'F', oct: 5 }],
 
   // B
@@ -486,10 +493,20 @@ export const ALTERNATE_GUITAR_VOICINGS = Object.freeze({
     { name: 'Con Cejilla (Traste 3)', detail: 'Traste 3 · Forma de E7 con cejilla', frets: [3, 5, 3, 4, 3, 3], fingers: [1, 3, 1, 2, 1, 1], baseFret: 3, barres: [3] },
     { name: 'Con Cejilla (Traste 10)', detail: 'Traste 10 · Forma de A7 con cejilla', frets: [-1, 10, 12, 10, 12, 10], fingers: [0, 1, 3, 1, 4, 1], baseFret: 10, barres: [10] }
   ],
+  'A#': [
+    { name: 'Con Cejilla (Traste 1)', detail: 'Traste 1 · Forma de A transportada', frets: [-1, 1, 3, 3, 3, 1], fingers: [0, 1, 2, 3, 4, 1], baseFret: 1, barres: [1] },
+    { name: 'Con Cejilla (Traste 6)', detail: 'Traste 6 · Forma de E con cejilla', frets: [6, 8, 8, 7, 6, 6], fingers: [1, 3, 4, 2, 1, 1], baseFret: 6, barres: [6] },
+    { name: 'Registro Agudo (Traste 8)', detail: 'Trastes 8 - 11 · Solos y arpegios', frets: [-1, -1, 8, 10, 11, 10], fingers: [0, 0, 1, 3, 4, 2], baseFret: 8 }
+  ],
   'Bb': [
     { name: 'Con Cejilla (Traste 1)', detail: 'Traste 1 · Forma de A transportada', frets: [-1, 1, 3, 3, 3, 1], fingers: [0, 1, 2, 3, 4, 1], baseFret: 1, barres: [1] },
     { name: 'Con Cejilla (Traste 6)', detail: 'Traste 6 · Forma de E con cejilla', frets: [6, 8, 8, 7, 6, 6], fingers: [1, 3, 4, 2, 1, 1], baseFret: 6, barres: [6] },
     { name: 'Registro Agudo (Traste 8)', detail: 'Trastes 8 - 11 · Solos y arpegios', frets: [-1, -1, 8, 10, 11, 10], fingers: [0, 0, 1, 3, 4, 2], baseFret: 8 }
+  ],
+  'A#7': [
+    { name: 'Con Cejilla (Traste 1)', detail: 'Traste 1 · Forma de A7 con cejilla', frets: [-1, 1, 3, 1, 3, 1], fingers: [0, 1, 3, 1, 4, 1], baseFret: 1, barres: [1] },
+    { name: 'Con Cejilla (Traste 6)', detail: 'Traste 6 · Forma de E7 con cejilla', frets: [6, 8, 6, 7, 6, 6], fingers: [1, 3, 1, 2, 1, 1], baseFret: 6, barres: [6] },
+    { name: 'Registro Agudo (Traste 8)', detail: 'Trastes 8 - 10 · Tríada de séptima', frets: [-1, -1, 8, 10, 9, 10], fingers: [0, 0, 1, 3, 2, 4], baseFret: 8 }
   ],
   'Bb7': [
     { name: 'Con Cejilla (Traste 1)', detail: 'Traste 1 · Forma de A7 con cejilla', frets: [-1, 1, 3, 1, 3, 1], fingers: [0, 1, 3, 1, 4, 1], baseFret: 1, barres: [1] },

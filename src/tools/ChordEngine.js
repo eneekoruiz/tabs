@@ -83,13 +83,13 @@ class ChordEngine {
     return this.renderChordSVG(chordName, { instrument, voicingIndex });
   }
 
-  renderChordSVG(chordName, { instrument = this.currentInstrument, isLeftHanded = this.isLeftHanded, voicingIndex = 0 } = {}) {
+  renderChordSVG(chordName, { instrument = this.currentInstrument, isLeftHanded = this.isLeftHanded, voicingIndex = 0, displayName = null } = {}) {
     if (instrument === 'piano') {
-      return ChordSvgRenderer.renderPiano(chordName, voicingIndex);
+      return ChordSvgRenderer.renderPiano(chordName, voicingIndex, displayName);
     } else if (instrument === 'ukulele') {
-      return ChordSvgRenderer.renderUkulele(chordName, isLeftHanded, voicingIndex);
+      return ChordSvgRenderer.renderUkulele(chordName, isLeftHanded, voicingIndex, displayName);
     }
-    return ChordSvgRenderer.renderGuitar(chordName, isLeftHanded, voicingIndex);
+    return ChordSvgRenderer.renderGuitar(chordName, isLeftHanded, voicingIndex, displayName);
   }
 
   auditionChord(chordName, instrument = this.currentInstrument, voicingIndex = 0) {

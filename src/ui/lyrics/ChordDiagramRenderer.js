@@ -93,7 +93,7 @@ export class ChordDiagramRenderer {
             <div class="chords-visual-cards-grid" style="margin-top: 14px;">
               ${uniqueChords.map(chordName => {
                 const formattedName = ChordProParser.formatChordDisplay(chordName, notation);
-                const svgDiagram = chordEngine.renderChordSVG(chordName, { instrument });
+                const svgDiagram = chordEngine.renderChordSVG(chordName, { instrument, displayName: formattedName });
                 return `
                   <div class="song-chord-visual-card" data-chord="${chordName}" data-original-chord="${chordName}" role="button" aria-label="Escuchar y ver acorde ${formattedName}">
                     <div class="chord-card-diagram-box">

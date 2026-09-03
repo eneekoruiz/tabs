@@ -111,6 +111,8 @@ export class LyricsChordsView extends Component {
       this.performanceMode = 'play';
       localStorage.setItem('app_performance_mode', 'play');
       this.audioRecorder.dismiss();
+      this._scorecardShown = false;
+      try { vocalCoachEngine.resetSessionStats(); } catch (_) {}
 
       try {
         if (this.currentSong && (!this.currentSong.lyricsChords || this.currentSong.lyricsChords.trim().length === 0)) {
@@ -139,6 +141,10 @@ export class LyricsChordsView extends Component {
 
     this.registerUnsub(events.on('ui:loadLyricsSong', handleSongLoad));
     this.registerUnsub(events.on('song:loaded', handleSongLoad));
+    this.registerUnsub(events.on('settings:accidentalsChanged', () => {
+      this.render();
+      this.syncContextualState();
+    }));
 
     this.registerUnsub(events.on('song:transpose', (step) => {
       this.setTranspose(this.transposeSemitones + step);
@@ -852,6 +858,14 @@ export class LyricsChordsView extends Component {
           if (this.autoScroller && this.autoScroller.isRunning) {
             this.autoScroller.stop('explicit');
           }
+
+          this._songCompletedUnsub?.();
+          this._songCompletedUnsub = events.on('pitchLane:songCompleted', () => {
+            if (this.performanceMode === 'sing' && !this._scorecardShown) {
+              this._scorecardShown = true;
+              this.showVocalScorecard({ reason: 'completed' });
+            }
+          });
         });
       }
     } else {
@@ -916,6 +930,20 @@ export class LyricsChordsView extends Component {
     });
 
     this.container.querySelector('#btnBackToExplore')?.addEventListener('click', () => {
+      if (this.performanceMode === 'sing') {
+        const frames = vocalCoachEngine.sessionStats.totalSingingFrames || 0;
+        if (frames >= 25 && !this._scorecardShown) {
+          this._scorecardShown = true;
+          this.showVocalScorecard({
+            onClose: () => {
+              const globalBottomNav = document.getElementById('bottom-nav-container');
+              if (globalBottomNav) globalBottomNav.style.display = '';
+              events.emit('ui:switchTab', 'explore');
+            }
+          });
+          return;
+        }
+      }
       const globalBottomNav = document.getElementById('bottom-nav-container');
       if (globalBottomNav) globalBottomNav.style.display = '';
       events.emit('ui:switchTab', 'explore');
@@ -1082,6 +1110,8 @@ export class LyricsChordsView extends Component {
         this.pitchLane.seek(0);
         this._setSingerRibbonPausedState();
       }
+      this._scorecardShown = false;
+      try { vocalCoachEngine.resetSessionStats(); } catch (_) {}
       if (this.autoScroller) {
         this.autoScroller.stop('explicit');
         const el = this.container?.querySelector('#lyricsBodyScroll');
@@ -1099,7 +1129,12 @@ export class LyricsChordsView extends Component {
     });
 
     this.container.querySelector('#btnFinishVocalSession')?.addEventListener('click', () => {
-      this.showVocalScorecard();
+      const frames = vocalCoachEngine.sessionStats.totalSingingFrames || 0;
+      if (frames < 20) {
+        import('./Toast.js').then(({ toast }) => toast.show('Canta al menos unas notas antes de finalizar el ensayo', 'info', 2500));
+        return;
+      }
+      this.showVocalScorecard({ reason: 'user_finish' });
     });
 
     // --- Patrón de Rasgueo: Escuchar Ritmo Acústico ---
@@ -1453,30 +1488,27 @@ export class LyricsChordsView extends Component {
     });
   }
 
-  showVocalScorecard() {
+  showVocalScorecard(options = {}) {
     import('./lyrics/VocalScorecardModal.js').then(({ VocalScorecardModal }) => {
       import('../audio/VocalCoachEngine.js').then(({ vocalCoachEngine }) => {
         VocalScorecardModal.show({
           songTitle: this.currentSong?.title || 'Canción Actual',
           artist: this.currentSong?.artist || '',
           sessionStats: vocalCoachEngine.sessionStats,
+          onClose: () => {
+            this._scorecardShown = true;
+            if (options.onClose) options.onClose();
+          },
           onRetry: () => {
-            if (typeof vocalCoachEngine.resetSessionStats === 'function') {
-              vocalCoachEngine.resetSessionStats();
-            } else {
-              vocalCoachEngine.sessionStats = {
-                lowestPitch: null,
-                highestPitch: null,
-                inTuneFrames: 0,
-                totalSingingFrames: 0,
-                stabilityScore: 100,
-                breathSupportScore: 100,
-              };
-            }
+            try { vocalCoachEngine.resetSessionStats(); } catch (_) {}
+            this._scorecardShown = false;
             if (this.pitchLane) {
-              this.pitchLane.stop();
-              this.pitchLane.start();
+              this.pitchLane.pause();
+              this.pitchLane.seek(0);
+              this._setSingerRibbonPausedState();
+              this.pitchLane.play();
             }
+            if (options.onRetry) options.onRetry();
           }
         });
       });

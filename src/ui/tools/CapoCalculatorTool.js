@@ -4,6 +4,7 @@
  */
 
 import { chordEngine } from '../../tools/ChordEngine.js';
+import { ChordProParser } from '../lyrics/ChordProParser.js';
 
 export class CapoCalculatorTool {
   constructor() {
@@ -84,7 +85,11 @@ export class CapoCalculatorTool {
   }
 
   renderModal() {
-    const targetKeys = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'F#', 'G', 'Ab', 'A', 'Bb', 'B'];
+    const pref = ChordProParser.getAccidentalPreference();
+    const targetKeys = pref === 'flats'
+      ? ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B']
+      : ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+    this.targetKey = ChordProParser.spellAccidentals(this.targetKey, pref);
     const openShapes = ['C', 'G', 'D', 'E', 'A', 'Am', 'Em', 'Dm'];
     const fret = this.calculateFret(this.targetKey, this.openShape);
 

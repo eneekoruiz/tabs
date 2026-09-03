@@ -24,6 +24,7 @@ export class SettingsView extends Component {
     this.isLeftHanded = localStorage.getItem('app_lefthanded') === 'true';
     this.defaultInstrument = localStorage.getItem('app_instrument') || 'guitar';
     this.masterTuning = localStorage.getItem('app_master_tuning') || '440';
+    this.accidentalPreference = localStorage.getItem('app_accidental_preference') || 'sharps';
     this.visualTheme = localStorage.getItem('app_visual_theme') || 'paper';
 
     this.initEvents();
@@ -189,6 +190,18 @@ export class SettingsView extends Component {
               </select>
             </div>
 
+            <!-- Notación de Alteraciones: Sostenidos (#) vs Bemoles (b) -->
+            <div class="settings-row-item">
+              <div class="settings-row-info">
+                <strong>Notación de Alteraciones</strong>
+                <span>Unifica los acordes: elige si prefieres ver siempre sostenidos (#) o bemoles (b) sin mezclar</span>
+              </div>
+              <select id="selSettingsAccidentals" class="sel-settings-control">
+                <option value="sharps" ${this.accidentalPreference === 'sharps' ? 'selected' : ''}>Sostenidos (# ej. C#, F#, G#, A#)</option>
+                <option value="flats" ${this.accidentalPreference === 'flats' ? 'selected' : ''}>Bemoles (b ej. Db, Gb, Ab, Bb)</option>
+              </select>
+            </div>
+
             <!-- Estilo Visual -->
             <div class="settings-row-item">
               <div class="settings-row-info">
@@ -272,6 +285,15 @@ export class SettingsView extends Component {
       this.masterTuning = e.target.value;
       localStorage.setItem('app_master_tuning', this.masterTuning);
       toast.show(`Calibración fijada en ${this.masterTuning} Hz`, 'info', 900);
+    });
+
+    // Notación de Alteraciones (Sostenidos vs Bemoles)
+    this.container.querySelector('#selSettingsAccidentals')?.addEventListener('change', (e) => {
+      this.accidentalPreference = e.target.value === 'flats' ? 'flats' : 'sharps';
+      localStorage.setItem('app_accidental_preference', this.accidentalPreference);
+      events.emit('settings:accidentalsChanged', this.accidentalPreference);
+      events.emit('settings:updated');
+      toast.show(this.accidentalPreference === 'flats' ? 'Notas unificadas en bemoles (b)' : 'Notas unificadas en sostenidos (#)', 'info', 900);
     });
 
     // Tema Visual
