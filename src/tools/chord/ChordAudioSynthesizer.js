@@ -57,14 +57,32 @@ export class ChordAudioSynthesizer {
 
       if (chordData && Array.isArray(chordData.frets)) {
         chordData.frets.forEach((fret, idx) => {
-          if (fret !== -1) {
+          const numFret = Number(fret);
+          if (Number.isFinite(numFret) && numFret >= 0) {
             notes.push({
-              freq: baseFreqs[idx] * Math.pow(2, fret / 12),
+              freq: baseFreqs[idx] * Math.pow(2, numFret / 12),
               delay: idx * strumGap,
               isLow: idx < 2,
             });
           }
         });
+      }
+
+      // Failsafe garantizado: si ningún traste es válido, sintetizar tríada básica
+      if (notes.length === 0) {
+        const fallback = ChordSvgRenderer.getGuitarChord(ChordSvgRenderer.simplifyChord(chordName));
+        if (fallback && Array.isArray(fallback.frets)) {
+          fallback.frets.forEach((fret, idx) => {
+            const numFret = Number(fret);
+            if (Number.isFinite(numFret) && numFret >= 0) {
+              notes.push({
+                freq: baseFreqs[idx] * Math.pow(2, numFret / 12),
+                delay: idx * strumGap,
+                isLow: idx < 2,
+              });
+            }
+          });
+        }
       }
     }
 
@@ -148,55 +166,140 @@ export class ChordAudioSynthesizer {
     noise.start(startTime);
   }
 
-  static _synthPianoNote(ctx, freq, startTime, duration, reverbNode) {
+  static _synthPianoNote(ctx, freq, startTime, duration = 3.2, reverbNode) {
+    if (!Number.isFinite(freq) || freq <= 20) return;
+
     const masterGain = ctx.createGain();
     masterGain.connect(ctx.destination);
-    masterGain.connect(reverbNode);
+    if (reverbNode) masterGain.connect(reverbNode);
 
+    // Envolvente acústica de Gran Cola:
+    // Ataque suave pero definido (macillo de fieltro) + caída inicial rápida + resonancia de cola prolongada
     masterGain.gain.setValueAtTime(0.0001, startTime);
-    masterGain.gain.linearRampToValueAtTime(0.42, startTime + 0.006);
-    masterGain.gain.exponentialRampToValueAtTime(0.22, startTime + 0.1);
+    masterGain.gain.linearRampToValueAtTime(0.48, startTime + 0.005);
+    masterGain.gain.exponentialRampToValueAtTime(0.24, startTime + 0.09);
+    masterGain.gain.exponentialRampToValueAtTime(0.08, startTime + 0.8);
     masterGain.gain.exponentialRampToValueAtTime(0.0001, startTime + duration);
 
-    const filter = ctx.createBiquadFilter();
-    filter.type = 'lowpass';
-    filter.frequency.setValueAtTime(7000, startTime);
-    filter.frequency.exponentialRampToValueAtTime(1200, startTime + duration * 0.5);
-    filter.connect(masterGain);
+    // Filtro de cuerpo de piano de madera (tabla armónica)
+    const bodyFilter = ctx.createBiquadFilter();
+    bodyFilter.type = 'lowpass';
+    bodyFilter.frequency.setValueAtTime(Math.min(9000, freq * 7), startTime);
+    bodyFilter.frequency.exponentialRampToValueAtTime(Math.max(400, freq * 1.5), startTime + duration * 0.7);
+    bodyFilter.Q.value = 0.9;
+    bodyFilter.connect(masterGain);
 
-    const osc1 = ctx.createOscillator();
-    const g1 = ctx.createGain();
-    osc1.type = 'sine';
-    osc1.frequency.value = freq;
-    g1.gain.value = 0.7;
-    osc1.connect(g1); g1.connect(filter);
+    const soundboardFilter = ctx.createBiquadFilter();
+    soundboardFilter.type = 'peaking';
+    soundboardFilter.frequency.value = 420;
+    soundboardFilter.Q.value = 1.2;
+    soundboardFilter.gain.value = 3.5;
+    soundboardFilter.connect(bodyFilter);
 
-    const osc2 = ctx.createOscillator();
-    const g2 = ctx.createGain();
-    osc2.type = 'triangle';
-    osc2.frequency.value = freq * 2;
-    g2.gain.value = 0.22;
-    osc2.connect(g2); g2.connect(filter);
+    // Partiales armónicos con inharmonicidad de rigidez de cuerda de piano:
+    // f_n = n * f0 * sqrt(1 + B * n^2), B ≈ 0.00025
+    const B = 0.00025;
+    const partials = [
+      { mult: 1, gain: 0.65, type: 'sine', detune: 0 },
+      { mult: 2, gain: 0.28, type: 'sine', detune: 1.2 },
+      { mult: 3, gain: 0.14, type: 'triangle', detune: -1.4 },
+      { mult: 4, gain: 0.07, type: 'sine', detune: 2.1 },
+      { mult: 5, gain: 0.03, type: 'sine', detune: -2.3 },
+      { mult: 6, gain: 0.015, type: 'sine', detune: 3.0 }
+    ];
 
-    const osc3 = ctx.createOscillator();
-    const g3 = ctx.createGain();
-    osc3.type = 'sine';
-    osc3.frequency.value = freq * 4;
-    g3.gain.value = 0.06;
-    osc3.connect(g3); g3.connect(filter);
+    partials.forEach(p => {
+      const inharmonicMult = p.mult * Math.sqrt(1 + B * (p.mult ** 2));
+      const pFreq = freq * inharmonicMult;
+      if (pFreq > 18000) return;
 
-    const bufferSize = Math.floor(ctx.sampleRate * 0.008);
-    const clickBuf = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-    const cd = clickBuf.getChannelData(0);
-    for (let i = 0; i < bufferSize; i++) cd[i] = (Math.random() * 2 - 1) * (1 - i / bufferSize);
-    const click = ctx.createBufferSource();
-    click.buffer = clickBuf;
-    const clickGain = ctx.createGain();
-    clickGain.gain.value = 0.12;
-    click.connect(clickGain); clickGain.connect(masterGain);
+      const osc = ctx.createOscillator();
+      const g = ctx.createGain();
+      osc.type = p.type;
+      osc.frequency.setValueAtTime(pFreq, startTime);
+      osc.detune.setValueAtTime(p.detune, startTime);
 
-    [osc1, osc2, osc3].forEach(o => { o.start(startTime); o.stop(startTime + duration + 0.05); });
-    click.start(startTime);
+      g.gain.setValueAtTime(p.gain, startTime);
+      const partialDecay = duration / (1 + (p.mult - 1) * 0.55);
+      g.gain.exponentialRampToValueAtTime(0.0001, startTime + partialDecay);
+
+      osc.connect(g);
+      g.connect(soundboardFilter);
+
+      osc.start(startTime);
+      osc.stop(startTime + duration + 0.05);
+    });
+
+    // Impacto acústico del macillo de fieltro (Felt Hammer Transient)
+    const hammerSize = Math.floor(ctx.sampleRate * 0.015);
+    const hammerBuf = ctx.createBuffer(1, hammerSize, ctx.sampleRate);
+    const hData = hammerBuf.getChannelData(0);
+    for (let i = 0; i < hammerSize; i++) {
+      hData[i] = (Math.random() * 2 - 1) * Math.exp(-i / (hammerSize * 0.18));
+    }
+    const hammer = ctx.createBufferSource();
+    hammer.buffer = hammerBuf;
+    const hammerFilter = ctx.createBiquadFilter();
+    hammerFilter.type = 'bandpass';
+    hammerFilter.frequency.value = Math.min(2200, freq * 2.5);
+    hammerFilter.Q.value = 1.8;
+
+    const hammerGain = ctx.createGain();
+    hammerGain.gain.setValueAtTime(0.12, startTime);
+    hammerGain.gain.exponentialRampToValueAtTime(0.0001, startTime + 0.03);
+
+    hammer.connect(hammerFilter);
+    hammerFilter.connect(hammerGain);
+    hammerGain.connect(masterGain);
+    hammer.start(startTime);
+  }
+
+  /**
+   * Ejecuta un rasgueo de guitarra acústica realista (downstroke o upstroke).
+   */
+  static strumGuitar(ctx, chordName = 'C', stroke = 'down', tempo = 120, voicingIndex = 0) {
+    if (!ctx) return;
+    if (ctx.state === 'suspended') ctx.resume();
+
+    const chordData = ChordSvgRenderer.getGuitarChord(chordName, voicingIndex);
+    const baseFreqs = [82.41, 110.00, 146.83, 196.00, 246.94, 329.63]; // E2 A2 D3 G3 B3 e4
+    const validStrings = [];
+
+    if (chordData && Array.isArray(chordData.frets)) {
+      chordData.frets.forEach((fret, idx) => {
+        const numFret = Number(fret);
+        if (Number.isFinite(numFret) && numFret >= 0) {
+          validStrings.push({
+            stringIdx: idx,
+            freq: baseFreqs[idx] * Math.pow(2, numFret / 12),
+            isLow: idx < 2
+          });
+        }
+      });
+    }
+
+    if (validStrings.length === 0) return;
+
+    // Dirección del rasgueo: down = graves a agudos, up = agudos a medios
+    const stringsInOrder = stroke === 'down'
+      ? [...validStrings]
+      : [...validStrings].reverse().slice(0, 4);
+
+    const strumSpeed = stroke === 'down' ? 0.012 : 0.009;
+    const now = ctx.currentTime;
+    const duration = 0.55;
+
+    const reverbDelay = ctx.createDelay(0.08);
+    reverbDelay.delayTime.value = 0.04;
+    const reverbGain = ctx.createGain();
+    reverbGain.gain.value = 0.15;
+    reverbDelay.connect(reverbGain);
+    reverbGain.connect(ctx.destination);
+
+    stringsInOrder.forEach((str, i) => {
+      const strikeTime = now + i * strumSpeed;
+      this._synthStringNote(ctx, str.freq, strikeTime, duration, str.isLow, reverbDelay, false);
+    });
   }
 
   /**

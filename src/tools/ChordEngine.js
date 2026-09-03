@@ -101,6 +101,15 @@ class ChordEngine {
     }
   }
 
+  strumGuitar(chordName = 'C', stroke = 'down', tempo = 120, voicingIndex = 0) {
+    try {
+      const ctx = this.getAudioContext();
+      ChordAudioSynthesizer.strumGuitar(ctx, chordName, stroke, tempo, voicingIndex);
+    } catch (err) {
+      console.warn('[ChordEngine] Error en rasgueo acústico:', err);
+    }
+  }
+
   pluckString(stringIndex, chordName = this.currentChord, instrument = this.currentInstrument, voicingIndex = 0) {
     try {
       const ctx = this.getAudioContext();

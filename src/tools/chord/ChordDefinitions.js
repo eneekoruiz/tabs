@@ -119,7 +119,22 @@ export const GUITAR_CHORDS = Object.freeze({
   'Bm7b5': { frets: [-1, 2, 3, 2, 3, -1], fingers: [0, 1, 3, 2, 4, 0], baseFret: 1 },
   'Cdim': { frets: [-1, 3, 4, 5, 4, -1], fingers: [0, 1, 2, 4, 3, 0], baseFret: 1 },
   'E7#9': { frets: [0, 2, 0, 1, 3, 3], fingers: [0, 2, 0, 1, 3, 4], baseFret: 1 },
-  'C9': { frets: [-1, 3, 2, 3, 3, -1], fingers: [0, 2, 1, 3, 4, 0], baseFret: 1 }
+  'C9': { frets: [-1, 3, 2, 3, 3, -1], fingers: [0, 2, 1, 3, 4, 0], baseFret: 1 },
+  'Bb6': { frets: [-1, 1, 3, 3, 3, 3], fingers: [0, 1, 2, 3, 4, 4], baseFret: 1, barres: [1] },
+  'C#dim': { frets: [-1, 4, 5, 3, 5, 3], fingers: [0, 2, 4, 1, 3, 1], baseFret: 3 },
+  'D#dim': { frets: [-1, -1, 1, 2, 1, 2], fingers: [0, 0, 1, 3, 2, 4], baseFret: 1 },
+  'F#dim': { frets: [2, -1, 1, 2, 1, -1], fingers: [3, 0, 1, 4, 2, 0], baseFret: 1 },
+  'G+': { frets: [3, 2, 1, 0, 0, 3], fingers: [3, 2, 1, 0, 0, 4], baseFret: 1 },
+  'Gaug': { frets: [3, 2, 1, 0, 0, 3], fingers: [3, 2, 1, 0, 0, 4], baseFret: 1 },
+  'Cadd9': { frets: [-1, 3, 2, 0, 3, 0], fingers: [0, 2, 1, 0, 3, 0], baseFret: 1 },
+  'D/F#': { frets: [2, 0, 0, 2, 3, 2], fingers: [1, 0, 0, 2, 4, 3], baseFret: 1 },
+  'C/G': { frets: [3, 3, 2, 0, 1, 0], fingers: [3, 4, 2, 0, 1, 0], baseFret: 1 },
+  'G/B': { frets: [-1, 2, 0, 0, 3, 3], fingers: [0, 1, 0, 0, 3, 4], baseFret: 1 },
+  'Am/G': { frets: [3, 0, 2, 2, 1, 0], fingers: [4, 0, 2, 3, 1, 0], baseFret: 1 },
+  'F7/C': { frets: [-1, 3, 1, 2, 1, 1], fingers: [0, 3, 1, 2, 1, 1], baseFret: 1, barres: [1] },
+  'Eb/G': { frets: [3, 1, 1, 3, 4, 3], fingers: [2, 1, 1, 3, 4, 3], baseFret: 1 },
+  'D/A': { frets: [-1, 0, 0, 2, 3, 2], fingers: [0, 0, 0, 1, 3, 2], baseFret: 1 },
+  'Bb/D': { frets: [-1, -1, 0, 3, 3, 1], fingers: [0, 0, 0, 2, 3, 1], baseFret: 1 }
 });
 
 // Base de datos de digitaciones estándar y verificadas de UKELELE (G C E A)
@@ -237,55 +252,121 @@ export const UKULELE_CHORDS = Object.freeze({
 
 // Notas reales por acorde de Piano
 export const PIANO_VOICINGS = Object.freeze({
+  // C
   'C': [{ key: 'C', oct: 4 }, { key: 'E', oct: 4 }, { key: 'G', oct: 4 }],
   'Cm': [{ key: 'C', oct: 4 }, { key: 'Eb', oct: 4 }, { key: 'G', oct: 4 }],
   'C7': [{ key: 'C', oct: 4 }, { key: 'E', oct: 4 }, { key: 'G', oct: 4 }, { key: 'Bb', oct: 4 }],
   'Cmaj7': [{ key: 'C', oct: 4 }, { key: 'E', oct: 4 }, { key: 'G', oct: 4 }, { key: 'B', oct: 4 }],
   'Cadd9': [{ key: 'C', oct: 4 }, { key: 'D', oct: 4 }, { key: 'E', oct: 4 }, { key: 'G', oct: 4 }],
   'Csus4': [{ key: 'C', oct: 4 }, { key: 'F', oct: 4 }, { key: 'G', oct: 4 }],
-  'C9': [{ key: 'C', oct: 4 }, { key: 'E', oct: 4 }, { key: 'G', oct: 4 }, { key: 'Bb', oct: 4 }, { key: 'D', oct: 5 }],
+  'Csus2': [{ key: 'C', oct: 4 }, { key: 'D', oct: 4 }, { key: 'G', oct: 4 }],
   'Cdim': [{ key: 'C', oct: 4 }, { key: 'Eb', oct: 4 }, { key: 'Gb', oct: 4 }],
+  'Caug': [{ key: 'C', oct: 4 }, { key: 'E', oct: 4 }, { key: 'G#', oct: 4 }],
+  'C6': [{ key: 'C', oct: 4 }, { key: 'E', oct: 4 }, { key: 'G', oct: 4 }, { key: 'A', oct: 4 }],
+  'C5': [{ key: 'C', oct: 4 }, { key: 'G', oct: 4 }],
 
+  // C# / Db
+  'C#': [{ key: 'C#', oct: 4 }, { key: 'F', oct: 4 }, { key: 'G#', oct: 4 }],
+  'Db': [{ key: 'Db', oct: 4 }, { key: 'F', oct: 4 }, { key: 'Ab', oct: 4 }],
+  'C#m': [{ key: 'C#', oct: 4 }, { key: 'E', oct: 4 }, { key: 'G#', oct: 4 }],
+  'Dbm': [{ key: 'Db', oct: 4 }, { key: 'E', oct: 4 }, { key: 'Ab', oct: 4 }],
+  'C#7': [{ key: 'C#', oct: 4 }, { key: 'F', oct: 4 }, { key: 'G#', oct: 4 }, { key: 'B', oct: 4 }],
+  'Db7': [{ key: 'Db', oct: 4 }, { key: 'F', oct: 4 }, { key: 'Ab', oct: 4 }, { key: 'B', oct: 4 }],
+  'C#dim': [{ key: 'C#', oct: 4 }, { key: 'E', oct: 4 }, { key: 'G', oct: 4 }],
+  'Db5': [{ key: 'Db', oct: 4 }, { key: 'Ab', oct: 4 }],
+
+  // D
   'D': [{ key: 'D', oct: 4 }, { key: 'F#', oct: 4 }, { key: 'A', oct: 4 }],
   'Dm': [{ key: 'D', oct: 4 }, { key: 'F', oct: 4 }, { key: 'A', oct: 4 }],
   'D7': [{ key: 'D', oct: 4 }, { key: 'F#', oct: 4 }, { key: 'A', oct: 4 }, { key: 'C', oct: 5 }],
+  'Dmaj7': [{ key: 'D', oct: 4 }, { key: 'F#', oct: 4 }, { key: 'A', oct: 4 }, { key: 'C#', oct: 5 }],
+  'Dm7': [{ key: 'D', oct: 4 }, { key: 'F', oct: 4 }, { key: 'A', oct: 4 }, { key: 'C', oct: 5 }],
   'Dsus4': [{ key: 'D', oct: 4 }, { key: 'G', oct: 4 }, { key: 'A', oct: 4 }],
   'Dsus2': [{ key: 'D', oct: 4 }, { key: 'E', oct: 4 }, { key: 'A', oct: 4 }],
+  'Ddim': [{ key: 'D', oct: 4 }, { key: 'F', oct: 4 }, { key: 'Ab', oct: 4 }],
 
+  // D# / Eb
+  'D#': [{ key: 'D#', oct: 4 }, { key: 'G', oct: 4 }, { key: 'A#', oct: 4 }],
+  'Eb': [{ key: 'Eb', oct: 4 }, { key: 'G', oct: 4 }, { key: 'Bb', oct: 4 }],
+  'D#m': [{ key: 'D#', oct: 4 }, { key: 'F#', oct: 4 }, { key: 'A#', oct: 4 }],
+  'Ebm': [{ key: 'Eb', oct: 4 }, { key: 'Gb', oct: 4 }, { key: 'Bb', oct: 4 }],
+  'Eb7': [{ key: 'Eb', oct: 4 }, { key: 'G', oct: 4 }, { key: 'Bb', oct: 4 }, { key: 'Db', oct: 5 }],
+  'D#dim': [{ key: 'D#', oct: 4 }, { key: 'F#', oct: 4 }, { key: 'A', oct: 4 }],
+  'Ebmaj7': [{ key: 'Eb', oct: 4 }, { key: 'G', oct: 4 }, { key: 'Bb', oct: 4 }, { key: 'D', oct: 5 }],
+
+  // E
   'E': [{ key: 'E', oct: 4 }, { key: 'G#', oct: 4 }, { key: 'B', oct: 4 }],
   'Em': [{ key: 'E', oct: 4 }, { key: 'G', oct: 4 }, { key: 'B', oct: 4 }],
   'Em7': [{ key: 'E', oct: 4 }, { key: 'G', oct: 4 }, { key: 'B', oct: 4 }, { key: 'D', oct: 5 }],
   'E7': [{ key: 'E', oct: 4 }, { key: 'G#', oct: 4 }, { key: 'B', oct: 4 }, { key: 'D', oct: 5 }],
+  'Emaj7': [{ key: 'E', oct: 4 }, { key: 'G#', oct: 4 }, { key: 'B', oct: 4 }, { key: 'D#', oct: 5 }],
+  'Esus4': [{ key: 'E', oct: 4 }, { key: 'A', oct: 4 }, { key: 'B', oct: 4 }],
   'E7#9': [{ key: 'E', oct: 4 }, { key: 'G#', oct: 4 }, { key: 'B', oct: 4 }, { key: 'D', oct: 5 }, { key: 'G', oct: 5 }],
 
+  // F
   'F': [{ key: 'F', oct: 4 }, { key: 'A', oct: 4 }, { key: 'C', oct: 5 }],
   'Fm': [{ key: 'F', oct: 4 }, { key: 'Ab', oct: 4 }, { key: 'C', oct: 5 }],
+  'F7': [{ key: 'F', oct: 4 }, { key: 'A', oct: 4 }, { key: 'C', oct: 5 }, { key: 'Eb', oct: 5 }],
   'Fmaj7': [{ key: 'F', oct: 4 }, { key: 'A', oct: 4 }, { key: 'C', oct: 5 }, { key: 'E', oct: 5 }],
-  'F#m': [{ key: 'F#', oct: 4 }, { key: 'A', oct: 4 }, { key: 'C#', oct: 5 }],
-  'F#': [{ key: 'F#', oct: 4 }, { key: 'A#', oct: 4 }, { key: 'C#', oct: 5 }],
+  'Fm7': [{ key: 'F', oct: 4 }, { key: 'Ab', oct: 4 }, { key: 'C', oct: 5 }, { key: 'Eb', oct: 5 }],
+  'F5': [{ key: 'F', oct: 4 }, { key: 'C', oct: 5 }],
 
+  // F# / Gb
+  'F#': [{ key: 'F#', oct: 4 }, { key: 'A#', oct: 4 }, { key: 'C#', oct: 5 }],
+  'Gb': [{ key: 'Gb', oct: 4 }, { key: 'Bb', oct: 4 }, { key: 'Db', oct: 5 }],
+  'F#m': [{ key: 'F#', oct: 4 }, { key: 'A', oct: 4 }, { key: 'C#', oct: 5 }],
+  'Gbm': [{ key: 'Gb', oct: 4 }, { key: 'A', oct: 4 }, { key: 'Db', oct: 5 }],
+  'F#7': [{ key: 'F#', oct: 4 }, { key: 'A#', oct: 4 }, { key: 'C#', oct: 5 }, { key: 'E', oct: 5 }],
+  'F#dim': [{ key: 'F#', oct: 4 }, { key: 'A', oct: 4 }, { key: 'C', oct: 5 }],
+
+  // G
   'G': [{ key: 'G', oct: 4 }, { key: 'B', oct: 4 }, { key: 'D', oct: 5 }],
   'Gm': [{ key: 'G', oct: 4 }, { key: 'Bb', oct: 4 }, { key: 'D', oct: 5 }],
   'G7': [{ key: 'G', oct: 4 }, { key: 'B', oct: 4 }, { key: 'D', oct: 5 }, { key: 'F', oct: 5 }],
   'Gmaj7': [{ key: 'G', oct: 4 }, { key: 'B', oct: 4 }, { key: 'D', oct: 5 }, { key: 'F#', oct: 5 }],
+  'Gm7': [{ key: 'G', oct: 4 }, { key: 'Bb', oct: 4 }, { key: 'D', oct: 5 }, { key: 'F', oct: 5 }],
+  'Gsus4': [{ key: 'G', oct: 4 }, { key: 'C', oct: 5 }, { key: 'D', oct: 5 }],
+  'G+': [{ key: 'G', oct: 4 }, { key: 'B', oct: 4 }, { key: 'D#', oct: 5 }],
+  'Gaug': [{ key: 'G', oct: 4 }, { key: 'B', oct: 4 }, { key: 'D#', oct: 5 }],
   'G5': [{ key: 'G', oct: 4 }, { key: 'D', oct: 5 }],
 
+  // G# / Ab
+  'G#': [{ key: 'G#', oct: 4 }, { key: 'C', oct: 5 }, { key: 'D#', oct: 5 }],
+  'Ab': [{ key: 'Ab', oct: 4 }, { key: 'C', oct: 5 }, { key: 'Eb', oct: 5 }],
+  'G#m': [{ key: 'G#', oct: 4 }, { key: 'B', oct: 4 }, { key: 'D#', oct: 5 }],
+  'Abm': [{ key: 'Ab', oct: 4 }, { key: 'B', oct: 4 }, { key: 'Eb', oct: 5 }],
+  'Ab7': [{ key: 'Ab', oct: 4 }, { key: 'C', oct: 5 }, { key: 'Eb', oct: 5 }, { key: 'Gb', oct: 5 }],
+  'Ab5': [{ key: 'Ab', oct: 4 }, { key: 'Eb', oct: 5 }],
+
+  // A
   'A': [{ key: 'A', oct: 4 }, { key: 'C#', oct: 5 }, { key: 'E', oct: 5 }],
   'Am': [{ key: 'A', oct: 4 }, { key: 'C', oct: 5 }, { key: 'E', oct: 5 }],
   'Am7': [{ key: 'A', oct: 4 }, { key: 'C', oct: 5 }, { key: 'E', oct: 5 }, { key: 'G', oct: 5 }],
   'A7': [{ key: 'A', oct: 4 }, { key: 'C#', oct: 5 }, { key: 'E', oct: 5 }, { key: 'G', oct: 5 }],
+  'Amaj7': [{ key: 'A', oct: 4 }, { key: 'C#', oct: 5 }, { key: 'E', oct: 5 }, { key: 'G#', oct: 5 }],
   'A7sus4': [{ key: 'A', oct: 4 }, { key: 'D', oct: 5 }, { key: 'E', oct: 5 }, { key: 'G', oct: 5 }],
+  'Asus4': [{ key: 'A', oct: 4 }, { key: 'D', oct: 5 }, { key: 'E', oct: 5 }],
+  'Asus2': [{ key: 'A', oct: 4 }, { key: 'B', oct: 4 }, { key: 'E', oct: 5 }],
 
+  // A# / Bb
+  'A#': [{ key: 'A#', oct: 4 }, { key: 'D', oct: 5 }, { key: 'F', oct: 5 }],
+  'Bb': [{ key: 'Bb', oct: 4 }, { key: 'D', oct: 5 }, { key: 'F', oct: 5 }],
+  'A#m': [{ key: 'A#', oct: 4 }, { key: 'C#', oct: 5 }, { key: 'F', oct: 5 }],
+  'Bbm': [{ key: 'Bb', oct: 4 }, { key: 'Db', oct: 5 }, { key: 'F', oct: 5 }],
+  'Bb7': [{ key: 'Bb', oct: 4 }, { key: 'D', oct: 5 }, { key: 'F', oct: 5 }, { key: 'Ab', oct: 5 }],
+  'Bbm7': [{ key: 'Bb', oct: 4 }, { key: 'Db', oct: 5 }, { key: 'F', oct: 5 }, { key: 'Ab', oct: 5 }],
+  'Bbmaj7': [{ key: 'Bb', oct: 4 }, { key: 'D', oct: 5 }, { key: 'F', oct: 5 }, { key: 'A', oct: 5 }],
+  'Bb6': [{ key: 'Bb', oct: 4 }, { key: 'D', oct: 5 }, { key: 'F', oct: 5 }, { key: 'G', oct: 5 }],
+  'Bb5': [{ key: 'Bb', oct: 4 }, { key: 'F', oct: 5 }],
+
+  // B
   'B': [{ key: 'B', oct: 4 }, { key: 'D#', oct: 5 }, { key: 'F#', oct: 5 }],
   'Bm': [{ key: 'B', oct: 4 }, { key: 'D', oct: 5 }, { key: 'F#', oct: 5 }],
+  'Bm7': [{ key: 'B', oct: 4 }, { key: 'D', oct: 5 }, { key: 'F#', oct: 5 }, { key: 'A', oct: 5 }],
   'Bm7b5': [{ key: 'B', oct: 4 }, { key: 'D', oct: 5 }, { key: 'F', oct: 5 }, { key: 'A', oct: 5 }],
   'B7': [{ key: 'B', oct: 4 }, { key: 'D#', oct: 5 }, { key: 'F#', oct: 5 }, { key: 'A', oct: 5 }],
-  'G#m': [{ key: 'G#', oct: 4 }, { key: 'B', oct: 4 }, { key: 'D#', oct: 5 }],
-  'Bb5': [{ key: 'Bb', oct: 4 }, { key: 'F', oct: 5 }],
-  'C5': [{ key: 'C', oct: 4 }, { key: 'G', oct: 4 }],
-  'F5': [{ key: 'F', oct: 4 }, { key: 'C', oct: 5 }],
-  'Ab5': [{ key: 'Ab', oct: 4 }, { key: 'Eb', oct: 5 }],
-  'Db5': [{ key: 'Db', oct: 4 }, { key: 'Ab', oct: 4 }]
+  'Bmaj7': [{ key: 'B', oct: 4 }, { key: 'D#', oct: 5 }, { key: 'F#', oct: 5 }, { key: 'A#', oct: 5 }],
+  'Bsus4': [{ key: 'B', oct: 4 }, { key: 'E', oct: 5 }, { key: 'F#', oct: 5 }]
 });
 
 // Voicings / Posiciones alternativas verificadas para GUITARRA

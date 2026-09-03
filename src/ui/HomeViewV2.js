@@ -579,9 +579,8 @@ export class HomeViewV2 extends Component {
     return `
       <article class="song-card home-song-card discovery-song-card ${isSelected ? 'is-selected' : ''}" data-group-key="${encodedGroup}">
         <button class="song-card-main btn-select-song" type="button" data-group-key="${encodedGroup}" aria-label="Previsualizar ${this.escapeHTML(version.title)} de ${this.escapeHTML(version.artist)}" aria-controls="discoveryDetailPanel" aria-pressed="${isSelected}">
-          <div class="song-card-header-line" style="display: flex; justify-content: space-between; align-items: flex-start; width: 100%; gap: 8px;">
+          <div class="song-card-header-line" style="display: flex; width: 100%;">
             <span class="song-card-title">${this.escapeHTML(group.title)}</span>
-            <span class="song-badge-diff ${difficultyClass}">${this.escapeHTML(diff)}</span>
           </div>
           <span class="song-card-artist">${this.escapeHTML(group.artist)}</span>
           <div class="song-card-meta">
@@ -589,8 +588,11 @@ export class HomeViewV2 extends Component {
             ${hasTempo ? `<span class="meta-pill">${numericTempo} BPM</span>` : ''}
           </div>
         </button>
-        <div class="catalog-version-row" style="justify-content: flex-end;">
-          <button class="btn-load-explore-song" style="width: 100%; border-radius: 8px; margin-top: 8px;" type="button" data-group-key="${encodedGroup}" data-version-index="${selectedIndex}" data-id="${this.escapeHTML(version.id || '')}" data-title="${this.encodeData(version.title)}" data-artist="${this.encodeData(version.artist)}" aria-label="Abrir ${this.escapeHTML(version.title)} de ${this.escapeHTML(version.artist)}">
+        <div class="catalog-version-row" style="display: flex; flex-direction: column; gap: 6px; width: 100%; margin-top: 6px;">
+          <div class="song-card-badge-row" style="display: flex; justify-content: flex-start;">
+            <span class="song-badge-diff ${difficultyClass}">${this.escapeHTML(diff)}</span>
+          </div>
+          <button class="btn-load-explore-song" style="width: 100%; border-radius: 8px;" type="button" data-group-key="${encodedGroup}" data-version-index="${selectedIndex}" data-id="${this.escapeHTML(version.id || '')}" data-title="${this.encodeData(version.title)}" data-artist="${this.encodeData(version.artist)}" aria-label="Abrir ${this.escapeHTML(version.title)} de ${this.escapeHTML(version.artist)}">
             <span>Abrir</span>
             <span class="sr-only">${this.escapeHTML(version.title)}</span>
           </button>
@@ -921,6 +923,11 @@ export class HomeViewV2 extends Component {
       card.addEventListener('focusin', () => this.selectGroup(groupKey, false));
       card.addEventListener('click', (event) => {
         if (event.target.closest('.btn-load-explore-song, .catalog-version-select')) return;
+        const isMobile = window.innerWidth <= 900 || ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
+        if (isMobile) {
+          this.openGroupVersion(groupKey);
+          return;
+        }
         this.selectGroup(groupKey, false);
       });
       card.addEventListener('dblclick', () => {

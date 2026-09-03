@@ -1108,7 +1108,7 @@ export class LyricsChordsView extends Component {
     let strumTimer = null;
     let strumIndex = 0;
 
-    btnStrumPreview?.addEventListener('click', () => {
+    btnStrumPreview?.addEventListener('click', async () => {
       const isPlaying = btnStrumPreview.classList.contains('playing');
       const arrows = this.container.querySelectorAll('.strum-pattern-arrows .strum-arrow');
       const tempo = parseInt(btnStrumPreview.dataset.tempo, 10) || 120;
@@ -1116,6 +1116,7 @@ export class LyricsChordsView extends Component {
 
       if (isPlaying) {
         clearInterval(strumTimer);
+        strumTimer = null;
         btnStrumPreview.classList.remove('playing');
         const icon = btnStrumPreview.querySelector('.strum-play-icon');
         const label = btnStrumPreview.querySelector('.strum-play-label');
@@ -1125,11 +1126,20 @@ export class LyricsChordsView extends Component {
         return;
       }
 
+      const ctx = chordEngine.getAudioContext();
+      if (ctx && ctx.state === 'suspended') {
+        await ctx.resume();
+      }
+
       btnStrumPreview.classList.add('playing');
       const icon = btnStrumPreview.querySelector('.strum-play-icon');
       const label = btnStrumPreview.querySelector('.strum-play-label');
       if (icon) icon.textContent = '⏹';
       if (label) label.textContent = 'Pausar';
+
+      // Obtener el primer acorde real de la canción para que el rasgueo suene afinado a la canción
+      const firstChordCard = this.container.querySelector('.song-chord-visual-card');
+      const sampleChord = firstChordCard?.dataset?.chord || firstChordCard?.dataset?.originalChord || 'G';
 
       // Mapeo rítmico de 8 corcheas a las 6 flechas: [arrow0, null, arrow1, arrow2, null, arrow3, arrow4, arrow5]
       const stepToArrow = [0, null, 1, 2, null, 3, 4, 5];
@@ -1142,24 +1152,7 @@ export class LyricsChordsView extends Component {
         const stroke = strokeTypes[strumIndex];
         if (stroke) {
           try {
-            const ctx = chordEngine.getAudioContext();
-            if (ctx && ctx.state === 'suspended') ctx.resume();
-            const now = ctx.currentTime;
-            const freqs = stroke === 'down' 
-              ? [164.81, 196.00, 246.94, 329.63] 
-              : [329.63, 246.94, 196.00];
-            freqs.forEach((freq, fIdx) => {
-              const osc = ctx.createOscillator();
-              const gain = ctx.createGain();
-              osc.type = 'triangle';
-              osc.frequency.setValueAtTime(freq, now + fIdx * 0.008);
-              gain.gain.setValueAtTime(strumIndex === 0 ? 0.26 : 0.15, now + fIdx * 0.008);
-              gain.gain.exponentialRampToValueAtTime(0.001, now + fIdx * 0.008 + 0.14);
-              osc.connect(gain);
-              gain.connect(ctx.destination);
-              osc.start(now + fIdx * 0.008);
-              osc.stop(now + fIdx * 0.008 + 0.15);
-            });
+            chordEngine.strumGuitar(sampleChord, stroke, tempo);
           } catch (e) {
             console.warn('[StrumPreview] Audio error:', e);
           }

@@ -314,8 +314,36 @@ body.theme-ivory .quick-chip-btn:hover {
 }
 
 .discovery-song-card .song-card-main {
-  min-height: 90px;
-  padding: 12px 14px 8px;
+  min-height: 80px;
+  padding: 12px 14px 6px;
+  cursor: pointer;
+}
+
+.discovery-song-card .song-card-title {
+  display: -webkit-box !important;
+  -webkit-line-clamp: 2 !important;
+  -webkit-box-orient: vertical !important;
+  overflow: hidden !important;
+  white-space: normal !important;
+  line-height: 1.28 !important;
+  font-size: 0.98rem !important;
+  font-weight: 800 !important;
+  text-align: left;
+  word-break: break-word;
+  width: 100%;
+}
+
+.song-card-badge-row {
+  margin-bottom: 2px;
+}
+
+.song-card-badge-row .song-badge-diff {
+  font-size: 0.65rem;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: 6px;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
 }
 
 .version-count-badge {

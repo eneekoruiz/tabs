@@ -1420,18 +1420,159 @@ body.theme-dark .btn-hero-inst-pill.active {
   font-weight: 900;
 }
 
-/* Responsivo para Móviles Estrechos (< 640px) */
+/* Responsivo para Móviles Estrechos (< 640px): Cabecera Compacta y Limpia */
 @media (max-width: 640px) {
+  .lyrics-header-main {
+    gap: 8px !important;
+    margin-bottom: 12px !important;
+    padding: 0 4px;
+  }
+
+  /* Fila 1: Una sola línea limpia y ultra compacta */
+  .lyrics-nav-tools-row {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 8px !important;
+    width: 100% !important;
+  }
+
+  .btn-back-to-explore {
+    padding: 6px 10px !important;
+    font-size: 0.8rem !important;
+    border-radius: 10px !important;
+    flex-shrink: 0 !important;
+  }
+
+  /* Ocultar herramientas secundarias en la barra móvil para que nunca ocupe 2-3 líneas; se acceden desde '···' */
+  .lyrics-header-tools-group {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    gap: 6px !important;
+  }
+
+  .lyrics-header-tools-group .tool-score-toggle,
+  .lyrics-header-tools-group .tool-pdf-pill,
+  .lyrics-header-tools-group .tool-capo,
+  .lyrics-header-tools-group .tool-font {
+    display: none !important;
+  }
+
+  .autoscroll-toolbar-cluster {
+    flex-shrink: 0 !important;
+  }
+
+  .autoscroll-toolbar-cluster .quick-tool-pill {
+    padding: 5px 10px !important;
+    font-size: 0.78rem !important;
+  }
+
+  .btn-more-options-circle {
+    width: 34px !important;
+    height: 34px !important;
+    flex-shrink: 0 !important;
+  }
+
+  /* Fila 2: Título + Barra Horizontal Unificada de Modo e Instrumento */
   .lyrics-hero-row {
     flex-direction: column !important;
-    align-items: flex-start !important;
-    gap: 12px;
+    align-items: stretch !important;
+    gap: 8px !important;
+    width: 100% !important;
   }
+
+  .lyrics-hero-title-group {
+    width: 100% !important;
+  }
+
+  .lyrics-song-title {
+    font-size: 1.35rem !important;
+    line-height: 1.2 !important;
+    margin-bottom: 2px !important;
+  }
+
+  .lyrics-song-meta-line {
+    font-size: 0.78rem !important;
+    flex-wrap: wrap !important;
+  }
+
+  /* Controles de Modo e Instrumento: fila horizontal fluida de una sola línea */
   .hero-right-controls {
-    width: 100%;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    box-sizing: border-box;
+    width: 100% !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    scrollbar-width: none !important;
+    padding-bottom: 2px !important;
+  }
+  .hero-right-controls::-webkit-scrollbar {
+    display: none;
+  }
+
+  .hero-mode-cluster {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 8px !important;
+    width: max-content !important;
+    min-width: 100% !important;
+  }
+
+  .performance-mode-segmented-control {
+    flex-shrink: 0 !important;
+  }
+
+  .performance-mode-segmented-control .ui-toggle-switch {
+    min-width: 130px !important;
+    height: 32px !important;
+    padding: 2px !important;
+  }
+
+  .performance-mode-segmented-control .toggle-label {
+    font-size: 0.72rem !important;
+    padding: 4px 6px !important;
+  }
+
+  /* Ocultar la flecha y texto '↳ Instrumento:' en móvil para ahorrar espacio crítico */
+  .hero-suboption-bridge {
+    display: none !important;
+  }
+
+  .hero-instrument-extension {
+    display: flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+    flex-shrink: 0 !important;
+    border-left: none !important;
+    padding-left: 0 !important;
+  }
+
+  .hero-instrument-selector {
+    display: flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+    background: rgba(255, 255, 255, 0.06) !important;
+    padding: 2px 4px !important;
+    border-radius: 10px !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  }
+
+  .btn-hero-inst-pill {
+    padding: 4px 8px !important;
+    font-size: 0.75rem !important;
+    border-radius: 8px !important;
+    height: 28px !important;
+    gap: 4px !important;
+  }
+
+  .inst-pill-icon {
+    font-size: 0.85rem !important;
+  }
+
+  .inst-pill-label {
+    font-size: 0.72rem !important;
+    font-weight: 700 !important;
   }
 }
 
