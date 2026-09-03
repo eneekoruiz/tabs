@@ -69,7 +69,12 @@ export const ARTIST_DISCOGRAPHIES = [
       "I Feel It Coming",
       "Call Out My Name",
       "Heartless",
-      "Pray For Me"
+      "Pray For Me",
+      "Often",
+      "Wicked Games",
+      "Sacrifice",
+      "Creepin'",
+      "Reminder"
     ]
   },
   {
@@ -87,7 +92,13 @@ export const ARTIST_DISCOGRAPHIES = [
       "Lights Up",
       "Kiwi",
       "Sweet Creature",
-      "Music for a Sushi Restaurant"
+      "Music for a Sushi Restaurant",
+      "Cherry",
+      "Treat People With Kindness",
+      "She",
+      "Daylight",
+      "Cinema",
+      "Two Ghosts"
     ]
   },
   {
@@ -104,7 +115,15 @@ export const ARTIST_DISCOGRAPHIES = [
       "Chasing Pavements",
       "Send My Love",
       "All I Ask",
-      "Make You Feel My Love"
+      "Make You Feel My Love",
+      "Send My Love (To Your New Lover)",
+      "Rumour Has It",
+      "Hometown Glory",
+      "One and Only",
+      "I Drink Wine",
+      "Water Under the Bridge",
+      "Don't You Remember",
+      "Turning Tables"
     ]
   },
   {
@@ -122,7 +141,9 @@ export const ARTIST_DISCOGRAPHIES = [
       "Animals",
       "Maps",
       "One More Night",
-      "Won't Go Home Without You"
+      "Won't Go Home Without You",
+      "Makes Me Wonder",
+      "Daylight"
     ]
   },
   {
@@ -139,7 +160,8 @@ export const ARTIST_DISCOGRAPHIES = [
       "Lost In Japan",
       "If I Can't Have You",
       "Life Of The Party",
-      "Wonder"
+      "Wonder",
+      "It'll Be Okay"
     ]
   },
   {
@@ -175,7 +197,11 @@ export const ARTIST_DISCOGRAPHIES = [
       "Rain on Me",
       "Alejandro",
       "Judas",
-      "Hold My Hand"
+      "Hold My Hand",
+      "The Edge of Glory",
+      "Applause",
+      "Telephone",
+      "Bloody Mary"
     ]
   },
   {
@@ -193,7 +219,12 @@ export const ARTIST_DISCOGRAPHIES = [
       "Disturbia",
       "Don't Stop The Music",
       "Where Have You Been",
-      "Man Down"
+      "Man Down",
+      "Rude Boy",
+      "S&M",
+      "Take a Bow",
+      "Pon de Replay",
+      "Bitch Better Have My Money"
     ]
   },
   {
@@ -211,7 +242,12 @@ export const ARTIST_DISCOGRAPHIES = [
       "Drunk in Love",
       "Run the World (Girls)",
       "Listen",
-      "Formation"
+      "Formation",
+      "Single Ladies (Put a Ring on It)",
+      "Break My Soul",
+      "Sweet Dreams",
+      "Beautiful Liar",
+      "XO"
     ]
   },
   {
@@ -229,7 +265,12 @@ export const ARTIST_DISCOGRAPHIES = [
       "Intentions",
       "Yummy",
       "Hold On",
-      "Company"
+      "Company",
+      "Lonely",
+      "As Long As You Love Me",
+      "Never Say Never",
+      "All That Matters",
+      "Beauty and a Beat"
     ]
   },
   {
@@ -244,7 +285,10 @@ export const ARTIST_DISCOGRAPHIES = [
       "Same Old Love",
       "Love You Like a Love Song",
       "Calm Down",
-      "Good For You"
+      "Good For You",
+      "It Ain't Me",
+      "Wolves",
+      "The Heart Wants What It Wants"
     ]
   },
   {
@@ -258,7 +302,8 @@ export const ARTIST_DISCOGRAPHIES = [
       "Bam Bam",
       "I Have Questions",
       "Liar",
-      "Don't Go Yet"
+      "Don't Go Yet",
+      "Shameless"
     ]
   },
   {
@@ -273,7 +318,10 @@ export const ARTIST_DISCOGRAPHIES = [
       "Writing's on the Wall",
       "Fire on Fire",
       "Dancing With A Stranger",
-      "Latch"
+      "Latch",
+      "How Do You Sleep?",
+      "Diamonds",
+      "Like I Can"
     ]
   },
   {
@@ -287,7 +335,10 @@ export const ARTIST_DISCOGRAPHIES = [
       "Better Now",
       "Chemical",
       "I Fall Apart",
-      "White Iverson"
+      "White Iverson",
+      "Wow.",
+      "I Had Some Help",
+      "Goodbyes"
     ]
   },
   {
@@ -300,7 +351,23 @@ export const ARTIST_DISCOGRAPHIES = [
       "In My Feelings",
       "Passionfruit",
       "Hold On We're Going Home",
-      "Nonstop"
+      "Nonstop",
+      "Hold On, We're Going Home",
+      "Best I Ever Had",
+      "Started From the Bottom",
+      "Nice For What",
+      "Marvins Room",
+      "Headlines",
+      "Find Your Love",
+      "Too Good",
+      "Take Care",
+      "Rich Flex",
+      "Jimmy Cooks",
+      "Laugh Now Cry Later",
+      "Energy",
+      "Controlla",
+      "Know Yourself",
+      "Fake Love"
     ]
   },
   {
@@ -342,7 +409,9 @@ export const ARTIST_DISCOGRAPHIES = [
       "Count on Me",
       "Versace on the Floor",
       "It Will Rain",
-      "Gorilla"
+      "Gorilla",
+      "The Lazy Song",
+      "Finesse"
     ]
   },
   {
@@ -360,7 +429,9 @@ export const ARTIST_DISCOGRAPHIES = [
       "Love Again",
       "Be The One",
       "Houdini",
-      "Training Season"
+      "Training Season",
+      "Hallucinate",
+      "We're Good"
     ]
   },
   {
@@ -382,7 +453,12 @@ export const ARTIST_DISCOGRAPHIES = [
       "Wildest Dreams",
       "I Knew You Were Trouble",
       "Delicate",
-      "Willow"
+      "Willow",
+      "Karma",
+      "We Are Never Ever Getting Back Together",
+      "Look What You Made Me Do",
+      "August",
+      "Fortnight"
     ]
   },
   {
@@ -400,7 +476,12 @@ export const ARTIST_DISCOGRAPHIES = [
       "Bellyache",
       "Idontwannabeyouanymore",
       "Lunch",
-      "Chihiro"
+      "Chihiro",
+      "What Was I Made For?",
+      "Bury a Friend",
+      "All the Good Girls Go to Hell",
+      "Therefore I Am",
+      "Your Power"
     ]
   },
   {
@@ -417,7 +498,12 @@ export const ARTIST_DISCOGRAPHIES = [
       "Shivers",
       "Galway Girl",
       "Give Me Love",
-      "I See Fire"
+      "I See Fire",
+      "Dive",
+      "Happier",
+      "Eyes Closed",
+      "Lego House",
+      "Sing"
     ]
   },
   {
@@ -438,7 +524,11 @@ export const ARTIST_DISCOGRAPHIES = [
       "Adventure of a Lifetime",
       "Hymn for the Weekend",
       "A Sky Full of Stars",
-      "Something Just Like This"
+      "Something Just Like This",
+      "Talk",
+      "Violet Hill",
+      "Every Teardrop Is a Waterfall",
+      "Sparks"
     ]
   },
   {
@@ -455,7 +545,10 @@ export const ARTIST_DISCOGRAPHIES = [
       "Enemy",
       "Bad Liar",
       "It's Time",
-      "Walking The Wire"
+      "Walking The Wire",
+      "Birds",
+      "Follow You",
+      "On Top of the World"
     ]
   },
   {
@@ -517,7 +610,8 @@ export const ARTIST_DISCOGRAPHIES = [
       "Breathe",
       "Hey You",
       "Us and Them",
-      "Mother"
+      "Mother",
+      "Brain Damage"
     ]
   },
   {
@@ -534,7 +628,8 @@ export const ARTIST_DISCOGRAPHIES = [
       "By the Way",
       "Give It Away",
       "Tell Me Baby",
-      "Soul to Squeeze"
+      "Soul to Squeeze",
+      "Around the World"
     ]
   },
   {
@@ -549,7 +644,9 @@ export const ARTIST_DISCOGRAPHIES = [
       "Good Riddance (Time of Your Life)",
       "Holiday",
       "When I Come Around",
-      "Jesus of Suburbia"
+      "Jesus of Suburbia",
+      "Brain Stew",
+      "Longview"
     ]
   },
   {
@@ -565,7 +662,8 @@ export const ARTIST_DISCOGRAPHIES = [
       "Stay Together for the Kids",
       "The Rock Show",
       "Feeling This",
-      "ONE MORE TIME"
+      "ONE MORE TIME",
+      "Always"
     ]
   },
   {
@@ -581,7 +679,10 @@ export const ARTIST_DISCOGRAPHIES = [
       "Breaking The Habit",
       "One More Light",
       "Papercut",
-      "Bleed It Out"
+      "Bleed It Out",
+      "One Step Closer",
+      "Shadow of the Day",
+      "New Divide"
     ]
   },
   {
@@ -595,7 +696,11 @@ export const ARTIST_DISCOGRAPHIES = [
       "Fluorescent Adolescent",
       "I Wanna Be Yours",
       "Mardy Bum",
-      "Cornerstone"
+      "Cornerstone",
+      "Brianstorm",
+      "When the Sun Goes Down",
+      "I Bet You Look Good on the Dancefloor",
+      "Snap Out of It"
     ]
   },
   {
@@ -609,7 +714,12 @@ export const ARTIST_DISCOGRAPHIES = [
       "T.N.T.",
       "Hells Bells",
       "Shoot to Thrill",
-      "For Those About to Rock"
+      "For Those About to Rock",
+      "Dirty Deeds Done Dirt Cheap",
+      "For Those About to Rock (We Salute You)",
+      "Whole Lotta Rosie",
+      "It's a Long Way to the Top (If You Wanna Rock 'n' Roll)",
+      "Let There Be Rock"
     ]
   },
   {
@@ -623,7 +733,11 @@ export const ARTIST_DISCOGRAPHIES = [
       "Always",
       "Wanted Dead or Alive",
       "I'll Be There for You",
-      "Keep the Faith"
+      "Keep the Faith",
+      "Bad Medicine",
+      "Runaway",
+      "Born to Be My Baby",
+      "Have a Nice Day"
     ]
   },
   {
@@ -637,7 +751,11 @@ export const ARTIST_DISCOGRAPHIES = [
       "Wild Horses",
       "Start Me Up",
       "Gimme Shelter",
-      "Jumpin' Jack Flash"
+      "Jumpin' Jack Flash",
+      "Honky Tonk Women",
+      "Brown Sugar",
+      "Miss You",
+      "You Can't Always Get What You Want"
     ]
   },
   {
@@ -650,7 +768,11 @@ export const ARTIST_DISCOGRAPHIES = [
       "Life on Mars?",
       "Let's Dance",
       "Rebel Rebel",
-      "Changes"
+      "Changes",
+      "Ziggy Stardust",
+      "Modern Love",
+      "Moonage Daydream",
+      "The Man Who Sold the World"
     ]
   },
   {
@@ -661,7 +783,12 @@ export const ARTIST_DISCOGRAPHIES = [
       "Knockin' on Heaven's Door",
       "Like a Rolling Stone",
       "The Times They Are A-Changin'",
-      "Tangled Up in Blue"
+      "Tangled Up in Blue",
+      "Mr. Tambourine Man",
+      "Don't Think Twice, It's All Right",
+      "Hurricane",
+      "Lay Lady Lay",
+      "Just Like a Woman"
     ]
   },
   {
@@ -673,7 +800,12 @@ export const ARTIST_DISCOGRAPHIES = [
       "Three Little Birds",
       "Could You Be Loved",
       "Is This Love",
-      "One Love"
+      "One Love",
+      "Jamming",
+      "Buffalo Soldier",
+      "Waiting in Vain",
+      "I Shot the Sheriff",
+      "Get Up, Stand Up"
     ]
   },
   {
@@ -686,7 +818,14 @@ export const ARTIST_DISCOGRAPHIES = [
       "Man in the Mirror",
       "Smooth Criminal",
       "Black or White",
-      "The Way You Make Me Feel"
+      "The Way You Make Me Feel",
+      "Don't Stop 'Til You Get Enough",
+      "Rock With You",
+      "Bad",
+      "Heal the World",
+      "Earth Song",
+      "You Are Not Alone",
+      "Human Nature"
     ]
   },
   {
@@ -748,7 +887,10 @@ export const ARTIST_DISCOGRAPHIES = [
       "Rock and Roll",
       "Going to California",
       "Ramble On",
-      "Dazed and Confused"
+      "Dazed and Confused",
+      "Tangerine",
+      "Babe I'm Gonna Leave You",
+      "Since I've Been Loving You"
     ]
   },
   {
@@ -764,7 +906,9 @@ export const ARTIST_DISCOGRAPHIES = [
       "Supersonic",
       "Masterplan",
       "Morning Glory",
-      "Slide Away"
+      "Slide Away",
+      "Half the World Away",
+      "Some Might Say"
     ]
   },
   {
@@ -796,7 +940,10 @@ export const ARTIST_DISCOGRAPHIES = [
       "About a Girl",
       "All Apologies",
       "Polly",
-      "Where Did You Sleep Last Night"
+      "Where Did You Sleep Last Night",
+      "Drain You",
+      "Dumb",
+      "Pennyroyal Tea"
     ]
   },
   {
@@ -810,7 +957,12 @@ export const ARTIST_DISCOGRAPHIES = [
       "Fake Plastic Trees",
       "Paranoid Android",
       "Exit Music",
-      "Street Spirit"
+      "Street Spirit",
+      "Street Spirit (Fade Out)",
+      "Exit Music (For a Film)",
+      "Lucky",
+      "Just",
+      "Everything in Its Right Place"
     ]
   },
   {
@@ -823,7 +975,11 @@ export const ARTIST_DISCOGRAPHIES = [
       "Paradise City",
       "Patience",
       "Knockin' on Heaven's Door",
-      "Welcome to the Jungle"
+      "Welcome to the Jungle",
+      "Civil War",
+      "Estranged",
+      "Nightrain",
+      "You Could Be Mine"
     ]
   },
   {
@@ -834,7 +990,12 @@ export const ARTIST_DISCOGRAPHIES = [
       "Take It Easy",
       "Desperado",
       "Peaceful Easy Feeling",
-      "Tequila Sunrise"
+      "Tequila Sunrise",
+      "Lyin' Eyes",
+      "One of These Nights",
+      "New Kid in Town",
+      "Heartache Tonight",
+      "Life in the Fast Lane"
     ]
   },
   {
@@ -853,7 +1014,12 @@ export const ARTIST_DISCOGRAPHIES = [
       "Tears in Heaven",
       "Wonderful Tonight",
       "Layla",
-      "Cocaine"
+      "Cocaine",
+      "Change the World",
+      "I Shot the Sheriff",
+      "Before You Accuse Me",
+      "Old Love",
+      "Lay Down Sally"
     ]
   },
   {
@@ -1941,10 +2107,8 @@ export const ARTIST_DISCOGRAPHIES = [
       "New York, New York",
       "Come Fly With Me",
       "Somethin' Stupid",
-      "Fly Me to the Moon",
       "Theme from New York, New York",
-      "Strangers in the Night",
-      "Come Fly with Me"
+      "Strangers in the Night"
     ]
   },
   {
@@ -2081,9 +2245,6 @@ export const ARTIST_DISCOGRAPHIES = [
       "Marta tiene un marcapasos",
       "Te quiero",
       "El ataque de las chicas cocodrilo",
-      "Devuélveme a Mi Chica",
-      "Marta Tiene un Marcapasos",
-      "Te Quiero",
       "Suéltate el Pelo",
       "Voy a Pasármelo Bien",
       "Temblando"
