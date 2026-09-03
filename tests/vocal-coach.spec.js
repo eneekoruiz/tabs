@@ -8,16 +8,26 @@ test.describe('Vocal Coach QA Extremo', () => {
     });
     
     // Abrir la app local
-    await page.goto('http://localhost:3000');
+    await page.goto('http://127.0.0.1:3000');
+    await page.waitForLoadState('networkidle');
   });
 
   test('Mocking de Audio y Validación de Estado (Canvas)', async ({ page }) => {
     // 1. Abrir la primera canción en el explorador
-    await page.locator('.library-grid .song-card').first().click();
+    const loadBtn = page.locator('.btn-load-explore-song').first();
+    await expect(loadBtn).toBeVisible({ timeout: 10000 });
+    await loadBtn.click();
 
-    // 2. Abrir herramientas y darle a "Quiero CANTARLA"
-    await page.click('#btnOpenToolsSheet');
-    await page.click('#btnGuiderSing');
+    // Si aparece el selector de versiones, elegir la primera
+    const versionItem = page.locator('.version-item-card, .btn-select-version-action').first();
+    if (await versionItem.isVisible({ timeout: 1500 }).catch(() => false)) {
+      await versionItem.click();
+    }
+
+    // Esperar a que cargue el visor de canciones y activar Modo Cantar
+    const singBtn = page.locator('#btnPlaySingToggle, .opt-sing, #btnGuiderSing').first();
+    await expect(singBtn).toBeVisible({ timeout: 10000 });
+    await singBtn.click();
 
     // 3. El engine de VocalCoach y PitchLane arrancan, el mock de Oscillator también.
     // 4. El oscillator mock empieza en 440Hz (A4) y a los 2 segundos cambia a 523.25Hz (C5).
@@ -47,9 +57,18 @@ test.describe('Vocal Coach QA Extremo', () => {
   test('Memory Leak & FPS Check (Test de estrés de larga duración)', async ({ page }) => {
     test.setTimeout(120000); // Dar 2 minutos de timeout
 
-    await page.locator('.library-grid .song-card').first().click();
-    await page.click('#btnOpenToolsSheet');
-    await page.click('#btnGuiderSing');
+    const loadBtn = page.locator('.btn-load-explore-song').first();
+    await expect(loadBtn).toBeVisible({ timeout: 10000 });
+    await loadBtn.click();
+
+    const versionItem = page.locator('.version-item-card, .btn-select-version-action').first();
+    if (await versionItem.isVisible({ timeout: 1500 }).catch(() => false)) {
+      await versionItem.click();
+    }
+
+    const singBtn = page.locator('#btnPlaySingToggle, .opt-sing, #btnGuiderSing').first();
+    await expect(singBtn).toBeVisible({ timeout: 10000 });
+    await singBtn.click();
 
     // Monitorizar la RAM usada (JS heap size si está disponible, o asertar FPS)
     const getPerformanceInfo = async () => {

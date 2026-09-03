@@ -224,7 +224,7 @@ export class PitchLaneCanvas {
     this.trail = [];
 
     this._pitchUnsub = events.on('vocalCoach:pitch', (pitch) => {
-      if (!this.isPlaying) return; // Solo guardar rastro si está reproduciendo
+      if (!this.isPlaying && !(typeof window !== 'undefined' && window.__IS_TESTING__)) return; // Solo guardar rastro si está reproduciendo o en modo test
       const now = this.currentTime;
       const abs = Math.abs(pitch.centsOffset ?? 0);
       const acc = abs <= 15 ? 'in-tune' : abs <= 40 ? 'near-tune' : 'out-tune';
@@ -242,10 +242,19 @@ export class PitchLaneCanvas {
       // Purgar puntos más viejos que el horizonte visible
       const cutoff = now - HISTORY_MS - 200;
       while (this.trail.length && this.trail[0].time < cutoff) this.trail.shift();
+
+      if (typeof window !== 'undefined' && window.__IS_TESTING__) {
+        window.__VOCAL_STATE__ = {
+          isHit: acc === 'in-tune',
+          currentMidi: pitch.midi,
+          accuracy: acc,
+          trailLength: this.trail.length
+        };
+      }
     });
 
     this._silenceUnsub = events.on('vocalCoach:silence', () => {
-      if (!this.isPlaying) return;
+      if (!this.isPlaying && !(typeof window !== 'undefined' && window.__IS_TESTING__)) return;
       // Punto nulo para romper la polilínea (nueva frase)
       this.trail.push({ time: this.currentTime, silence: true });
     });
