@@ -138,6 +138,19 @@ test.describe('📱 Mobile UX & Acoustic Audio Engine — Suite E2E', () => {
     expect(checkState.scoreAfterPausedPitch).toBe(0); // Cero puntos sumados en pausa
     expect(checkState.scoreAfterPlayHit).toBeGreaterThan(0); // Sumó puntos al reproducir y acertar
     expect(checkState.scoreAfterRepause).toBe(checkState.scoreAfterPlayHit); // No sumó en pausa
+
+    // Pulsar reproducir en modo cantar
+    const btnSingPlay = page.locator('#btnSingPlayPause');
+    await expect(btnSingPlay).toBeVisible();
+    await btnSingPlay.click();
+
+    // Comprobar que AutoScroll NO se activa automáticamente al reproducir en modo cantar
+    const btnAutoScroll = page.locator('#btnToggleAutoScroll');
+    await expect(btnAutoScroll).not.toHaveClass(/active/);
+
+    // Pausar
+    await btnSingPlay.click();
+    await expect(btnAutoScroll).not.toHaveClass(/active/);
   });
 
   test('5. Mis Tabs: Favoritas seleccionadas por defecto y sin pestaña Todas', async ({ page }) => {

@@ -850,7 +850,7 @@ export class LyricsChordsView extends Component {
           this.pitchLane.start();
           this._setSingerRibbonPausedState();
           if (this.autoScroller && this.autoScroller.isRunning) {
-            this.pitchLane.play();
+            this.autoScroller.stop('explicit');
           }
         });
       }
@@ -1067,7 +1067,6 @@ export class LyricsChordsView extends Component {
           this.pitchLane.play();
           const labelEl = this.container?.querySelector('#singerPitchNoteLabel');
           if (labelEl) labelEl.textContent = '🎤 Escuchando tu voz... ¡Canta!';
-          if (this.autoScroller && !this.autoScroller.isRunning) this.autoScroller.start();
         }
       }
       const isRunning = this.pitchLane ? this.pitchLane.isPlaying : false;
