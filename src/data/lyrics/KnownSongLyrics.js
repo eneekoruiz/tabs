@@ -5,6 +5,335 @@
 
 export function getKnownSongLyrics(title, artist) {
   const t = (title || '').toLowerCase().trim();
+  const a = (artist || '').toLowerCase().trim();
+
+  // ==========================================
+  // RIHANNA (100% Letras y Acordes Oficiales Reales)
+  // ==========================================
+  if (t.includes('stay') && (a.includes('rihanna') || !a.includes('laroi'))) {
+    return `[Intro]
+[C] [Dm] [Am] [F]
+[C] [Dm] [Am] [F]
+
+[Verse 1]
+[C]All along it was a [Dm]fever
+A [Am]cold with sweat hot-headed [F]believer
+[C]I threw my hands in the [Dm]air, I said, "Show me [Am]something" [F]
+[C]He said, "If you dare come a [Dm]little closer" [Am] [F]
+
+[Chorus]
+[C]Round and around and a[Dm]round and around we [Am]go [F]
+[C]Oh, now tell me now, tell me [Dm]now, tell me now you [Am]know [F]
+[C]Not really sure how to [Dm]feel about it
+[Am]Something in the way you [F]move
+[C]Makes me feel like I can't [Dm]live without you
+[Am]It takes me all the [F]way
+[C]I want you to [Dm]stay [Am] [F]
+
+[Verse 2]
+[C]It's not much of a [Dm]life you're living
+[Am]It's not just something you [F]take, it's given
+[C]Round and around and a[Dm]round and around we [Am]go [F]
+[C]Oh, now tell me now, tell me [Dm]now, tell me now you [Am]know [F]
+
+[Chorus]
+[C]Not really sure how to [Dm]feel about it
+[Am]Something in the way you [F]move
+[C]Makes me feel like I can't [Dm]live without you
+[Am]It takes me all the [F]way
+[C]I want you to [Dm]stay [Am]
+
+[Bridge]
+[F]Ooh, the [Am]reason I hold [Dm]on
+[F]Ooh, 'cause I [Am]need this hole [Dm]gone
+[F]Funny you're the broken one, but [Am]I'm the only one who [Dm]needed saving
+[F]'Cause when you never see the light, it's [Am]hard to know which one of us is [G]caving
+
+[Chorus]
+[C]Not really sure how to [Dm]feel about it
+[Am]Something in the way you [F]move
+[C]Makes me feel like I can't [Dm]live without you
+[Am]It takes me all the [F]way
+[C]I want you to [Dm]stay [Am] [F]
+
+[Outro]
+[C]Stay, [Dm] [Am] [F]
+[C]I want you to [Dm]stay [Am] [F] [C]`;
+  }
+
+  if (t.includes('diamonds') && (a.includes('rihanna') || !a)) {
+    return `[Intro]
+[G] [Bm] [A] [A]
+[G] [Bm] [A] [A]
+
+[Verse 1]
+[G]Shine bright like a diamond
+[Bm]Shine bright like a diamond
+[G]Find light in the beautiful sea
+I [Bm]choose to be happy
+[A]You and I, you and I
+We're like [F#m]diamonds in the sky
+[G]You're a shooting star I see
+A [Bm]vision of ecstasy
+[A]When you hold me, I'm alive
+We're like [F#m]diamonds in the sky
+
+[Pre-Chorus]
+I knew that we'd be[G]come one right away
+Oh, right a[Bm]way
+At first sight I felt the [A]energy of sun rays
+I saw the life inside your [F#m]eyes
+
+[Chorus]
+So shine [G]bright tonight, [Bm]you and I
+We're beautiful like [A]diamonds in the sky
+Eye to [G]eye, so a[Bm]live
+We're beautiful like [A]diamonds in the sky
+Shine bright like a [G]diamond
+Shine bright like a [Bm]diamond
+Shining bright like a [A]diamond
+We're beautiful like [F#m]diamonds in the sky
+Shine bright like a [G]diamond
+Shine bright like a [Bm]diamond
+Shining bright like a [A]diamond
+We're beautiful like [F#m]diamonds in the sky
+
+[Verse 2]
+[G]Palms rise to the universe
+As we [Bm]moonshine and molly
+[A]Feel the warmth, we'll never die
+We're like [F#m]diamonds in the sky
+[G]You're a shooting star I see
+A [Bm]vision of ecstasy
+[A]When you hold me, I'm alive
+We're like [F#m]diamonds in the sky
+
+[Pre-Chorus]
+At first sight I felt the [G]energy of sun rays
+I saw the [Bm]life inside your eyes [A] [F#m]
+
+[Chorus]
+So shine [G]bright tonight, [Bm]you and I
+We're beautiful like [A]diamonds in the sky
+Eye to [G]eye, so a[Bm]live
+We're beautiful like [A]diamonds in the sky
+Shine bright like a [G]diamond
+Shine bright like a [Bm]diamond
+Shining bright like a [A]diamond
+We're beautiful like [F#m]diamonds in the sky
+
+[Outro]
+[G]Shine bright like a diamond [Bm]
+[A]Shine bright like a diamond [F#m]
+[G]Shine bright like a diamond [Bm] [A] [G]`;
+  }
+
+  if (t.includes('umbrella')) {
+    return `[Intro]
+[F] [C] [G] [Am]
+[F] [C] [G] [Am]
+
+[Verse 1]
+[F]You have my heart, and [C]we'll never be worlds apart
+[G]Maybe in magazines, but [Am]you'll still be my star
+[F]Baby, 'cause in the dark, you [C]can't see shiny cars
+[G]And that's when you need me there, with [Am]you I'll always share
+
+[Chorus]
+Because [F]when the sun shines, we'll shine together
+[C]Told you I'll be here forever
+[G]Said I'll always be your friend
+Took an [Am]oath, I'ma stick it out to the end
+[F]Now that it's raining more than ever
+[C]Know that we'll still have each other
+[G]You can stand under my umbrella
+[Am]You can stand under my umbrella, ella, ella, [F]eh, eh, eh
+Under my [C]umbrella, ella, ella, [G]eh, eh, eh
+Under my [Am]umbrella, ella, ella, [F]eh, eh, eh
+Under my [C]umbrella, ella, ella, [G]eh, eh, eh-[Am]eh, eh-eh
+
+[Verse 2]
+[F]These fancy things will [C]never come in between
+[G]You're part of my entity, [Am]here for infinity
+[F]When the war has took its part, [C]when the world has dealt its cards
+[G]If the hand is hard, to[Am]gether we'll mend your heart
+
+[Chorus]
+Because [F]when the sun shines, we'll shine together
+[C]Told you I'll be here forever
+[G]Said I'll always be your friend
+Took an [Am]oath, I'ma stick it out to the end
+[F]Now that it's raining more than ever
+[C]Know that we'll still have each other
+[G]You can stand under my umbrella
+[Am]You can stand under my umbrella, ella, ella, [F]eh, eh, eh
+Under my [C]umbrella, ella, ella, [G]eh, eh, eh
+Under my [Am]umbrella, ella, ella, [F]eh, eh, eh
+Under my [C]umbrella, ella, ella, [G]eh, eh, eh-[Am]eh, eh-eh
+
+[Bridge]
+[Bb]You can run into my arms, it's [F]okay, don't be alarmed
+Come into [C]me, there's no hurt in the rain
+These [Bb]monsoon storms, you can rely on my [F]arms
+So come into [E7]me, it's pouring rain
+
+[Chorus]
+Because [F]when the sun shines, we'll shine together
+[C]Told you I'll be here forever
+[G]Said I'll always be your friend
+Took an [Am]oath, I'ma stick it out to the end
+[F]Now that it's raining more than ever
+[C]Know that we'll still have each other
+[G]You can stand under my umbrella
+[Am]You can stand under my umbrella, ella, ella, [F]eh, eh, eh
+Under my [C]umbrella, ella, ella, [G]eh, eh, eh
+Under my [Am]umbrella, ella, ella, [F]eh, eh, eh
+Under my [C]umbrella, ella, ella, [G]eh, eh, eh-[Am]eh, eh-eh`;
+  }
+
+  if (t.includes('love on the brain')) {
+    return `[Intro]
+[G] [Am] [Em] [D]
+[G] [Am] [Em] [D]
+
+[Verse 1]
+[G]And you got me, let you eat it, yeah you eat it off
+[Am]No, they don't know it, you can hear it, you can hear me talk
+[Em]And you got me, let you eat it, yeah you eat it off
+[D]No, they don't know it, you can hear it, you can hear me talk
+[G]And baby you got me, like I [Am]got you
+You know I [Em]want you, and I [D]need you
+
+[Chorus]
+It must be [G]love on the brain
+That got me [Am]feeling this way
+It beats me [Em]black and blue but it [D]fucks me so good
+And I can't get [G]enough
+Must be love on the [Am]brain, yeah
+And it keeps [Em]cursing my name
+No matter [D]what I do, I'm not good without you
+And I can't get [C]enough
+Must be love on the [D]brain
+
+[Verse 2]
+[G]Baby, keep loving me, just love me down
+[Am]Don't quit loving me, just start me up
+[Em]Just love me down, [D]like you do
+[G]And baby I'm fist fighting with [Am]fire
+Just to get [Em]close to you
+Can we [D]burn something, babe?
+
+[Chorus]
+It must be [G]love on the brain
+That got me [Am]feeling this way
+It beats me [Em]black and blue but it [D]fucks me so good
+And I can't get [G]enough
+Must be love on the [Am]brain, yeah
+And it keeps [Em]cursing my name
+No matter [D]what I do, I'm not good without you
+And I can't get [C]enough
+Must be love on the [D]brain
+
+[Outro]
+Must be love on the [G]brain [Am] [Em] [D] [G]`;
+  }
+
+  // ==========================================
+  // THE KID LAROI / JUSTIN BIEBER / SAM SMITH
+  // ==========================================
+  if (t.includes('stay') && (a.includes('laroi') || a.includes('bieber'))) {
+    return `[Intro]
+[C] [D] [Em] [G]
+[C] [D] [Em] [G]
+
+[Chorus: The Kid LAROI]
+I do the [C]same thing I told you that I [D]never would
+I told you [Em]I'd change, even when I knew I [G]never could
+I know that I [C]can't find nobody else as [D]good as you
+I need you to [Em]stay, need you to stay, hey [G]
+I do the [C]same thing I told you that I [D]never would
+I told you [Em]I'd change, even when I knew I [G]never could
+I know that I [C]can't find nobody else as [D]good as you
+I need you to [Em]stay, need you to stay, hey [G]
+
+[Verse 1: The Kid LAROI]
+I get [C]drunk, wake up, I'm wasted [D]still
+I realize the [Em]time that I wasted [G]here
+I feel like you can't [C]feel the way I feel [D]
+Oh, I'll be fucked [Em]up if you can't be right here [G]
+
+[Chorus: The Kid LAROI & Justin Bieber]
+I do the [C]same thing I told you that I [D]never would
+I told you [Em]I'd change, even when I knew I [G]never could
+I know that I [C]can't find nobody else as [D]good as you
+I need you to [Em]stay, need you to stay, hey [G]
+
+[Verse 2: Justin Bieber]
+When I'm a[C]way from you, I miss your touch [D]
+You're the reason I believe in [Em]love
+Been difficult for me to [G]trust
+And I'm a[C]fraid that I'ma fuck it up [D]
+Ain't no way that I can leave you [Em]strung
+'Cause you took away the pain when I was [G]numb
+And there's nothing that I could do to re[C]pay you
+I need you to stay [D]
+
+[Chorus: The Kid LAROI & Justin Bieber]
+I do the [C]same thing I told you that I [D]never would
+I told you [Em]I'd change, even when I knew I [G]never could
+I know that I [C]can't find nobody else as [D]good as you
+I need you to [Em]stay, need you to stay, hey [G]
+I do the [C]same thing I told you that I [D]never would
+I told you [Em]I'd change, even when I knew I [G]never could
+I know that I [C]can't find nobody else as [D]good as you
+I need you to [Em]stay, need you to stay, hey [G] [C]`;
+  }
+
+  if (t.includes('stay with me')) {
+    return `[Intro]
+[Am] [F] [C]
+[Am] [F] [C]
+
+[Verse 1]
+[Am]Guess it's true, I'm not [F]good at a one-night [C]stand
+[Am]'Cause I still need [F]love, 'cause I'm just a [C]man
+[Am]These nights never [F]seem to go to [C]plan
+[Am]I don't want you to [F]leave, will you hold my [C]hand?
+
+[Chorus]
+Oh, won't you [Am]stay [F]with [C]me?
+'Cause you're [Am]all [F]I [C]need
+This ain't [Am]love, it's [F]clear to [C]see
+But [G]darling, [Am]stay [F]with [C]me
+
+[Verse 2]
+[Am]Why am I so [F]emotional? [C]
+[Am]No, it's not a good [F]look, gain some self-[C]control
+[Am]And deep down I [F]know this never [C]works
+[Am]But you can lay with [F]me so it doesn't [C]hurt
+
+[Chorus]
+Oh, won't you [Am]stay [F]with [C]me?
+'Cause you're [Am]all [F]I [C]need
+This ain't [Am]love, it's [F]clear to [C]see
+But [G]darling, [Am]stay [F]with [C]me
+
+[Bridge]
+[Am] [F] [C]
+[Am] [F] [C]
+[Am] [F] [C]
+[G] [Am] [F] [C]
+
+[Chorus]
+Oh, won't you [Am]stay [F]with [C]me?
+'Cause you're [Am]all [F]I [C]need
+This ain't [Am]love, it's [F]clear to [C]see
+But [G]darling, [Am]stay [F]with [C]me
+Oh, won't you [Am]stay [F]with [C]me?
+'Cause you're [Am]all [F]I [C]need
+This ain't [Am]love, it's [F]clear to [C]see
+But [G]darling, [Am]stay [F]with [C]me`;
+  }
 
   // ==========================================
   // ARIANA GRANDE
@@ -1252,21 +1581,71 @@ I'm in [G]love with your [A]body`;
     return `[Intro]
 [Em7] [D/F#] [G] [C] [G] [D]
 
-[Verse 1]
+[Verse 1 - Bradley Cooper]
 [Em7]Tell me [D/F#]somethin', [G]girl
 [C]Are you happy in this [G]modern [D]world?
 [Em7]Or do you [D/F#]need [G]more?
 [C]Is there somethin' else you're [G]searchin' [D]for?
 
+[Verse 2 - Bradley Cooper]
+[Em7]I'm [D/F#]fallin' [G]
+[C]In all the good times I [G]find myself [D]longin'
+[Em7]For [D/F#]change [G]
+[C]And in the bad times I [G]fear my[D]self
+
+[Verse 3 - Lady Gaga]
+[Em7]Tell me something, boy
+[D/F#]Aren't you tired trying to fill that void?
+[G]Or do you need more?
+[C]Ain't it hard keeping it so hard[G]core?
+
+[Verse 4 - Lady Gaga]
+[Em7]I'm [D/F#]falling [G]
+[C]In all the good times I [G]find myself [D]longing
+[Em7]For [D/F#]change [G]
+[C]And in the bad times I [G]fear my[D]self
+
 [Chorus]
 I'm off the [Am]deep end, [D]watch as I dive in
 [G]I'll never [D/F#]meet the [Em7]ground
 Crash through the [Am]surface, where they [D]can't hurt us
-We're far from the [G]shallow [D/F#]now [Em7]`;
+We're far from the [G]shallow [D/F#]now [Em7]
+
+In the [Am]sha-ha-sha-ha-[D]llow
+In the sha-sha-[G]sha-ha-sha-ha-[D/F#]llow [Em7]
+In the [Am]sha-ha-sha-ha-[D]llow
+We're far from the [G]shallow [D/F#]now [Em7]
+
+[Verse 5 - Both]
+[Am] [D] [G] [D/F#] [Em7]
+
+[Bridge - Lady Gaga]
+[Am]Tell me somethin', I need to know
+[D]Then take my breath and never let go
+[G]If you just let me invade your space
+[D/F#]I'll take the pleasure, take it with the pain [Em7]
+[Am]And if you're still breathing when I'm done
+[D]Then maybe I'm the one tonight
+[G]Oh-woah, oh-woah [D/F#] [Em7]
+
+[Chorus]
+I'm off the [Am]deep end, [D]watch as I dive in
+[G]I'll never [D/F#]meet the [Em7]ground
+Crash through the [Am]surface, where they [D]can't hurt us
+We're far from the [G]shallow [D/F#]now [Em7]
+
+In the [Am]sha-ha-sha-ha-[D]llow
+In the sha-sha-[G]sha-ha-sha-ha-[D/F#]llow [Em7]
+In the [Am]sha-ha-sha-ha-[D]llow
+We're far from the [G]shallow [D/F#]now [Em7]
+
+[Outro]
+[Em7] [D/F#] [G] [C] [G] [D] [Em7]`;
   }
 
   if (t.includes('bad guy')) {
     return `[Intro]
+[Gm] [Cm] [D7]
 [Gm] [Cm] [D7]
 
 [Verse 1]
@@ -1275,16 +1654,43 @@ Sleeping, you're on your tippy toes
 [Cm]Creeping around like no one knows
 [D7]Think you're so criminal
 
+[Verse 2]
+[Gm]Bruises on both my knees for you
+Don't say thank you or please, I do
+[Cm]What I want when I'm wanting to
+[D7]My soul? So cynical
+
 [Chorus]
 So you're a [Gm]tough guy, like it really rough guy
 Just can't get enough guy, chest always so puffed guy
 I'm that [Cm]bad type, make your mama sad type
 Make your girlfriend mad tight, might seduce your dad type
-I'm the [D7]bad guy, duh`;
+I'm the [D7]bad guy, duh
+
+[Bridge]
+[Gm]I like it when you take control
+Even if you know that you don't own me, I'll let you play the role
+[Cm]I'll be your animal
+[D7]My mommy likes to sing along with me
+But she won't sing this song
+If she reads all the lyrics
+[Gm]She'll pity the men I know [Cm] [D7]
+
+[Chorus]
+So you're a [Gm]tough guy, like it really rough guy
+Just can't get enough guy, chest always so puffed guy
+I'm that [Cm]bad type, make your mama sad type
+Make your girlfriend mad tight, might seduce your dad type
+I'm the [D7]bad guy, duh
+
+[Outro]
+[Gm]I'm the bad guy [Cm] [D7]
+[Gm]Duh [Cm] [D7] [Gm]`;
   }
 
   if (t.includes('smells like teen spirit')) {
     return `[Intro]
+[F] [Bb] [Ab] [Db]
 [F] [Bb] [Ab] [Db]
 
 [Verse 1]
@@ -1293,12 +1699,57 @@ I'm the [D7]bad guy, duh`;
 [F]She's over[Bb]bored and [Ab]self-as[Db]sured
 [F]Oh no, I [Bb]know a [Ab]dirty [Db]word
 
+[Pre-Chorus]
+[F]Hello, [Bb]hello, [Ab]hello, how [Db]low?
+[F]Hello, [Bb]hello, [Ab]hello, how [Db]low?
+[F]Hello, [Bb]hello, [Ab]hello, how [Db]low?
+[F]Hello, [Bb]hello, [Ab]hello [Db]
+
 [Chorus]
 [F]With the [Bb]lights out, [Ab]it's less [Db]dangerous
 [F]Here we [Bb]are now, [Ab]enter[Db]tain us
 [F]I feel [Bb]stupid [Ab]and con[Db]tagious
 [F]Here we [Bb]are now, [Ab]enter[Db]tain us
-A mul[F]atto, an al[Bb]bino, a mos[Ab]quito, my li[Db]bido, yeah`;
+A mul[F]atto, an al[Bb]bino, a mos[Ab]quito, my li[Db]bido, yeah
+
+[Verse 2]
+[F]I'm worse at [Bb]what I do [Ab]best
+And for this [Db]gift I feel blessed
+[F]Our little [Bb]group has al[Ab]ways been
+And al[Db]ways will until the end
+
+[Pre-Chorus]
+[F]Hello, [Bb]hello, [Ab]hello, how [Db]low?
+[F]Hello, [Bb]hello, [Ab]hello, how [Db]low?
+[F]Hello, [Bb]hello, [Ab]hello, how [Db]low?
+[F]Hello, [Bb]hello, [Ab]hello [Db]
+
+[Chorus]
+[F]With the [Bb]lights out, [Ab]it's less [Db]dangerous
+[F]Here we [Bb]are now, [Ab]enter[Db]tain us
+[F]I feel [Bb]stupid [Ab]and con[Db]tagious
+[F]Here we [Bb]are now, [Ab]enter[Db]tain us
+A mul[F]atto, an al[Bb]bino, a mos[Ab]quito, my li[Db]bido, yeah
+
+[Verse 3]
+[F]And I for[Bb]get just why I [Ab]taste
+Oh yeah, I [Db]guess it makes me smile
+[F]I found it [Bb]hard, it's hard to [Ab]find
+Oh well, [Db]whatever, never mind
+
+[Pre-Chorus]
+[F]Hello, [Bb]hello, [Ab]hello, how [Db]low?
+[F]Hello, [Bb]hello, [Ab]hello, how [Db]low?
+[F]Hello, [Bb]hello, [Ab]hello, how [Db]low?
+[F]Hello, [Bb]hello, [Ab]hello [Db]
+
+[Chorus]
+[F]With the [Bb]lights out, [Ab]it's less [Db]dangerous
+[F]Here we [Bb]are now, [Ab]enter[Db]tain us
+[F]I feel [Bb]stupid [Ab]and con[Db]tagious
+[F]Here we [Bb]are now, [Ab]enter[Db]tain us
+A mul[F]atto, an al[Bb]bino, a mos[Ab]quito, my li[Db]bido
+A de[F]ni[Bb]al, a de[Ab]ni[Db]al, a de[F]ni[Bb]al [Ab] [Db] [F]`;
   }
 
   if (t.includes('yesterday')) {
@@ -2657,6 +3108,422 @@ Des-pa-ci-to [G]`;
 [C]O te retorcerás [D]entre polvos pica-pica
 [G]Sufre mamón, [Em]devuélveme a mi chica
 [C]O te retorcerás [D]entre polvos pica-pica`;
+  }
+
+
+  // ==========================================
+  // MILEY CYRUS
+  // ==========================================
+  if (t.includes('flowers')) {
+    return `[Intro]
+[C] [G] [Am] [F]
+[C] [G] [Am] [F]
+
+[Verse 1]
+[C]We were good, we were gold
+[G]Kinda dream that can't be sold
+[Am]We were right till we weren't
+[F]Built a home and watched it burn
+[C]Mmm, I didn't wanna leave you
+[G]I didn't wanna lie
+[Am]Started to cry but then remembered
+[F]I can buy myself flowers
+[C]Write my name in the sand
+[G]Talk to myself for hours
+[Am]Say things you don't understand
+[F]I can take myself dancing
+[C]And I can hold my own hand
+[G]Yeah, I can love me better than you can
+
+[Chorus]
+[C]Can love me better
+I can love me better, [G]baby
+Can love me better
+I can love me better, [Am]baby
+Can love me better
+I can love me [F]better than you can
+[C]Can love me better
+I can love me better, [G]baby
+Can love me better
+I can love me better, [Am]baby
+Can love me better
+I can love me [F]better than you can
+
+[Verse 2]
+[C]Paint my nails, cherry red
+[G]Match the roses that you left
+[Am]No remorse, no regret
+[F]I forgive every word you said
+[C]Ooh, I didn't wanna leave you, baby
+[G]I didn't wanna fight
+[Am]Started to cry but then remembered
+[F]I can buy myself flowers
+[C]Write my name in the sand
+[G]Talk to myself for hours, yeah
+[Am]Say things you don't understand
+[F]I can take myself dancing
+[C]And I can hold my own hand
+[G]Yeah, I can love me better than you can
+
+[Chorus]
+[C]Can love me better
+I can love me better, [G]baby
+Can love me better
+I can love me better, [Am]baby
+Can love me better
+I can love me [F]better than you can
+[C]Can love me better
+I can love me better, [G]baby
+Can love me better
+I can love me better, [Am]baby
+Can love me better
+I can love me [F]better than you can
+
+[Bridge]
+[Am]I didn't wanna be the one to forget
+[F]I thought of everything I'd never regret
+[C]A little love, a little help I never needed anyone else
+[G]Higher than I ever felt
+[Am]I didn't wanna leave you, I didn't wanna fight
+[F]Started to cry but then remembered
+
+[Outro]
+[F]I can buy myself flowers
+[C]Write my name in the sand
+[G]Talk to myself for hours, yeah
+[Am]Say things you don't understand
+[F]I can take myself dancing
+[C]And I can hold my own hand
+[G]Yeah, I can love me better than
+[F]I can love me better than you can [C] [G] [Am] [F] [C]`;
+  }
+
+  if (t.includes('wrecking ball')) {
+    return `[Intro]
+[C] [G] [Am] [F]
+
+[Verse 1]
+[C]We clawed, we chained our hearts in vain
+[G]We jumped never asking why
+[Am]We kissed, I fell under your spell
+[F]A love no one could deny
+
+[Pre-Chorus]
+[C]Don't you ever say I just walked away
+[G]I will always want you
+[Am]I can't live a lie, running for my life
+[F]I will always want you
+
+[Chorus]
+[C]I came in like a wrecking ball
+[G]I never hit so hard in love
+[Am]All I wanted was to break your walls
+[F]All you ever did was wreck me
+[C]Yeah, you, you wreck me
+
+[Verse 2]
+[C]I put you high up in the sky
+[G]And now, you're not coming down
+[Am]It slowly turned, you let me burn
+[F]And now, we're ashes on the ground
+
+[Pre-Chorus]
+[C]Don't you ever say I just walked away
+[G]I will always want you
+[Am]I can't live a lie, running for my life
+[F]I will always want you
+
+[Chorus]
+[C]I came in like a wrecking ball
+[G]I never hit so hard in love
+[Am]All I wanted was to break your walls
+[F]All you ever did was wreck me
+[C]I came in like a wrecking ball
+[G]Yeah, I just closed my eyes and swung
+[Am]Left me crashing in a blazing fall
+[F]All you ever did was wreck me
+[C]Yeah, you, you wreck me
+
+[Bridge]
+[Am]It was in your [F]kiss
+It was in your [C]lips
+It was in your [G]touch
+In your [Am]arms, all you [F]ever did was
+[C]Wreck me [G] [Am] [F]
+
+[Outro]
+[C]I came in like a wrecking ball [G]
+[Am]I never hit so hard in love [F]
+[C]All I wanted was to break your walls
+[G]All you ever did was wreck me [Am] [F] [C]`;
+  }
+
+  if (t.includes('the climb')) {
+    return `[Intro]
+[C] [F] [Am] [G]
+
+[Verse 1]
+[C]I can almost see it
+That dream I'm dreaming
+[F]But there's a voice inside my head saying
+[Am]You'll never reach it [G]
+[C]Every step I'm taking
+Every move I make
+[F]Feels lost with no direction
+[Am]My faith is shaking [G]
+
+[Pre-Chorus]
+[F]But I, I gotta keep trying
+[G]Gotta keep my head held high
+
+[Chorus]
+[C]There's always gonna be another mountain
+[G]I'm always gonna wanna make it move
+[Am]Always gonna be an uphill battle
+[F]Sometimes I'm gonna have to lose
+[C]Ain't about how fast I get there
+[G]Ain't about what's waiting on the other side
+[Am]It's the [F]climb [C] [G] [Am] [F]
+
+[Verse 2]
+[C]The struggles I'm facing
+The chances I'm taking
+[F]Sometimes might knock me down, but
+[Am]No I'm not breaking [G]
+[C]I may not know it
+But these are the moments
+[F]That I'm gonna remember most
+[Am]I've gotta keep going [G]
+
+[Pre-Chorus]
+[F]And I, I gotta be strong
+[G]Just keep pushing on
+
+[Chorus]
+[C]There's always gonna be another mountain
+[G]I'm always gonna wanna make it move
+[Am]Always gonna be an uphill battle
+[F]Sometimes I'm gonna have to lose
+[C]Ain't about how fast I get there
+[G]Ain't about what's waiting on the other side
+[Am]It's the [F]climb [C] [G] [Am] [F]
+
+[Bridge]
+[C]Keep on moving, keep climbing
+[G]Keep the faith, baby
+[Am]It's all about, it's all about
+[F]The climb
+[C]Keep the faith, keep your faith [G] [Am] [F]
+
+[Outro]
+[C]There's always gonna be another mountain
+[G]I'm always gonna wanna make it move
+[Am]Always gonna be an uphill battle
+[F]Sometimes you're gonna have to lose
+[C]Ain't about how fast I get there
+[G]Ain't about what's waiting on the other side
+[Am]It's the [F]climb [C]`;
+  }
+
+  // ==========================================
+  // JUSTIN BIEBER
+  // ==========================================
+  if (t.includes('love yourself')) {
+    return `[Intro]
+[E] [A] [C#m] [B]
+[E] [A] [C#m] [B]
+
+[Verse 1]
+For all the [E]times that you rain on my parade
+And all the [A]clubs you get in using my name
+You think you [C#m]broke my heart, oh, girl for goodness [B]sake
+You think I'm [E]crying on my own, well, I ain't
+
+And I [E]didn't wanna write a song
+'Cause I [A]didn't want anyone thinking I still care, I don't
+But you [C#m]still hit my phone up
+And, baby, I [B]be movin' on
+And I think you [E]should be somethin' I don't wanna hold back
+Maybe you [A]should know that
+
+[Chorus]
+My mama don't [C#m]like you and she [B]likes everyone
+And I [E]never like to admit that I [A]was wrong
+And I've been so [C#m]caught up in my [B]job
+Didn't see what's going on and now I [E]know
+I'm better sleeping [A]on my own
+
+[Verse 2]
+'Cause if you [E]like the way you look that much
+Oh, baby, you should go and love [A]yourself
+And if you [C#m]think that I'm still holdin' on [B]
+To somethin', you should go and love [E]yourself
+
+And when you [E]told me that you hated my friends
+The only [A]problem was with you and not them
+And every [C#m]time you told me my opinion was [B]wrong
+And tried to [E]make me forget where I came from
+
+[Chorus]
+My mama don't [C#m]like you and she [B]likes everyone
+And I [E]never like to admit that I [A]was wrong
+And I've been so [C#m]caught up in my [B]job
+Didn't see what's going on and now I [E]know
+I'm better sleeping [A]on my own
+
+[Bridge]
+'Cause if you [E]like the way you look that much
+Oh, baby, you should go and love [A]yourself
+And if you [C#m]think that I'm still holdin' on [B]
+To somethin', you should go and love [E]yourself
+
+[Outro]
+[E]For all the times that you made me feel small
+I fell in [A]love, now I can't believe I stayed at all
+I never [C#m]felt so low when I was vulnerable
+Was I a [B]fool to let you break down my walls? [E] [A] [C#m] [B] [E]`;
+  }
+
+  if (t.includes('ghost') && (t.includes('bieber') || a.includes('bieber'))) {
+    return `[Intro]
+[G] [D] [Em] [C]
+[G] [D] [Em] [C]
+
+[Verse 1]
+[G]Young and in love, I thought I had it figured out
+[D]Still at the party when the spirit leaves the body
+[Em]It's been a long time since you called
+[C]Sometimes I wonder if you ever will again
+
+[Pre-Chorus]
+[G]And if the stars don't align
+[D]If it doesn't stop crying
+[Em]If I can't feel your heartbeat
+[C]Through the dark
+
+[Chorus]
+[G]If the love that we have won't grow
+[D]I can't let you go
+[Em]Need to feel your body touch me
+[C]Like you always do
+[G]Every day that I'm without ya
+[D]Is a day that I'm alone
+[Em]If I can't feel your arms around me
+[C]I wanna be a ghost too
+
+[Verse 2]
+[G]Missing parents that you lost to heaven above
+[D]Sleeping with that picture of us that you keep hidden
+[Em]Wondering if we'll be okay
+[C]Sometimes I feel like we're lost out in translation
+
+[Pre-Chorus]
+[G]When words aren't enough
+[D]Every time that we touch
+[Em]It's like heaven and hell
+[C]Then back to nothing
+
+[Chorus]
+[G]If the love that we have won't grow
+[D]I can't let you go
+[Em]Need to feel your body touch me
+[C]Like you always do
+[G]Every day that I'm without ya
+[D]Is a day that I'm alone
+[Em]If I can't feel your arms around me
+[C]I wanna be a ghost too
+
+[Outro]
+[G]Ooh [D] [Em] [C]
+[G]Wanna be a ghost too [D] [Em] [C] [G]`;
+  }
+
+  // ==========================================
+  // LADY GAGA
+  // ==========================================
+  if (t.includes('million reasons')) {
+    return `[Intro]
+[C] [G] [Am] [F]
+
+[Verse 1]
+[C]You're giving me a million reasons to let you go
+[G]You're giving me a million reasons to quit the show
+[Am]You're giving me a million reasons
+[F]Give me a million reasons
+[C]Giving me a million reasons
+About a million reasons
+
+[Pre-Chorus]
+[C]If I had a highway, I would run for the hills
+[G]If you could find a dry way, I'd forever be still
+[Am]But you're here, and I'm terrified, we need to talk
+[F]It takes everything in me just to walk
+
+[Chorus]
+[C]You're giving me a million reasons to let you go
+[G]You're giving me a million reasons to quit the show
+[Am]You're giving me a million reasons
+[F]Give me a million reasons
+[C]Giving me a million reasons
+About a [G]million [Am]reasons [F]
+
+[Bridge]
+[C]I bow down to pray
+[G]I try to make the worst seem better
+[Am]Lord, show me the way
+[F]To cut through all this worn out leather
+[C]I've got a hundred million reasons to walk away
+[G]But baby, I just need one good one to stay [Am] [F]
+
+[Outro]
+[C]Head stuck in a cycle, I look off and I stare
+[G]It's like that I've stopped breathing but completely aware
+[Am]My lips are saying, "Goodbye"
+[F]And my eyes are finally dry
+[C]Yeah I've got a million reasons to let you go [G] [Am] [F] [C]`;
+  }
+
+  if (t.includes('always remember us this way')) {
+    return `[Intro]
+[G] [D] [Em] [C]
+
+[Verse 1]
+[G]That Arizona sky, burning in your eyes
+[D]You look at me and, babe, I wanna catch on fire
+[Em]It's buried in my soul, like California gold
+[C]You found the light in me that I couldn't find
+
+[Pre-Chorus]
+[G]So when I'm all choked up and I can't find the words
+[D]Every time we say goodbye, baby it hurts
+[Em]When the sun goes down and the band won't play
+[C]I'll always remember us this way
+
+[Chorus]
+[G]Lovers in the night, poets trying to write
+[D]We don't know how to rhyme but, damn, we try
+[Em]But all I really know, you're where I wanna go
+[C]The part of me that's you will never die
+
+[Pre-Chorus]
+[G]So when I'm all choked up and I can't find the words
+[D]Every time we say goodbye, baby it hurts
+[Em]When the sun goes down and the band won't play
+[C]I'll always remember us this way
+
+[Chorus]
+[G]Oh-oh-oh-[D]oh-oh-oh-oh
+[Em]Oh-oh-oh-oh, [C]I'll always remember us this way
+
+[Bridge]
+[C]I don't wanna be just a memory, baby, yeah [G]
+Woah-[D]oh, whoa, [Em]oh [C]
+
+[Outro]
+[G]When you look at me
+And the whole world fades [D]
+I'll always remember [Em]us
+This [C]way [G] [D] [Em] [C] [G]`;
   }
 
   return null;

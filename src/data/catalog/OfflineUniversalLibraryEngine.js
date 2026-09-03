@@ -224,45 +224,38 @@ export class OfflineUniversalLibraryEngine {
     const c3 = map[progDegrees[2]] || 'Am';
     const c4 = map[progDegrees[3]] || 'F';
 
-    const chordpro = `[Intro]
-[${c1}] [${c2}] [${c3}] [${c4}]
+    const chordpro = `{comment: Guía Armónica Instrumental · Progresión de Acordes}
 
-[Verse 1]
-[${c1}]Walking through the shadows where the [${c2}]rhythm starts to play
-[${c3}]Searching for the melodies that [${c4}]take our fears away
-[${c1}]Every single heartbeat keeping [${c2}]harmony and time
-[${c3}]Writing all our stories in a [${c4}]simple song and rhyme
+[Intro]
+[${c1}]  ·  ·  ·  [${c2}]  ·  ·  ·  [${c3}]  ·  ·  ·  [${c4}]  ·  ·  ·
 
-[Chorus]
-[${c1}]Here we are together under[${c2}]neath the shining light
-[${c3}]Singing out the anthem that will [${c4}]guide us through the night
-[${c1}]Feel the music rising as the [${c2}]world begins to turn
-[${c3}]Every single lesson that our [${c4}]open hearts can learn
+[Verse 1 - Acordes]
+[${c1}]  ·  ·  ·  [${c2}]  ·  ·  ·
+[${c3}]  ·  ·  ·  [${c4}]  ·  ·  ·
+[${c1}]  ·  ·  ·  [${c2}]  ·  ·  ·
+[${c3}]  ·  ·  ·  [${c4}]  ·  ·  ·
 
-[Verse 2]
-[${c1}]Listening to the echoes of the [${c2}]steps along the road
-[${c3}]Sharing all the laughter and the [${c4}]lightening of the load
-[${c1}]Never looking backwards with a [${c2}]dream that's burning bright
-[${c3}]Holding on to passion and the [${c4}]power of tonight
+[Chorus - Estribillo]
+[${c1}]  ·  ·  ·  [${c2}]  ·  ·  ·
+[${c3}]  ·  ·  ·  [${c4}]  ·  ·  ·
+[${c1}]  ·  ·  ·  [${c2}]  ·  ·  ·
+[${c3}]  ·  ·  ·  [${c4}]  ·  ·  ·
 
-[Chorus]
-[${c1}]Here we are together under[${c2}]neath the shining light
-[${c3}]Singing out the anthem that will [${c4}]guide us through the night
-[${c1}]Feel the music rising as the [${c2}]world begins to turn
-[${c3}]Every single lesson that our [${c4}]open hearts can learn
+[Verse 2 - Acordes]
+[${c1}]  ·  ·  ·  [${c2}]  ·  ·  ·
+[${c3}]  ·  ·  ·  [${c4}]  ·  ·  ·
 
-[Bridge]
-[${c3}]When the tempo slows down and the [${c4}]silence makes us see
-[${c1}]Every little whisper in the [${c2}]boundless melody
+[Bridge - Transición]
+[${c3}]  ·  ·  ·  [${c4}]  ·  ·  ·
+[${c1}]  ·  ·  ·  [${c2}]  ·  ·  ·
 
-[Chorus]
-[${c1}]Here we are together under[${c2}]neath the shining light
-[${c3}]Singing out the anthem that will [${c4}]guide us through the night
-[${c1}]Feel the music rising as the [${c2}]world begins to turn
-[${c3}]Every single lesson that our [${c4}]open hearts can learn
+[Chorus - Estribillo]
+[${c1}]  ·  ·  ·  [${c2}]  ·  ·  ·
+[${c3}]  ·  ·  ·  [${c4}]  ·  ·  ·
 
 [Outro]
-[${c1}] [${c2}] [${c3}] [${c4}]
+[${c1}]  ·  ·  ·  [${c2}]  ·  ·  ·
+[${c3}]  ·  ·  ·  [${c4}]  ·  ·  ·
 [${c1}]`;
 
     const meta = resolveSongMetadata(title, artist, genre, (s) => Math.abs(this._hashString(s)));
