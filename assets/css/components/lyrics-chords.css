@@ -1445,7 +1445,7 @@ body.theme-dark .btn-hero-inst-pill.active {
     flex-shrink: 0 !important;
   }
 
-  /* Ocultar herramientas secundarias en la barra móvil para que nunca ocupe 2-3 líneas; se acceden desde '···' */
+  /* Ocultar herramientas secundarias en la barra móvil para que nunca ocupe 2-4 líneas; se acceden desde '···' */
   .lyrics-header-tools-group {
     display: flex !important;
     flex-wrap: nowrap !important;
@@ -1453,6 +1453,7 @@ body.theme-dark .btn-hero-inst-pill.active {
     gap: 6px !important;
   }
 
+  .desktop-header-tool,
   .lyrics-header-tools-group .tool-score-toggle,
   .lyrics-header-tools-group .tool-pdf-pill,
   .lyrics-header-tools-group .tool-capo,
@@ -1475,7 +1476,7 @@ body.theme-dark .btn-hero-inst-pill.active {
     flex-shrink: 0 !important;
   }
 
-  /* Fila 2: Título + Barra Horizontal Unificada de Modo e Instrumento */
+  /* Fila 2: Título + Barra Unificada de Modo e Instrumento */
   .lyrics-hero-row {
     flex-direction: column !important;
     align-items: stretch !important;
@@ -1489,8 +1490,10 @@ body.theme-dark .btn-hero-inst-pill.active {
 
   .lyrics-song-title {
     font-size: 1.35rem !important;
-    line-height: 1.2 !important;
+    line-height: 1.25 !important;
     margin-bottom: 2px !important;
+    white-space: normal !important;
+    word-break: break-word !important;
   }
 
   .lyrics-song-meta-line {
@@ -1498,40 +1501,37 @@ body.theme-dark .btn-hero-inst-pill.active {
     flex-wrap: wrap !important;
   }
 
-  /* Controles de Modo e Instrumento: fila horizontal fluida de una sola línea */
+  /* Controles de Modo e Instrumento: bloque vertical apilado sin cortes */
   .hero-right-controls {
     width: 100% !important;
-    overflow-x: auto !important;
-    -webkit-overflow-scrolling: touch !important;
-    scrollbar-width: none !important;
+    overflow: visible !important;
     padding-bottom: 2px !important;
-  }
-  .hero-right-controls::-webkit-scrollbar {
-    display: none;
   }
 
   .hero-mode-cluster {
     display: flex !important;
-    flex-direction: row !important;
-    align-items: center !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
     gap: 8px !important;
-    width: max-content !important;
-    min-width: 100% !important;
+    width: 100% !important;
   }
 
   .performance-mode-segmented-control {
-    flex-shrink: 0 !important;
+    width: 100% !important;
+    display: flex !important;
+    justify-content: center !important;
   }
 
   .performance-mode-segmented-control .ui-toggle-switch {
-    min-width: 130px !important;
-    height: 32px !important;
+    width: 100% !important;
+    max-width: 260px !important;
+    height: 34px !important;
     padding: 2px !important;
   }
 
   .performance-mode-segmented-control .toggle-label {
-    font-size: 0.72rem !important;
-    padding: 4px 6px !important;
+    font-size: 0.76rem !important;
+    padding: 5px 8px !important;
   }
 
   /* Ocultar la flecha y texto '↳ Instrumento:' en móvil para ahorrar espacio crítico */
@@ -1539,40 +1539,48 @@ body.theme-dark .btn-hero-inst-pill.active {
     display: none !important;
   }
 
+  /* Instrumento: fila que siempre ocupa el 100% del ancho disponible */
   .hero-instrument-extension {
     display: flex !important;
-    align-items: center !important;
-    gap: 4px !important;
-    flex-shrink: 0 !important;
+    align-items: stretch !important;
+    width: 100% !important;
     border-left: none !important;
     padding-left: 0 !important;
   }
 
+  /* Contenedor de píldoras: grid de 3 columnas iguales, sin overflow */
   .hero-instrument-selector {
-    display: flex !important;
-    align-items: center !important;
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
     gap: 4px !important;
+    width: 100% !important;
     background: rgba(255, 255, 255, 0.06) !important;
-    padding: 2px 4px !important;
+    padding: 3px !important;
     border-radius: 10px !important;
     border: 1px solid rgba(255, 255, 255, 0.08) !important;
   }
 
+  /* Cada píldora ocupa toda su celda centrada */
   .btn-hero-inst-pill {
-    padding: 4px 8px !important;
-    font-size: 0.75rem !important;
-    border-radius: 8px !important;
-    height: 28px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
     gap: 4px !important;
+    width: 100% !important;
+    padding: 6px 4px !important;
+    font-size: 0.72rem !important;
+    border-radius: 8px !important;
+    height: 30px !important;
   }
 
   .inst-pill-icon {
-    font-size: 0.85rem !important;
+    font-size: 0.9rem !important;
   }
 
   .inst-pill-label {
     font-size: 0.72rem !important;
     font-weight: 700 !important;
+    white-space: nowrap !important;
   }
 }
 
@@ -3331,9 +3339,13 @@ body.theme-ivory .top-metro-bpm-badge {
 
   .lyrics-song-title {
     font-size: 1.1rem !important;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: unset !important;
+    word-break: break-word !important;
+    display: -webkit-box !important;
+    -webkit-line-clamp: 2 !important;
+    -webkit-box-orient: vertical !important;
     max-width: 100%;
   }
 

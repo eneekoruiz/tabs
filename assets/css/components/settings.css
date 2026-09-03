@@ -205,20 +205,33 @@ body.theme-ivory .sel-settings-control {
   }
 
   .settings-row-item {
-    flex-direction: column !important;
-    align-items: stretch !important;
-    gap: 8px !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 12px !important;
     border-bottom: 1px solid var(--border-subtle);
     padding-bottom: 12px !important;
+    flex-wrap: nowrap !important;
+  }
+
+  .settings-row-item .settings-row-info {
+    flex: 1 1 0 !important;
+    min-width: 0 !important;
+  }
+
+  .settings-row-item .switch-toggle {
+    flex-shrink: 0 !important;
   }
 
   .settings-row-item:last-child {
     border-bottom: none;
   }
 
+  /* Selects and action buttons still expand, but only when the row naturally wraps them */
   .settings-row-item .sel-settings-control,
   .settings-row-item .btn-settings-action {
-    width: 100% !important;
+    min-width: 120px !important;
+    max-width: 160px !important;
     text-align: center !important;
   }
 }

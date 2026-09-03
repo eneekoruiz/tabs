@@ -46,7 +46,7 @@ export class LibraryExplorerV2 extends Component {
   constructor(container) {
     super(container);
     this.searchQuery = '';
-    this.activeFilter = 'all';
+    this.activeFilter = 'favorites';
     this.activeGenre = 'all';
     this.isOpen = true;
     this.songs = [];
@@ -205,7 +205,6 @@ export class LibraryExplorerV2 extends Component {
             <button class="lib-tab ${this.activeFilter === 'favorites' ? 'active' : ''}" data-filter="favorites" role="tab" aria-selected="${this.activeFilter === 'favorites'}">⭐ Favoritas</button>
             <button class="lib-tab ${this.activeFilter === 'visited' ? 'active' : ''}" data-filter="visited" role="tab" aria-selected="${this.activeFilter === 'visited'}">🔥 Más Visitadas</button>
             <button class="lib-tab ${this.activeFilter === 'setlists' ? 'active' : ''}" data-filter="setlists" role="tab" aria-selected="${this.activeFilter === 'setlists'}">📋 Setlists</button>
-            <button class="lib-tab ${this.activeFilter === 'all' ? 'active' : ''}" data-filter="all" role="tab" aria-selected="${this.activeFilter === 'all'}">📂 Todas</button>
           </div>
 
           ${this.activeFilter === 'all' ? `

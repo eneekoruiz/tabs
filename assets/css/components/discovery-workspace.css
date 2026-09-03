@@ -736,14 +736,62 @@ body.theme-ivory .artist-card-item:hover {
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .discovery-skeleton-card span,
-  .discovery-detail-skeleton span {
-    animation: none;
+}
+
+/* ============================================================
+   Explore Mode Chip Bar (Horizontal scrollable on mobile)
+   ============================================================ */
+.explore-mode-chip-bar {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  margin-top: 12px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding-bottom: 2px;
+}
+
+.explore-mode-chip-bar::-webkit-scrollbar {
+  display: none;
+}
+
+.explore-mode-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 16px;
+  border-radius: 20px;
+  border: 1.5px solid var(--border-subtle);
+  background: var(--bg-surface-solid);
+  color: var(--text-secondary);
+  font-weight: 700;
+  font-size: 0.86rem;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  flex-shrink: 0;
+}
+
+.explore-mode-chip.active {
+  border-color: var(--accent-primary);
+  background: var(--accent-primary);
+  color: #ffffff;
+}
+
+.explore-mode-chip:not(.active):hover {
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+}
+
+@media (max-width: 640px) {
+  .explore-mode-chip-bar {
+    margin-top: 10px;
+    gap: 6px;
   }
 
-  .discovery-song-card,
-  .discovery-filter-bar button {
-    transition: none;
+  .explore-mode-chip {
+    padding: 6px 14px;
+    font-size: 0.82rem;
   }
 }

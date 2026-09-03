@@ -310,12 +310,12 @@ export class HomeViewV2 extends Component {
             </div>
           </div>
 
-          <div class="explore-mode-toggle-row" style="display: flex; gap: 10px; margin-top: 14px; justify-content: center; flex-wrap: wrap;">
-            <button type="button" class="btn-explore-mode ${this.exploreMode === 'songs' ? 'active-mode' : ''}" id="btnModeSongs" data-mode="songs" style="padding: 8px 18px; border-radius: 20px; border: 1px solid ${this.exploreMode === 'songs' ? 'var(--accent-primary)' : 'var(--border-subtle)'}; background: ${this.exploreMode === 'songs' ? 'var(--accent-primary)' : 'var(--bg-surface-solid)'}; color: ${this.exploreMode === 'songs' ? '#ffffff' : 'var(--text-secondary)'}; font-weight: 700; font-size: 0.86rem; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s;">
-              <span>🎵</span> Popurrí de Éxitos
+          <div class="explore-mode-chip-bar" role="group" aria-label="Modo de exploración">
+            <button type="button" class="explore-mode-chip ${this.exploreMode === 'songs' ? 'active' : ''}" id="btnModeSongs" data-mode="songs">
+              🎵 Éxitos
             </button>
-            <button type="button" class="btn-explore-mode ${this.exploreMode === 'artists' ? 'active-mode' : ''}" id="btnModeArtists" data-mode="artists" style="padding: 8px 18px; border-radius: 20px; border: 1px solid ${this.exploreMode === 'artists' ? 'var(--accent-primary)' : 'var(--border-subtle)'}; background: ${this.exploreMode === 'artists' ? 'var(--accent-primary)' : 'var(--bg-surface-solid)'}; color: ${this.exploreMode === 'artists' ? '#ffffff' : 'var(--text-secondary)'}; font-weight: 700; font-size: 0.86rem; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s;">
-              <span>🎙️</span> Explorar por Artista
+            <button type="button" class="explore-mode-chip ${this.exploreMode === 'artists' ? 'active' : ''}" id="btnModeArtists" data-mode="artists">
+              🎙️ Por Artista
             </button>
           </div>
         </header>
@@ -578,25 +578,17 @@ export class HomeViewV2 extends Component {
 
     return `
       <article class="song-card home-song-card discovery-song-card ${isSelected ? 'is-selected' : ''}" data-group-key="${encodedGroup}">
-        <button class="song-card-main btn-select-song" type="button" data-group-key="${encodedGroup}" aria-label="Previsualizar ${this.escapeHTML(version.title)} de ${this.escapeHTML(version.artist)}" aria-controls="discoveryDetailPanel" aria-pressed="${isSelected}">
+        <button class="song-card-main btn-select-song" type="button" data-group-key="${encodedGroup}" aria-label="Abrir ${this.escapeHTML(version.title)} de ${this.escapeHTML(version.artist)}" aria-controls="discoveryDetailPanel" aria-pressed="${isSelected}">
           <div class="song-card-header-line" style="display: flex; width: 100%;">
             <span class="song-card-title">${this.escapeHTML(group.title)}</span>
           </div>
           <span class="song-card-artist">${this.escapeHTML(group.artist)}</span>
           <div class="song-card-meta">
+            <span class="song-badge-diff ${difficultyClass}">${this.escapeHTML(diff)}</span>
             ${cleanGenre ? `<span class="genre-badge">${this.escapeHTML(cleanGenre)}</span>` : ''}
             ${hasTempo ? `<span class="meta-pill">${numericTempo} BPM</span>` : ''}
           </div>
         </button>
-        <div class="catalog-version-row" style="display: flex; flex-direction: column; gap: 6px; width: 100%; margin-top: 6px;">
-          <div class="song-card-badge-row" style="display: flex; justify-content: flex-start;">
-            <span class="song-badge-diff ${difficultyClass}">${this.escapeHTML(diff)}</span>
-          </div>
-          <button class="btn-load-explore-song" style="width: 100%; border-radius: 8px;" type="button" data-group-key="${encodedGroup}" data-version-index="${selectedIndex}" data-id="${this.escapeHTML(version.id || '')}" data-title="${this.encodeData(version.title)}" data-artist="${this.encodeData(version.artist)}" aria-label="Abrir ${this.escapeHTML(version.title)} de ${this.escapeHTML(version.artist)}">
-            <span>Abrir</span>
-            <span class="sr-only">${this.escapeHTML(version.title)}</span>
-          </button>
-        </div>
       </article>
     `;
   }

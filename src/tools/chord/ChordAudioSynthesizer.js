@@ -105,7 +105,9 @@ export class ChordAudioSynthesizer {
     masterGain.connect(reverbNode);
 
     const attackTime = 0.004;
-    const peakGain = isLow ? 0.55 : 0.45;
+    // Gain per string: low strings 0.18, high strings 0.14.
+    // With up to 6 simultaneous strings: max headroom ≈ 0.18*2 + 0.14*4 = 0.92 — no clipping on mobile.
+    const peakGain = isLow ? 0.18 : 0.14;
     masterGain.gain.setValueAtTime(0.0001, startTime);
     masterGain.gain.linearRampToValueAtTime(peakGain, startTime + attackTime);
     masterGain.gain.exponentialRampToValueAtTime(peakGain * 0.6, startTime + 0.06);

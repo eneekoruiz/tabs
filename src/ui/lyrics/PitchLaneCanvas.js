@@ -8,6 +8,8 @@
 
 import { events } from '../../core/EventBus.js';
 import { VFXEngine } from './VFXEngine.js';
+import { chordEngine } from '../../tools/ChordEngine.js';
+import { vocalCoachEngine } from '../../audio/VocalCoachEngine.js';
 
 const NOTE_NAMES    = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
 const COLOR_IN_TUNE   = '#22c55e';
@@ -55,6 +57,8 @@ export class PitchLaneCanvas {
     /** @type {Array<{startTime:number, duration:number, midi:number, text:string}>} */
     this.targetBlocks = [];
     this.targetStartTime = 0;
+    this.karaokeAccompEnabled = true;
+    this._lastAccompBlock = null;
 
     this._setupCanvas();
     this._bindResize();
@@ -106,6 +110,7 @@ export class PitchLaneCanvas {
 
     let currentMidi = 60; // C4 inicial
     let currentNoteName = 'C';
+    let currentChordName = 'C'; // Used for karaoke harmonic backing
     let timeCursor = 0; // Iniciar en 0
     let inIntro = false;
 
@@ -165,6 +170,7 @@ export class PitchLaneCanvas {
         if (!tok) continue;
         if (tok.startsWith('[') && tok.endsWith(']')) {
           const chordName = tok.slice(1, -1);
+          currentChordName = chordName;
           currentMidi = getNearestChordTone(chordName, currentMidi);
           currentNoteName = SEMITONE_TO_NAME[currentMidi % 12];
         } else {
@@ -190,6 +196,7 @@ export class PitchLaneCanvas {
           duration: duration,
           midi: currentMidi,
           noteName: currentNoteName,
+          chord: currentChordName,
           text: word
         });
 
@@ -220,10 +227,12 @@ export class PitchLaneCanvas {
   play() {
     this.isPlaying = true;
     this.lastTimestamp = performance.now();
+    if (this.vfxEngine) this.vfxEngine.setPlaying(true);
   }
 
   pause() {
     this.isPlaying = false;
+    if (this.vfxEngine) this.vfxEngine.setPlaying(false);
   }
 
   seek(timeMs) {
@@ -303,6 +312,24 @@ export class PitchLaneCanvas {
 
     if (this.isPlaying) {
       this.currentTime += delta;
+
+      // Karaoke Backing Track: reproducir base armónica de fondo al entrar a cada bloque
+      if (this.karaokeAccompEnabled && this.targetBlocks.length > 0) {
+        const activeBlock = this.targetBlocks.find(
+          b => b.startTime <= this.currentTime && (b.startTime + b.duration) >= this.currentTime
+        );
+        if (activeBlock && activeBlock !== this._lastAccompBlock) {
+          this._lastAccompBlock = activeBlock;
+          if (activeBlock.noteName && !activeBlock.isInterlude) {
+            try { vocalCoachEngine.setTargetNote(activeBlock.noteName); } catch (_) {}
+          }
+          if (activeBlock.chord) {
+            try {
+              chordEngine.auditionChord(activeBlock.chord, 'piano', 0);
+            } catch (_) {}
+          }
+        }
+      }
     }
 
     this._draw();
@@ -413,6 +440,10 @@ export class PitchLaneCanvas {
           if (isNoteMatch) {
             hitSuccess = true;
             block.hitFrames = (block.hitFrames || 0) + 1;
+            // Registrar acierto en VFXEngine cada 8 frames de afinación sostenida
+            if (this.vfxEngine && this.isPlaying && block.hitFrames % 8 === 0) {
+              this.vfxEngine.registerHit();
+            }
           }
         }
       }

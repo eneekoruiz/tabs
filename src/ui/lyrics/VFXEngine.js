@@ -27,10 +27,10 @@ export class VFXEngine {
   }
 
   _resize() {
-    if (!this.canvas) return;
-    const rect = this.canvas.parentElement.getBoundingClientRect();
-    this.width = rect.width;
-    this.height = rect.height;
+    const parent = this.canvas.parentElement;
+    const rect = parent ? parent.getBoundingClientRect() : (this.canvas.getBoundingClientRect() || { width: 300, height: 150 });
+    this.width = rect.width || 300;
+    this.height = rect.height || 150;
     
     // Soporte para pantallas Retina / High-DPI
     const dpr = window.devicePixelRatio || 1;
@@ -42,6 +42,7 @@ export class VFXEngine {
   start() {
     if (this.isActive) return;
     this.isActive = true;
+    this.isPlaying = false;     // linked to PitchLane play/pause
     this.combo = 0;
     this.score = 0;
     this._loop();
@@ -53,36 +54,48 @@ export class VFXEngine {
 
   stop() {
     this.isActive = false;
+    this.isPlaying = false;
     if (this.animationFrameId) {
       cancelAnimationFrame(this.animationFrameId);
     }
     this.particles = [];
   }
 
-  _handlePitch(pitchData) {
-    if (!this.isActive) return;
+  /** Called by PitchLaneCanvas.play() / .pause() to gate scoring. */
+  setPlaying(val) {
+    this.isPlaying = !!val;
+    if (!this.isPlaying) this.combo = 0; // break combo on pause
+  }
 
-    if (pitchData.accuracyStatus === 'in-tune') {
-      this.combo++;
-      if (this.combo > this.maxCombo) this.maxCombo = this.combo;
-      this.score += 10 * Math.floor(1 + this.combo / 50);
+  registerHit() {
+    if (!this.isActive || !this.isPlaying) return;
+    this.combo++;
+    if (this.combo > this.maxCombo) this.maxCombo = this.combo;
+    this.score += 10 * Math.floor(1 + this.combo / 50);
 
-      // Si hay un cambio de combo importante, generar explosión de chispas
-      if (this.combo % 50 === 0) {
-        this.spawnExplosion(this.width / 2, this.height / 2, '#FFD700', 30);
-      } else {
-        // Partículas constantes de rastro
-        this.spawnParticle(this.width / 2, this.height / 2, '#00e676');
-      }
+    if (this.combo % 30 === 0) {
+      this.spawnExplosion(this.width / 2, this.height / 2, '#FFD700', 25);
     } else {
-      // Fallo rompe el combo
-      this.combo = 0;
+      this.spawnParticle(this.width / 2, this.height / 2, '#00e676');
+    }
+  }
+
+  breakCombo() {
+    if (!this.isActive || !this.isPlaying) return;
+    this.combo = 0;
+  }
+
+  _handlePitch(pitchData) {
+    if (!this.isActive || !this.isPlaying) return;
+
+    // Visual feedback particles only; score is awarded via registerHit()
+    if (pitchData.accuracyStatus === 'in-tune') {
+      this.spawnParticle(this.width / 2, this.height / 2, '#00e676');
     }
   }
 
   _handleSilence() {
-    if (!this.isActive) return;
-    // El silencio prolongado también rompe el combo
+    if (!this.isActive || !this.isPlaying) return;
     if (this.combo > 0) {
       this.combo = 0;
     }

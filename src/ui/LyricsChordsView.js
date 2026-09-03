@@ -540,19 +540,19 @@ export class LyricsChordsView extends Component {
 
               <div class="lyrics-header-tools-group">
                 <!-- Toggle Directo: Partitura / Letra (Toggle Switch) -->
-                <button id="btnToggleScoreView" class="quick-tool-pill tool-score-toggle ${this.viewMode === 'score' ? 'active' : ''}" type="button" aria-pressed="${this.viewMode === 'score'}" title="${this.viewMode === 'score' ? 'Volver a Letra y Acordes' : 'Ver Partitura Interactiva'}">
+                <button id="btnToggleScoreView" class="quick-tool-pill tool-score-toggle desktop-header-tool ${this.viewMode === 'score' ? 'active' : ''}" type="button" aria-pressed="${this.viewMode === 'score'}" title="${this.viewMode === 'score' ? 'Volver a Letra y Acordes' : 'Ver Partitura Interactiva'}">
                   <span class="tool-btn-icon">🎼</span>
                   <span class="tool-btn-label">Partitura</span>
                 </button>
 
                 <!-- Botón Directo: Exportar PDF / Imprimir -->
-                <button id="btnQuickExportPdf" class="quick-tool-pill tool-pdf-pill" type="button" aria-label="Exportar PDF o Imprimir" title="Exportar o Imprimir PDF">
+                <button id="btnQuickExportPdf" class="quick-tool-pill tool-pdf-pill desktop-header-tool" type="button" aria-label="Exportar PDF o Imprimir" title="Exportar o Imprimir PDF">
                   <span class="tool-btn-icon">📄</span>
                   <span class="tool-btn-label">PDF</span>
                 </button>
 
                 <!-- Cejilla / Capo -->
-                <div class="quick-tool-pill tool-capo">
+                <div class="quick-tool-pill tool-capo desktop-header-tool">
                   <span class="tool-label">Capo</span>
                   <select id="selCapoQuick" aria-label="Seleccionar cejilla">
                     <option value="0" ${this.capoFret === 0 ? 'selected' : ''}>Off</option>
@@ -565,7 +565,7 @@ export class LyricsChordsView extends Component {
                 </div>
 
                 <!-- Zoom de Letra -->
-                <div class="quick-tool-pill tool-font">
+                <div class="quick-tool-pill tool-font desktop-header-tool">
                   <button id="btnFontDecr" class="btn-quick-font-decr" type="button" aria-label="Reducir letra">A-</button>
                   <span id="lblFontScalePercent" class="font-scale-text">${this.fontSizeScale}%</span>
                   <button id="btnFontIncr" class="btn-quick-font-incr" type="button" aria-label="Aumentar letra">A+</button>
