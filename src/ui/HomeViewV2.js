@@ -313,15 +313,29 @@ export class HomeViewV2 extends Component {
                 </button>
               </div>
 
+                </button>
+              </div>
+
               <div class="explore-recents-dropdown" id="exploreRecentsDropdown" hidden>
                 ${this.renderRecentsContent()}
               </div>
             </div>
 
-            <button class="btn-genre-filter-toggle ${this.selectedGenre !== 'all' ? 'active-filter' : ''}" id="btnToggleGenreFilter" type="button" aria-label="Filtrar por género" aria-controls="exploreGenreDropdownFilter" aria-expanded="false">
-              <span class="filter-button-label">${this.escapeHTML(selectedGenre?.name || 'Todos los géneros')}</span>
-              <span class="dropdown-caret" aria-hidden="true">▾</span>
-            </button>
+            <div class="explore-search-filters-inline">
+              <div class="explore-mode-chip-bar" role="group" aria-label="Modo de exploración">
+                <button type="button" class="explore-mode-chip ${this.exploreMode === 'songs' ? 'active' : ''}" id="btnModeSongs" data-mode="songs" aria-pressed="${this.exploreMode === 'songs'}">
+                  Canciones
+                </button>
+                <button type="button" class="explore-mode-chip ${this.exploreMode === 'artists' ? 'active' : ''}" id="btnModeArtists" data-mode="artists" aria-pressed="${this.exploreMode === 'artists'}">
+                  Artistas
+                </button>
+              </div>
+
+              <button class="btn-genre-filter-toggle ${this.selectedGenre !== 'all' ? 'active-filter' : ''}" id="btnToggleGenreFilter" type="button" aria-label="Filtrar por género" aria-controls="exploreGenreDropdownFilter" aria-expanded="false">
+                <span class="filter-button-label">${this.escapeHTML(selectedGenre?.name || 'Todos los géneros')}</span>
+                <span class="dropdown-caret" aria-hidden="true">▾</span>
+              </button>
+            </div>
           </div>
 
           <div class="explore-genre-dropdown-filter" id="exploreGenreDropdownFilter" hidden>
@@ -334,28 +348,22 @@ export class HomeViewV2 extends Component {
               `).join('')}
             </div>
           </div>
-
-          <div class="explore-mode-chip-bar" role="group" aria-label="Modo de exploración">
-            <button type="button" class="explore-mode-chip ${this.exploreMode === 'songs' ? 'active' : ''}" id="btnModeSongs" data-mode="songs" aria-pressed="${this.exploreMode === 'songs'}">
-              Canciones
-            </button>
-            <button type="button" class="explore-mode-chip ${this.exploreMode === 'artists' ? 'active' : ''}" id="btnModeArtists" data-mode="artists" aria-pressed="${this.exploreMode === 'artists'}">
-              Artistas
-            </button>
-          </div>
         </header>
 
-        <details class="catalog-audit-panel">
-          <summary>Estado del catálogo <span>Contenido disponible ≠ canción verificada</span></summary>
-          <div id="catalogQualitySummary">${this.renderQualitySummary()}</div>
-          <button id="btnExportCatalogAudit" type="button">Descargar inventario y pendientes</button>
-        </details>
         ${this.renderPracticeHub()}
 
-        <details class="explore-trending-accordion">
-          <summary><span><span class="trending-kicker">DESCUBRIR</span><strong>Tendencias para practicar</strong></span><span class="trending-summary-hint">Abrir selección</span></summary>
-          <div id="exploreTrendingList" class="explore-trending-list">${this.renderTrendingSongs()}</div>
-        </details>
+        <div class="explore-secondary-bars">
+          <details class="catalog-audit-panel">
+            <summary>Estado del catálogo <span>Contenido disponible ≠ canción verificada</span></summary>
+            <div id="catalogQualitySummary">${this.renderQualitySummary()}</div>
+            <button id="btnExportCatalogAudit" type="button">Descargar inventario y pendientes</button>
+          </details>
+
+          <details class="explore-trending-accordion">
+            <summary><span><span class="trending-kicker">DESCUBRIR</span><strong>Tendencias para practicar</strong></span><span class="trending-summary-hint">Abrir selección</span></summary>
+            <div id="exploreTrendingList" class="explore-trending-list">${this.renderTrendingSongs()}</div>
+          </details>
+        </div>
 
         <section class="explore-songs-section" aria-labelledby="discoveryResultStatus">
           <div class="discovery-workspace">

@@ -56,6 +56,7 @@ export class KaraokeBackingEngine {
     this.tempoBpm = 72;
     this.transposeSemitones = 0;
     this.chordSource = 'none';
+    this.vocalComfortMode = true;
   }
 
   get ready() { return !this.loading && (this.mode === 'local' ? Boolean(this.media) : this.durationMs > 0); }
@@ -309,7 +310,13 @@ export class KaraokeBackingEngine {
           const AudioCtx = window.AudioContext || window.webkitAudioContext;
           this.context = new AudioCtx();
           this.master = this.context.createGain();
-          this.master.connect(this.context.destination);
+          this.vocalFilter = this.context.createBiquadFilter();
+          this.vocalFilter.type = 'peaking';
+          this.vocalFilter.frequency.value = 2000;
+          this.vocalFilter.Q.value = 1.2;
+          this.vocalFilter.gain.value = this.vocalComfortMode ? -4.5 : 0;
+          this.master.connect(this.vocalFilter);
+          this.vocalFilter.connect(this.context.destination);
         }
         await this.context.resume();
         if (token !== this.transportGeneration) return false;
@@ -360,6 +367,14 @@ export class KaraokeBackingEngine {
     if (this.media) this.media.audio.volume = this.volume;
     if (this.master) this.master.gain.setTargetAtTime(this.volume, this.context.currentTime, 0.02);
     this.notify();
+  }
+  setVocalComfortMode(enabled = !this.vocalComfortMode) {
+    this.vocalComfortMode = Boolean(enabled);
+    if (this.vocalFilter && this.context) {
+      this.vocalFilter.gain.setTargetAtTime(this.vocalComfortMode ? -4.5 : 0, this.context.currentTime, 0.02);
+    }
+    this.notify();
+    return this.vocalComfortMode;
   }
   setOffsetMs(value) { this.offsetMs = bounded(value, -600000, 600000); this.notify(); }
   async saveSettings() {

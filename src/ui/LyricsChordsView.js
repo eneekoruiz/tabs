@@ -400,50 +400,88 @@ export class LyricsChordsView extends Component {
     const instrumentalVideoId = this.currentSong?.karaokeVideoId || this.currentSong?.backingTrackVideoId || '';
     const videoCandidate = this.getSingModeVideoId() || originalVideoId;
     const activeVideoId = /^[A-Za-z0-9_-]{11}$/.test(videoCandidate) ? videoCandidate : '';
+    const isVocalComfort = Boolean(this.backing?.vocalComfortMode);
+
     return `
-      <div class="karaoke-lyrics" aria-label="Letra de canto">
-        <p id="karaokeCurrentLine"></p><p id="karaokeNextLine"></p>
-      </div>
       <section class="karaoke-audio-companion-panel" id="karaokeAudioCompanion" aria-label="Base de canto">
-        <div class="karaoke-heading">
-          <div><span class="studio-eyebrow">TU ENSAYO, A TU RITMO</span><h2>Estudio de canto</h2><p id="karaokeBackingStatus" role="status">Preparando acompañamiento…</p></div>
-          <button type="button" id="btnImportKaraokeBacking">Importar audio</button>
-          <input type="file" id="karaokeBackingFile" accept="audio/*,.wav,.mp3,.m4a,.ogg,.flac" hidden>
-        </div>
-        ${activeVideoId ? `
-          <div class="karaoke-video-block" aria-label="Referencia de vídeo">
-            <div class="karaoke-track-switch" role="group" aria-label="Fuente de vídeo de la pista">
-              <button type="button" id="btnKaraokeTrackOriginal" class="${this.karaokeTrackMode === 'original' ? 'active' : ''}" data-karaoke-track="original" ${originalVideoId ? '' : 'disabled'}>Original</button>
-              <button type="button" id="btnKaraokeTrackInstrumental" class="${this.karaokeTrackMode === 'instrumental' ? 'active' : ''}" data-karaoke-track="instrumental" ${instrumentalVideoId ? '' : 'disabled'}>Instrumental</button>
-            </div>
-            <iframe id="karaokeYouTubeIframe" title="Vídeo de referencia de la canción" width="100%" height="220" src="https://www.youtube-nocookie.com/embed/${activeVideoId}?autoplay=0&rel=0&modestbranding=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        <div class="karaoke-primary-bar">
+          <div class="karaoke-status-block">
+            <span class="studio-eyebrow">ACOMPAÑAMIENTO</span>
+            <p id="karaokeBackingStatus" class="karaoke-backing-status-text" role="status">Preparando acompañamiento…</p>
           </div>
-        ` : ''}
-        <div class="karaoke-source-switch" role="group" aria-label="Fuente de acompañamiento">
-          <label><input type="radio" name="karaokeSource" value="local" checked> Base importada</label>
-          <label><input type="radio" name="karaokeSource" value="synth"> Guía de práctica</label>
+
+          <div class="karaoke-timeline">
+            <output id="karaokeTime">0:00 / 0:00</output>
+            <input type="range" id="karaokeSeek" aria-label="Posición de la base" min="0" max="1" step="0.1" value="0">
+          </div>
+
+          <div class="karaoke-quick-actions">
+            <button type="button" id="btnToggleVocalComfort" class="karaoke-comfort-pill ${isVocalComfort ? 'active' : ''}" aria-pressed="${isVocalComfort}" title="Modo Voz Fácil: curva suave y menor fatiga vocal">
+              🎙️ Voz Fácil: ${isVocalComfort ? 'ON' : 'OFF'}
+            </button>
+            <div class="karaoke-mic-row">
+              <button type="button" id="btnKaraokeMic" aria-pressed="false">Activar micrófono</button>
+              <span id="karaokeMicStatus" role="status">Micrófono desactivado</span>
+            </div>
+          </div>
         </div>
-        <p class="karaoke-source-note" id="karaokeSourceNote">Audio guardado en este dispositivo.</p>
-        <div class="karaoke-timeline">
-          <output id="karaokeTime">0:00 / 0:00</output>
-          <input type="range" id="karaokeSeek" aria-label="Posición de la base" min="0" max="1" step="0.1" value="0">
-        </div>
-        <div class="karaoke-mixer">
-          <label>Volumen de base <input type="range" id="karaokeVolume" min="0" max="1" step="0.01" value="0.65"></label>
-          <label>Tempo de práctica <input type="number" id="karaokeTempo" min="40" max="220" step="1" value="${Number(this.backing?.tempoBpm || this.currentSong?.tempo) || 72}"></label>
-          <label>Inicio de letra (s) <input type="number" id="karaokeOffset" min="-600" max="600" step="0.1" value="0"></label>
-          <button type="button" id="btnRemoveKaraokeBacking">Borrar base</button>
-        </div>
-        <p class="karaoke-error" id="karaokeBackingError" role="alert" hidden></p>
-        <button type="button" id="btnAssociateLegacyBacking" hidden>Asociar base anterior a esta versión</button>
-        <div class="karaoke-mic-row">
-          <button type="button" id="btnKaraokeMic" aria-pressed="false">Activar micrófono</button>
-          <span id="karaokeMicStatus" role="status">Micrófono desactivado</span>
-        </div>
-        <p class="karaoke-source-note">Con auriculares, el micrófono recibe tu voz sin la base de fondo.</p>
-        <p class="karaoke-source-note" id="karaokeTimingNote">Letra con avance estimado. Sin melodía vocal de referencia.</p>
-        <div class="karaoke-lyrics-import"><button type="button" id="btnImportKaraokeLyrics">Importar letra con tiempos · LRC</button><input type="file" id="karaokeLyricsFile" accept=".lrc,text/plain" hidden><p>Los tiempos se guardan con esta canción. El ajuste «Inicio de letra» permite alinear la entrada con tu audio.</p></div>
-        ${/^[A-Za-z0-9_-]{11}$/.test(this.currentSong?.youtubeVideoId || '') ? `<a class="karaoke-video-link" href="https://www.youtube.com/watch?v=${this.currentSong.youtubeVideoId}" target="_blank" rel="noopener noreferrer">Vídeo opcional · requiere conexión</a>` : ''}
+
+        <!-- Opciones Secundarias Condensadas en Acordeón de Estudio -->
+        <details class="karaoke-secondary-drawer" id="karaokeSecondaryDrawer" open>
+          <summary class="karaoke-drawer-summary">
+            <span class="karaoke-drawer-title">⚙️ Ajustes de Pista y Archivos</span>
+            <span class="karaoke-drawer-sub">Importar audio/LRC, tempo, desfase y vídeo</span>
+          </summary>
+
+          <div class="karaoke-drawer-content">
+            <!-- Bloque 1: Fuente y Archivo de Audio -->
+            <div class="karaoke-card-group">
+              <span class="karaoke-group-label">Pista y Archivo de Audio</span>
+              <div class="karaoke-source-switch" role="group" aria-label="Fuente de acompañamiento">
+                <label><input type="radio" name="karaokeSource" value="local" checked> Base importada</label>
+                <label><input type="radio" name="karaokeSource" value="synth"> Guía de práctica</label>
+              </div>
+              <p class="karaoke-source-note" id="karaokeSourceNote">Audio guardado en este dispositivo.</p>
+              <div class="karaoke-actions-inline">
+                <button type="button" id="btnImportKaraokeBacking" ${this.backing?.loading ? 'disabled' : ''}>Importar audio</button>
+                <input type="file" id="karaokeBackingFile" accept="audio/*,.wav,.mp3,.m4a,.ogg,.flac" hidden>
+                <button type="button" id="btnRemoveKaraokeBacking" ${this.backing?.loading || !this.backing?.record ? 'disabled' : ''}>Borrar base</button>
+              </div>
+              <button type="button" id="btnAssociateLegacyBacking" hidden>Asociar base anterior a esta versión</button>
+              <p class="karaoke-error" id="karaokeBackingError" role="alert" hidden></p>
+            </div>
+
+            <!-- Bloque 2: Mezcla y Sincronización -->
+            <div class="karaoke-card-group">
+              <span class="karaoke-group-label">Mezcla y Sincronización</span>
+              <div class="karaoke-mixer">
+                <label>Volumen de base <input type="range" id="karaokeVolume" min="0" max="1" step="0.01" value="0.65"></label>
+                <label>Tempo de práctica <input type="number" id="karaokeTempo" min="40" max="220" step="1" value="${Number(this.backing?.tempoBpm || this.currentSong?.tempo) || 72}" ${this.backing?.loading ? 'disabled' : ''}></label>
+                <label>Inicio de letra (s) <input type="number" id="karaokeOffset" min="-600" max="600" step="0.1" value="0" ${this.backing?.mode !== 'local' || !this.backing?.record ? 'disabled' : ''}></label>
+              </div>
+              <p class="karaoke-source-note" id="karaokeTimingNote">Letra con avance estimado. Sin melodía vocal de referencia.</p>
+            </div>
+
+            <!-- Bloque 3: Letra LRC y Vídeo de Referencia -->
+            <div class="karaoke-card-group">
+              <span class="karaoke-group-label">Letra Sincronizada y Vídeo</span>
+              <div class="karaoke-lyrics-import">
+                <button type="button" id="btnImportKaraokeLyrics" ${this.backing?.loading ? 'disabled' : ''}>Importar letra con tiempos · LRC</button>
+                <input type="file" id="karaokeLyricsFile" accept=".lrc,text/plain" hidden>
+              </div>
+              ${activeVideoId ? `
+                <div class="karaoke-video-block" aria-label="Referencia de vídeo">
+                  <div class="karaoke-track-switch" role="group" aria-label="Fuente de vídeo de la pista">
+                    <button type="button" id="btnKaraokeTrackOriginal" class="${this.karaokeTrackMode === 'original' ? 'active' : ''}" data-karaoke-track="original" ${originalVideoId ? '' : 'disabled'}>Original</button>
+                    <button type="button" id="btnKaraokeTrackInstrumental" class="${this.karaokeTrackMode === 'instrumental' ? 'active' : ''}" data-karaoke-track="instrumental" ${instrumentalVideoId ? '' : 'disabled'}>Instrumental</button>
+                  </div>
+                  <iframe id="karaokeYouTubeIframe" title="Vídeo de referencia de la canción" width="100%" height="150" src="https://www.youtube-nocookie.com/embed/${activeVideoId}?autoplay=0&rel=0&modestbranding=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </div>
+              ` : ''}
+              ${/^[A-Za-z0-9_-]{11}$/.test(this.currentSong?.youtubeVideoId || '') ? `<a class="karaoke-video-link" href="https://www.youtube.com/watch?v=${this.currentSong.youtubeVideoId}" target="_blank" rel="noopener noreferrer">Vídeo opcional en YouTube</a>` : ''}
+            </div>
+          </div>
+        </details>
       </section>
     `;
   }
@@ -515,6 +553,13 @@ export class LyricsChordsView extends Component {
       mic.disabled = Boolean(vocalCoachEngine.starting);
       mic.textContent = vocalCoachEngine.isRunning ? 'Desactivar micrófono' : 'Activar micrófono';
       mic.setAttribute('aria-pressed', String(vocalCoachEngine.isRunning));
+    }
+    const comfortBtn = panel.querySelector('#btnToggleVocalComfort');
+    if (comfortBtn) {
+      const active = Boolean(engine.vocalComfortMode);
+      comfortBtn.classList.toggle('active', active);
+      comfortBtn.setAttribute('aria-pressed', String(active));
+      comfortBtn.textContent = `🎙️ Voz Fácil: ${active ? 'ON' : 'OFF'}`;
     }
     const heroLabel = this.container.querySelector('.sing-mic-label');
     if (heroLabel) heroLabel.textContent = vocalCoachEngine.isRunning ? 'Micrófono activo' : 'Micrófono apagado';
@@ -1203,73 +1248,76 @@ export class LyricsChordsView extends Component {
               </div>
             </div>
           ` : ''}
-          
-          <style>
-            @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-            @keyframes slideUp { from { transform: translateY(100%); opacity: 0.6; } to { transform: translateY(0); opacity: 1; } }
-          </style>
-
-
-          <!-- Singer Live Pitch Ribbon Overlay (Modo Cantar) -->
+          <!-- Singer Live Pitch Stage (Modo Cantar) - Experiencia Single-Page centrada en afinación -->
           ${this.performanceMode === 'sing' ? `
-            ${this.renderKaraokePanel()}
-
-            <div class="singer-pitch-lane-wrapper" style="width: 100%; height: 380px; position: relative; border-radius: 20px; overflow: hidden; margin-top: 12px; border: 1px solid rgba(255,255,255,0.05); box-shadow: 0 12px 32px rgba(0,0,0,0.3);">
-              <canvas id="pitchLaneCanvas" style="display:block; width:100%; height:100%;"></canvas>
-            </div>
-
-            <div class="singer-vocal-ribbon" id="singerVocalRibbon" style="margin-top: 12px;">
-              <div class="ribbon-left">
-                <span class="ribbon-live-dot"></span>
-                <span class="ribbon-status-label" id="singerPitchNoteLabel">⏸️ En pausa · Pulsa ▶ para cantar</span>
+            <div class="sing-stage-workspace" id="singStageWorkspace">
+              <!-- Letra de canto prominente e integrada -->
+              <div class="karaoke-lyrics" aria-label="Letra de canto">
+                <p id="karaokeCurrentLine"></p><p id="karaokeNextLine"></p>
               </div>
-              <div class="ribbon-center">
-                <span class="ribbon-note-big" id="singerNoteBig">—</span>
-                <span class="ribbon-freq-badge font-mono" id="singerFreqBadge">0 Hz</span>
+
+              <!-- Pista de afinación principal (Pitch Lane) -->
+              <div class="singer-pitch-lane-wrapper" style="width: 100%; height: clamp(200px, 28vh, 320px); position: relative; border-radius: 16px; overflow: hidden; margin-top: 8px; border: 1px solid var(--border-subtle); box-shadow: 0 8px 24px rgba(0,0,0,0.25);">
+                <canvas id="pitchLaneCanvas" style="display:block; width:100%; height:100%;"></canvas>
               </div>
-              <div class="ribbon-right">
-                <button class="btn-ribbon-range-finder" id="btnOpenRangeFinder" title="Encuentra tu rango vocal">
-                  🎙️ Rango Vocal
+
+              <!-- Cinta de Afinación en Tiempo Real -->
+              <div class="singer-vocal-ribbon" id="singerVocalRibbon" style="margin-top: 8px;">
+                <div class="ribbon-left">
+                  <span class="ribbon-live-dot"></span>
+                  <span class="ribbon-status-label" id="singerPitchNoteLabel">⏸️ En pausa · Pulsa ▶ para cantar</span>
+                </div>
+                <div class="ribbon-center">
+                  <span class="ribbon-note-big" id="singerNoteBig">—</span>
+                  <span class="ribbon-freq-badge font-mono" id="singerFreqBadge">0 Hz</span>
+                </div>
+                <div class="ribbon-right">
+                  <button type="button" class="btn-ribbon-range-finder" id="btnOpenRangeFinder" title="Encuentra tu rango vocal">
+                    🎙️ Rango Vocal
+                  </button>
+                </div>
+              </div>
+
+              <!-- Consola de Acompañamiento Condensada y Opciones Secundarias -->
+              ${this.renderKaraokePanel()}
+
+              <!-- Banner de Permiso de Micrófono si fue Denegado -->
+              <div class="mic-permission-warning-banner" id="micPermissionWarning" style="display: none;">
+                <div class="mic-warning-content">
+                  <span class="mic-warning-icon">⚠️</span>
+                  <div class="mic-warning-info">
+                    <strong>Permiso de Micrófono Requerido</strong>
+                    <span>La app necesita acceso al micrófono para detectar la afinación de tu voz mientras cantas.</span>
+                  </div>
+                </div>
+                <button type="button" class="btn-request-mic-permission" id="btnRetryMicPermission">
+                  🎤 Otorgar Permiso al Micrófono
                 </button>
               </div>
             </div>
+          ` : ''}
 
-            <!-- Banner de Permiso de Micrófono si fue Denegado -->
-            <div class="mic-permission-warning-banner" id="micPermissionWarning" style="display: none;">
-              <div class="mic-warning-content">
-                <span class="mic-warning-icon">⚠️</span>
-                <div class="mic-warning-info">
-                  <strong>Permiso de Micrófono Requerido</strong>
-                  <span>La app necesita acceso al micrófono para detectar la afinación de tu voz mientras cantas.</span>
-                </div>
+          <!-- TOMA RECIENTE -->
+          ${this.audioRecorder.recordedUrl && !this.audioRecorder.isRecording ? `
+            <div class="recording-playback-card">
+              <div class="rec-card-meta">
+                <strong>🎙️ Toma Grabada</strong>
+                <audio controls src="${this.audioRecorder.recordedUrl}" class="rec-audio-element"></audio>
               </div>
-              <button class="btn-request-mic-permission" id="btnRetryMicPermission">
-                🎤 Otorgar Permiso al Micrófono
-              </button>
+              <div class="rec-card-actions">
+                <button class="btn-rec-download" id="btnDownloadRecording">Descargar Audio</button>
+                <button class="btn-rec-dismiss" id="btnDismissRecording">Descartar</button>
+              </div>
             </div>
           ` : ''}
 
-        <!-- TOMA RECIENTE -->
-        ${this.audioRecorder.recordedUrl && !this.audioRecorder.isRecording ? `
-          <div class="recording-playback-card">
-            <div class="rec-card-meta">
-              <strong>🎙️ Toma Grabada</strong>
-              <audio controls src="${this.audioRecorder.recordedUrl}" class="rec-audio-element"></audio>
-            </div>
-            <div class="rec-card-actions">
-              <button class="btn-rec-download" id="btnDownloadRecording">Descargar Audio</button>
-              <button class="btn-rec-dismiss" id="btnDismissRecording">Descartar</button>
-            </div>
-          </div>
-        ` : ''}
-
-        <!-- GALERÍA DE DIAGRAMAS SVG -->
-        ${this.performanceMode !== 'sing' ? ChordDiagramRenderer.renderGallery(uniqueChords, {
-          instrument: this.currentInstrument,
-          notation: this.notationSystem,
-          tempo: this.currentSong?.tempo || 120,
-          timeSignature: this.currentSong?.timeSignature || '4/4'
-        }) : ''}
+          <!-- GALERÍA DE DIAGRAMAS SVG -->
+          ${this.performanceMode !== 'sing' ? ChordDiagramRenderer.renderGallery(uniqueChords, {
+            instrument: this.currentInstrument,
+            notation: this.notationSystem,
+            tempo: this.currentSong?.tempo || 120,
+            timeSignature: this.currentSong?.timeSignature || '4/4'
+          }) : ''}
 
         <!-- CUERPO DE LETRA (Oculto en modo cantar) -->
         <div id="lyricsBodyContent" style="display: ${this.viewMode === 'score' || this.performanceMode === 'sing' ? 'none' : 'block'};">
@@ -1687,6 +1735,14 @@ export class LyricsChordsView extends Component {
       } else {
         await this.startSingingMicrophone();
       }
+    });
+
+    this.container.querySelector('#btnToggleVocalComfort')?.addEventListener('click', () => {
+      const active = this.backing.setVocalComfortMode();
+      this.updateKaraokeState();
+      import('./Toast.js').then(({ toast }) => {
+        toast.show(active ? 'Modo Voz Fácil: mezcla optimizada y menor esfuerzo' : 'Modo Voz Fácil desactivado', 'info', 1500);
+      });
     });
 
     // --- Canto: Controles Flotantes y Sincronización de Audio ---
