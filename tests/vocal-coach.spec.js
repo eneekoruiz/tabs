@@ -8,13 +8,13 @@ test.describe('Vocal Coach QA Extremo', () => {
     });
     
     // Abrir la app local
-    await page.goto('http://127.0.0.1:3000');
+    await page.goto('/');
     await page.waitForLoadState('networkidle');
   });
 
   test('Mocking de Audio y Validación de Estado (Canvas)', async ({ page }) => {
     // 1. Abrir la primera canción en el explorador
-    const loadBtn = page.locator('.btn-load-explore-song').first();
+    const loadBtn = page.locator('.btn-select-song').first();
     await expect(loadBtn).toBeVisible({ timeout: 10000 });
     await loadBtn.click();
 
@@ -57,7 +57,7 @@ test.describe('Vocal Coach QA Extremo', () => {
   test('Memory Leak & FPS Check (Test de estrés de larga duración)', async ({ page }) => {
     test.setTimeout(120000); // Dar 2 minutos de timeout
 
-    const loadBtn = page.locator('.btn-load-explore-song').first();
+    const loadBtn = page.locator('.btn-select-song').first();
     await expect(loadBtn).toBeVisible({ timeout: 10000 });
     await loadBtn.click();
 

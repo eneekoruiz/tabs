@@ -10,6 +10,7 @@ import { events } from '../../core/EventBus.js';
 import { state } from '../../core/State.js';
 import { smartBandEngine } from '../../audio/SmartBandEngine.js';
 import { toast } from '../Toast.js';
+import { escapeHTML } from '../../utils/sanitize.js';
 
 export class SmartBandTool extends Component {
   constructor() {
@@ -19,7 +20,7 @@ export class SmartBandTool extends Component {
   }
 
   initEvents() {
-    events.on('smartBand:open', () => this.open('#smart-band-modal-container'));
+    this.registerUnsub(events.on('smartBand:open', () => this.open('#smart-band-modal-container')));
   }
 
   open(targetContainerSelector = '#smart-band-modal-container') {
@@ -29,12 +30,15 @@ export class SmartBandTool extends Component {
     }
     if (!host) return;
 
-    this.currentHost = targetContainerSelector;
+    this.currentHost = `#${host.id}`;
+    this.unsubStep?.();
     host.innerHTML = this.renderModal();
     this.attachListeners(host);
   }
 
   close(host) {
+    this.unsubStep?.();
+    this.unsubStep = null;
     this.engine.stop();
     if (host) host.innerHTML = '';
   }
@@ -52,9 +56,9 @@ export class SmartBandTool extends Component {
           <!-- Cabecera -->
           <div class="smartband-modal-header">
             <div class="smartband-title-group">
-              <div class="smartband-badge">GENERATIVE AI JAM · LIVE WEB AUDIO DSP</div>
+              <div class="smartband-badge">ACOMPAÑAMIENTO LOCAL · BAJO Y BATERÍA</div>
               <h2 id="smartBandTitle" class="smartband-modal-title">🎷 The Smart Band</h2>
-              <p class="smartband-modal-subtitle">Tu banda de acompañamiento virtual en vivo: Batería y Bajo generativos sincronizados a tus acordes.</p>
+              <p class="smartband-modal-subtitle">Bajo y batería sintetizados. Un compás de 4/4 por acorde de la progresión seleccionada.</p>
             </div>
             <button class="btn-close-smartband" id="btnCloseSmartBand" aria-label="Cerrar Smart Band">✕</button>
           </div>
@@ -65,12 +69,12 @@ export class SmartBandTool extends Component {
             <div class="smartband-section-card">
               <div class="section-card-header">
                 <h3 class="section-title">1. Progresión de Acordes de la Canción</h3>
-                <span class="song-ref-badge">${currentSong?.title || 'Jam Libre'}</span>
+                <span class="song-ref-badge">${escapeHTML(currentSong?.title || 'Jam Libre')}</span>
               </div>
               <div class="chords-chips-row" id="smartBandChordsRow">
                 ${chords.map((chord, idx) => `
                   <div class="chord-chip ${idx === this.engine.currentChordIndex ? 'active' : ''}" data-index="${idx}">
-                    <span class="chord-name">${chord}</span>
+                    <span class="chord-name">${escapeHTML(chord)}</span>
                     <span class="chord-sub">Compás ${idx + 1}</span>
                   </div>
                 `).join('')}
@@ -184,6 +188,16 @@ export class SmartBandTool extends Component {
   attachListeners(container) {
     const card = container.querySelector('#modal-smart-band');
     if (!card) return;
+    card.addEventListener('keydown', event => {
+      if (event.key === 'Escape') this.close(container);
+    });
+    card.querySelector('#btnCloseSmartBand')?.focus();
+    [['rngDrumsVol', 'Volumen de batería'], ['rngBassVol', 'Volumen de bajo'], ['rngSmartBandBpm', 'Tempo en BPM']].forEach(([id, label]) => card.querySelector(`#${id}`)?.setAttribute('aria-label', label));
+    [['btnMuteDrums', 'Silenciar batería', this.engine.drumsMuted], ['btnMuteBass', 'Silenciar bajo', this.engine.bassMuted]].forEach(([id, label, pressed]) => {
+      card.querySelector(`#${id}`)?.setAttribute('aria-label', label);
+      card.querySelector(`#${id}`)?.setAttribute('aria-pressed', String(pressed));
+    });
+    card.querySelectorAll('.btn-style-card').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.style === this.engine.style)));
 
     // Cerrar
     card.querySelector('#btnCloseSmartBand')?.addEventListener('click', () => this.close(container));
@@ -191,10 +205,15 @@ export class SmartBandTool extends Component {
     // Play / Pause
     const toggleBtn = card.querySelector('#btnToggleSmartBand');
     toggleBtn?.addEventListener('click', () => {
+      try {
       const isNowPlaying = this.engine.toggle();
       this.open(this.currentHost || '#smart-band-modal-container');
       if (isNowPlaying) {
         toast.show(`¡The Smart Band tocando en estilo ${this.engine.style.toUpperCase()} a ${this.engine.bpm} BPM!`, 'success');
+      }
+      } catch (error) {
+        this.engine.stop();
+        toast.show('No se pudo iniciar la banda: ' + error.message, 'error');
       }
     });
 
@@ -206,7 +225,7 @@ export class SmartBandTool extends Component {
     // Presets de Progresión
     card.querySelectorAll('.btn-prog-preset').forEach(btn => {
       btn.addEventListener('click', (e) => {
-        const prog = e.target.dataset.prog.split(',');
+        const prog = e.currentTarget.dataset.prog.split(',');
         this.engine.setProgression(prog);
         this.open(this.currentHost || '#smart-band-modal-container');
         toast.show(`Progresión cargada: ${prog.join(' - ')}`, 'info');
@@ -227,11 +246,13 @@ export class SmartBandTool extends Component {
     card.querySelector('#btnMuteDrums')?.addEventListener('click', () => {
       const muted = this.engine.toggleDrumsMute();
       card.querySelector('#btnMuteDrums').classList.toggle('active', muted);
+      card.querySelector('#btnMuteDrums').setAttribute('aria-pressed', String(muted));
     });
 
     card.querySelector('#btnMuteBass')?.addEventListener('click', () => {
       const muted = this.engine.toggleBassMute();
       card.querySelector('#btnMuteBass').classList.toggle('active', muted);
+      card.querySelector('#btnMuteBass').setAttribute('aria-pressed', String(muted));
     });
 
     // Sliders de Volumen
@@ -258,7 +279,8 @@ export class SmartBandTool extends Component {
     });
 
     // Escuchar pulso y actualizar dots
-    events.on('smartBand:step', ({ step, isQuarterBeat, beatNumber }) => {
+    this.unsubStep = events.on('smartBand:step', ({ step, isQuarterBeat, beatNumber, chordIndex }) => {
+      card.querySelectorAll('.chord-chip').forEach((chip, index) => chip.classList.toggle('active', index === chordIndex));
       if (isQuarterBeat) {
         for (let i = 1; i <= 4; i++) {
           const dot = card.querySelector(`#beatDot-${i}`);

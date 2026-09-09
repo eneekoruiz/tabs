@@ -19,8 +19,8 @@ import { toast } from './Toast.js';
 export class SettingsView extends Component {
   constructor(container) {
     super(container);
-    this.userEmail = localStorage.getItem('user_email') || 'musico.pro@studio.com';
-    this.userName = localStorage.getItem('user_name') || 'Músico PRO';
+    this.userEmail = localStorage.getItem('user_email') || 'Datos guardados en este dispositivo';
+    this.userName = localStorage.getItem('user_name') || 'Perfil local';
     this.isLeftHanded = localStorage.getItem('app_lefthanded') === 'true';
     this.defaultInstrument = localStorage.getItem('app_instrument') || 'guitar';
     this.masterTuning = localStorage.getItem('app_master_tuning') || '440';
@@ -37,16 +37,19 @@ export class SettingsView extends Component {
     this.container.addEventListener('click', (e) => {
       // Modificar Email / Nombre
       if (e.target.id === 'btnChangeProfile') {
-        const newName = prompt('Ingresa tu nuevo nombre de usuario:', this.userName);
+        const newName = prompt('¿Cómo quieres que aparezca tu perfil?', this.userName);
         if (newName && newName.trim()) {
           this.userName = newName.trim();
           localStorage.setItem('user_name', this.userName);
         }
         
-        const newEmail = prompt('Ingresa tu nuevo correo electrónico:', this.userEmail);
+        const newEmail = prompt('Correo opcional para identificar tu perfil (puedes dejarlo vacío):', localStorage.getItem('user_email') || '');
         if (newEmail && newEmail.trim() && newEmail.includes('@')) {
           this.userEmail = newEmail.trim();
           localStorage.setItem('user_email', this.userEmail);
+        } else if (newEmail === '') {
+          localStorage.removeItem('user_email');
+          this.userEmail = 'Datos guardados en este dispositivo';
         }
         
         toast.show('Perfil actualizado correctamente', 'success');
@@ -58,16 +61,16 @@ export class SettingsView extends Component {
         if (confirm('¿Estás seguro de que deseas cerrar sesión? (Se restablecerán las credenciales locales)')) {
           localStorage.removeItem('user_email');
           localStorage.removeItem('user_name');
-          this.userEmail = 'invitado@studio.local';
-          this.userName = 'Músico Invitado';
-          toast.show('Sesión cerrada con éxito', 'info');
+          this.userEmail = 'Datos guardados en este dispositivo';
+          this.userName = 'Perfil local';
+          toast.show('Perfil local restablecido', 'info');
           this.render();
         }
       }
 
-      // Contraseña
+      // En modo local no existe una contraseña falsa que restablecer.
       if (e.target.id === 'btnRecoverPassword') {
-        alert('Se ha enviado un enlace seguro a tu correo electrónico para restablecer la contraseña.');
+        toast.show('Tus datos están protegidos localmente. Crea una copia de seguridad para llevarlos a otro dispositivo.', 'info', 2800);
       }
 
       // Abrir Analíticas desde Ajustes
@@ -80,8 +83,8 @@ export class SettingsView extends Component {
   render() {
     if (!this.container) return;
 
-    this.userEmail = localStorage.getItem('user_email') || 'musico.pro@studio.com';
-    this.userName = localStorage.getItem('user_name') || 'Músico PRO';
+    this.userEmail = localStorage.getItem('user_email') || 'Datos guardados en este dispositivo';
+    this.userName = localStorage.getItem('user_name') || 'Perfil local';
     this.isLeftHanded = localStorage.getItem('app_lefthanded') === 'true';
     this.defaultInstrument = localStorage.getItem('app_instrument') || 'guitar';
     this.masterTuning = localStorage.getItem('app_master_tuning') || '440';
@@ -101,7 +104,7 @@ export class SettingsView extends Component {
           <div class="settings-user-meta">
             <div class="settings-user-title-line">
               <h1 class="settings-user-name">${this.userName}</h1>
-              <span class="pro-membership-pill">${this.userName === 'Músico Invitado' ? 'GRATUITO' : 'STUDIO PRO'}</span>
+              <span class="pro-membership-pill">${this.userName === 'Perfil local' ? 'SIN CUENTA' : 'STUDIO PRO'}</span>
             </div>
             <span class="settings-user-email">${this.userEmail}</span>
           </div>
@@ -122,18 +125,18 @@ export class SettingsView extends Component {
 
             <div class="settings-row-item">
               <div class="settings-row-info">
-                <strong>Contraseña y Acceso</strong>
-                <span>Protegido con cifrado local</span>
+                <strong>Seguridad de los datos</strong>
+                <span>Tu biblioteca se guarda localmente y funciona sin conexión</span>
               </div>
-              <button class="btn-settings-action" id="btnRecoverPassword">Restablecer</button>
+              <button class="btn-settings-action" id="btnRecoverPassword">Cómo funciona</button>
             </div>
 
             <div class="settings-row-item">
               <div class="settings-row-info">
-                <strong>Cerrar Sesión</strong>
-                <span>Desvincular cuenta de este dispositivo</span>
+                <strong>Restablecer perfil local</strong>
+                <span>Elimina solo la identidad visible, no tus canciones ni tus copias</span>
               </div>
-              <button class="btn-settings-action" id="btnLogout" style="color: #ff5722; border-color: rgba(255,87,34,0.3);">Desconectar</button>
+              <button class="btn-settings-action btn-settings-danger" id="btnLogout">Restablecer perfil</button>
             </div>
           </div>
 
@@ -145,7 +148,7 @@ export class SettingsView extends Component {
                 <strong>Dashboard de Práctica Personal</strong>
                 <span>${statsSummary.totalHours}h acumuladas • Racha de ${statsSummary.currentStreak} días</span>
               </div>
-              <button class="btn-settings-action" id="btnOpenAnalyticsFromSettings" style="background: rgba(255, 145, 0, 0.15); border-color: #ff9100; color: #ff9100;">Ver Dashboard</button>
+              <button class="btn-settings-action btn-settings-accent" id="btnOpenAnalyticsFromSettings">Ver dashboard</button>
             </div>
           </div>
 
@@ -230,7 +233,7 @@ export class SettingsView extends Component {
 
           <!-- 4. Copia de Seguridad Blindada y Sincronización -->
           <div class="settings-card-group">
-            <h2 class="settings-group-title">Copia de Seguridad Blindada (Sin Conexión)</h2>
+            <h2 class="settings-group-title">Copia de Seguridad Local</h2>
 
             <div class="settings-row-item">
               <div class="settings-row-info">
@@ -309,9 +312,9 @@ export class SettingsView extends Component {
       }
     });
 
-    // Recuperar Contraseña
+    // Seguridad local: no fingir una recuperación de contraseña sin backend.
     this.container.querySelector('#btnRecoverPassword')?.addEventListener('click', () => {
-      toast.show(`Enlace de recuperación enviado a ${this.userEmail}`, 'success', 2500);
+      toast.show('Tus datos están protegidos localmente. Crea una copia de seguridad para llevarlos a otro dispositivo.', 'info', 2800);
     });
 
     // Modificar Email

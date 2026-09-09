@@ -1,3 +1,5 @@
+import { matchesSong } from "../../catalog/SongIdentity.js";
+
 /**
  * @file arcticACDC.js
  * @description Arctic Monkeys & AC/DC - Letras y acordes 100% completos y oficiales en formato ChordPro.
@@ -7,7 +9,7 @@ export function getArcticAcdcLyrics(t, a) {
   // ==========================================
   // 60. Arctic Monkeys - Do I Wanna Know?
   // ==========================================
-  if (t.includes('do i wanna know')) {
+  if (matchesSong(t, a, ["do i wanna know"], ["arctic monkeys"])) {
     return `[Intro]
 [Gm] [Eb] [Cm] [Gm]
 [Gm] [Eb] [Cm] [Gm]
@@ -70,7 +72,7 @@ Now I've thought it [Gm]through
   // ==========================================
   // 61. Arctic Monkeys - 505
   // ==========================================
-  if (t === '505' || t.includes('505')) {
+  if (matchesSong(t, a, ["505"], ["arctic monkeys"])) {
     return `[Intro]
 [Dm] [Em]
 [Dm] [Em]
@@ -114,7 +116,7 @@ With your [Em]hands between your thighs and a smile!
   // ==========================================
   // 62. Arctic Monkeys - R U Mine?
   // ==========================================
-  if (t.includes('r u mine') || t.includes('are you mine')) {
+  if (matchesSong(t, a, ["r u mine","are you mine"], ["arctic monkeys"])) {
     return `[Intro]
 [F#m] [F#m]
 [F#m] [F#m]
@@ -180,7 +182,7 @@ Tomorrow or tonight?
   // ==========================================
   // 63. Arctic Monkeys - Why'd You Only Call Me When You're High?
   // ==========================================
-  if (t.includes('only call me when') || t.includes("why'd you only call me")) {
+  if (matchesSong(t, a, ["only call me when","whyd you only call me","whyd you only call me when youre high"], ["arctic monkeys"])) {
     return `[Intro]
 [F#m] [D] [Bm]
 [F#m] [D] [Bm]
@@ -237,7 +239,7 @@ Why'd you only call me when you're [D]high?
   // ==========================================
   // 64. Arctic Monkeys - Fluorescent Adolescent
   // ==========================================
-  if (t.includes('fluorescent adolescent')) {
+  if (matchesSong(t, a, ["fluorescent adolescent"], ["arctic monkeys"])) {
     return `[Intro]
 [E] [C#m] [A] [B]
 [E] [C#m] [A] [B]
@@ -300,7 +302,7 @@ Not [A]fluorescent [B]anymore [E]`;
   // ==========================================
   // 65. Arctic Monkeys - I Wanna Be Yours
   // ==========================================
-  if (t.includes('i wanna be yours') || t.includes('wanna be yours')) {
+  if (matchesSong(t, a, ["i wanna be yours","wanna be yours"], ["arctic monkeys"])) {
     return `[Intro]
 [Cm] [Bb] [Ab] [Fm]
 [Cm] [Bb] [Ab] [Fm]
@@ -350,7 +352,7 @@ Not [A]fluorescent [B]anymore [E]`;
   // ==========================================
   // 66. AC/DC - You Shook Me All Night Long
   // ==========================================
-  if (t.includes('you shook me all night long') || t.includes('shook me all night long')) {
+  if (matchesSong(t, a, ["you shook me all night long","shook me all night long"], ["ac dc"])) {
     return `[Intro]
 [G] [C] [D] [G] [C] [D]
 
@@ -404,7 +406,7 @@ You really took me, you shook me [C]all [G]night [D]long [G]`;
   // ==========================================
   // 67. AC/DC - Hells Bells
   // ==========================================
-  if (t.includes('hells bells')) {
+  if (matchesSong(t, a, ["hells bells"], ["ac dc"])) {
     return `[Intro]
 [A] [C] [D] [A] [G] [D]
 [A] [C] [D] [A] [G] [D]
@@ -466,7 +468,7 @@ My [C]temperature's [D]high, hells [A]bells
   // ==========================================
   // 68. AC/DC - T.N.T.
   // ==========================================
-  if (t === 'tnt' || t === 't.n.t.' || t.includes('t.n.t') || (t.includes('tnt') && a.includes('ac/dc'))) {
+  if (matchesSong(t, a, ["tnt","t n t"], ["ac dc"])) {
     return `[Intro]
 [E] [G] [A]
 [E] [G] [A]

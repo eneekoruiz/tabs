@@ -1,3 +1,5 @@
+import { matchesSong } from "../../catalog/SongIdentity.js";
+
 /**
  * @file stonesBowieKillersStrokes.js
  * @description The Rolling Stones, David Bowie, The Killers & The Strokes - Letras y acordes 100% completos y oficiales en formato ChordPro.
@@ -7,7 +9,7 @@ export function getStonesBowieKillersStrokesLyrics(t, a) {
   // ==========================================
   // 77. The Rolling Stones - Paint It Black
   // ==========================================
-  if (t.includes('paint it black') || t.includes('paint it, black')) {
+  if (matchesSong(t, a, ["paint it black"], ["the rolling stones"])) {
     return `[Intro]
 [Em] [B] [Em] [B]
 
@@ -56,7 +58,7 @@ I wanna see the sun blotted out from the sky
   // ==========================================
   // 78. The Rolling Stones - Angie
   // ==========================================
-  if (t === 'angie' || (t.includes('angie') && (a.includes('rolling stones') || !a))) {
+  if (matchesSong(t, a, ["angie"], ["the rolling stones"])) {
     return `[Intro]
 [Am] [E7] [G] [F] [C] [G/B]
 
@@ -105,7 +107,7 @@ But [Am]Angie, [E7]Angie, [G] [F]ain't it [C]good to be alive?
   // ==========================================
   // 79. The Rolling Stones - (I Can't Get No) Satisfaction
   // ==========================================
-  if (t.includes('satisfaction')) {
+  if (matchesSong(t, a, ["satisfaction","i cant get no satisfaction"], ["the rolling stones"])) {
     return `[Intro]
 [E] [A] [E] [A]
 [E] [A] [E] [A]
@@ -161,7 +163,7 @@ I can't get [E]no [A] [E]`;
   // ==========================================
   // 80. David Bowie - Space Oddity
   // ==========================================
-  if (t.includes('space oddity')) {
+  if (matchesSong(t, a, ["space oddity"], ["david bowie"])) {
     return `[Intro]
 [Fmaj7] [Em] [Fmaj7] [Em]
 
@@ -219,7 +221,7 @@ Here am [Fmaj7]I floating 'round my [Em7]tin can
   // ==========================================
   // 81. David Bowie - Heroes
   // ==========================================
-  if (t === 'heroes' || (t.includes('heroes') && (a.includes('bowie') || !a))) {
+  if (matchesSong(t, a, ["heroes"], ["david bowie"])) {
     return `[Intro]
 [D] [G] [D] [G]
 
@@ -269,7 +271,7 @@ We can be [D]heroes [G] [D]`;
   // ==========================================
   // 82. The Killers - Mr. Brightside
   // ==========================================
-  if (t.includes('mr. brightside') || t.includes('mr brightside')) {
+  if (matchesSong(t, a, ["mr brightside"], ["the killers"])) {
     return `[Intro]
 [D] [D/C#] [G/B] [G]
 [D] [D/C#] [G/B] [G]
@@ -332,7 +334,7 @@ I [D]never [D/C#] [G/B] [G] [D]`;
   // ==========================================
   // 83. The Strokes - Last Nite
   // ==========================================
-  if (t.includes('last nite') || t.includes('last night') && (a.includes('strokes') || !a)) {
+  if (matchesSong(t, a, ["last nite","last night"], ["the strokes"])) {
     return `[Intro]
 [C] [C] [C] [C]
 [C] [C] [C] [C]

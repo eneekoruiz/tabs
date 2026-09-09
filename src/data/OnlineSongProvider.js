@@ -7,7 +7,7 @@
 import { offlineUniversalLibrary } from './catalog/OfflineUniversalLibraryEngine.js';
 import { getKnownSongLyrics } from './lyrics/KnownSongLyrics.js';
 import { LyricsHarmonizer } from './lyrics/LyricsHarmonizer.js';
-import { db } from './Database.js';
+import { assessSong } from './catalog/CatalogQuality.js';
 
 export class OnlineSongProvider {
   constructor() {
@@ -21,7 +21,7 @@ export class OnlineSongProvider {
   async searchOnline(query, limit = 30) {
     if (!query || !query.trim()) return [];
     const cleanQuery = query.trim();
-    const cacheKey = `search_${cleanQuery.toLowerCase()}`;
+    const cacheKey = `search_${cleanQuery.toLowerCase()}_${limit}`;
 
     if (this.cache.has(cacheKey)) {
       return this.cache.get(cacheKey);
@@ -29,8 +29,7 @@ export class OnlineSongProvider {
 
     // Obtener únicamente resultados que existen en el índice local verificable
     const offlineResults = offlineUniversalLibrary.search(cleanQuery, limit).map(s => ({
-      ...s,
-      isOfflineReady: true
+      ...s
     }));
 
     // Si encontramos suficientes resultados en el catálogo local offline, devolverlos de inmediato
@@ -55,13 +54,14 @@ export class OnlineSongProvider {
                 id: `online_${Math.abs(item.id || Date.now())}`,
                 title: item.trackName,
                 artist: item.artistName,
-                genre: 'Pop',
-                difficulty: 'Intermedio',
-                capo: 0,
-                source: 'online_harvester',
-                contentKind: 'curated_lyrics',
-                hasCuratedLyrics: true,
-                isOfflineReady: true
+                album: item.albumName || '',
+                duration: item.duration || null,
+                recordingId: `lrclib:${item.id}`,
+                source: 'online_metadata',
+                contentKind: 'metadata_only',
+                hasCuratedLyrics: false,
+                isOfflineReady: false,
+                provenance: { metadata: { provider: 'LRCLIB', sourceUrl: `https://lrclib.net/api/get/${item.id}` } }
               });
               if (offlineResults.length >= limit) break;
             }
@@ -97,52 +97,13 @@ export class OnlineSongProvider {
     // 1. Obtener partitura completa desde el motor offline universal (letras reales curadas)
     const offlineSheet = offlineUniversalLibrary.getSongSheet(title, artist);
     if (offlineSheet) {
-      this.lyricsCache.set(cacheKey, offlineSheet);
-      return offlineSheet;
+      const normalizedSheet = { ...offlineSheet, quality: assessSong(offlineSheet) };
+      this.lyricsCache.set(cacheKey, normalizedSheet);
+      return normalizedSheet;
     }
 
-    // 2. Si no está en la base local, recolectar en tiempo real de LRCLIB ("más canciones por el camino")
-    try {
-      const q = artist
-        ? `https://lrclib.net/api/get?artist_name=${encodeURIComponent(artist)}&track_name=${encodeURIComponent(title)}`
-        : `https://lrclib.net/api/search?q=${encodeURIComponent(title)}`;
-      const res = await fetch(q);
-      if (res.ok) {
-        const data = await res.json();
-        const plain = Array.isArray(data) ? (data.find(d => d.plainLyrics)?.plainLyrics) : data.plainLyrics;
-        if (plain && plain.length > 50) {
-          const harmonized = LyricsHarmonizer.harmonize(plain, title, artist);
-          const dynamicSheet = {
-            title,
-            artist: artist || 'Artista Universal',
-            key: 'C',
-            capo: 0,
-            tuning: 'Standard (E A D G B E)',
-            tempo: 120,
-            strumming: '↓ ↓↑ ↑↓↑ (Pop Ballad Standard)',
-            chords: ['C', 'G', 'Am', 'F'],
-            chordpro: harmonized,
-            source: 'universal_online_harvested',
-            isOfflineReady: true
-          };
-          this.lyricsCache.set(cacheKey, dynamicSheet);
-          // Persistir inmediatamente en IndexedDB para disponibilidad offline permanente
-          try {
-            db.saveSong({
-              title,
-              artist: artist || 'Artista Universal',
-              lyricsChords: harmonized,
-              tempo: 120,
-              genre: 'Pop',
-              isOfflineReady: true
-            }).catch(() => {});
-          } catch(e) {}
-          return dynamicSheet;
-        }
-      }
-    } catch (e) {
-      console.warn('[OnlineSongProvider] Fallback online fetch error:', e);
-    }
+    // Discovery metadata is not permission to bulk copy lyrics. Missing content
+    // stays missing until explicitly imported or supplied by a licensed provider.
 
     this.lyricsCache.set(cacheKey, null);
     return null;

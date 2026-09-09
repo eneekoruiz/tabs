@@ -13,6 +13,9 @@ export class PedalboardEngine {
     this.mediaStream = null;
     this.sourceNode = null;
     this.isActive = false;
+    this.isPreparing = false;
+    this.requestId = 0;
+    this.inputAnalyser = null;
 
     // Nodos de la cadena DSP
     this.nodes = {
@@ -103,13 +106,17 @@ export class PedalboardEngine {
    * Inicia la captura de audio en vivo desde micrófono o tarjeta de sonido/guitarra
    */
   async startLiveInput() {
+    if (this.isActive || this.isPreparing) return false;
+    const requestId = ++this.requestId;
+    this.isPreparing = true;
+    try {
     const ctx = this._getAudioContext();
 
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
       throw new Error('getUserMedia no disponible en este entorno');
     }
 
-    this.mediaStream = await navigator.mediaDevices.getUserMedia({
+    const stream = await navigator.mediaDevices.getUserMedia({
       audio: {
         echoCancellation: false,
         noiseSuppression: false,
@@ -118,17 +125,35 @@ export class PedalboardEngine {
       }
     });
 
+    if (requestId !== this.requestId) {
+      stream.getTracks().forEach(track => track.stop());
+      return false;
+    }
+    this.mediaStream = stream;
     this.sourceNode = ctx.createMediaStreamSource(this.mediaStream);
     this._buildDspChain(ctx);
     this.sourceNode.connect(this.nodes.inputGain);
+    this.inputAnalyser = ctx.createAnalyser();
+    this.inputAnalyser.fftSize = 1024;
+    this.sourceNode.connect(this.inputAnalyser);
 
     this.isActive = true;
+    this.isPreparing = false;
     this._startMetering();
     events.emit('pedalboard:state', { isActive: true, params: this.params, preset: this.currentPreset });
     return true;
+    } catch (error) {
+      if (requestId !== this.requestId) return false;
+      this.stopLiveInput();
+      throw error;
+    }
   }
 
   stopLiveInput() {
+    this.requestId++;
+    this.isPreparing = false;
+    this.inputAnalyser?.disconnect();
+    this.inputAnalyser = null;
     if (this.mediaStream) {
       this.mediaStream.getTracks().forEach(track => track.stop());
       this.mediaStream = null;
@@ -722,6 +747,7 @@ export class PedalboardEngine {
 
   _startMetering() {
     const dataArray = new Uint8Array(32);
+    const inputData = new Float32Array(this.inputAnalyser.fftSize);
 
     const checkLevels = () => {
       if (!this.isActive || !this.nodes.analyser) return;
@@ -732,14 +758,13 @@ export class PedalboardEngine {
 
       this.outputLevel = Math.min(100, Math.round((sum / (dataArray.length * 255)) * 130));
 
-      // Noise Gate logic
-      if (this.params.gateEnabled && this.nodes.noiseGateGain && this.audioContext) {
-        const thresholdNorm = Math.pow(10, this.params.gateThreshold / 20) * 100;
-        if (this.outputLevel < thresholdNorm) {
-          this.nodes.noiseGateGain.gain.setTargetAtTime(0.001, this.audioContext.currentTime, 0.05);
-        } else {
-          this.nodes.noiseGateGain.gain.setTargetAtTime(1.0, this.audioContext.currentTime, 0.01);
-        }
+      // Measure before the gate so a closed gate can reopen on the next note.
+      this.inputAnalyser.getFloatTimeDomainData(inputData);
+      const rms = Math.sqrt(inputData.reduce((sum, sample) => sum + sample * sample, 0) / inputData.length);
+      this.inputLevel = rms;
+      if (this.nodes.noiseGateGain && this.audioContext) {
+        const closed = this.params.gateEnabled && rms < Math.pow(10, this.params.gateThreshold / 20);
+        this.nodes.noiseGateGain.gain.setTargetAtTime(closed ? 0.001 : 1, this.audioContext.currentTime, closed ? 0.05 : 0.01);
       }
 
       events.emit('pedalboard:meter', { level: this.outputLevel });

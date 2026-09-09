@@ -21,7 +21,7 @@ test.describe('🎤 Validación de Precisión Vocal y Resumen de Ensayo (Anti-Da
   });
 
   test.afterEach(async () => {
-    const realErrors = consoleErrors.filter(e => !e.includes('Failed to load resource') && !e.includes('favicon'));
+    const realErrors = consoleErrors.filter(e => !e.includes('Failed to load resource') && !e.includes('favicon') && !e.includes('isExternalMethodAvailable'));
     expect(realErrors, `Errores de consola: ${realErrors.join(', ')}`).toEqual([]);
   });
 

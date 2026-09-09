@@ -1,7 +1,9 @@
 /**
  * @file SongMetadataResolver.js
- * @description Tabla maestra de tempos y dificultades reales para canciones icónicas y generador determinista.
+ * @description Metadatos declarados en el repositorio, pendientes de verificacion musical.
  */
+
+import { normalizeSongText } from './SongIdentity.js';
 
 export const KNOWN_SONG_METADATA = {
   'back in black ac/dc': { tempo: 92, difficulty: 'Intermedio' },
@@ -172,42 +174,15 @@ export const POPURRI_PRIORITY = [
   'la camisa negra juanes'
 ];
 
-export function resolveSongMetadata(title, artist, genre, hashFn) {
-  const normKey = `${(title || '').toLowerCase()} ${(artist || '').toLowerCase()}`.trim();
-  const known = KNOWN_SONG_METADATA[normKey];
+const metadataIndex = new Map(Object.entries(KNOWN_SONG_METADATA)
+  .map(([identity, metadata]) => [normalizeSongText(identity), metadata]));
 
-  let difficulty = known?.difficulty;
-  if (!difficulty) {
-    const fn = typeof hashFn === 'function' ? hashFn : defaultHash;
-    const h = Math.abs(fn((title || '') + (artist || '')));
-    const mod = h % 100;
-    if (mod < 30) difficulty = 'Principiante';
-    else if (mod < 76) difficulty = 'Intermedio';
-    else if (mod < 93) difficulty = 'Avanzado';
-    else difficulty = 'Experto';
-  }
-
-  let tempo = known?.tempo;
-  if (!tempo) {
-    const fn = typeof hashFn === 'function' ? hashFn : defaultHash;
-    const h = Math.abs(fn((title || '') + (artist || '')));
-    const g = (genre || '').toLowerCase();
-    if (g.includes('acoustic') || g.includes('folk')) tempo = 68 + (h % 34);
-    else if (g.includes('metal') || g.includes('punk')) tempo = 126 + (h % 46);
-    else if (g.includes('rock')) tempo = 92 + (h % 44);
-    else if (g.includes('latin') || g.includes('reggae')) tempo = 86 + (h % 34);
-    else if (g.includes('r&b') || g.includes('soul') || g.includes('blues')) tempo = 72 + (h % 38);
-    else tempo = 88 + (h % 40);
-  }
-
-  return { difficulty, tempo };
-}
-
-function defaultHash(str) {
-  let hash = 0;
-  for (let i = 0; i < str.length; i++) {
-    hash = ((hash << 5) - hash) + str.charCodeAt(i);
-    hash |= 0;
-  }
-  return hash;
+export function resolveSongMetadata(title, artist) {
+  const known = metadataIndex.get(normalizeSongText(`${title || ''} ${artist || ''}`));
+  return {
+    difficulty: known?.difficulty || null,
+    tempo: known?.tempo || null,
+    tempoSource: known?.tempo ? 'repository_metadata' : 'unknown',
+    authenticity: 'unverified',
+  };
 }

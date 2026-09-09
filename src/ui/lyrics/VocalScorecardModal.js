@@ -3,9 +3,11 @@
  * @description Tarjeta de rendimiento vocal post-interpretación (Simply Sing / Yousician style).
  * Muestra porcentaje de afinación global, medalla, notas extremas y apoyo respiratorio con datos 100% reales.
  */
+import { escapeHTML } from '../../utils/sanitize.js';
+import { trapModalFocus } from '../ModalFocus.js';
 
 export class VocalScorecardModal {
-  static show({ songTitle = '', artist = '', sessionStats = {}, onRetry, onClose }) {
+  static show({ songTitle = '', artist = '', sessionStats = {}, hasMelodyReference = false, onRetry, onClose }) {
     const existing = document.getElementById('vocalScorecardModal');
     if (existing) existing.remove();
 
@@ -29,54 +31,61 @@ export class VocalScorecardModal {
       if (accuracy >= 80 && (stability == null || stability >= 70)) {
         medalEmoji = '🥇';
         medalTitle = '¡Afinación Maestra (Oro)!';
-        medalDesc = 'Excelente colocación laríngea, apoyo diafragmático firme y afinación impecable a lo largo de la canción.';
+        medalDesc = 'Tu voz se mantuvo muy cerca del tono objetivo durante la mayor parte del ensayo.';
         medalColor = '#fbbf24';
       } else if (accuracy >= 60) {
         medalEmoji = '🥈';
         medalTitle = 'Gran Control Vocal (Plata)';
-        medalDesc = 'Buen control de la columna de aire y afinación consistente. Solo faltan pequeños ajustes en los cambios de registro.';
+        medalDesc = 'Buen control del tono. Puedes ganar precisión en los cambios de registro y en las entradas.';
         medalColor = '#cbd5e1';
       } else {
         medalEmoji = '🥉';
         medalTitle = 'Ensayo Vocal en Proceso (Bronce)';
-        medalDesc = 'Se han registrado notas fuera de tono. Mantén el caudal de aire continuo y apóyate en los tonos guía para centrar las notas.';
+        medalDesc = 'Hay margen para centrar más las notas. Baja el tempo y usa la guía como referencia de entrada.';
         medalColor = '#f59e0b';
       }
     }
 
+    const previousFocus = document.activeElement;
+    const safeTitle = escapeHTML(songTitle);
+    const safeArtist = escapeHTML(artist);
     const modalEl = document.createElement('div');
     modalEl.id = 'vocalScorecardModal';
     modalEl.className = 'vocal-scorecard-overlay';
     modalEl.setAttribute('role', 'dialog');
     modalEl.setAttribute('aria-modal', 'true');
+    modalEl.setAttribute('aria-labelledby', 'scorecardTitle');
     modalEl.innerHTML = `
       <div class="scorecard-card">
         <button class="btn-scorecard-close" id="btnScorecardClose" aria-label="Cerrar">✕</button>
         <div class="scorecard-badge">RESUMEN DE ENSAYO VOCAL</div>
         <div class="scorecard-medal-emoji">${medalEmoji}</div>
-        <h2 class="scorecard-medal-title" style="color: ${medalColor}">${medalTitle}</h2>
-        <p class="scorecard-song-name">${songTitle} ${artist ? `· ${artist}` : ''}</p>
-        <p class="scorecard-desc">${medalDesc}</p>
+        <h2 id="scorecardTitle" class="scorecard-medal-title" style="color: ${medalColor}">${escapeHTML(medalTitle)}</h2>
+        <p class="scorecard-song-name">${safeTitle} ${safeArtist ? `· ${safeArtist}` : ''}</p>
+        <p class="scorecard-desc">${escapeHTML(medalDesc)}</p>
+        <p class="scorecard-reference-note">${hasMelodyReference
+          ? 'Referencia vocal aportada; en los intervalos sin nota se mide afinación cromática.'
+          : 'Afinación cromática: compara tu voz con la nota más cercana. No evalúa la melodía original de la canción.'}</p>
 
         <div class="scorecard-stats-grid">
           <div class="scorecard-stat-box">
-            <span class="stat-label">Afinación Global</span>
+            <span class="stat-label">${hasMelodyReference ? 'Afinación medida' : 'Afinación cromática'}</span>
             <span class="stat-number ${accuracy >= 70 ? 'stat-good' : ''}">${accuracy}%</span>
-            <span class="stat-sub">${hasSufficientData ? 'En tono perfecto' : 'Sin muestras de voz'}</span>
+            <span class="stat-sub">${hasSufficientData ? 'Dentro del margen de afinación' : 'Sin muestras de voz'}</span>
           </div>
           <div class="scorecard-stat-box">
-            <span class="stat-label">Estabilidad de Aire</span>
+            <span class="stat-label">Estabilidad de tono</span>
             <span class="stat-number">${stability != null ? `${stability}%` : '—'}</span>
-            <span class="stat-sub">${stability != null ? 'Vibrato controlado' : 'Sin datos'}</span>
+            <span class="stat-sub">${stability != null ? 'Variación medida' : 'Sin datos'}</span>
           </div>
           <div class="scorecard-stat-box">
-            <span class="stat-label">Apoyo Respiratorio</span>
+            <span class="stat-label">Consistencia de señal</span>
             <span class="stat-number">${breath != null ? `${breath}%` : '—'}</span>
-            <span class="stat-sub">${breath != null ? 'Presión diafragmática' : 'Sin datos'}</span>
+            <span class="stat-sub">${breath != null ? 'Nivel de voz medido' : 'Sin datos'}</span>
           </div>
           <div class="scorecard-stat-box">
             <span class="stat-label">Rango Empleado</span>
-            <span class="stat-number stat-range">${lowNote} – ${highNote}</span>
+            <span class="stat-number stat-range">${escapeHTML(lowNote)} – ${escapeHTML(highNote)}</span>
             <span class="stat-sub">${hasSufficientData ? 'Tesitura de la toma' : 'Sin tesitura'}</span>
           </div>
         </div>
@@ -90,18 +99,19 @@ export class VocalScorecardModal {
 
     document.body.appendChild(modalEl);
 
-    modalEl.querySelector('#btnScorecardClose')?.addEventListener('click', () => {
+    let releaseFocus;
+    const close = (retry = false) => {
+      releaseFocus?.(false);
       modalEl.remove();
-      if (onClose) onClose();
-    });
-    modalEl.querySelector('#btnScorecardDone')?.addEventListener('click', () => {
-      modalEl.remove();
-      if (onClose) onClose();
-    });
-    modalEl.querySelector('#btnScorecardRetry')?.addEventListener('click', () => {
-      modalEl.remove();
-      if (onRetry) onRetry();
-    });
+      previousFocus?.focus?.({ preventScroll: true });
+      if (retry) onRetry?.();
+      else onClose?.();
+    };
+    modalEl.querySelector('#btnScorecardClose')?.addEventListener('click', () => close());
+    modalEl.querySelector('#btnScorecardDone')?.addEventListener('click', () => close());
+    modalEl.querySelector('#btnScorecardRetry')?.addEventListener('click', () => close(true));
+    modalEl.addEventListener('click', event => { if (event.target === modalEl) close(); });
+    releaseFocus = trapModalFocus(modalEl, { onClose: () => close() });
   }
 }
 

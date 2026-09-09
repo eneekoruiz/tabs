@@ -41,11 +41,20 @@ export class ChordAudioSynthesizer {
         voicing = [voicing[2], { key: voicing[0].key, oct: voicing[0].oct + 1 }, { key: voicing[1].key, oct: voicing[1].oct + 1 }];
       }
 
-      notes = voicing.map((v, i) => ({
-        freq: (NOTE_FREQ[v.key] || 261.63) * Math.pow(2, v.oct - 4),
-        delay: i * 0.018,
-        isLow: v.oct <= 3,
-      }));
+      // Fundamental grave de mano izquierda: extraer la raíz armónica canónica del acorde
+      const rootMatch = (chordName || '').match(/^([A-G][#b]?)/);
+      const rootKey = rootMatch ? rootMatch[1] : (voicing[0]?.key || 'C');
+      const bassNote = {
+        freq: (NOTE_FREQ[rootKey] || 261.63) * 0.5,
+        delay: 0,
+        isLow: true
+      };
+
+      notes = [bassNote, ...voicing.map((v, i) => ({
+        freq: (NOTE_FREQ[v.key] || 261.63) * Math.pow(2, (v.oct || 4) - 4),
+        delay: (i + 1) * 0.020,
+        isLow: (v.oct || 4) <= 3,
+      }))];
     } else {
       const chordData = isUkulele
         ? ChordSvgRenderer.getUkuleleChord(chordName, voicingIndex)
@@ -97,6 +106,112 @@ export class ChordAudioSynthesizer {
         this._synthStringNote(ctx, note.freq, t, duration, note.isLow, reverbDelay, isUkulele);
       }
     });
+  }
+
+  static arpeggiate(ctx, chordName, instrument = 'guitar', voicingIndex = 0, onNoteCallback = null) {
+    if (!ctx) return [];
+    const isPiano = instrument === 'piano';
+    const isUkulele = instrument === 'ukulele';
+
+    // Nodo de reverb ligero
+    const reverbDelay = ctx.createDelay(0.12);
+    reverbDelay.delayTime.value = 0.065;
+    const reverbFeedback = ctx.createGain();
+    reverbFeedback.gain.value = 0.32;
+    const reverbOut = ctx.createGain();
+    reverbOut.gain.value = 0.22;
+    reverbDelay.connect(reverbFeedback);
+    reverbFeedback.connect(reverbDelay);
+    reverbDelay.connect(reverbOut);
+    reverbOut.connect(ctx.destination);
+
+    let notes = [];
+
+    if (isPiano) {
+      const cleanName = ChordSvgRenderer.simplifyChord(chordName);
+      let voicing = PIANO_VOICINGS[chordName] || PIANO_VOICINGS[cleanName]
+        || [{ key: 'C', oct: 4 }, { key: 'E', oct: 4 }, { key: 'G', oct: 4 }];
+
+      if (voicingIndex === 1 && voicing.length >= 3) {
+        voicing = [voicing[1], voicing[2], { key: voicing[0].key, oct: voicing[0].oct + 1 }];
+      } else if (voicingIndex === 2 && voicing.length >= 3) {
+        voicing = [voicing[2], { key: voicing[0].key, oct: voicing[0].oct + 1 }, { key: voicing[1].key, oct: voicing[1].oct + 1 }];
+      }
+
+      const rootMatch = (chordName || '').match(/^([A-G][#b]?)/);
+      const rootKey = rootMatch ? rootMatch[1] : (voicing[0]?.key || 'C');
+      const bassNote = {
+        key: rootKey,
+        oct: 3,
+        freq: (NOTE_FREQ[rootKey] || 261.63) * 0.5,
+        isLow: true
+      };
+
+      const allNotes = [bassNote, ...voicing.map(v => ({
+        key: v.key,
+        oct: v.oct || 4,
+        freq: (NOTE_FREQ[v.key] || 261.63) * Math.pow(2, (v.oct || 4) - 4),
+        isLow: (v.oct || 4) <= 3
+      }))];
+
+      allNotes.sort((a, b) => a.freq - b.freq);
+
+      const arpeggioStep = 0.20; // 200ms entre notas
+      notes = allNotes.map((n, i) => ({
+        ...n,
+        delay: i * arpeggioStep
+      }));
+    } else {
+      const chordData = isUkulele
+        ? ChordSvgRenderer.getUkuleleChord(chordName, voicingIndex)
+        : ChordSvgRenderer.getGuitarChord(chordName, voicingIndex);
+      const baseFreqs = isUkulele
+        ? [392.00, 261.63, 329.63, 440.00]
+        : [82.41, 110.00, 146.83, 196.00, 246.94, 329.63];
+      const arpeggioStep = isUkulele ? 0.22 : 0.18;
+
+      const activeStrings = [];
+      if (chordData && Array.isArray(chordData.frets)) {
+        chordData.frets.forEach((fret, idx) => {
+          const numFret = Number(fret);
+          if (Number.isFinite(numFret) && numFret >= 0) {
+            activeStrings.push({
+              stringIndex: idx,
+              fret: numFret,
+              freq: baseFreqs[idx] * Math.pow(2, numFret / 12),
+              isLow: idx < 2
+            });
+          }
+        });
+      }
+
+      // Ordenar de cuerda grave a aguda
+      activeStrings.sort((a, b) => a.stringIndex - b.stringIndex);
+
+      notes = activeStrings.map((s, i) => ({
+        ...s,
+        delay: i * arpeggioStep
+      }));
+    }
+
+    notes.forEach((note, index) => {
+      const t = ctx.currentTime + note.delay;
+      const duration = isPiano ? 3.0 : (note.isLow ? 3.4 : 2.8);
+
+      if (isPiano) {
+        this._synthPianoNote(ctx, note.freq, t, duration, reverbDelay);
+      } else {
+        this._synthStringNote(ctx, note.freq, t, duration, note.isLow, reverbDelay, isUkulele);
+      }
+
+      if (typeof onNoteCallback === 'function') {
+        setTimeout(() => {
+          onNoteCallback(note, index, notes.length);
+        }, Math.max(0, Math.round(note.delay * 1000)));
+      }
+    });
+
+    return notes;
   }
 
   static _synthStringNote(ctx, freq, startTime, duration, isLow, reverbNode, isUkulele) {
@@ -175,19 +290,28 @@ export class ChordAudioSynthesizer {
     masterGain.connect(ctx.destination);
     if (reverbNode) masterGain.connect(reverbNode);
 
+    // Calibración psicoacústica de volumen parejo (Fletcher-Munson compensation):
+    // Notas más graves (C3, C4) reciben ganancia compensada para que su volumen percibido
+    // sea exactamente igual al de notas más agudas (D5, F5, etc.) sin sonar bajas ni apagadas.
+    const loudnessFactor = Math.min(1.42, Math.max(0.85, Math.pow(440 / Math.max(80, freq), 0.28)));
+    const peakGain = 0.65 * loudnessFactor;
+    const sustainGain = 0.44 * loudnessFactor;
+    const decayGain = 0.22 * loudnessFactor;
+
     // Envolvente acústica de Gran Cola:
-    // Ataque suave pero definido (macillo de fieltro) + caída inicial rápida + resonancia de cola prolongada
+    // Ataque suave pero definido (macillo de fieltro) + cuerpo acústico sostenido + resonancia de cola
     masterGain.gain.setValueAtTime(0.0001, startTime);
-    masterGain.gain.linearRampToValueAtTime(0.48, startTime + 0.005);
-    masterGain.gain.exponentialRampToValueAtTime(0.24, startTime + 0.09);
-    masterGain.gain.exponentialRampToValueAtTime(0.08, startTime + 0.8);
+    masterGain.gain.linearRampToValueAtTime(peakGain, startTime + 0.005);
+    masterGain.gain.exponentialRampToValueAtTime(sustainGain, startTime + 0.08);
+    masterGain.gain.exponentialRampToValueAtTime(decayGain, startTime + 0.9);
     masterGain.gain.exponentialRampToValueAtTime(0.0001, startTime + duration);
 
     // Filtro de cuerpo de piano de madera (tabla armónica)
+    // Conserva armónicos ricos y presencia incluso en notas graves (C3, C4) para evitar sonido enlatado o sordo
     const bodyFilter = ctx.createBiquadFilter();
     bodyFilter.type = 'lowpass';
-    bodyFilter.frequency.setValueAtTime(Math.min(9000, freq * 7), startTime);
-    bodyFilter.frequency.exponentialRampToValueAtTime(Math.max(400, freq * 1.5), startTime + duration * 0.7);
+    bodyFilter.frequency.setValueAtTime(Math.max(4500, Math.min(12000, freq * 10)), startTime);
+    bodyFilter.frequency.exponentialRampToValueAtTime(Math.max(2000, freq * 2.8), startTime + duration * 0.7);
     bodyFilter.Q.value = 0.9;
     bodyFilter.connect(masterGain);
 
@@ -366,6 +490,27 @@ export class ChordAudioSynthesizer {
     gain.connect(ctx.destination);
     osc.start();
     osc.stop(ctx.currentTime + 0.04);
+  }
+
+  static playPianoNote(ctx, noteName, octave = 4) {
+    if (!ctx) return null;
+    if (ctx.state === 'suspended') ctx.resume();
+    const cleanNote = (noteName || 'C').replace(/[0-9]/g, '');
+    const freq = (NOTE_FREQ[cleanNote] || 261.63) * Math.pow(2, octave - 4);
+
+    const reverbDelay = ctx.createDelay(0.08);
+    reverbDelay.delayTime.value = 0.045;
+    const reverbFeedback = ctx.createGain();
+    reverbFeedback.gain.value = 0.22;
+    const reverbOut = ctx.createGain();
+    reverbOut.gain.value = 0.15;
+    reverbDelay.connect(reverbFeedback);
+    reverbFeedback.connect(reverbDelay);
+    reverbDelay.connect(reverbOut);
+    reverbOut.connect(ctx.destination);
+
+    this._synthPianoNote(ctx, freq, ctx.currentTime, 2.5, reverbDelay);
+    return { freq, note: cleanNote, octave };
   }
 }
 

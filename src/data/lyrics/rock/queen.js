@@ -1,3 +1,5 @@
+import { matchesSong } from "../../catalog/SongIdentity.js";
+
 /**
  * @file queen.js
  * @description Queen - Letras y acordes 100% completos y oficiales en formato ChordPro.
@@ -7,7 +9,7 @@ export function getQueenLyrics(t, a) {
   // ==========================================
   // 11. Queen - Love of My Life
   // ==========================================
-  if (t.includes('love of my life')) {
+  if (matchesSong(t, a, ["love of my life"], ["queen"])) {
     return `[Intro]
 [D] [Bm] [Em] [A7]
 [D] [Bm] [Em] [A7]
@@ -49,7 +51,7 @@ Don't [Em]take it away from me, because [A7]you don't know what it [D]means to m
   // ==========================================
   // 12. Queen - Under Pressure
   // ==========================================
-  if (t.includes('under pressure')) {
+  if (matchesSong(t, a, ["under pressure"], ["queen"])) {
     return `[Intro]
 [D] [A] [G] [A]
 [D] [A] [G] [A]
@@ -103,7 +105,7 @@ And [D]love dares you to change our way of [A]caring about ourselves
   // ==========================================
   // 13. Queen - Radio Ga Ga
   // ==========================================
-  if (t.includes('radio ga ga') || t.includes('radio gaga')) {
+  if (matchesSong(t, a, ["radio ga ga","radio gaga"], ["queen"])) {
     return `[Intro]
 [F] [Bb/F] [F] [Bb/F]
 [F] [Bb/F] [F] [Bb/F]
@@ -168,7 +170,7 @@ How [Bb/F]music changes through the years
   // ==========================================
   // 14. Queen - Another One Bites the Dust
   // ==========================================
-  if (t.includes('another one bites the dust')) {
+  if (matchesSong(t, a, ["another one bites the dust"], ["queen"])) {
     return `[Intro]
 [Em] [Em] [Em] [Em]
 
@@ -221,7 +223,7 @@ Shoot out, hey, another one bites the dust [Em]`;
   // ==========================================
   // 15. Queen - Crazy Little Thing Called Love
   // ==========================================
-  if (t.includes('crazy little thing called love')) {
+  if (matchesSong(t, a, ["crazy little thing called love"], ["queen"])) {
     return `[Intro]
 [D] [Dsus4] [D] [Dsus4] [D] [Dsus4] [D]
 
@@ -265,7 +267,7 @@ I [D]ain't ready, [Bb]crazy little [C]thing called [D]love
   // ==========================================
   // 16. Queen - Don't Stop Me Now
   // ==========================================
-  if (t.includes("don't stop me now") || t.includes('dont stop me now')) {
+  if (matchesSong(t, a, ["dont stop me now"], ["queen"])) {
     return `[Intro]
 [F]Tonight I'm gonna have my[Am]self a real [Dm]good time
 I feel a[Gm]live and the [C7]world I'll turn it inside [F]out, yeah
@@ -323,7 +325,7 @@ I don't wanna stop at [F]all`;
   // ==========================================
   // 17. Queen - We Are The Champions
   // ==========================================
-  if (t.includes('we are the champions')) {
+  if (matchesSong(t, a, ["we are the champions"], ["queen"])) {
     return `[Intro]
 [Cm] [Gm] [Cm] [Gm]
 

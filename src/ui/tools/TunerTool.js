@@ -28,6 +28,8 @@ export class TunerTool {
     this.activeOsc = null;
     this.isListening = false;
     this.unsubPitch = null;
+    this.isPreparing = false;
+    this.requestId = 0;
   }
 
   playPitch(freq, noteName) {
@@ -64,8 +66,14 @@ export class TunerTool {
   }
 
   async startMicrophone(container) {
+    if (this.isListening || this.isPreparing) return;
+    const requestId = ++this.requestId;
+    this.isPreparing = true;
+    const micButton = container?.querySelector('#btnToggleMicTuner');
+    if (micButton) micButton.disabled = true;
     try {
       const started = await pitchDetector.start();
+      if (requestId !== this.requestId) return;
       this.isListening = Boolean(started && pitchDetector.isRunning);
       if (!this.isListening) return;
       toast.show('Micrófono activo: toca una cuerda para afinar', 'success', 1500);
@@ -82,10 +90,17 @@ export class TunerTool {
     } catch (e) {
       console.warn('Error accediendo al micrófono:', e);
       toast.show('No se pudo acceder al micrófono: ' + e.message, 'warning');
+    } finally {
+      if (requestId === this.requestId) {
+        this.isPreparing = false;
+        if (micButton) micButton.disabled = false;
+      }
     }
   }
 
   stopMicrophone(container) {
+    this.requestId++;
+    this.isPreparing = false;
     pitchDetector.stop();
     this.isListening = false;
     if (this.unsubPitch) {
@@ -94,10 +109,18 @@ export class TunerTool {
     }
     const btn = container?.querySelector('#btnToggleMicTuner');
     if (btn) {
+      btn.disabled = false;
       btn.classList.remove('active');
       btn.innerHTML = '<span>Escuchar mi instrumento</span>';
     }
     toast.show('Afinador por micrófono detenido', 'info', 800);
+  }
+
+  stopTone() {
+    if (!this.activeOsc) return;
+    try { this.activeOsc.stop(); } catch (_) {}
+    this.activeOsc.disconnect();
+    this.activeOsc = null;
   }
 
   updateAutoTunerUI(pitch, container) {

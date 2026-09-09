@@ -1,3 +1,5 @@
+import { matchesSong } from "../catalog/SongIdentity.js";
+
 /**
  * @file KnownSongLyricsPopIcons.js
  * @description Base de datos de letras 100% auténticas, completas y oficiales con acordes ChordPro exactos
@@ -15,7 +17,7 @@ export function getPopIconsSongLyrics(title, artist) {
   // TAYLOR SWIFT
   // ==========================================
   // 1. Taylor Swift - Shake It Off
-  if (t.includes('shake it off') && (a.includes('taylor') || a.includes('swift') || !a)) {
+  if (matchesSong(t, a, ["shake it off"], ["taylor swift"])) {
     return `[Intro]
 [G] [Am] [C]
 [G] [Am] [C]
@@ -88,7 +90,7 @@ I, I, I shake it off, I shake it off [G]`;
   }
 
   // 2. Taylor Swift - All Too Well
-  if (t.includes('all too well') && (a.includes('taylor') || a.includes('swift') || !a)) {
+  if (matchesSong(t, a, ["all too well"], ["taylor swift"])) {
     return `[Intro]
 [C] [G/B] [Am] [F]
 [C] [G/B] [Am] [F]
@@ -165,7 +167,7 @@ It was [C]rare, I was [G/B]there, I remember it all too [Am]well [F]
   }
 
   // 3. Taylor Swift - You Belong With Me
-  if (t.includes('belong with me') && (a.includes('taylor') || a.includes('swift') || !a)) {
+  if (matchesSong(t, a, ["belong with me","you belong with me"], ["taylor swift"])) {
     return `[Intro]
 [G] [D] [Am] [C]
 [G] [D] [Am] [C]
@@ -235,7 +237,7 @@ You belong with [G]me [D] [Am] [C] [G]`;
   }
 
   // 4. Taylor Swift - Style
-  if (t.includes('style') && (a.includes('taylor') || a.includes('swift') || !a)) {
+  if (matchesSong(t, a, ["style"], ["taylor swift"])) {
     return `[Intro]
 [Bm] [G] [Bm] [G]
 [Bm] [G] [Bm] [G]
@@ -304,7 +306,7 @@ And when we [Bm]go crashing down, we come back every time
   }
 
   // 5. Taylor Swift - Bad Blood
-  if (t.includes('bad blood') && (a.includes('taylor') || a.includes('swift') || !a)) {
+  if (matchesSong(t, a, ["bad blood"], ["taylor swift"])) {
     return `[Intro]
 [C] [G] [Am] [F]
 
@@ -395,7 +397,7 @@ And, baby, now we got bad [C]blood, hey!`;
   }
 
   // 6. Taylor Swift - Cruel Summer
-  if (t.includes('cruel summer') && (a.includes('taylor') || a.includes('swift') || !a)) {
+  if (matchesSong(t, a, ["cruel summer"], ["taylor swift"])) {
     return `[Intro]
 [A] [C#m] [F#m] [D]
 [A] [C#m] [F#m] [D]
@@ -473,7 +475,7 @@ I [D]love you, ain't that the worst thing you ever heard?" [A]`;
   }
 
   // 7. Taylor Swift - Enchanted
-  if (t.includes('enchanted') && (a.includes('taylor') || a.includes('swift') || !a)) {
+  if (matchesSong(t, a, ["enchanted"], ["taylor swift"])) {
     return `[Intro]
 [G] [Bm] [C] [G]
 [G] [Bm] [C] [G]
@@ -540,7 +542,7 @@ Please don't have somebody waiting on [Bm]you [C] [G]`;
   }
 
   // 8. Taylor Swift - Lover
-  if (t.includes('lover') && (a.includes('taylor') || a.includes('swift') || !a)) {
+  if (matchesSong(t, a, ["lover"], ["taylor swift"])) {
     return `[Intro]
 [G] [D/F#] [C] [D]
 [G] [D/F#] [C] [D]
@@ -596,7 +598,7 @@ Darling, you're my, [G]my, my, [D/F#]my [C]lover
   // BRUNO MARS
   // ==========================================
   // 9. Bruno Mars - Uptown Funk
-  if (t.includes('uptown funk') && (a.includes('bruno') || a.includes('mars') || a.includes('ronson') || !a)) {
+  if (matchesSong(t, a, ["uptown funk"], ["bruno mars"])) {
     return `[Intro]
 [Dm7] [G7]
 [Dm7] [G7]
@@ -697,7 +699,7 @@ Uptown [G7]Funk you up, Uptown Funk you up [Dm7]`;
   }
 
   // 10. Bruno Mars - That's What I Like
-  if (t.includes("that's what i like") && (a.includes('bruno') || a.includes('mars') || !a)) {
+  if (matchesSong(t, a, ["thats what i like"], ["bruno mars"])) {
     return `[Intro]
 [Bbm] [Ebm] [Ab] [Db]
 [Bbm] [Ebm] [Ab] [Db]
@@ -779,7 +781,7 @@ Don't be [Ab]shy, it's alright, [Db]alright
   }
 
   // 11. Bruno Mars - 24K Magic
-  if ((t.includes('24k magic') || t.includes('twenty four k magic')) && (a.includes('bruno') || a.includes('mars') || !a)) {
+  if (matchesSong(t, a, ["24k magic","twenty four k magic"], ["bruno mars"])) {
     return `[Intro]
 [Fm7]Tonight, I just want to take you higher
 [Bbm7]Throw your hands up in the sky
@@ -868,7 +870,7 @@ I'm a dangerous [Dbmaj7]man with some money in my [C7]pocket (keep up)
   }
 
   // 12. Bruno Mars - Treasure
-  if (t.includes('treasure') && (a.includes('bruno') || a.includes('mars') || !a)) {
+  if (matchesSong(t, a, ["treasure"], ["bruno mars"])) {
     return `[Intro]
 [Abmaj7] [Gm7] [Fm7] [Gm7] [Cm]
 [Abmaj7] [Gm7] [Fm7] [Gm7] [Cm]
@@ -928,7 +930,7 @@ I'm a dangerous [Dbmaj7]man with some money in my [C7]pocket (keep up)
   }
 
   // 13. Bruno Mars - Marry You
-  if (t.includes('marry you') && (a.includes('bruno') || a.includes('mars') || !a)) {
+  if (matchesSong(t, a, ["marry you"], ["bruno mars"])) {
     return `[Intro]
 [F] [Gm] [Bb] [F]
 [F] [Gm] [Bb] [F]
@@ -983,7 +985,7 @@ Hey [Bb]baby, I think I wanna marry [F]you
   }
 
   // 14. Bruno Mars - Talking to the Moon
-  if (t.includes('talking to the moon') && (a.includes('bruno') || a.includes('mars') || !a)) {
+  if (matchesSong(t, a, ["talking to the moon"], ["bruno mars"])) {
     return `[Intro]
 [E] [G#7] [C#m] [B] [A]
 [E] [G#7] [C#m] [B] [A]
@@ -1029,7 +1031,7 @@ Talking to the [E]moon [G#7] [C#m] [B] [A] [E]`;
   }
 
   // 15. Bruno Mars - The Lazy Song
-  if (t.includes('lazy song') && (a.includes('bruno') || a.includes('mars') || !a)) {
+  if (matchesSong(t, a, ["lazy song","the lazy song"], ["bruno mars"])) {
     return `[Intro]
 [B]Today I don't feel like [F#]doing anything
 [E]I just wanna lay in my bed
@@ -1094,7 +1096,7 @@ Nothing at [B]all, ooh, [F#]hoo, ooh, [E]hoo, hoo
   }
 
   // 16. Bruno Mars - Count On Me
-  if (t.includes('count on me') && (a.includes('bruno') || a.includes('mars') || !a)) {
+  if (matchesSong(t, a, ["count on me"], ["bruno mars"])) {
     return `[Intro]
 [C] [C] [C] [C]
 
@@ -1152,7 +1154,7 @@ You can count on [C]me 'cause I can count on [Em]you
   // ARIANA GRANDE
   // ==========================================
   // 17. Ariana Grande - 7 rings
-  if ((t.includes('7 rings') || t.includes('seven rings')) && (a.includes('ariana') || a.includes('grande') || !a)) {
+  if (matchesSong(t, a, ["7 rings","seven rings"], ["ariana grande"])) {
     return `[Intro]
 [Em] [C] [Am] [B7]
 [Em] [C] [Am] [B7]
@@ -1227,7 +1229,7 @@ I [Em]want it, I got it, yeah
   }
 
   // 18. Ariana Grande - thank u, next
-  if ((t.includes('thank u, next') || t.includes('thank you, next') || t.includes('thank u next')) && (a.includes('ariana') || a.includes('grande') || !a)) {
+  if (matchesSong(t, a, ["thank u next","thank you next"], ["ariana grande"])) {
     return `[Intro]
 [Bb] [F] [Gm] [Eb]
 [Bb] [F] [Gm] [Eb]
@@ -1306,7 +1308,7 @@ I'm so fuckin' [Gm]grateful for my [Eb]ex
   }
 
   // 19. Ariana Grande - positions
-  if (t.includes('positions') && (a.includes('ariana') || a.includes('grande') || !a)) {
+  if (matchesSong(t, a, ["positions"], ["ariana grande"])) {
     return `[Intro]
 [Dm] [C] [Bb] [A7]
 [Dm] [C] [Bb] [A7]
@@ -1365,7 +1367,7 @@ Ah, [A7]yeah
   }
 
   // 20. Ariana Grande - no tears left to cry
-  if (t.includes('no tears left to cry') && (a.includes('ariana') || a.includes('grande') || !a)) {
+  if (matchesSong(t, a, ["no tears left to cry"], ["ariana grande"])) {
     return `[Intro]
 [Am]Right now, I'm in a state of [F]mind
 I wanna be in, like, [C]all the time
@@ -1434,7 +1436,7 @@ Ain't got no [Am]tears left to cry [F] [C] [G] [Am]`;
   }
 
   // 21. Ariana Grande - Side to Side
-  if (t.includes('side to side') && (a.includes('ariana') || a.includes('grande') || !a)) {
+  if (matchesSong(t, a, ["side to side"], ["ariana grande"])) {
     return `[Intro]
 [Em] [Am] [D] [G]
 [C] [B7] [Em]
@@ -1507,7 +1509,7 @@ Boy, got me walkin' [D]side to [G]side
   }
 
   // 22. Ariana Grande - Dangerous Woman
-  if (t.includes('dangerous woman') && (a.includes('ariana') || a.includes('grande') || !a)) {
+  if (matchesSong(t, a, ["dangerous woman"], ["ariana grande"])) {
     return `[Intro]
 [Em] [G] [C] [B7]
 [Em] [G] [C] [B7]
@@ -1576,7 +1578,7 @@ Makes me wanna do [B7]things that I shouldn't
   }
 
   // 23. Ariana Grande - Into You
-  if (t.includes('into you') && (a.includes('ariana') || a.includes('grande') || !a)) {
+  if (matchesSong(t, a, ["into you"], ["ariana grande"])) {
     return `[Intro]
 [Dm] [F] [C] [Bb]
 [Dm] [F] [C] [Bb]
@@ -1647,7 +1649,7 @@ So [Dm]come light me up
   }
 
   // 24. Ariana Grande - God is a woman
-  if (t.includes('god is a woman') && (a.includes('ariana') || a.includes('grande') || !a)) {
+  if (matchesSong(t, a, ["god is a woman"], ["ariana grande"])) {
     return `[Intro]
 [Ebm] [B] [Abm] [Bb]
 [Ebm] [B] [Abm] [Bb]
@@ -1712,7 +1714,7 @@ You'll believe [Ebm]God is a woman
   }
 
   // 25. Ariana Grande - One Last Time
-  if (t.includes('one last time') && (a.includes('ariana') || a.includes('grande') || !a)) {
+  if (matchesSong(t, a, ["one last time"], ["ariana grande"])) {
     return `[Intro]
 [G] [Em] [C] [D]
 [G] [Em] [C] [D]
@@ -1786,7 +1788,7 @@ I need to be the [D]one who takes you [G]home
   }
 
   // 26. Ariana Grande - Break Free
-  if (t.includes('break free') && (a.includes('ariana') || a.includes('grande') || !a)) {
+  if (matchesSong(t, a, ["break free"], ["ariana grande"])) {
     return `[Intro]
 [Gm] [Eb] [Bb] [F]
 [Gm] [Eb] [Bb] [F]
@@ -1855,7 +1857,7 @@ This is the [Gm]part when I break [Eb]free
   // THE WEEKND
   // ==========================================
   // 27. The Weeknd - Blinding Lights
-  if (t.includes('blinding lights') && (a.includes('weeknd') || !a)) {
+  if (matchesSong(t, a, ["blinding lights"], ["the weeknd"])) {
     return `[Intro]
 [Fm] [Cm] [Eb] [Bb]
 [Fm] [Cm] [Eb] [Bb]
@@ -1915,7 +1917,7 @@ No, [Eb]I can't sleep until I [Bb]feel your touch
   }
 
   // 28. The Weeknd - Starboy
-  if (t.includes('starboy') && (a.includes('weeknd') || !a)) {
+  if (matchesSong(t, a, ["starboy"], ["the weeknd"])) {
     return `[Intro]
 [Gm] [F] [Eb] [F]
 [Gm] [F] [Eb] [F]
@@ -1997,7 +1999,7 @@ No, [Eb]I can't sleep until I [Bb]feel your touch
   }
 
   // 29. The Weeknd - Save Your Tears
-  if (t.includes('save your tears') && (a.includes('weeknd') || !a)) {
+  if (matchesSong(t, a, ["save your tears"], ["the weeknd"])) {
     return `[Intro]
 [C] [Em] [Am] [G]
 [C] [Em] [Am] [G]
@@ -2060,7 +2062,7 @@ Said, I make you [Am]cry when I run away [G]
   }
 
   // 30. The Weeknd - The Hills
-  if (t.includes('the hills') && (a.includes('weeknd') || !a)) {
+  if (matchesSong(t, a, ["the hills"], ["the weeknd"])) {
     return `[Intro]
 [Cm] [Ab] [Bb]
 [Cm] [Ab] [Bb]
@@ -2129,7 +2131,7 @@ When I'm fucked up, that's the real me, yeah
   }
 
   // 31. The Weeknd - Can't Feel My Face
-  if (t.includes("can't feel my face") && (a.includes('weeknd') || !a)) {
+  if (matchesSong(t, a, ["cant feel my face"], ["the weeknd"])) {
     return `[Intro]
 [Am] [G] [F] [C]
 [Am] [G] [F] [C]
@@ -2190,7 +2192,7 @@ When I'm fucked up, that's the real me, yeah
   }
 
   // 32. The Weeknd - Die For You
-  if (t.includes('die for you') && (a.includes('weeknd') || !a)) {
+  if (matchesSong(t, a, ["die for you"], ["the weeknd"])) {
     return `[Intro]
 [C#m] [B] [A] [G#m]
 [C#m] [B] [A] [G#m]
@@ -2278,7 +2280,7 @@ Baby, I would [A]die for you [G#m] [C#m]`;
   }
 
   // 33. The Weeknd - I Feel It Coming
-  if (t.includes('feel it coming') && (a.includes('weeknd') || !a)) {
+  if (matchesSong(t, a, ["feel it coming","i feel it coming"], ["the weeknd"])) {
     return `[Intro]
 [Em] [D] [C] [Am7] [Bm7]
 [Em] [D] [C] [Am7] [Bm7]
@@ -2347,7 +2349,7 @@ Baby, I would [A]die for you [G#m] [C#m]`;
   }
 
   // 34. The Weeknd - Call Out My Name
-  if (t.includes('call out my name') && (a.includes('weeknd') || !a)) {
+  if (matchesSong(t, a, ["call out my name"], ["the weeknd"])) {
     return `[Intro]
 [Dm] [C] [Bb] [Am]
 [Dm] [C] [Bb] [Am]
@@ -2417,7 +2419,7 @@ And I'll be on my [Bb]way [Am] [Dm]`;
   // DUA LIPA
   // ==========================================
   // 35. Dua Lipa - New Rules
-  if (t.includes('new rules') && (a.includes('dua') || a.includes('lipa') || !a)) {
+  if (matchesSong(t, a, ["new rules"], ["dua lipa"])) {
     return `[Intro]
 [Am] [G] [F] [Dm]
 [Am] [G] [F] [Dm]
@@ -2488,7 +2490,7 @@ You know you're [G]gonna wake up in his bed in the morning
   }
 
   // 36. Dua Lipa - Physical
-  if (t.includes('physical') && (a.includes('dua') || a.includes('lipa') || !a)) {
+  if (matchesSong(t, a, ["physical"], ["dua lipa"])) {
     return `[Intro]
 [Cm] [Ab] [Bb] [Gm]
 [Cm] [Ab] [Bb] [Gm]
@@ -2570,7 +2572,7 @@ Let's get [Gm]physical
   }
 
   // 37. Dua Lipa - Break My Heart
-  if (t.includes('break my heart') && (a.includes('dua') || a.includes('lipa') || !a)) {
+  if (matchesSong(t, a, ["break my heart"], ["dua lipa"])) {
     return `[Intro]
 [Em] [G] [C] [Am]
 [Em] [G] [C] [Am]
@@ -2641,7 +2643,7 @@ Am I [Em]falling in love with the one that could [G]break my heart?
   }
 
   // 38. Dua Lipa - One Kiss
-  if (t.includes('one kiss') && (a.includes('dua') || a.includes('lipa') || a.includes('calvin') || !a)) {
+  if (matchesSong(t, a, ["one kiss"], ["dua lipa"])) {
     return `[Intro]
 [Am] [Dm] [F] [G]
 [Am] [Dm] [F] [G]
@@ -2711,7 +2713,7 @@ I look like all you [Am]need [Dm] [F] [G]
   }
 
   // 39. Dua Lipa - Dance The Night
-  if (t.includes('dance the night') && (a.includes('dua') || a.includes('lipa') || !a)) {
+  if (matchesSong(t, a, ["dance the night"], ["dua lipa"])) {
     return `[Intro]
 [Bm] [A] [G] [F#]
 [Bm] [A] [G] [F#]
@@ -2780,7 +2782,7 @@ In my [G]eyes, no, you won't see 'em [F#]
   }
 
   // 40. Dua Lipa - IDGAF
-  if (t.includes('idgaf') && (a.includes('dua') || a.includes('lipa') || !a)) {
+  if (matchesSong(t, a, ["idgaf"], ["dua lipa"])) {
     return `[Intro]
 [E] [B] [C#m] [A]
 [E] [B] [C#m] [A]
@@ -2859,7 +2861,7 @@ I've been movin' on since we said goodbye
   // BILLIE EILISH
   // ==========================================
   // 41. Billie Eilish - Bad Guy
-  if (t.includes('bad guy') && (a.includes('billie') || a.includes('eilish') || !a)) {
+  if (matchesSong(t, a, ["bad guy"], ["billie eilish"])) {
     return `[Intro]
 [Gm] [Cm] [D7]
 [Gm] [Cm] [D7]
@@ -2922,7 +2924,7 @@ I'm a bad guy
   }
 
   // 42. Billie Eilish - Lovely
-  if (t.includes('lovely') && (a.includes('billie') || a.includes('eilish') || a.includes('khalid') || !a)) {
+  if (matchesSong(t, a, ["lovely"], ["billie eilish"])) {
     return `[Intro]
 [Em] [G] [C] [Bm]
 [Em] [G] [C] [Bm]
@@ -2972,7 +2974,7 @@ Hello, [Bm]welcome home [Em] [G] [C] [Bm] [Em]`;
   }
 
   // 43. Billie Eilish - What Was I Made For
-  if (t.includes('what was i made for') && (a.includes('billie') || a.includes('eilish') || !a)) {
+  if (matchesSong(t, a, ["what was i made for"], ["billie eilish"])) {
     return `[Intro]
 [C] [Em] [F] [G]
 [C] [Em] [F] [G]
@@ -3019,7 +3021,7 @@ Somethin' I'm [C]made for
   }
 
   // 44. Billie Eilish - Everything I Wanted
-  if ((t.includes('everything i wanted') || t.includes('everything i want')) && (a.includes('billie') || a.includes('eilish') || !a)) {
+  if (matchesSong(t, a, ["everything i wanted","everything i want"], ["billie eilish"])) {
     return `[Intro]
 [F#m] [C#m] [D] [A]
 [F#m] [C#m] [D] [A]
@@ -3081,7 +3083,7 @@ As [F#m]long as I'm [C#m]here, no one can [D]hurt you [A] [F#m]`;
   }
 
   // 45. Billie Eilish - Ocean Eyes
-  if (t.includes('ocean eyes') && (a.includes('billie') || a.includes('eilish') || !a)) {
+  if (matchesSong(t, a, ["ocean eyes"], ["billie eilish"])) {
     return `[Intro]
 [C] [Dm] [Am] [G]
 [C] [Dm] [Am] [G]
@@ -3136,7 +3138,7 @@ Those [Am]ocean eyes
   }
 
   // 46. Billie Eilish - Happier Than Ever
-  if (t.includes('happier than ever') && (a.includes('billie') || a.includes('eilish') || !a)) {
+  if (matchesSong(t, a, ["happier than ever"], ["billie eilish"])) {
     return `[Intro]
 [C] [E7] [Am] [F] [Fm]
 
@@ -3200,7 +3202,7 @@ Leave me a[C]lone!`;
   }
 
   // 47. Billie Eilish - When the Party's Over
-  if ((t.includes("when the party's over") || t.includes("when the partys over")) && (a.includes('billie') || a.includes('eilish') || !a)) {
+  if (matchesSong(t, a, ["when the partys over"], ["billie eilish"])) {
     return `[Intro]
 [C#m] [A] [E] [B]
 [C#m] [A] [E] [B]
@@ -3247,7 +3249,7 @@ I could [C#m]lie, say I [A]like it like that
   // KATY PERRY
   // ==========================================
   // 48. Katy Perry - Teenage Dream
-  if (t.includes('teenage dream') && (a.includes('katy') || a.includes('perry') || !a)) {
+  if (matchesSong(t, a, ["teenage dream"], ["katy perry"])) {
     return `[Intro]
 [Bb] [Gm] [Eb] [F]
 [Bb] [Gm] [Eb] [F]
@@ -3320,7 +3322,7 @@ This is [Eb]real, so take a chance and
   }
 
   // 49. Katy Perry - California Gurls
-  if ((t.includes('california gurls') || t.includes('california girls')) && (a.includes('katy') || a.includes('perry') || !a)) {
+  if (matchesSong(t, a, ["california gurls","california girls"], ["katy perry"])) {
     return `[Intro]
 [C] [Dm] [F] [G]
 [C] [Dm] [F] [G]
@@ -3393,7 +3395,7 @@ This is [Eb]real, so take a chance and
   }
 
   // 50. Katy Perry - Hot N Cold
-  if ((t.includes('hot n cold') || t.includes('hot and cold')) && (a.includes('katy') || a.includes('perry') || !a)) {
+  if (matchesSong(t, a, ["hot n cold","hot and cold"], ["katy perry"])) {
     return `[Intro]
 [G] [D] [Am] [C]
 [G] [D] [Am] [C]
@@ -3454,7 +3456,7 @@ You're [C]up then you're down [G]`;
   }
 
   // 51. Katy Perry - I Kissed a Girl
-  if (t.includes('kissed a girl') && (a.includes('katy') || a.includes('perry') || !a)) {
+  if (matchesSong(t, a, ["kissed a girl","i kissed a girl"], ["katy perry"])) {
     return `[Intro]
 [Am] [C] [Dm] [F] [E]
 [Am] [C] [Dm] [F] [E]
@@ -3515,7 +3517,7 @@ I [Dm]liked it [F] [E]
   }
 
   // 52. Katy Perry - The One That Got Away
-  if (t.includes('one that got away') && (a.includes('katy') || a.includes('perry') || !a)) {
+  if (matchesSong(t, a, ["one that got away","the one that got away"], ["katy perry"])) {
     return `[Intro]
 [E] [G#m] [C#m] [A]
 [E] [G#m] [C#m] [A]
@@ -3571,7 +3573,7 @@ The [A]one that got a[E]way`;
   }
 
   // 53. Katy Perry - Dark Horse
-  if (t.includes('dark horse') && (a.includes('katy') || a.includes('perry') || !a)) {
+  if (matchesSong(t, a, ["dark horse"], ["katy perry"])) {
     return `[Intro]
 [Am] [Em] [F] [G]
 [Am] [Em] [F] [G]
@@ -3651,7 +3653,7 @@ The [A]one that got a[E]way`;
   // LADY GAGA
   // ==========================================
   // 54. Lady Gaga - Bad Romance
-  if (t.includes('bad romance') && (a.includes('gaga') || !a)) {
+  if (matchesSong(t, a, ["bad romance"], ["lady gaga"])) {
     return `[Intro]
 [Am]Oh-oh-oh-oh-oh, [C]oh-oh-oh-oh, [F]oh-oh-oh
 Caught in a bad [G]romance
@@ -3737,7 +3739,7 @@ You and [Am]me could write a bad romance
   }
 
   // 55. Lady Gaga - Poker Face
-  if (t.includes('poker face') && (a.includes('gaga') || !a)) {
+  if (matchesSong(t, a, ["poker face"], ["lady gaga"])) {
     return `[Intro]
 [Am]Mum-mum-mum-mah, [F]mum-mum-mum-mah
 [C]Mum-mum-mum-mah, [G]mum-mum-mum-mah
@@ -3814,7 +3816,7 @@ No, he [F]can't read my poker [C]face
   }
 
   // 56. Lady Gaga - Born This Way
-  if (t.includes('born this way') && (a.includes('gaga') || !a)) {
+  if (matchesSong(t, a, ["born this way"], ["lady gaga"])) {
     return `[Intro]
 [F#m]It doesn't matter if you love him, or capital H-I-M
 Just put your paws up
@@ -3891,7 +3893,7 @@ I'm on the [A]right track, baby, I was [E]born this way
   }
 
   // 57. Lady Gaga - Paparazzi
-  if (t.includes('paparazzi') && (a.includes('gaga') || !a)) {
+  if (matchesSong(t, a, ["paparazzi"], ["lady gaga"])) {
     return `[Intro]
 [Cm] [Ab] [Eb] [Bb]
 [Cm] [Ab] [Eb] [Bb]
@@ -3962,7 +3964,7 @@ Papa-paparazzi
   }
 
   // 58. Lady Gaga - Just Dance
-  if (t.includes('just dance') && (a.includes('gaga') || !a)) {
+  if (matchesSong(t, a, ["just dance"], ["lady gaga"])) {
     return `[Intro]
 [C#m] [B] [A] [B]
 RedOne, Konvict, Gaga, oh-yeah
@@ -4018,7 +4020,7 @@ RedOne, Konvict, Gaga, oh-yeah
   }
 
   // 59. Lady Gaga - Shallow
-  if (t.includes('shallow') && (a.includes('gaga') || a.includes('cooper') || !a)) {
+  if (matchesSong(t, a, ["shallow"], ["lady gaga"])) {
     return `[Intro]
 [Em] [D/F#] [G] [C] [G] [D]
 [Em] [D/F#] [G] [C] [G] [D]
@@ -4074,7 +4076,7 @@ RedOne, Konvict, Gaga, oh-yeah
   }
 
   // 60. Lady Gaga - Always Remember Us This Way
-  if ((t.includes('always remember us this way') || t.includes('remember us this way')) && (a.includes('gaga') || !a)) {
+  if (matchesSong(t, a, ["always remember us this way","remember us this way"], ["lady gaga"])) {
     return `[Intro]
 [Am] [F] [C] [G]
 [Am] [F] [C] [G]
@@ -4137,7 +4139,7 @@ Oh, re[F]member us this [C]way`;
   // MILEY CYRUS
   // ==========================================
   // 61. Miley Cyrus - Flowers
-  if (t.includes('flowers') && (a.includes('miley') || a.includes('cyrus') || !a)) {
+  if (matchesSong(t, a, ["flowers"], ["miley cyrus"])) {
     return `[Intro]
 [Am] [Dm] [G] [C]
 [Am] [Dm] [G] [C]
@@ -4208,7 +4210,7 @@ Can love me better, [Dm]I can love me better, baby
   }
 
   // 62. Miley Cyrus - Party in the U.S.A.
-  if ((t.includes('party in the usa') || t.includes('party in the u.s.a.')) && (a.includes('miley') || a.includes('cyrus') || !a)) {
+  if (matchesSong(t, a, ["party in the usa","party in the u s a"], ["miley cyrus"])) {
     return `[Intro]
 [G] [Bm] [Em] [C]
 [G] [Bm] [Em] [C]
@@ -4290,7 +4292,7 @@ They [Bm]know I'm gonna be okay
   }
 
   // 63. Miley Cyrus - Midnight Sky
-  if (t.includes('midnight sky') && (a.includes('miley') || a.includes('cyrus') || !a)) {
+  if (matchesSong(t, a, ["midnight sky"], ["miley cyrus"])) {
     return `[Intro]
 [Em] [C] [D] [G]
 [Em] [C] [D] [G]
@@ -4350,7 +4352,7 @@ In the midnight [D]sky [G] [Em]`;
   }
 
   // 64. Miley Cyrus - Angels Like You
-  if (t.includes('angels like you') && (a.includes('miley') || a.includes('cyrus') || !a)) {
+  if (matchesSong(t, a, ["angels like you"], ["miley cyrus"])) {
     return `[Intro]
 [G] [Em] [C] [D]
 [G] [Em] [C] [D]
@@ -4415,7 +4417,7 @@ Angels like [G]you can't fly down here with [Em]me
   }
 
   // 65. Miley Cyrus - We Can't Stop
-  if ((t.includes("we can't stop") || t.includes("we cant stop")) && (a.includes('miley') || a.includes('cyrus') || !a)) {
+  if (matchesSong(t, a, ["we cant stop"], ["miley cyrus"])) {
     return `[Intro]
 [E] [G#m] [A] [C#m] [B]
 [E] [G#m] [A] [C#m] [B]
@@ -4494,7 +4496,7 @@ Yeah, yeah`;
   }
 
   // 66. Miley Cyrus - Malibu
-  if (t.includes('malibu') && (a.includes('miley') || a.includes('cyrus') || !a)) {
+  if (matchesSong(t, a, ["malibu"], ["miley cyrus"])) {
     return `[Intro]
 [G] [Em] [A] [D]
 [G] [Em] [A] [D]
@@ -4546,7 +4548,7 @@ Next to [G]you in Malibu
   }
 
   // 67. Miley Cyrus - Wrecking Ball
-  if (t.includes('wrecking ball') && (a.includes('miley') || a.includes('cyrus') || !a)) {
+  if (matchesSong(t, a, ["wrecking ball"], ["miley cyrus"])) {
     return `[Intro]
 [Dm] [F] [C] [Bb]
 [Dm] [F] [C] [Bb]
@@ -4616,7 +4618,7 @@ Yeah, you, you [C]wreck me [Bb] [Dm]`;
   // JUSTIN BIEBER
   // ==========================================
   // 68. Justin Bieber - Peaches
-  if (t.includes('peaches') && (a.includes('bieber') || a.includes('caesar') || !a)) {
+  if (matchesSong(t, a, ["peaches"], ["justin bieber"])) {
     return `[Intro]
 [Fmaj7] [Em7] [Dm7] [Cmaj7]
 [Fmaj7] [Em7] [Dm7] [Cmaj7]
@@ -4674,7 +4676,7 @@ I get my [Em7]weed from California
   }
 
   // 69. Justin Bieber - Boyfriend
-  if (t.includes('boyfriend') && (a.includes('bieber') || !a)) {
+  if (matchesSong(t, a, ["boyfriend"], ["justin bieber"])) {
     return `[Intro]
 [Bm] [A] [G] [F#]
 [Bm] [A] [G] [F#]
@@ -4740,7 +4742,7 @@ Never let you [G]go
   }
 
   // 70. Justin Bieber - Intentions
-  if (t.includes('intentions') && (a.includes('bieber') || a.includes('quavo') || !a)) {
+  if (matchesSong(t, a, ["intentions"], ["justin bieber"])) {
     return `[Intro]
 [A] [C#m] [D] [E]
 [A] [C#m] [D] [E]
@@ -4800,7 +4802,7 @@ Never let you [G]go
   }
 
   // 71. Justin Bieber - Ghost
-  if (t.includes('ghost') && (a.includes('bieber') || !a)) {
+  if (matchesSong(t, a, ["ghost"], ["justin bieber"])) {
     return `[Intro]
 [D] [A] [Bm] [G]
 [D] [A] [Bm] [G]
@@ -4868,7 +4870,7 @@ I miss you more than [D]life [A]
   // SELENA GOMEZ
   // ==========================================
   // 72. Selena Gomez - Lose You to Love Me
-  if (t.includes('lose you to love me') && (a.includes('selena') || a.includes('gomez') || !a)) {
+  if (matchesSong(t, a, ["lose you to love me"], ["selena gomez"])) {
     return `[Intro]
 [C] [G] [Am] [F]
 [C] [G] [Am] [F]
@@ -4929,7 +4931,7 @@ I needed to [C]lose you to [G]love me
   }
 
   // 73. Selena Gomez - Hands to Myself
-  if (t.includes('hands to myself') && (a.includes('selena') || a.includes('gomez') || !a)) {
+  if (matchesSong(t, a, ["hands to myself"], ["selena gomez"])) {
     return `[Intro]
 [D] [Bm] [G] [A]
 [D] [Bm] [G] [A]
@@ -5003,7 +5005,7 @@ And I'm trying, trying, I'm [A]trying, but I
   }
 
   // 74. Selena Gomez - Back to You
-  if (t.includes('back to you') && (a.includes('selena') || a.includes('gomez') || !a)) {
+  if (matchesSong(t, a, ["back to you"], ["selena gomez"])) {
     return `[Intro]
 [D] [Bm] [G] [A]
 [D] [Bm] [G] [A]
@@ -5070,7 +5072,7 @@ I know I'd go [G]back to you [A] [D]`;
   }
 
   // 75. Selena Gomez - Same Old Love
-  if (t.includes('same old love') && (a.includes('selena') || a.includes('gomez') || !a)) {
+  if (matchesSong(t, a, ["same old love"], ["selena gomez"])) {
     return `[Intro]
 [Bm] [G] [A] [F#m]
 [Bm] [G] [A] [F#m]
@@ -5143,7 +5145,7 @@ That [G]shit, it tears me up
   // SAM SMITH
   // ==========================================
   // 76. Sam Smith - Too Good At Goodbyes
-  if (t.includes('too good at goodbyes') && (a.includes('sam') || a.includes('smith') || !a)) {
+  if (matchesSong(t, a, ["too good at goodbyes"], ["sam smith"])) {
     return `[Intro]
 [Dm] [F] [C] [Gm]
 [Dm] [F] [C] [Gm]
@@ -5213,7 +5215,7 @@ I'm way too [F]good at goodbyes
   }
 
   // 77. Sam Smith - I'm Not The Only One
-  if ((t.includes("not the only one") || t.includes("i'm not the only one")) && (a.includes('sam') || a.includes('smith') || !a)) {
+  if (matchesSong(t, a, ["not the only one","im not the only one"], ["sam smith"])) {
     return `[Intro]
 [F] [A7] [Dm] [Bb]
 [F] [C] [F]
@@ -5266,7 +5268,7 @@ I know I'm [Bb]not the only [F]one`;
   }
 
   // 78. Sam Smith - Unholy
-  if (t.includes('unholy') && (a.includes('sam') || a.includes('smith') || a.includes('petras') || !a)) {
+  if (matchesSong(t, a, ["unholy"], ["sam smith"])) {
     return `[Intro]
 [Dm] [Bb] [Gm] [A7]
 [Dm] [Bb] [Gm] [A7]
@@ -5326,7 +5328,7 @@ At the body shop, [A7]doin' somethin' unholy
   }
 
   // 79. Sam Smith - Lay Me Down
-  if (t.includes('lay me down') && (a.includes('sam') || a.includes('smith') || !a)) {
+  if (matchesSong(t, a, ["lay me down"], ["sam smith"])) {
     return `[Intro]
 [E] [C#m] [A] [B]
 [E] [C#m] [A] [B]
@@ -5380,7 +5382,7 @@ Can I [E]lay by your side, next to [C#m]you?
   // ED SHEERAN
   // ==========================================
   // 80. Ed Sheeran - Castle on the Hill
-  if (t.includes('castle on the hill') && (a.includes('ed') || a.includes('sheeran') || !a)) {
+  if (matchesSong(t, a, ["castle on the hill"], ["ed sheeran"])) {
     return `[Intro]
 [D] [D] [D] [D]
 
@@ -5442,7 +5444,7 @@ Over the [G]castle on the [D]hill`;
   }
 
   // 81. Ed Sheeran - The A Team
-  if ((t.includes('the a team') || t.includes('a team')) && (a.includes('ed') || a.includes('sheeran') || !a)) {
+  if (matchesSong(t, a, ["the a team","a team"], ["ed sheeran"])) {
     return `[Intro]
 [A] [A] [A] [A]
 
@@ -5525,7 +5527,7 @@ To [D]fly, [E]fly
   }
 
   // 82. Ed Sheeran - Shivers
-  if (t.includes('shivers') && (a.includes('ed') || a.includes('sheeran') || !a)) {
+  if (matchesSong(t, a, ["shivers"], ["ed sheeran"])) {
     return `[Intro]
 [Dm] [Bb] [C] [Am]
 [Dm] [Bb] [C] [Am]
@@ -5596,7 +5598,7 @@ And when you're close up, give me the [Dm]shivers
   }
 
   // 83. Ed Sheeran - Bad Habits
-  if (t.includes('bad habits') && (a.includes('ed') || a.includes('sheeran') || !a)) {
+  if (matchesSong(t, a, ["bad habits"], ["ed sheeran"])) {
     return `[Intro]
 [Bm] [D] [A] [G]
 [Bm] [D] [A] [G]
@@ -5665,7 +5667,7 @@ My bad habits lead to [D]you [A] [G] [Bm]`;
   // COLDPLAY
   // ==========================================
   // 84. Coldplay - Clocks
-  if (t.includes('clocks') && (a.includes('coldplay') || !a)) {
+  if (matchesSong(t, a, ["clocks"], ["coldplay"])) {
     return `[Intro]
 [Eb] [Bbm] [Bbm] [Fm]
 [Eb] [Bbm] [Bbm] [Fm]
@@ -5723,7 +5725,7 @@ And [Eb]nothing else com[Bbm]pares [Fm]
   }
 
   // 85. Coldplay - Paradise
-  if (t.includes('paradise') && (a.includes('coldplay') || !a)) {
+  if (matchesSong(t, a, ["paradise"], ["coldplay"])) {
     return `[Intro]
 [Gm] [Bb] [F] [C]
 [Gm] [Bb] [F] [C]
@@ -5777,7 +5779,7 @@ This could be [Gm]para-para-[Bb]paradise
   }
 
   // 86. Coldplay - Hymn for the Weekend
-  if (t.includes('hymn for the weekend') && (a.includes('coldplay') || a.includes('beyonce') || !a)) {
+  if (matchesSong(t, a, ["hymn for the weekend"], ["coldplay"])) {
     return `[Intro]
 [Cm] [Ab] [Eb] [Bb]
 [Cm] [Ab] [Eb] [Bb]
@@ -5841,7 +5843,7 @@ That we shoot a[Cm]cross the [Ab]sky [Eb] [Bb] [Cm]`;
   }
 
   // 87. Coldplay - A Sky Full of Stars
-  if (t.includes('sky full of stars') && (a.includes('coldplay') || !a)) {
+  if (matchesSong(t, a, ["sky full of stars","a sky full of stars"], ["coldplay"])) {
     return `[Intro]
 [Am] [F] [C] [Em]
 [Am] [F] [C] [Em]
@@ -5894,7 +5896,7 @@ Such a [Em]heavenly view
   // MICHAEL JACKSON
   // ==========================================
   // 88. Michael Jackson - Thriller
-  if (t.includes('thriller') && (a.includes('michael') || a.includes('jackson') || !a)) {
+  if (matchesSong(t, a, ["thriller"], ["michael jackson"])) {
     return `[Intro]
 [C#m] [B] [A] [B]
 [C#m] [B] [A] [B]
@@ -5957,7 +5959,7 @@ You're [A]fighting for your life inside a [B]killer, thriller tonight
   }
 
   // 89. Michael Jackson - Smooth Criminal
-  if (t.includes('smooth criminal') && (a.includes('michael') || a.includes('jackson') || !a)) {
+  if (matchesSong(t, a, ["smooth criminal"], ["michael jackson"])) {
     return `[Intro]
 [Am] [G] [F] [G]
 [Am] [G] [F] [G]
@@ -6049,7 +6051,7 @@ A [G]smooth criminal [Am]`;
   }
 
   // 90. Michael Jackson - Bad
-  if (t.includes('bad') && !t.includes('blood') && !t.includes('guy') && !t.includes('habits') && !t.includes('romance') && (a.includes('michael') || a.includes('jackson') || !a)) {
+  if (matchesSong(t, a, ["bad","blood","guy","habits","romance"], ["michael jackson"])) {
     return `[Intro]
 [Am] [G] [Am] [G]
 [Am] [G] [Am] [G]

@@ -9,6 +9,10 @@ export class HandsFreeController {
   constructor() {
     this.recognition = null;
     this.isListening = false;
+    this.manualStop = false;
+    this.permissionDenied = false;
+    this.restartTimer = null;
+    this.permissionWarningShown = false;
     this._initSpeechRecognition();
   }
 
@@ -32,29 +36,58 @@ export class HandsFreeController {
     };
 
     this.recognition.onerror = (event) => {
-      console.error('[HandsFreeController] Error de reconocimiento:', event.error);
+      const error = event?.error || 'unknown';
+      if (error === 'not-allowed' || error === 'service-not-allowed') {
+        this.permissionDenied = true;
+        this.isListening = false;
+        clearTimeout(this.restartTimer);
+        if (!this.permissionWarningShown) {
+          this.permissionWarningShown = true;
+          console.warn('[HandsFreeController] El navegador no ha concedido permiso para la escucha activa.');
+          events.emit('handsFree:permissionDenied');
+        }
+        return;
+      }
+      // Los errores transitorios no deben llenar la consola mientras el
+      // reconocimiento intenta recuperarse en segundo plano.
+      console.warn('[HandsFreeController] Reconocimiento temporalmente no disponible:', error);
     };
 
     this.recognition.onend = () => {
-      if (this.isListening) {
-        // Reiniciar automáticamente para continuous listening
-        this.recognition.start();
-      }
+      if (!this.isListening || this.manualStop || this.permissionDenied) return;
+      // Algunos motores finalizan la sesión aunque continuous sea true.
+      // Reintentamos con una pequeña pausa para evitar carreras start/stop.
+      clearTimeout(this.restartTimer);
+      this.restartTimer = setTimeout(() => {
+        if (!this.isListening || this.manualStop || this.permissionDenied) return;
+        try { this.recognition.start(); } catch (_) { /* ya estaba iniciada */ }
+      }, 180);
     };
   }
 
   start() {
     if (!this.recognition || this.isListening) return;
+    this.manualStop = false;
+    this.permissionDenied = false;
+    this.permissionWarningShown = false;
     this.isListening = true;
-    this.recognition.start();
+    try {
+      this.recognition.start();
+    } catch (error) {
+      this.isListening = false;
+      console.warn('[HandsFreeController] No se pudo iniciar la escucha activa:', error?.message || error);
+      return;
+    }
     console.log('[HandsFreeController] Escucha activa iniciada.');
     events.emit('handsFree:started');
   }
 
   stop() {
     if (!this.recognition || !this.isListening) return;
+    this.manualStop = true;
     this.isListening = false;
-    this.recognition.stop();
+    clearTimeout(this.restartTimer);
+    try { this.recognition.stop(); } catch (_) { /* ya estaba detenida */ }
     console.log('[HandsFreeController] Escucha detenida.');
     events.emit('handsFree:stopped');
   }

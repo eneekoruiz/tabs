@@ -9,6 +9,7 @@ import { events } from '../../core/EventBus.js';
 import { state } from '../../core/State.js';
 import { pedalboardEngine } from '../../audio/PedalboardEngine.js';
 import { toast } from '../Toast.js';
+import { escapeHTML } from '../../utils/sanitize.js';
 
 export class PedalboardTool extends Component {
   constructor() {
@@ -18,12 +19,12 @@ export class PedalboardTool extends Component {
   }
 
   initEvents() {
-    events.on('pedalboard:open', () => this.open('#pedalboard-modal-container'));
-    events.on('song:loaded', (song) => {
+    this.registerUnsub(events.on('pedalboard:open', () => this.open('#pedalboard-modal-container')));
+    this.registerUnsub(events.on('song:loaded', (song) => {
       if (this.engine) {
         this.engine.detectToneForSong(song);
       }
-    });
+    }));
   }
 
   open(targetContainerSelector = '#pedalboard-modal-container') {
@@ -33,7 +34,8 @@ export class PedalboardTool extends Component {
     }
     if (!host) return;
 
-    this.currentHost = targetContainerSelector;
+    this.currentHost = `#${host.id}`;
+    this.unsubMeter?.();
 
     // Detectar tono inteligente si hay canción activa y aún no se ha inicializado preset
     const currentSong = state.get('activeSong');
@@ -46,6 +48,9 @@ export class PedalboardTool extends Component {
   }
 
   close(host) {
+    this.engine.stopLiveInput();
+    this.unsubMeter?.();
+    this.unsubMeter = null;
     if (host) host.innerHTML = '';
   }
 
@@ -87,7 +92,7 @@ export class PedalboardTool extends Component {
               <span class="smart-tone-icon">⚡</span>
               <div class="smart-tone-text">
                 <strong>Smart Tone Activo:</strong>
-                <span>${this._getPresetDisplayName(this.engine.currentPreset)} ${currentSong?.title ? `(para "${currentSong.title}")` : ''}</span>
+                <span>${this._getPresetDisplayName(this.engine.currentPreset)} ${currentSong?.title ? `(para "${escapeHTML(currentSong.title)}")` : ''}</span>
               </div>
             </div>
           </div>
@@ -277,6 +282,14 @@ export class PedalboardTool extends Component {
   attachListeners(container) {
     const card = container.querySelector('#modal-virtual-pedalboard');
     if (!card) return;
+    card.addEventListener('keydown', event => {
+      if (event.key === 'Escape') this.close(container);
+    });
+    card.querySelector('#btnClosePedalboard')?.focus();
+    card.querySelectorAll('input[type="range"], select').forEach(control => {
+      const label = control.closest('.knob-wrapper, .master-vol-slot')?.querySelector('label');
+      control.setAttribute('aria-label', label?.textContent.trim() || control.dataset.param);
+    });
 
     // Cerrar
     card.querySelector('#btnClosePedalboard')?.addEventListener('click', () => this.close(container));
@@ -285,6 +298,8 @@ export class PedalboardTool extends Component {
     // Activar / Desactivar entrada de micrófono / guitarra
     const liveBtn = card.querySelector('#btnToggleLiveAudioInput');
     liveBtn?.addEventListener('click', async () => {
+      if (this.engine.isPreparing) return;
+      liveBtn.disabled = true;
       try {
         if (this.engine.isActive) {
           this.engine.stopLiveInput();
@@ -292,18 +307,22 @@ export class PedalboardTool extends Component {
           liveBtn.innerHTML = '<span class="mic-dot"></span> 🎙️ ACTIVAR ENTRADA (GUITARRA / MIC)';
           toast.show('Entrada de audio desactivada', 'info');
         } else {
-          await this.engine.startLiveInput();
+          const started = await this.engine.startLiveInput();
+          if (!started || !liveBtn.isConnected) return;
           liveBtn.classList.add('active');
           liveBtn.innerHTML = '<span class="mic-dot pulse"></span> 🔴 ENTRADA EN VIVO ACTIVA';
           toast.show('¡Procesador DSP activo! Toca tu guitarra o canta.', 'success');
         }
       } catch (err) {
         toast.show('Error accediendo al micrófono: ' + err.message, 'error');
+      } finally {
+        liveBtn.disabled = false;
+        liveBtn.setAttribute('aria-pressed', String(this.engine.isActive));
       }
     });
 
     // Escuchar medidor de señal
-    events.on('pedalboard:meter', ({ level }) => {
+    this.unsubMeter = events.on('pedalboard:meter', ({ level }) => {
       const meter = card.querySelector('#pedalboardSignalMeter');
       if (meter) meter.style.width = `${level}%`;
     });
@@ -311,7 +330,7 @@ export class PedalboardTool extends Component {
     // Presets
     card.querySelectorAll('.btn-preset-chip').forEach(btn => {
       btn.addEventListener('click', (e) => {
-        const preset = e.target.dataset.preset;
+        const preset = e.currentTarget.dataset.preset;
         this.engine.applyPreset(preset);
         this.open(this.currentHost || '#pedalboard-modal-container');
         toast.show(`Preset cargado: ${this._getPresetDisplayName(preset)}`, 'info');
@@ -320,10 +339,12 @@ export class PedalboardTool extends Component {
 
     // Footswitches (Bypass)
     card.querySelectorAll('.pedal-footswitch').forEach(sw => {
+      sw.setAttribute('aria-pressed', String(this.engine.params[sw.dataset.toggle]));
       sw.addEventListener('click', (e) => {
         const param = sw.dataset.toggle;
         const currentVal = this.engine.params[param];
         this.engine.setParam(param, !currentVal);
+        sw.setAttribute('aria-pressed', String(!currentVal));
         const chassis = sw.closest('.pedal-chassis');
         if (chassis) {
           chassis.classList.toggle('enabled', !currentVal);
@@ -340,6 +361,7 @@ export class PedalboardTool extends Component {
         const param = e.target.dataset.param;
         const val = parseFloat(e.target.value);
         this.engine.setParam(param, val);
+        if (param === 'masterVolume') card.querySelector('#lblMasterVol').textContent = `${Math.round(val * 100)}%`;
         const label = e.target.nextElementSibling;
         if (label && label.classList.contains('knob-val')) {
           if (param === 'chorusMix' || param === 'delayMix' || param === 'reverbMix') {

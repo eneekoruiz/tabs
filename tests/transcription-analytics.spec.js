@@ -41,7 +41,7 @@ test.describe('🎙️ Transcripción IA, Analíticas y Backup Blindado - Suite 
       };
     });
 
-    await page.goto('http://localhost:3000/index.html');
+    await page.goto('/index.html');
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(600);
   });
@@ -193,7 +193,7 @@ test.describe('🎙️ Transcripción IA, Analíticas y Backup Blindado - Suite 
 
   test('5. Acceso Rápido a Transcripción y Analíticas desde el Menú de Opciones de Canción', async ({ page }) => {
     // Abrir una canción del catálogo
-    const songCard = page.locator('.btn-load-explore-song').first();
+    const songCard = page.locator('.song-card .btn-select-song').first();
     await songCard.click();
     await page.waitForTimeout(500);
 
@@ -202,6 +202,7 @@ test.describe('🎙️ Transcripción IA, Analíticas y Backup Blindado - Suite 
     await page.waitForTimeout(200);
 
     // Abrir Transcriptor desde Opciones
+    await page.locator('.song-advanced-options summary').click();
     await page.click('#btnOpenTranscriberQuick');
     await expect(page.locator('#modal-audio-transcriber')).toBeVisible();
     await page.click('#btnCloseTranscriber');

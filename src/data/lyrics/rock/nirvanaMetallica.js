@@ -1,3 +1,5 @@
+import { matchesSong } from "../../catalog/SongIdentity.js";
+
 /**
  * @file nirvanaMetallica.js
  * @description Nirvana & Metallica - Letras y acordes 100% completos y oficiales en formato ChordPro.
@@ -7,7 +9,7 @@ export function getNirvanaMetallicaLyrics(t, a) {
   // ==========================================
   // 28. Nirvana - Smells Like Teen Spirit
   // ==========================================
-  if (t.includes('smells like teen spirit')) {
+  if (matchesSong(t, a, ["smells like teen spirit"], ["nirvana"])) {
     return `[Intro]
 [F5] [Bb5] [Ab5] [Db5]
 [F5] [Bb5] [Ab5] [Db5]
@@ -86,7 +88,7 @@ A mul[F5]atto, an al[Bb5]bino, a mos[Ab5]quito, my li[Db5]bido
   // ==========================================
   // 29. Nirvana - Come As You Are
   // ==========================================
-  if (t.includes('come as you are')) {
+  if (matchesSong(t, a, ["come as you are"], ["nirvana"])) {
     return `[Intro]
 [F#m] [E] [F#m] [E]
 [F#m] [E] [F#m] [E]
@@ -137,7 +139,7 @@ No, I [B]don't have a [D]gun
   // ==========================================
   // 30. Nirvana - Heart-Shaped Box
   // ==========================================
-  if (t.includes('heart-shaped box') || t.includes('heart shaped box')) {
+  if (matchesSong(t, a, ["heart shaped box"], ["nirvana"])) {
     return `[Intro]
 [A] [F#5] [D7]
 [A] [F#5] [D7]
@@ -200,7 +202,7 @@ Your ad[D7]vice [A]`;
   // ==========================================
   // 31. Nirvana - Lithium
   // ==========================================
-  if (t.includes('lithium')) {
+  if (matchesSong(t, a, ["lithium"], ["nirvana"])) {
     return `[Intro]
 [D] [F#] [Bm] [G] [Bb] [C] [A] [C]
 
@@ -248,7 +250,7 @@ And [Bb]I don't [C]care
   // ==========================================
   // 32. Nirvana - In Bloom
   // ==========================================
-  if (t.includes('in bloom')) {
+  if (matchesSong(t, a, ["in bloom"], ["nirvana"])) {
     return `[Intro]
 [Bb] [Gb] [Eb] [B] [A]
 [Bb] [Gb] [Eb] [B] [A]
@@ -307,7 +309,7 @@ Don't know what it [Bb]means, don't know what it [Eb]means, when I say [Bb]`;
   // ==========================================
   // 33. Nirvana - The Man Who Sold the World
   // ==========================================
-  if (t.includes('the man who sold the world') || t.includes('man who sold the world')) {
+  if (matchesSong(t, a, ["the man who sold the world","man who sold the world"], ["nirvana"])) {
     return `[Intro]
 [A] [Dm] [F] [Dm]
 [A] [Dm] [F] [Dm]
@@ -352,7 +354,7 @@ You're [C]face to face with the [F]man who sold the world
   // ==========================================
   // 34. Nirvana - About a Girl
   // ==========================================
-  if (t.includes('about a girl')) {
+  if (matchesSong(t, a, ["about a girl"], ["nirvana"])) {
     return `[Intro]
 [Em] [G] [Em] [G]
 [Em] [G] [Em] [G]
@@ -409,7 +411,7 @@ But I can't [Em]see you every [A]night
   // ==========================================
   // 35. Metallica - Nothing Else Matters
   // ==========================================
-  if (t.includes('nothing else matters')) {
+  if (matchesSong(t, a, ["nothing else matters"], ["metallica"])) {
     return `[Intro]
 [Em] [D] [C]
 [Em] [D] [C]
@@ -467,7 +469,7 @@ But I can't [Em]see you every [A]night
   // ==========================================
   // 36. Metallica - Enter Sandman
   // ==========================================
-  if (t.includes('enter sandman')) {
+  if (matchesSong(t, a, ["enter sandman"], ["metallica"])) {
     return `[Intro]
 [Em] [F5] [E5] [G5] [F#5] [F5] [E5]
 [Em] [F5] [E5] [G5] [F#5] [F5] [E5]
@@ -531,7 +533,7 @@ Boom! Yeah, yeah [Em]`;
   // ==========================================
   // 37. Metallica - The Unforgiven
   // ==========================================
-  if (t.includes('the unforgiven') || t.includes('unforgiven')) {
+  if (matchesSong(t, a, ["the unforgiven","unforgiven"], ["metallica"])) {
     return `[Intro]
 [Am] [Em] [Am] [Em]
 [C] [G] [Am]
@@ -602,7 +604,7 @@ So I [Em]dub thee Unfor[Am]given [Em] [Am]`;
   // ==========================================
   // 38. Metallica - Master of Puppets
   // ==========================================
-  if (t.includes('master of puppets')) {
+  if (matchesSong(t, a, ["master of puppets"], ["metallica"])) {
     return `[Intro]
 [Em] [D] [C] [B]
 [Em] [D] [C] [B]
@@ -676,7 +678,7 @@ Master, master [Em]`;
   // ==========================================
   // 39. Metallica - Fade to Black
   // ==========================================
-  if (t.includes('fade to black')) {
+  if (matchesSong(t, a, ["fade to black"], ["metallica"])) {
     return `[Intro]
 [Bm] [A] [G] [A]
 [Bm] [A] [G] [A]

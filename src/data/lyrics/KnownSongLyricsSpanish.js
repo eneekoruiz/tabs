@@ -1,3 +1,5 @@
+import { matchesSong } from "../catalog/SongIdentity.js";
+
 /**
  * @file KnownSongLyricsSpanish.js
  * @description Base de datos exhaustiva de letras REALES 100% auténticas y completas
@@ -14,7 +16,7 @@ export function getSpanishSongLyrics(title, artist) {
   // ==========================================
   // 1. Joaquín Sabina - 19 Días y 500 Noches
   // ==========================================
-  if (t.includes('19 dias y 500 noches') || t.includes('19 días y 500 noches') || norm.includes('19 dias y 500 noches')) {
+  if (matchesSong(t, a, ["19 dias y 500 noches"], ["joaquin sabina"])) {
     return `[Intro]
 [E] [B7] [E] [B7] [E]
 
@@ -81,7 +83,7 @@ Diecinueve [F#m]días y qui[B7]nientas [E]noches [A] [B7] [E]`;
   // ==========================================
   // 2. Joaquín Sabina - Y Nos Dieron las Diez
   // ==========================================
-  if (t.includes('y nos dieron las diez') || norm.includes('nos dieron las diez') || norm.includes('nos dieron las 10')) {
+  if (matchesSong(t, a, ["y nos dieron las diez"], ["joaquin sabina"])) {
     return `[Intro]
 [G] [D] [C] [D] [G]
 

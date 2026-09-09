@@ -1,3 +1,5 @@
+import { matchesSong } from "../../catalog/SongIdentity.js";
+
 /**
  * @file rhcpGreenDay.js
  * @description Red Hot Chili Peppers & Green Day - Letras y acordes 100% completos y oficiales en formato ChordPro.
@@ -7,7 +9,7 @@ export function getRhcpGreenDayLyrics(t, a) {
   // ==========================================
   // 40. Red Hot Chili Peppers - Can't Stop
   // ==========================================
-  if (t.includes("can't stop") || t.includes('cant stop')) {
+  if (matchesSong(t, a, ["cant stop"], ["red hot chili peppers"])) {
     return `[Intro]
 [Em] [D] [Bm] [C]
 [Em] [D] [Bm] [C]
@@ -70,7 +72,7 @@ export function getRhcpGreenDayLyrics(t, a) {
   // ==========================================
   // 41. Red Hot Chili Peppers - Scar Tissue
   // ==========================================
-  if (t.includes('scar tissue')) {
+  if (matchesSong(t, a, ["scar tissue"], ["red hot chili peppers"])) {
     return `[Intro]
 [F] [C] [Dm]
 [F] [C] [Dm]
@@ -129,7 +131,7 @@ With the [Dm]birds I'll share this [C]lonely view
   // ==========================================
   // 42. Red Hot Chili Peppers - Otherside
   // ==========================================
-  if (t.includes('otherside')) {
+  if (matchesSong(t, a, ["otherside"], ["red hot chili peppers"])) {
     return `[Intro]
 [Am] [F] [C] [G]
 
@@ -191,7 +193,7 @@ I've gotta [G]take it on the [A]otherside
   // ==========================================
   // 43. Red Hot Chili Peppers - Snow (Hey Oh)
   // ==========================================
-  if (t.includes('snow') && (t.includes('hey oh') || a.includes('chili peppers') || !a)) {
+  if (matchesSong(t, a, ["snow","hey oh","snow hey oh"], ["red hot chili peppers"])) {
     return `[Intro]
 [G#m] [E] [B] [F#]
 [G#m] [E] [B] [F#]
@@ -246,7 +248,7 @@ I got your [E]hey oh, [B]now listen what I [F#]say, oh
   // ==========================================
   // 44. Red Hot Chili Peppers - Dani California
   // ==========================================
-  if (t.includes('dani california')) {
+  if (matchesSong(t, a, ["dani california"], ["red hot chili peppers"])) {
     return `[Intro]
 [Am] [G] [Dm] [Am]
 [Am] [G] [Dm] [Am]
@@ -306,7 +308,7 @@ She's my [Dm]priestess, I'm your [G]priest, yeah, yeah
   // ==========================================
   // 45. Green Day - American Idiot
   // ==========================================
-  if (t.includes('american idiot')) {
+  if (matchesSong(t, a, ["american idiot"], ["green day"])) {
     return `[Intro]
 [Ab5] [Db5] [Gb5] [Db5] [Ab5] [Gb5]
 [Ab5] [Db5] [Gb5] [Db5] [Ab5] [Gb5]
@@ -367,7 +369,7 @@ She's my [Dm]priestess, I'm your [G]priest, yeah, yeah
   // ==========================================
   // 46. Green Day - Wake Me Up When September Ends
   // ==========================================
-  if (t.includes('wake me up when september ends') || t.includes('september ends')) {
+  if (matchesSong(t, a, ["wake me up when september ends","september ends"], ["green day"])) {
     return `[Intro]
 [G] [Gmaj7/F#] [Em] [D] [C] [Cm] [G]
 
@@ -416,7 +418,7 @@ The [Gmaj7/F#]innocent can never last
   // ==========================================
   // 47. Green Day - 21 Guns
   // ==========================================
-  if (t.includes('21 guns')) {
+  if (matchesSong(t, a, ["21 guns"], ["green day"])) {
     return `[Intro]
 [Dm] [Bb] [F] [C]
 [Dm] [Bb] [F] [C]
@@ -477,7 +479,7 @@ Like a [Bb]liar looking for for[C]giveness from a stone
   // ==========================================
   // 48. Green Day - Holiday
   // ==========================================
-  if (t === 'holiday' || (t.includes('holiday') && (a.includes('green day') || !a))) {
+  if (matchesSong(t, a, ["holiday"], ["green day"])) {
     return `[Intro]
 [Fm] [Db] [Ab] [Eb]
 [Fm] [Db] [Ab] [Eb]
@@ -536,7 +538,7 @@ On [Fm]holiday! [Db] [Ab] [Eb] [Fm]`;
   // ==========================================
   // 49. Green Day - When I Come Around
   // ==========================================
-  if (t.includes('when i come around')) {
+  if (matchesSong(t, a, ["when i come around"], ["green day"])) {
     return `[Intro]
 [G] [D] [Em] [C]
 [G] [D] [Em] [C]

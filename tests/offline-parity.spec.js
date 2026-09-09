@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test';
 const FALLBACK_BASE_URL = 'http://127.0.0.1:3000';
 const APP_SHELL = '.bottom-nav-bar';
 const SEARCH_INPUT = '#exploreSearchInput';
-const LOCAL_CATALOG_RESULT = '.btn-load-explore-song';
+const LOCAL_CATALOG_RESULT = '.btn-select-song';
 const KNOWN_OFFLINE_SONG = 'Blackbird';
 
 test.use({ serviceWorkers: 'allow' });

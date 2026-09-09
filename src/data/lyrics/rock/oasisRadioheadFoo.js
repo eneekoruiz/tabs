@@ -1,3 +1,5 @@
+import { matchesSong } from "../../catalog/SongIdentity.js";
+
 /**
  * @file oasisRadioheadFoo.js
  * @description Oasis, Radiohead & Foo Fighters - Letras y acordes 100% completos y oficiales en formato ChordPro.
@@ -7,7 +9,7 @@ export function getOasisRadioheadFooLyrics(t, a) {
   // ==========================================
   // 69. Oasis - Wonderwall
   // ==========================================
-  if (t.includes('wonderwall')) {
+  if (matchesSong(t, a, ["wonderwall"], ["oasis"])) {
     return `[Intro]
 [Em7] [G] [Dsus4] [A7sus4]
 [Em7] [G] [Dsus4] [A7sus4]
@@ -63,7 +65,7 @@ You're gonna be the one that saves me [Em7] [Cadd9] [Em7] [G] [Em7]`;
   // ==========================================
   // 70. Oasis - Champagne Supernova
   // ==========================================
-  if (t.includes('champagne supernova')) {
+  if (matchesSong(t, a, ["champagne supernova"], ["oasis"])) {
     return `[Intro]
 [A] [A/G] [A/F#] [A/E]
 [A] [A/G] [A/F#] [A/E]
@@ -131,7 +133,7 @@ A champagne supernova in the [A]sky [A/G] [A/F#] [A/E] [A]`;
   // ==========================================
   // 71. Radiohead - Creep
   // ==========================================
-  if (t === 'creep' || (t.includes('creep') && (a.includes('radiohead') || !a))) {
+  if (matchesSong(t, a, ["creep"], ["radiohead"])) {
     return `[Intro]
 [G] [B] [C] [Cm]
 
@@ -178,7 +180,7 @@ I don't be[G]long here [B] [C] [Cm] [G]`;
   // ==========================================
   // 72. Radiohead - Fake Plastic Trees
   // ==========================================
-  if (t.includes('fake plastic trees')) {
+  if (matchesSong(t, a, ["fake plastic trees"], ["radiohead"])) {
     return `[Intro]
 [A] [Amaj7/G#] [F#m] [D]
 [A] [Amaj7/G#] [F#m] [D]
@@ -232,7 +234,7 @@ All the [Bm]time, all the [A]time`;
   // ==========================================
   // 73. Radiohead - High and Dry
   // ==========================================
-  if (t.includes('high and dry')) {
+  if (matchesSong(t, a, ["high and dry"], ["radiohead"])) {
     return `[Intro]
 [F#m11] [Asus2] [E] [E]
 [F#m11] [Asus2] [E] [E]
@@ -285,7 +287,7 @@ The best thing that you've had has gone away
   // ==========================================
   // 74. Foo Fighters - Everlong
   // ==========================================
-  if (t.includes('everlong')) {
+  if (matchesSong(t, a, ["everlong"], ["foo fighters"])) {
     return `[Intro]
 [Dmaj7] [B5] [G5]
 [Dmaj7] [B5] [G5]
@@ -349,7 +351,7 @@ You've gotta promise not to [B5]stop when I say when [G5] [D5]`;
   // ==========================================
   // 75. Foo Fighters - Best of You
   // ==========================================
-  if (t.includes('best of you')) {
+  if (matchesSong(t, a, ["best of you"], ["foo fighters"])) {
     return `[Intro]
 [C#m7] [B] [A]
 [C#m7] [B] [A]
@@ -398,7 +400,7 @@ You [A]trust, you must confess
   // ==========================================
   // 76. Foo Fighters - The Pretender
   // ==========================================
-  if (t.includes('the pretender') || t.includes('pretender')) {
+  if (matchesSong(t, a, ["the pretender","pretender"], ["foo fighters"])) {
     return `[Intro]
 [Am] [Am/G] [Am/F#] [F]
 [Am] [Am/G] [Am/F#] [F]

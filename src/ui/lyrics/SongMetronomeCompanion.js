@@ -49,6 +49,9 @@ export class SongMetronomeCompanion {
     this.currentSubBeat = 0;
     this.currentMeasureBeat = 0;
     this.schedulerTimer = null;
+    this.pendingCallbacks = new Set();
+    this.voices = new Set();
+    this.generation = 0;
     this.tapTimes = [];
 
     if (this.currentSong) {
@@ -98,7 +101,7 @@ export class SongMetronomeCompanion {
         this.subdivision = VALID_SUBDIVISIONS.has(parsed.subdivision) ? parsed.subdivision : 'quarter';
         this.sound = VALID_SOUNDS.has(parsed.sound) ? parsed.sound : 'woodblock';
         this.accent = parsed.accent !== undefined ? Boolean(parsed.accent) : true;
-        this.volume = Math.max(0, Math.min(1, Number(parsed.volume) || 0.8));
+        this.volume = Number.isFinite(parsed.volume) ? Math.max(0, Math.min(1, parsed.volume)) : 0.8;
         this.countInMeasures = [0, 1, 2, 4].includes(Number(parsed.countInMeasures)) ? Number(parsed.countInMeasures) : 0;
         return;
       }
@@ -225,6 +228,7 @@ export class SongMetronomeCompanion {
     if (!ctx) return;
 
     this.isRunning = true;
+    this.generation++;
     this.currentSubBeat = 0;
     this.currentMeasureBeat = 0;
     this.nextNoteTime = ctx.currentTime + 0.05;
@@ -243,6 +247,7 @@ export class SongMetronomeCompanion {
 
     const schedule = () => {
       if (!this.isRunning) return;
+      if (this.nextNoteTime < ctx.currentTime - 0.1) this.nextNoteTime = ctx.currentTime + 0.02;
 
       while (this.nextNoteTime < ctx.currentTime + 0.1) {
         this.scheduleNote(this.nextNoteTime);
@@ -252,7 +257,7 @@ export class SongMetronomeCompanion {
         else if (this.subdivision === 'triplet') subFactor = 1 / 3;
         else if (this.subdivision === 'sixteenth') subFactor = 0.25;
 
-        const secondsPerSubBeat = (60.0 / this.bpm) * subFactor;
+        const secondsPerSubBeat = this.getBeatSeconds() * subFactor;
         this.nextNoteTime += secondsPerSubBeat;
         this.currentSubBeat++;
       }
@@ -264,9 +269,14 @@ export class SongMetronomeCompanion {
 
   stop(reason = 'explicit') {
     const wasRunning = this.isRunning;
+    this.generation++;
     this.isRunning = false;
     this.isCountIn = false;
     this.countInRemainingBeats = 0;
+    for (const timer of this.pendingCallbacks) clearTimeout(timer);
+    this.pendingCallbacks.clear();
+    for (const voice of this.voices) { try { voice.stop(); } catch (_) {} }
+    this.voices.clear();
 
     if (this.schedulerTimer) {
       clearInterval(this.schedulerTimer);
@@ -284,6 +294,19 @@ export class SongMetronomeCompanion {
   getBeatsPerMeasure() {
     const top = parseInt(this.timeSignature.split('/')[0], 10);
     return Number.isFinite(top) && top > 0 ? top : 4;
+  }
+
+  getBeatSeconds() {
+    return (60 / this.bpm) * (4 / Number(this.timeSignature.split('/')[1] || 4));
+  }
+
+  atAudioTime(time, callback) {
+    const generation = this.generation;
+    const timer = setTimeout(() => {
+      this.pendingCallbacks.delete(timer);
+      if (this.isRunning && generation === this.generation) callback();
+    }, Math.max(0, (time - this.getAudioContext().currentTime) * 1000));
+    this.pendingCallbacks.add(timer);
   }
 
   scheduleNote(time) {
@@ -305,7 +328,7 @@ export class SongMetronomeCompanion {
     let countInCurrentBeat = 0;
     let countInMeasureNumber = 1;
 
-    if (this.isCountIn) {
+    if (this.isCountIn && this.countInRemainingBeats > 0) {
       if (isMainBeat) {
         isCountInNote = true;
         countInCurrentBeat = (this.countInTotalBeats - this.countInRemainingBeats) % beatsPerMeasure + 1;
@@ -313,12 +336,11 @@ export class SongMetronomeCompanion {
         this.countInRemainingBeats--;
 
         if (this.countInRemainingBeats <= 0) {
-          this.isCountIn = false;
-          setTimeout(() => {
-            if (this.isRunning) {
-              this.onCountInComplete();
-            }
-          }, Math.max(0, (time - ctx.currentTime) * 1000));
+          this.atAudioTime(time + this.getBeatSeconds(), () => {
+            this.isCountIn = false;
+            this.emitState('count_in_complete');
+            this.onCountInComplete();
+          });
         }
       }
     }
@@ -326,9 +348,7 @@ export class SongMetronomeCompanion {
     this.playClickSound(ctx, time, isAccent, isMainBeat, isCountInNote);
 
     if (isMainBeat) {
-      const delayMs = Math.max(0, (time - ctx.currentTime) * 1000);
-      setTimeout(() => {
-        if (!this.isRunning) return;
+      this.atAudioTime(time, () => {
         this.currentMeasureBeat = measureBeat;
         this.onBeat({
           beat: measureBeat,
@@ -339,7 +359,7 @@ export class SongMetronomeCompanion {
           countInMeasureNumber,
           countInTotalMeasures: this.countInMeasures
         });
-      }, delayMs);
+      });
     }
   }
 
@@ -349,6 +369,8 @@ export class SongMetronomeCompanion {
     try {
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
+      this.voices.add(osc);
+      osc.onended = () => { osc.disconnect(); gain.disconnect(); this.voices.delete(osc); };
       osc.connect(gain);
       gain.connect(ctx.destination);
 

@@ -8,8 +8,8 @@
 
 import { events } from '../../core/EventBus.js';
 import { VFXEngine } from './VFXEngine.js';
-import { chordEngine } from '../../tools/ChordEngine.js';
 import { vocalCoachEngine } from '../../audio/VocalCoachEngine.js';
+import { buildKaraokeTimeline } from '../../audio/KaraokeTimeline.js';
 
 const NOTE_NAMES    = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
 const COLOR_IN_TUNE   = '#22c55e';
@@ -64,165 +64,33 @@ export class PitchLaneCanvas {
     this._bindResize();
   }
 
-  setTargetLyrics(chordProText, tempo = 72) {
-    if (!chordProText) return;
+  setTargetLyrics(chordProText, tempo = 72, songMeta = {}) {
     this.targetBlocks = [];
-
-    const cleanTempo = Number(tempo) && Number(tempo) >= 35 && Number(tempo) <= 240 ? Number(tempo) : 72;
-    const msPerBeat = (60 / cleanTempo) * 1000;
-
-    const NOTE_TO_SEMITONE = {
-      'C': 0, 'C#': 1, 'Db': 1, 'D': 2, 'D#': 3, 'Eb': 3,
-      'E': 4, 'F': 5, 'F#': 6, 'Gb': 6, 'G': 7, 'G#': 8,
-      'Ab': 8, 'A': 9, 'A#': 10, 'Bb': 10, 'B': 11
-    };
-    const SEMITONE_TO_NAME = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
-
-    // Selección armónica con mínima distancia de conducción de voces (evita saltos bruscos antinaturales)
-    const getNearestChordTone = (chordName, prevMidi = 60) => {
-      const match = chordName.match(/^([A-G][#b]?)(m|min|maj|7|sus|dim|aug)?/i);
-      if (!match) return prevMidi;
-      const rootStr = match[1].charAt(0).toUpperCase() + (match[1].slice(1) || '');
-      const quality = (match[2] || '').toLowerCase();
-      const semitone = NOTE_TO_SEMITONE[rootStr] ?? 0;
-      const isMinor = quality.startsWith('m') && !quality.startsWith('maj');
-      const third = (semitone + (isMinor ? 3 : 4)) % 12;
-      const fifth = (semitone + 7) % 12;
-
-      const pitchClasses = [semitone, third, fifth];
-      let bestMidi = prevMidi;
-      let minDistance = Infinity;
-
-      // Mantener en el registro vocal natural (C3 a C5 aprox, centrado en 60)
-      for (let oct = 3; oct <= 4; oct++) {
-        for (const pc of pitchClasses) {
-          const candidateMidi = (oct + 1) * 12 + pc;
-          if (candidateMidi < 48 || candidateMidi > 74) continue;
-          const dist = Math.abs(candidateMidi - prevMidi);
-          if (dist < minDistance) {
-            minDistance = dist;
-            bestMidi = candidateMidi;
-          }
-        }
-      }
-      return bestMidi;
-    };
-
-    let currentMidi = 60; // C4 inicial
-    let currentNoteName = 'C';
-    let currentChordName = 'C'; // Used for karaoke harmonic backing
-    let timeCursor = 0; // Iniciar en 0
-    let inIntro = false;
-
-    const lines = chordProText.split(/\r?\n/);
-
-    for (let l = 0; l < lines.length; l++) {
-      const line = lines[l].trim();
-      if (!line) {
-        if (!inIntro) timeCursor += msPerBeat * 1.5;
-        continue;
-      }
-
-      // Detectar secciones como [Intro], [Verse], [Chorus], [Bridge], [Outro]
-      if (/^\[(intro|verse|estribillo|chorus|coro|bridge|puente|outro|pre-chorus|pre-coro)[^\]]*\]$/i.test(line)) {
-        const isIntro = /intro/i.test(line);
-        if (isIntro) {
-          inIntro = true;
-          // Intro instrumental: 8 tiempos (2 compases a tempo real)
-          const introDur = msPerBeat * 8;
-          this.targetBlocks.push({
-            startTime: timeCursor,
-            duration: introDur,
-            midi: 60,
-            noteName: 'Intro',
-            text: '🎹 Intro Instrumental',
-            isInterlude: true
-          });
-          timeCursor += introDur;
-        } else {
-          inIntro = false;
-          // Pausa entre estrofas: 1 compás (4 tiempos) de descanso
-          timeCursor += msPerBeat * 2.5;
-        }
-        continue;
-      }
-
-      // Línea de solo acordes instrumentales (ej: "[C] [Dm] [Am] [F]")
-      const isOnlyChords = /^(\s*\[[^\]]+\]\s*)+$/.test(line);
-      if (isOnlyChords) {
-        if (inIntro) {
-          // Dentro de la intro ya está contabilizado en el bloque Intro
-          continue;
-        }
-        const chordMatches = line.match(/\[[^\]]+\]/g) || [];
-        timeCursor += chordMatches.length * msPerBeat * 1;
-        continue;
-      }
-
-      inIntro = false;
-
-      // Línea cantada con acordes y letra
-      const tokens = line.split(/(\[[^\]]+\]|\s+)/).filter(Boolean);
-      const wordsInLine = [];
-
-      for (let i = 0; i < tokens.length; i++) {
-        const tok = tokens[i].trim();
-        if (!tok) continue;
-        if (tok.startsWith('[') && tok.endsWith(']')) {
-          const chordName = tok.slice(1, -1);
-          currentChordName = chordName;
-          currentMidi = getNearestChordTone(chordName, currentMidi);
-          currentNoteName = SEMITONE_TO_NAME[currentMidi % 12];
-        } else {
-          wordsInLine.push(tok);
-        }
-      }
-
-      for (let w = 0; w < wordsInLine.length; w++) {
-        const word = wordsInLine[w];
-        const isLastWord = w === wordsInLine.length - 1;
-        const hasPunctuation = /[,.?!:;]$/.test(word);
-
-        let durationBeats = 0.85;
-        if (word.length > 5) durationBeats = 1.25;
-        if (hasPunctuation) durationBeats = 1.6;
-        if (isLastWord) durationBeats = 2.0;
-
-        const duration = msPerBeat * durationBeats;
-        const gap = msPerBeat * (hasPunctuation ? 0.5 : 0.2);
-
-        this.targetBlocks.push({
-          startTime: timeCursor,
-          duration: duration,
-          midi: currentMidi,
-          noteName: currentNoteName,
-          chord: currentChordName,
-          text: word
-        });
-
-        timeCursor += duration + gap;
-      }
-
-      // Pausa natural de respiración al final de cada verso (1.5 a 2.5 segundos)
-      timeCursor += msPerBeat * 2.0;
-    }
-
-    // Garantizar que el 100% de las canciones tengan cuenta atrás / intro instrumental previo
-    if (this.targetBlocks.length > 0 && !this.targetBlocks[0].isInterlude) {
-      const prepDur = msPerBeat * 4;
-      for (const block of this.targetBlocks) {
-        block.startTime += prepDur;
-      }
-      this.targetBlocks.unshift({
-        startTime: 0,
-        duration: prepDur,
-        midi: 60,
-        noteName: 'Intro',
-        text: '🎹 Cuenta Atrás',
-        isInterlude: true
-      });
+    const timeline = buildKaraokeTimeline({ ...songMeta, tempo, lyricsChords: chordProText });
+    this.lyricLines = timeline.lyricLines;
+    this.timingIsEstimated = timeline.timingIsEstimated;
+    // Only explicitly supplied vocal notes can become pitch targets.
+    if (Array.isArray(songMeta.vocalMelody)) {
+      this.targetBlocks = songMeta.vocalMelody.filter(c =>
+        c && Number.isFinite(c.startTime) && c.startTime >= 0 && Number.isFinite(c.duration) && c.duration > 0 &&
+        Number.isFinite(c.midi) && c.midi >= 36 && c.midi <= 96
+      ).map(c => ({ ...c, originalMidi: c.midi, text: c.text || '' }))
+        .sort((a, b) => a.startTime - b.startTime);
     }
     this._hasCompleted = false;
+    this.setTranspose(this.transposeSemitones || 0, true);
+    vocalCoachEngine.setTargetNote(null);
+  }
+
+  setTranspose(semitones, force = false) {
+    if (!force && semitones === this.transposeSemitones) return;
+    this.transposeSemitones = semitones;
+    this.targetBlocks.forEach(block => {
+      block.midi = block.originalMidi + semitones;
+      block.noteName = NOTE_NAMES[Math.round(block.midi) % 12];
+    });
+    this._lastAccompBlock = null;
+    vocalCoachEngine.setTargetNote(null);
   }
 
   play() {
@@ -240,6 +108,9 @@ export class PitchLaneCanvas {
 
   seek(timeMs) {
     this.currentTime = timeMs;
+    this.trail = [];
+    this._lastAccompBlock = null;
+    vocalCoachEngine.setTargetNote(null);
     this._hasCompleted = false;
   }
 
@@ -253,13 +124,13 @@ export class PitchLaneCanvas {
     this.trail = [];
 
     this._pitchUnsub = events.on('vocalCoach:pitch', (pitch) => {
-      if (!this.isPlaying && !(typeof window !== 'undefined' && window.__IS_TESTING__)) return; // Solo guardar rastro si está reproduciendo o en modo test
+      if (!this.isPlaying) return;
       const now = this.currentTime;
       const abs = Math.abs(pitch.centsOffset ?? 0);
       const acc = abs <= 15 ? 'in-tune' : abs <= 40 ? 'near-tune' : 'out-tune';
       this.trail.push({
         time: now,
-        midi: pitch.midi,
+        midi: pitch.midi + (pitch.cents || 0) / 100,
         note: pitch.note ?? '?',
         octave: pitch.octave ?? '',
         accuracyStatus: acc,
@@ -283,9 +154,10 @@ export class PitchLaneCanvas {
     });
 
     this._silenceUnsub = events.on('vocalCoach:silence', () => {
-      if (!this.isPlaying && !(typeof window !== 'undefined' && window.__IS_TESTING__)) return;
+      if (!this.isPlaying || this.trail.at(-1)?.silence) return;
       // Punto nulo para romper la polilínea (nueva frase)
       this.trail.push({ time: this.currentTime, silence: true });
+      if (this.trail.length > 400) this.trail.shift();
     });
 
     if (this.vfxEngine) this.vfxEngine.start();
@@ -302,9 +174,11 @@ export class PitchLaneCanvas {
       this.animFrameId = null;
     }
     if (this.vfxEngine) this.vfxEngine.stop();
+    this.vfxCanvas.remove();
     this._pitchUnsub?.();
     this._silenceUnsub?.();
     this._resizeObs?.disconnect();
+    vocalCoachEngine.setTargetNote(null);
   }
 
   _loop(timestamp) {
@@ -317,10 +191,10 @@ export class PitchLaneCanvas {
     this.lastTimestamp = timestamp;
 
     if (this.isPlaying) {
-      this.currentTime += delta;
+      this.currentTime = this.options.clock ? this.options.clock() : this.currentTime + delta;
 
       // Detección de finalización de la canción (al superar el último bloque lírico + 1.5s)
-      if (this.targetBlocks.length > 0) {
+      if (!this.options.clock && this.targetBlocks.length > 0) {
         const lastBlock = this.targetBlocks[this.targetBlocks.length - 1];
         const songEndTime = (lastBlock.startTime + lastBlock.duration) + 1500;
         if (this.currentTime >= songEndTime && !this._hasCompleted) {
@@ -330,21 +204,14 @@ export class PitchLaneCanvas {
         }
       }
 
-      // Karaoke Backing Track: reproducir base armónica de fondo al entrar a cada bloque
-      if (this.karaokeAccompEnabled && this.targetBlocks.length > 0) {
+      // Actualizar nota objetivo para el evaluador de afinación vocal (sin interferir con acordes sintéticos)
+      if (this.targetBlocks.length > 0) {
         const activeBlock = this.targetBlocks.find(
           b => b.startTime <= this.currentTime && (b.startTime + b.duration) >= this.currentTime
         );
-        if (activeBlock && activeBlock !== this._lastAccompBlock) {
+        if (activeBlock !== this._lastAccompBlock) {
           this._lastAccompBlock = activeBlock;
-          if (activeBlock.noteName && !activeBlock.isInterlude) {
-            try { vocalCoachEngine.setTargetNote(activeBlock.noteName); } catch (_) {}
-          }
-          if (activeBlock.chord) {
-            try {
-              chordEngine.auditionChord(activeBlock.chord, 'piano', 0);
-            } catch (_) {}
-          }
+          vocalCoachEngine.setTargetNote(activeBlock && !activeBlock.isInterlude ? activeBlock.midi : null);
         }
       }
     }
@@ -447,13 +314,12 @@ export class PitchLaneCanvas {
       let hitSuccess = false;
       let isCurrentBlock = (startX <= cursorX && endX >= cursorX);
       
-      if (isCurrentBlock && !block.isInterlude && this.trail.length > 0) {
+      if (this.isPlaying && isCurrentBlock && !block.isInterlude && this.trail.length > 0) {
         const lastPt = this.trail[this.trail.length - 1];
         if (!lastPt.silence) {
           // Evaluar afinación considerando octavas naturales (ej. voz masculina octava 3 vs objetivo octava 4)
           const absDiff = Math.abs(lastPt.midi - block.midi);
-          const pitchClassDiff = Math.abs((Math.round(lastPt.midi) % 12) - (block.midi % 12));
-          const isNoteMatch = (absDiff <= 1.2) || (pitchClassDiff === 0 || pitchClassDiff === 11 || pitchClassDiff === 1);
+          const isNoteMatch = absDiff <= 0.35 && this.currentTime - lastPt.time < 150;
           if (isNoteMatch) {
             hitSuccess = true;
             block.hitFrames = (block.hitFrames || 0) + 1;
@@ -605,7 +471,7 @@ export class PitchLaneCanvas {
   _setupCanvas() {
     const parent = this.canvas.parentElement;
     if (!parent) return;
-    const dpr  = window.devicePixelRatio || 1;
+    const dpr  = Math.min(2, window.devicePixelRatio || 1);
     this._dpr  = dpr;
     const rect = parent.getBoundingClientRect();
     if (!rect.width || !rect.height) return;
@@ -620,7 +486,7 @@ export class PitchLaneCanvas {
     const parent = this.canvas.parentElement;
     if (!parent) return;
     this._resizeObs = new ResizeObserver(() => {
-      const dpr  = window.devicePixelRatio || 1;
+      const dpr  = Math.min(2, window.devicePixelRatio || 1);
       this._dpr  = dpr;
       const rect = parent.getBoundingClientRect();
       if (!rect.width || !rect.height) return;

@@ -105,7 +105,7 @@ export class SongAutoScroller {
   }
 
   readScrollMetrics() {
-    const target = document.getElementById('score-viewport');
+    const target = document.querySelector('.stage-mode-view') || document.getElementById('score-viewport');
     if (target) {
       return {
         target,
@@ -136,7 +136,7 @@ export class SongAutoScroller {
   }
 
   scrollToTop() {
-    const target = document.getElementById('score-viewport') || window;
+    const target = this.readScrollMetrics().target;
     if (target.scrollTo) target.scrollTo({ top: 0, behavior: 'smooth' });
   }
 }

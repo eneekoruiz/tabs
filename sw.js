@@ -3,7 +3,7 @@
  * @description Service Worker para funcionamiento 100% Offline y PWA Installable.
  */
 
-const CACHE_NAME = 'tabs-chords-pro-v5.2';
+const CACHE_NAME = 'tabs-chords-pro-v5.7';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -52,11 +52,13 @@ const ASSETS_TO_CACHE = [
   './assets/css/components/vocal-coach.css',
   './assets/css/components/vocal-range-finder.css',
   './assets/css/components/version-picker.css',
+  './assets/css/design-system.css',
   './assets/vendor/alphatab/1.8.4/alphaTab.min.js',
   './assets/vendor/alphatab/1.8.4/alphaTab.worker.min.mjs',
   './assets/vendor/alphatab/1.8.4/alphaTab.worklet.min.mjs',
   './assets/vendor/alphatab/1.8.4/font/Bravura.woff2',
   './assets/vendor/alphatab/1.8.4/soundfont/sonivox.sf2',
+  './assets/vendor/lucide/lucide.min.js',
   './src/mainV2.js',
   './src/ai/HandsFreeController.js',
   './src/ai/LocalPolyphonicTranscriber.js',
@@ -65,6 +67,9 @@ const ASSETS_TO_CACHE = [
   './src/audio/AudioTranscriptionEngine.js',
   './src/audio/GamificationEngine.js',
   './src/audio/GigRecorder.js',
+  './src/audio/KaraokeBackingEngine.js',
+  './src/audio/KaraokeTimeline.js',
+  './src/ui/ModalFocus.js',
   './src/audio/MidiController.js',
   './src/audio/PedalboardEngine.js',
   './src/audio/PitchDetector.js',
@@ -79,12 +84,14 @@ const ASSETS_TO_CACHE = [
   './src/data/BackupSyncEngine.js',
   './src/data/CatalogDataset.js',
   './src/data/Database.js',
+  './src/data/KaraokeBackingStore.js',
   './src/data/Exporter.js',
   './src/data/MetadataParser.js',
   './src/data/OnlineSongProvider.js',
   './src/data/PracticeTrackerService.js',
   './src/data/SearchEngine.js',
   './src/data/SessionRecovery.js',
+  './src/data/catalog/CatalogQuality.js',
   './src/data/SetlistManager.js',
   './src/data/SmartScoreGenerator.js',
   './src/data/SoundFontCache.js',
@@ -93,6 +100,7 @@ const ASSETS_TO_CACHE = [
   './src/data/catalog/OfflineUniversalLibraryEngine.js',
   './src/data/catalog/PopCatalog.js',
   './src/data/catalog/RockCatalog.js',
+  './src/data/catalog/SongIdentity.js',
   './src/data/catalog/SongMetadataResolver.js',
   './src/data/lyrics/KnownSongLyrics.js',
   './src/data/lyrics/KnownSongLyricsEnglish.js',
@@ -131,6 +139,7 @@ const ASSETS_TO_CACHE = [
   './src/ui/GigMode.js',
   './src/ui/HomeView.js',
   './src/ui/HomeViewV2.js',
+  './src/ui/icons.js',
   './src/ui/KeyboardShortcuts.js',
   './src/ui/LibraryExplorer.js',
   './src/ui/LibraryExplorerV2.js',

@@ -1,3 +1,5 @@
+import { matchesSong } from "../../catalog/SongIdentity.js";
+
 /**
  * @file beatles.js
  * @description The Beatles - Letras y acordes 100% completos y oficiales en formato ChordPro.
@@ -7,7 +9,7 @@ export function getBeatlesLyrics(t, a) {
   // ==========================================
   // 1. The Beatles - Here Comes The Sun
   // ==========================================
-  if (t.includes('here comes the sun')) {
+  if (matchesSong(t, a, ["here comes the sun"], ["the beatles"])) {
     return `[Intro]
 [D] [G] [A7]
 [D] [G] [A7]
@@ -61,7 +63,7 @@ export function getBeatlesLyrics(t, a) {
   // ==========================================
   // 2. The Beatles - Come Together
   // ==========================================
-  if (t.includes('come together')) {
+  if (matchesSong(t, a, ["come together"], ["the beatles"])) {
     return `[Intro]
 [Dm] [Dm] [Dm] [Dm]
 
@@ -114,7 +116,7 @@ Come together, yeah [Dm]`;
   // ==========================================
   // 3. The Beatles - Something
   // ==========================================
-  if (t.includes('something') && (a.includes('beatles') || a.includes('harrison') || !a)) {
+  if (matchesSong(t, a, ["something"], ["the beatles"])) {
     return `[Intro]
 [F] [Eb] [G] [C]
 
@@ -157,7 +159,7 @@ I don't [D]know, [G]I don't [C]know
   // ==========================================
   // 4. The Beatles - In My Life
   // ==========================================
-  if (t.includes('in my life')) {
+  if (matchesSong(t, a, ["in my life"], ["the beatles"])) {
     return `[Intro]
 [A] [E] [A] [E]
 
@@ -203,7 +205,7 @@ In [Dm]my life, I'll love you [A]more
   // ==========================================
   // 5. The Beatles - Help!
   // ==========================================
-  if (t === 'help' || t === 'help!' || t.includes('help!')) {
+  if (matchesSong(t, a, ["help"], ["the beatles"])) {
     return `[Intro]
 [Bm]Help! I need somebody
 [G]Help! Not just anybody
@@ -254,7 +256,7 @@ Help [A]me, help me, [A6]ooh`;
   // ==========================================
   // 6. The Beatles - Hey Jude
   // ==========================================
-  if (t.includes('hey jude')) {
+  if (matchesSong(t, a, ["hey jude"], ["the beatles"])) {
     return `[Intro]
 [F] [C]
 
@@ -310,7 +312,7 @@ Then you'll be[C]gin to make it [F]better, better, better, better, better, yeah!
   // ==========================================
   // 7. The Beatles - Yesterday
   // ==========================================
-  if (t === 'yesterday' || t.includes('yesterday')) {
+  if (matchesSong(t, a, ["yesterday"], ["the beatles"])) {
     return `[Intro]
 [F] [F]
 
@@ -349,7 +351,7 @@ Oh, [Dm]I be[G7]lieve in [Bb]yes[F]terday
   // ==========================================
   // 8. The Beatles - Twist and Shout
   // ==========================================
-  if (t.includes('twist and shout')) {
+  if (matchesSong(t, a, ["twist and shout"], ["the beatles"])) {
     return `[Intro]
 [D] [G] [A] [A7]
 [D] [G] [A] [A7]
@@ -407,7 +409,7 @@ Shake it, shake it, shake it, baby, now
   // ==========================================
   // 9. The Beatles - All You Need Is Love
   // ==========================================
-  if (t.includes('all you need is love')) {
+  if (matchesSong(t, a, ["all you need is love"], ["the beatles"])) {
     return `[Intro]
 [G] [D/F#] [Em] [G] [D/F#] [Em]
 [C] [D7] [G]
@@ -470,7 +472,7 @@ Love is all you need, love is all you need, she loves you yeah yeah yeah
   // ==========================================
   // 10. The Beatles - A Hard Day's Night
   // ==========================================
-  if (t.includes("hard day's night") || t.includes('hard days night')) {
+  if (matchesSong(t, a, ["hard days night","a hard days night"], ["the beatles"])) {
     return `[Intro]
 [G7sus4]
 

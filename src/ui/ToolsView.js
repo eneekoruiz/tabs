@@ -14,6 +14,7 @@ import { Component } from './Component.js';
 import { events } from '../core/EventBus.js';
 import { chordEngine } from '../tools/ChordEngine.js';
 import { toast } from './Toast.js';
+import { trapModalFocus } from './ModalFocus.js';
 import { MetronomeTool } from './tools/MetronomeTool.js';
 import { TunerTool } from './tools/TunerTool.js';
 import { ChordDictionaryTool } from './tools/ChordDictionaryTool.js';
@@ -79,6 +80,8 @@ export class ToolsView extends Component {
   }
 
   openToolModal(toolName) {
+    this._toolFocusCleanup?.(false);
+    this._toolFocusCleanup = null;
     this.activeToolModal = toolName;
     const modalHost = this.container?.querySelector('#toolModalHost');
     if (!modalHost) return;
@@ -153,6 +156,9 @@ export class ToolsView extends Component {
         this.closeModal();
       });
     });
+    if (modalHost.firstElementChild) {
+      this._toolFocusCleanup = trapModalFocus(modalHost.firstElementChild, { onClose: () => this.closeModal() });
+    }
   }
 
   closeModal() {
@@ -185,6 +191,8 @@ export class ToolsView extends Component {
     this.activeToolModal = null;
     const modalHost = this.container?.querySelector('#toolModalHost');
     if (modalHost) modalHost.innerHTML = '';
+    this._toolFocusCleanup?.();
+    this._toolFocusCleanup = null;
   }
 
   bindMetronomeEvents() {
@@ -223,6 +231,13 @@ export class ToolsView extends Component {
   bindTunerEvents() {
     const host = this.container?.querySelector('#toolModalHost');
     if (!host) return;
+
+    host.querySelectorAll('.tuner-mode-tab-btn').forEach((button) => {
+      button.addEventListener('click', () => {
+        this.tunerTool.mode = button.dataset.mode || 'auto';
+        this.openToolModal('tuner');
+      });
+    });
 
     host.querySelector('#selTuningPreset')?.addEventListener('change', (e) => {
       this.tunerTool.selectedTuning = e.target.value;
@@ -333,6 +348,14 @@ export class ToolsView extends Component {
           <div class="view-header-badge">STUDIO & PRACTICE PRO</div>
           <h1>Herramientas del Músico</h1>
           <p>Entrenamiento vocal, metrónomo de precisión, afinador, entrenamiento auditivo y armonía.</p>
+        </div>
+
+        <div class="tools-command-bar" role="search">
+          <label class="tools-search-field">
+            <span aria-hidden="true">⌕</span>
+            <input id="toolsSearchInput" type="search" placeholder="Buscar una herramienta…" aria-label="Buscar una herramienta">
+          </label>
+          <span id="toolsSearchSummary" class="tools-search-summary">Explora por objetivo o instrumento</span>
         </div>
 
         <!-- CATEGORÍA 1: ESTUDIO & PROCESAMIENTO IA -->
@@ -596,8 +619,52 @@ export class ToolsView extends Component {
   }
 
   bindDashboardEvents() {
+    const search = this.container.querySelector('#toolsSearchInput');
+    const cards = [...this.container.querySelectorAll('.premium-list-item, .tool-card-pro')];
+    const groups = [...this.container.querySelectorAll('.tools-category-group')];
+    const summary = this.container.querySelector('#toolsSearchSummary');
+    const filter = () => {
+      const query = String(search?.value || '').trim().toLocaleLowerCase('es');
+      let visible = 0;
+      cards.forEach(card => {
+        const matches = !query || card.textContent.toLocaleLowerCase('es').includes(query);
+        card.hidden = !matches;
+        if (matches) visible += 1;
+      });
+      groups.forEach(group => {
+        group.hidden = !group.querySelector('.premium-list-item:not([hidden]), .tool-card-pro:not([hidden])');
+      });
+      if (summary) summary.textContent = query ? `${visible} herramienta${visible === 1 ? '' : 's'} encontrada${visible === 1 ? '' : 's'}` : 'Explora por objetivo o instrumento';
+    };
+    search?.addEventListener('input', filter);
+
     this.container.querySelectorAll('.tool-card-pro, .premium-list-item').forEach(card => {
-      card.addEventListener('click', () => {
+      card.setAttribute('role', 'group');
+      card.removeAttribute('tabindex');
+      // Toda tarjeta debe tener una acción explícita además del área clicable.
+      // Esto mejora descubribilidad, teclado y uso táctil sin duplicar el modal.
+      if (!card.querySelector('[data-preview-action="open-full"]') && card.dataset.tool) {
+        const action = document.createElement('button');
+        action.type = 'button';
+        action.className = 'tool-preview-action';
+        action.dataset.previewAction = 'open-full';
+        action.textContent = 'Abrir herramienta';
+        action.setAttribute('aria-label', `Abrir ${card.getAttribute('aria-label')?.replace(/^Abrir\s+/i, '') || card.dataset.tool}`);
+        card.querySelector('.premium-content, .tool-card-content')?.append(action);
+      }
+      card.addEventListener('click', (event) => {
+        if (event.target.closest('[data-preview-action="open-full"]')) return;
+        if (card.dataset.tool) this.openToolModal(card.dataset.tool);
+      });
+      card.addEventListener('keydown', (event) => {
+        if (event.target !== card) return;
+        if (event.key !== 'Enter' && event.key !== ' ') return;
+        event.preventDefault();
+        const tool = card.dataset.tool;
+        if (tool) this.openToolModal(tool);
+      });
+      card.querySelector('[data-preview-action="open-full"]')?.addEventListener('click', (event) => {
+        event.stopPropagation();
         const tool = card.dataset.tool;
         if (tool) this.openToolModal(tool);
       });

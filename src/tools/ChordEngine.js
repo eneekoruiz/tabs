@@ -101,6 +101,16 @@ class ChordEngine {
     }
   }
 
+  arpeggiateChord(chordName, instrument = this.currentInstrument, voicingIndex = 0, onNoteCallback = null) {
+    try {
+      const ctx = this.getAudioContext();
+      return ChordAudioSynthesizer.arpeggiate(ctx, chordName, instrument, voicingIndex, onNoteCallback);
+    } catch (err) {
+      console.warn('[ChordEngine] Error arpegiando acorde:', err);
+      return [];
+    }
+  }
+
   strumGuitar(chordName = 'C', stroke = 'down', tempo = 120, voicingIndex = 0) {
     try {
       const ctx = this.getAudioContext();
@@ -116,6 +126,16 @@ class ChordEngine {
       return ChordAudioSynthesizer.pluckString(ctx, stringIndex, chordName, instrument, voicingIndex);
     } catch (err) {
       console.warn('[ChordEngine] Error pulsando cuerda aislada:', err);
+      return null;
+    }
+  }
+
+  playPianoKey(noteName, octave = 4) {
+    try {
+      const ctx = this.getAudioContext();
+      return ChordAudioSynthesizer.playPianoNote(ctx, noteName, octave);
+    } catch (err) {
+      console.warn('[ChordEngine] Error pulsando tecla de piano:', err);
       return null;
     }
   }

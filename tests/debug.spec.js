@@ -6,7 +6,7 @@ test('Debug Blackbird lyrics', async ({ page }) => {
   await expect(heroSearch).toBeVisible();
 
   await heroSearch.fill('Blackbird');
-  const songCard = page.locator('.song-card', { hasText: /Blackbird/i }).locator('.btn-load-explore-song').first();
+  const songCard = page.locator('.song-card', { hasText: /Blackbird/i }).locator('.btn-select-song').first();
   await expect(songCard).toBeVisible({ timeout: 10000 });
   await songCard.click();
 

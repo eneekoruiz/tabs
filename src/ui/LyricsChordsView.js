@@ -10,15 +10,24 @@ import { state } from '../core/State.js';
 import { chordEngine } from '../tools/ChordEngine.js';
 import { pitchDetector } from '../audio/PitchDetector.js';
 import { vocalCoachEngine } from '../audio/VocalCoachEngine.js';
+import { KaraokeBackingEngine } from '../audio/KaraokeBackingEngine.js';
+import { karaokeSongKey } from '../data/KaraokeBackingStore.js';
+import { SessionRecovery } from '../data/SessionRecovery.js';
 import { PitchLaneCanvas } from './lyrics/PitchLaneCanvas.js';
 import { onlineSongProvider } from '../data/OnlineSongProvider.js';
+import { assessSong } from '../data/catalog/CatalogQuality.js';
 import { toast } from './Toast.js';
 import { ChordProParser } from './lyrics/ChordProParser.js';
 import { ChordDiagramRenderer } from './lyrics/ChordDiagramRenderer.js';
 import { SongAutoScroller } from './lyrics/SongAutoScroller.js';
 import { SongAudioRecorder } from './lyrics/SongAudioRecorder.js';
 import { ChordPopoverModal } from './lyrics/ChordPopoverModal.js';
+import { SongMetronomeCompanion } from './lyrics/SongMetronomeCompanion.js';
+import { extractYouTubeVideoId, saveSongYouTubeVideoId, buildYouTubeSearchUrl } from './lyrics/YouTubeCompanion.js';
 import { escapeHTML } from '../utils/sanitize.js';
+import { trapModalFocus } from './ModalFocus.js';
+
+const CHORD_MARKER_RE = /\[[A-G][#b]?(?:m|min|maj|dim|aug|sus|add|\d|\+)*(?:\/[A-G][#b]?)?\]/i;
 
 export class LyricsChordsView extends Component {
   constructor(container) {
@@ -38,8 +47,28 @@ export class LyricsChordsView extends Component {
     this.isInstrumentMenuOpen = false;
     this.isOptionsMenuOpen = false;
     this.isLiveListening = false;
+    this.isGeneratedChordGuide = false;
+    this.isShortcutsGuideOpen = false;
+    this._removeSpeedPanelOutsideListener = null;
     this.wakeLockSentinel = null;
     this.pitchLane = null;
+    this.backing = new KaraokeBackingEngine({
+      onChange: () => this.updateKaraokeState(),
+      onEnded: () => { this.pauseSinging(); this.showVocalScorecard({ reason: 'completed' }); }
+    });
+    this.karaokeTrackMode = 'original';
+    this.micStatus = 'Micrófono desactivado';
+    this._sessionSaveTimer = null;
+    this.sessionRecovery = new SessionRecovery();
+    this.isYouTubeCompanionOpen = false;
+    this.isYouTubeEditorOpen = false;
+    this.songMetronome = new SongMetronomeCompanion({
+      onStateChange: (metronome) => {
+        events.emit('song:stateChanged', { metronome });
+        this.updateSongMetronomeDOM();
+      },
+      onBeat: (beat) => events.emit('song:metronomeBeat', beat)
+    });
 
     // Submódulos desacoplados SRP
     this.autoScroller = new SongAutoScroller({
@@ -74,10 +103,22 @@ export class LyricsChordsView extends Component {
   }
 
   initFullscreenListeners() {
-    document.addEventListener('fullscreenchange', () => {
+    const onFullscreen = () => {
       if (!document.fullscreenElement && this.isStageMode) {
         this.exitStageMode();
       }
+    };
+    document.addEventListener('fullscreenchange', onFullscreen);
+    this.registerUnsub(() => document.removeEventListener('fullscreenchange', onFullscreen));
+    const onHidden = () => {
+      this.savePracticeSession();
+      if (document.hidden) { this.stopSinging(); this.songMetronome.stop(); this.autoScroller.stop('explicit'); }
+    };
+    document.addEventListener('visibilitychange', onHidden);
+    window.addEventListener('pagehide', onHidden);
+    this.registerUnsub(() => {
+      document.removeEventListener('visibilitychange', onHidden);
+      window.removeEventListener('pagehide', onHidden);
     });
   }
 
@@ -94,43 +135,88 @@ export class LyricsChordsView extends Component {
     const handleSongLoad = async (song) => {
       if (!song) return;
       
-      const isSameSong = this.currentSong && 
-        ((this.currentSong.id && song.id && String(this.currentSong.id) === String(song.id)) ||
-         (this.currentSong.title && song.title && this.currentSong.title === song.title)) &&
-        this.currentSong.lyricsChords;
+      const isSameSong = this.currentSong === song && this.currentSong.lyricsChords;
 
       if (isSameSong) {
         this.render();
         return;
       }
 
+      this.savePracticeSession();
+      clearTimeout(this._sessionSaveTimer);
+      this.stopSinging();
       this.currentSong = song;
       this.transposeSemitones = 0;
       this.capoFret = 0;
       this.visualTheme = localStorage.getItem('app_visual_theme') || 'paper';
       this.performanceMode = 'play';
       localStorage.setItem('app_performance_mode', 'play');
+      this.restorePracticeSession(song);
       this.audioRecorder.dismiss();
       this._scorecardShown = false;
       try { vocalCoachEngine.resetSessionStats(); } catch (_) {}
 
       try {
-        if (this.currentSong && (!this.currentSong.lyricsChords || this.currentSong.lyricsChords.trim().length === 0)) {
-          this.currentSong.lyricsChords = await onlineSongProvider.fetchLyricsAndChords(this.currentSong.title, this.currentSong.artist);
+        // Fill missing catalog lyrics without replacing imported/user-authored content.
+        const curatedLyrics = onlineSongProvider.getKnownSongLyrics(song.title, song.artist);
+        if (curatedLyrics && !String(song.lyricsChords || '').trim()) {
+          song.lyricsChords = curatedLyrics;
+          song.contentSource = 'repository_unverified';
         }
+        const hadChordMarkersBeforeLoad = CHORD_MARKER_RE.test(String(song.lyricsChords || ''));
+        if (this.currentSong && (!this.currentSong.lyricsChords || this.currentSong.lyricsChords.trim().length === 0)) {
+          const lyrics = await onlineSongProvider.fetchLyricsAndChords(song.title, song.artist);
+          if (this.currentSong !== song) return;
+          song.lyricsChords = lyrics;
+          if (lyrics && !song.contentSource) song.contentSource = 'repository_unverified';
+        }
+        const sourceLyrics = String(song.lyricsChords || '');
+        this.isGeneratedChordGuide = assessSong(song).generated;
+        // Never place guessed chords into an existing song's lyrics.
         if (this.currentSong) {
           const { resolveSongMetadata } = await import('../data/catalog/SongMetadataResolver.js');
+          if (this.currentSong !== song) return;
           const meta = resolveSongMetadata(this.currentSong.title, this.currentSong.artist, this.currentSong.genre);
-          if (meta?.tempo) this.currentSong.tempo = meta.tempo;
-          if (meta?.difficulty) this.currentSong.difficulty = meta.difficulty;
+          if (meta?.tempo && !Number(this.currentSong.tempo)) this.currentSong.tempo = meta.tempo;
+          if (meta?.difficulty && !this.currentSong.difficulty) this.currentSong.difficulty = meta.difficulty;
+
+          const { getSongYouTubeVideoId, getSongKaraokeVideoId } = await import('./lyrics/YouTubeCompanion.js');
+          if (this.currentSong !== song) return;
+          this.currentSong.youtubeVideoId = getSongYouTubeVideoId(this.currentSong);
+          this.currentSong.karaokeVideoId = getSongKaraokeVideoId(this.currentSong);
         }
       } catch (e) {
         console.warn('[LyricsChordsView] Error obteniendo acordes online:', e);
         import('./Toast.js').then(({ toast }) => toast.show('Error al descargar acordes', 'error', 3000)).catch(console.error);
       }
 
+      if (this.currentSong !== song) return;
+      const recovered = song._practiceRecovery;
+      if (recovered) {
+        if (Number.isFinite(recovered.transposeSemitones)) this.transposeSemitones = Math.max(-12, Math.min(12, Math.round(recovered.transposeSemitones)));
+        if (Number.isFinite(recovered.capoFret)) this.capoFret = Math.max(0, Math.min(7, Math.round(recovered.capoFret)));
+        if (Number.isFinite(recovered.fontSizeScale)) this.fontSizeScale = Math.max(80, Math.min(180, recovered.fontSizeScale));
+        if (['guitar', 'piano', 'ukulele'].includes(recovered.instrument)) this.currentInstrument = recovered.instrument;
+        if (['anglo', 'latin'].includes(recovered.notationSystem)) this.notationSystem = recovered.notationSystem;
+        if (Number.isFinite(recovered.autoScroll?.speedPercent)) this.autoScroller.setSpeed(recovered.autoScroll.speedPercent);
+        this.hideChordsMode = Boolean(recovered.hideChordsMode);
+        this.isSimplified = Boolean(recovered.isSimplified);
+        chordEngine.setInstrument(this.currentInstrument);
+        delete song._practiceRecovery;
+      }
+      this.songMetronome.setSong(song);
+      void this.backing.loadSong(song).then(() => {
+        if (this.currentSong === song && this.pitchLane) {
+          this.pitchLane.setTargetLyrics(song.lyricsChords, song.tempo, song);
+          this.updateKaraokeState();
+        }
+      });
+      this.backing.setTranspose(this.transposeSemitones);
       this.setViewMode('lyrics');
       this.render();
+      if (recovered && Number.isFinite(recovered.scrollTop)) {
+        this.autoScroller.writeScrollTop(this.autoScroller.readScrollMetrics(), recovered.scrollTop);
+      }
       this.syncContextualState();
     };
 
@@ -140,6 +226,21 @@ export class LyricsChordsView extends Component {
     }));
 
     this.registerUnsub(events.on('ui:loadLyricsSong', handleSongLoad));
+    this.registerUnsub(events.on('ui:switchTab', tab => {
+      if (tab !== 'player') {
+        this.savePracticeSession();
+        this.stopSinging();
+        this.songMetronome.stop();
+        this.autoScroller.stop('explicit');
+      }
+    }));
+    this.registerUnsub(events.on('vocalCoach:error', error => {
+      if (this.performanceMode !== 'sing') return;
+      this.micStatus = error?.name === 'NotAllowedError'
+        ? 'Permiso denegado. Habilita el micrófono en el navegador y vuelve a intentarlo.'
+        : 'Micrófono no disponible. Comprueba la conexión y vuelve a intentarlo.';
+      this.updateKaraokeState();
+    }));
     this.registerUnsub(events.on('song:loaded', handleSongLoad));
     this.registerUnsub(events.on('settings:accidentalsChanged', () => {
       this.render();
@@ -162,12 +263,31 @@ export class LyricsChordsView extends Component {
     }));
 
     this.registerUnsub(events.on('ui:closeAllOverlays', () => {
+      const hadOverlay = this.isOptionsMenuOpen || this.isShortcutsGuideOpen || this.isYouTubeCompanionOpen;
       this.isOptionsMenuOpen = false;
+      this.isShortcutsGuideOpen = false;
+      this.isYouTubeCompanionOpen = false;
+      this.isYouTubeEditorOpen = false;
+      this.closeSongMetronomePanel();
       const sheet = this.container?.querySelector('#lyricsToolsBottomSheetOverlay');
       if (sheet) sheet.style.display = 'none';
       const scoreModal = document.getElementById('vocalScorecardModal');
       if (scoreModal) scoreModal.remove();
+      if (hadOverlay) this.render();
     }));
+    this.registerUnsub(events.on('song:stepAutoScrollSpeed', (delta) => {
+      this.autoScroller.stepSpeed(delta);
+      this.syncContextualState();
+    }));
+    this.registerUnsub(events.on('song:setAutoScrollSpeed', (speed) => {
+      this.autoScroller.setSpeed(speed);
+      this.syncContextualState();
+    }));
+
+    this.registerUnsub(events.on('song:toggleMetronome', () => this.songMetronome.toggle()));
+    this.registerUnsub(events.on('song:stepMetronomeBpm', (delta) => this.songMetronome.stepBpm(delta)));
+    this.registerUnsub(events.on('song:tapMetronome', () => this.songMetronome.handleTapTempo()));
+    this.registerUnsub(events.on('song:openMetronomePanel', () => this.openSongMetronomePanel()));
 
     this.registerUnsub(events.on('song:toggleRecording', (opts) => {
       this.toggleRecording(opts?.video || false);
@@ -182,14 +302,15 @@ export class LyricsChordsView extends Component {
     }));
 
     this.registerUnsub(events.on('ui:closeAllOverlays', () => {
-      if (this.isOptionsMenuOpen) {
+      if (this.isOptionsMenuOpen || this.isShortcutsGuideOpen) {
         this.isOptionsMenuOpen = false;
+        this.isShortcutsGuideOpen = false;
         this.render();
       }
     }));
 
     this.registerUnsub(events.on('tuner:pitch', (pitch) => {
-      if (pitch && pitch.frequency > 0) {
+      if (this.performanceMode !== 'sing' && pitch && pitch.frequency > 0) {
         const noteEl = this.container?.querySelector('#singerNoteBig');
         const freqEl = this.container?.querySelector('#singerFreqBadge');
         const labelEl = this.container?.querySelector('#singerPitchNoteLabel');
@@ -222,7 +343,7 @@ export class LyricsChordsView extends Component {
           this._smartPauseTimer = setTimeout(() => {
             this._smartPauseTimer = null;
             if (this.smartPauseEnabled && this.isSingingPlaying()) {
-              this.pitchLane?.pause();
+              this.pauseSinging();
               this._setSingerRibbonPausedState();
               const btn = this.container?.querySelector('#btnSingPlayPause');
               if (btn) btn.innerHTML = '<svg viewBox="0 0 24 24" width="36" height="36" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
@@ -274,9 +395,223 @@ export class LyricsChordsView extends Component {
     }));
   }
 
+  renderKaraokePanel() {
+    const originalVideoId = this.currentSong?.youtubeVideoId || '';
+    const instrumentalVideoId = this.currentSong?.karaokeVideoId || this.currentSong?.backingTrackVideoId || '';
+    const videoCandidate = this.getSingModeVideoId() || originalVideoId;
+    const activeVideoId = /^[A-Za-z0-9_-]{11}$/.test(videoCandidate) ? videoCandidate : '';
+    return `
+      <div class="karaoke-lyrics" aria-label="Letra de canto">
+        <p id="karaokeCurrentLine"></p><p id="karaokeNextLine"></p>
+      </div>
+      <section class="karaoke-audio-companion-panel" id="karaokeAudioCompanion" aria-label="Base de canto">
+        <div class="karaoke-heading">
+          <div><span class="studio-eyebrow">TU ENSAYO, A TU RITMO</span><h2>Estudio de canto</h2><p id="karaokeBackingStatus" role="status">Preparando acompañamiento…</p></div>
+          <button type="button" id="btnImportKaraokeBacking">Importar audio</button>
+          <input type="file" id="karaokeBackingFile" accept="audio/*,.wav,.mp3,.m4a,.ogg,.flac" hidden>
+        </div>
+        ${activeVideoId ? `
+          <div class="karaoke-video-block" aria-label="Referencia de vídeo">
+            <div class="karaoke-track-switch" role="group" aria-label="Fuente de vídeo de la pista">
+              <button type="button" id="btnKaraokeTrackOriginal" class="${this.karaokeTrackMode === 'original' ? 'active' : ''}" data-karaoke-track="original" ${originalVideoId ? '' : 'disabled'}>Original</button>
+              <button type="button" id="btnKaraokeTrackInstrumental" class="${this.karaokeTrackMode === 'instrumental' ? 'active' : ''}" data-karaoke-track="instrumental" ${instrumentalVideoId ? '' : 'disabled'}>Instrumental</button>
+            </div>
+            <iframe id="karaokeYouTubeIframe" title="Vídeo de referencia de la canción" width="100%" height="220" src="https://www.youtube-nocookie.com/embed/${activeVideoId}?autoplay=0&rel=0&modestbranding=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+          </div>
+        ` : ''}
+        <div class="karaoke-source-switch" role="group" aria-label="Fuente de acompañamiento">
+          <label><input type="radio" name="karaokeSource" value="local" checked> Base importada</label>
+          <label><input type="radio" name="karaokeSource" value="synth"> Guía de práctica</label>
+        </div>
+        <p class="karaoke-source-note" id="karaokeSourceNote">Audio guardado en este dispositivo.</p>
+        <div class="karaoke-timeline">
+          <output id="karaokeTime">0:00 / 0:00</output>
+          <input type="range" id="karaokeSeek" aria-label="Posición de la base" min="0" max="1" step="0.1" value="0">
+        </div>
+        <div class="karaoke-mixer">
+          <label>Volumen de base <input type="range" id="karaokeVolume" min="0" max="1" step="0.01" value="0.65"></label>
+          <label>Tempo de práctica <input type="number" id="karaokeTempo" min="40" max="220" step="1" value="${Number(this.backing?.tempoBpm || this.currentSong?.tempo) || 72}"></label>
+          <label>Inicio de letra (s) <input type="number" id="karaokeOffset" min="-600" max="600" step="0.1" value="0"></label>
+          <button type="button" id="btnRemoveKaraokeBacking">Borrar base</button>
+        </div>
+        <p class="karaoke-error" id="karaokeBackingError" role="alert" hidden></p>
+        <button type="button" id="btnAssociateLegacyBacking" hidden>Asociar base anterior a esta versión</button>
+        <div class="karaoke-mic-row">
+          <button type="button" id="btnKaraokeMic" aria-pressed="false">Activar micrófono</button>
+          <span id="karaokeMicStatus" role="status">Micrófono desactivado</span>
+        </div>
+        <p class="karaoke-source-note">Con auriculares, el micrófono recibe tu voz sin la base de fondo.</p>
+        <p class="karaoke-source-note" id="karaokeTimingNote">Letra con avance estimado. Sin melodía vocal de referencia.</p>
+        <div class="karaoke-lyrics-import"><button type="button" id="btnImportKaraokeLyrics">Importar letra con tiempos · LRC</button><input type="file" id="karaokeLyricsFile" accept=".lrc,text/plain" hidden><p>Los tiempos se guardan con esta canción. El ajuste «Inicio de letra» permite alinear la entrada con tu audio.</p></div>
+        ${/^[A-Za-z0-9_-]{11}$/.test(this.currentSong?.youtubeVideoId || '') ? `<a class="karaoke-video-link" href="https://www.youtube.com/watch?v=${this.currentSong.youtubeVideoId}" target="_blank" rel="noopener noreferrer">Vídeo opcional · requiere conexión</a>` : ''}
+      </section>
+    `;
+  }
+
+  updateKaraokeState() {
+    this.pitchLane?.setTranspose(this.backing?.effectiveTranspose || 0);
+    const panel = this.container?.querySelector('#karaokeAudioCompanion');
+    if (!panel || !this.backing) return;
+    const engine = this.backing;
+    const local = engine.mode === 'local';
+    const status = engine.loading ? 'Preparando base…' : local
+      ? engine.record ? `${engine.record.name} · guardada en este dispositivo` : 'Esta canción aún no tiene una base importada.'
+      : 'Acompañamiento generado · no es una grabación original';
+    const backingStatusEl = panel.querySelector('#karaokeBackingStatus');
+    if (backingStatusEl) backingStatusEl.textContent = status;
+    const sourceNoteEl = panel.querySelector('#karaokeSourceNote');
+    if (sourceNoteEl) sourceNoteEl.textContent = local
+      ? `Velocidad ${engine.playbackRate.toFixed(2)}× · el navegador conserva el tono. Los tiempos siguen al audio.${this.transposeSemitones ? ' El audio y la referencia vocal no se transponen; el cambio de tono solo afecta al cifrado. Usa la guía generada para ensayar en otro tono.' : ''}`
+      : `${engine.chords.length ? 'Arreglo estimado del cifrado' : 'Pulso de práctica, sin acordes disponibles'} a ${Math.round(engine.tempoBpm)} BPM · tono ${engine.transposeSemitones > 0 ? '+' : ''}${engine.transposeSemitones} st. No reproduce el arreglo original.`;
+    panel.querySelectorAll('[name="karaokeSource"]').forEach(input => {
+      input.checked = input.value === engine.mode;
+      input.disabled = engine.loading;
+    });
+    const error = panel.querySelector('#karaokeBackingError');
+    if (error) {
+      error.textContent = engine.error;
+      error.hidden = !engine.error;
+    }
+    const importBtn = panel.querySelector('#btnImportKaraokeBacking');
+    const associate = panel.querySelector('#btnAssociateLegacyBacking');
+    if (associate) { associate.hidden = !engine.legacyRecord; associate.disabled = engine.loading; }
+    if (importBtn) importBtn.disabled = engine.loading;
+    const lyricsImportBtn = panel.querySelector('#btnImportKaraokeLyrics');
+    if (lyricsImportBtn) lyricsImportBtn.disabled = engine.loading;
+    const removeBtn = panel.querySelector('#btnRemoveKaraokeBacking');
+    if (removeBtn) removeBtn.disabled = engine.loading || !engine.record;
+    const volume = panel.querySelector('#karaokeVolume');
+    if (volume && document.activeElement !== volume) volume.value = engine.volume;
+    const offset = panel.querySelector('#karaokeOffset');
+    if (offset) {
+      offset.disabled = !local || !engine.record;
+      if (document.activeElement !== offset) offset.value = engine.offsetMs / 1000;
+    }
+    const tempo = panel.querySelector('#karaokeTempo');
+    if (tempo) {
+      tempo.disabled = engine.loading;
+      if (document.activeElement !== tempo) tempo.value = Math.round(engine.tempoBpm || this.currentSong?.tempo || 72);
+    }
+    const seek = panel.querySelector('#karaokeSeek');
+    if (seek) {
+      seek.disabled = !engine.ready;
+      seek.max = Math.max(1, engine.durationMs / 1000);
+      if (document.activeElement !== seek) seek.value = engine.currentTimeMs / 1000;
+    }
+    const format = ms => `${Math.floor(ms / 60000)}:${String(Math.floor(ms / 1000) % 60).padStart(2, '0')}`;
+    const timeEl = panel.querySelector('#karaokeTime');
+    if (timeEl) timeEl.textContent = `${format(engine.currentTimeMs)} / ${format(engine.durationMs)}`;
+    const micStatusEl = panel.querySelector('#karaokeMicStatus');
+    if (micStatusEl) micStatusEl.textContent = this.micStatus;
+    const play = this.container.querySelector('#btnSingPlayPause');
+    if (play) {
+      play.disabled = !engine.ready;
+      play.setAttribute('aria-label', engine.playing ? 'Pausar canto' : 'Reproducir base');
+      play.title = engine.playing ? 'Pausar canto' : 'Reproducir base';
+      play.textContent = engine.playing ? 'Ⅱ' : '▶';
+    }
+    const mic = panel.querySelector('#btnKaraokeMic');
+    if (mic) {
+      mic.disabled = Boolean(vocalCoachEngine.starting);
+      mic.textContent = vocalCoachEngine.isRunning ? 'Desactivar micrófono' : 'Activar micrófono';
+      mic.setAttribute('aria-pressed', String(vocalCoachEngine.isRunning));
+    }
+    const heroLabel = this.container.querySelector('.sing-mic-label');
+    if (heroLabel) heroLabel.textContent = vocalCoachEngine.isRunning ? 'Micrófono activo' : 'Micrófono apagado';
+    const lane = this.pitchLane;
+    if (!lane) return;
+    const lines = lane.lyricLines || [];
+    const time = this.getKaraokeClockMs();
+    const index = lines.findIndex(line => time >= line.startTime && time < line.startTime + line.duration);
+    const curLine = this.container?.querySelector('#karaokeCurrentLine');
+    if (curLine) {
+      curLine.textContent = index >= 0 ? lines[index].text
+        : time < 0 ? 'Introducción instrumental' : lines.length ? (time === 0 ? lines[0].text : '') : 'Sin letra disponible para esta canción.';
+    }
+    const nextLine = this.container?.querySelector('#karaokeNextLine');
+    if (nextLine) {
+      nextLine.textContent = (index >= 0 ? lines[index + 1] : lines.find(line => line.startTime > time))?.text || '';
+    }
+    const timingNote = panel?.querySelector('#karaokeTimingNote');
+    if (timingNote) {
+      timingNote.textContent = [
+        lane.timingIsEstimated ? 'Letra con avance estimado.' : 'Letra con tiempos aportados.',
+        lane.targetBlocks.length ? 'Melodía vocal aportada.' : 'Afinación cromática; sin evaluación de la melodía original.'
+      ].join(' ');
+    }
+  }
+
+  async startSingingMicrophone() {
+    const song = this.currentSong;
+    this.micStatus = 'Esperando permiso del micrófono…';
+    const pending = vocalCoachEngine.start();
+    this.updateKaraokeState();
+    const ok = await pending;
+    if (this.performanceMode !== 'sing' || song !== this.currentSong) return false;
+    if (ok) this.micStatus = 'Micrófono activo';
+    this.updateKaraokeState();
+    return ok;
+  }
+
+  async playSinging() {
+    if (!this.pitchLane || this.performanceMode !== 'sing') return;
+    const lane = this.pitchLane;
+    if (await this.backing.play()) {
+      if (this.pitchLane !== lane || this.performanceMode !== 'sing') { this.backing.pause(); return; }
+      lane.seek(this.backing.lyricTimeMs);
+      lane.play();
+      this._scorecardShown = false;
+      this.container.querySelector('#singerPitchNoteLabel').textContent = vocalCoachEngine.isRunning
+        ? 'Escuchando tu voz · afinación cromática' : 'Base en reproducción · micrófono desactivado';
+    }
+    this.updateKaraokeState();
+  }
+
+  pauseSinging() {
+    this.backing?.pause();
+    this.pitchLane?.pause();
+    vocalCoachEngine.setPlaybackActive(false);
+    clearTimeout(this._smartPauseTimer);
+    this._smartPauseTimer = null;
+    this._setSingerRibbonPausedState();
+    this.updateKaraokeState();
+  }
+
+  stopSinging() {
+    this.pauseSinging();
+    vocalCoachEngine.stop();
+    vocalCoachEngine.setTargetNote(null);
+    this.micStatus = 'Micrófono desactivado';
+    this.pitchLane?.stop();
+    this.pitchLane = null;
+    this._songCompletedUnsub?.();
+    this._songCompletedUnsub = null;
+    const nav = document.getElementById('bottom-nav-container');
+    if (nav) nav.style.display = '';
+    this.updateKaraokeState();
+  }
+
+  async setPerformanceMode(mode) {
+    if (!['play', 'sing'].includes(mode)) return;
+    this.stopSinging();
+    pitchDetector.stop();
+    this.isLiveListening = false;
+    this.performanceMode = mode;
+    localStorage.setItem('app_performance_mode', mode);
+    this.render();
+    if (mode === 'sing') {
+      vocalCoachEngine.resetSessionStats();
+      await this.backing.loadSong(this.currentSong);
+      this.updateKaraokeState();
+    }
+  }
+
   isSingingPlaying() {
-    if (typeof window !== 'undefined' && window.__IS_TESTING__) return true;
-    return Boolean(this.performanceMode === 'sing' && this.pitchLane && this.pitchLane.isPlaying);
+    return Boolean(this.performanceMode === 'sing' && (this.pitchLane?.isPlaying || this.backing?.playing));
+  }
+
+  getKaraokeClockMs() {
+    return Number(this.backing?.lyricTimeMs) || 0;
   }
 
   _setSingerRibbonPausedState() {
@@ -350,6 +685,7 @@ export class LyricsChordsView extends Component {
   }
 
   syncContextualState() {
+    this.queuePracticeAutosave();
     events.emit('song:stateChanged', {
       transpose: this.transposeSemitones,
       isAutoScrolling: this.autoScroller.isRunning,
@@ -360,14 +696,20 @@ export class LyricsChordsView extends Component {
   }
 
   setTranspose(semitones) {
-    this.transposeSemitones = semitones;
+    if (!Number.isFinite(Number(semitones))) return;
+    this.transposeSemitones = Math.max(-12, Math.min(12, Math.round(Number(semitones))));
+    const focusedId = this.container?.contains(document.activeElement) ? document.activeElement.id : null;
+    this.backing.setTranspose(this.transposeSemitones);
+    this.queuePracticeAutosave();
     this.render();
+    if (focusedId) this.container.querySelector(`#${CSS.escape(focusedId)}`)?.focus({ preventScroll: true });
     this.syncContextualState();
     toast.show(`Tono: ${this.transposeSemitones > 0 ? '+' : ''}${this.transposeSemitones}`, 'info', 500);
   }
 
   setCapo(fret) {
     this.capoFret = Math.max(0, Math.min(7, fret));
+    this.queuePracticeAutosave();
     this.render();
     toast.show(this.capoFret === 0 ? 'Cejilla desactivada' : `Cejilla en traste ${this.capoFret}`, 'info', 800);
   }
@@ -375,6 +717,7 @@ export class LyricsChordsView extends Component {
   setInstrument(inst) {
     this.currentInstrument = inst;
     localStorage.setItem('app_instrument', inst);
+    this.queuePracticeAutosave();
     chordEngine.setInstrument(inst);
     this.isInstrumentMenuOpen = false;
     this.render();
@@ -384,12 +727,14 @@ export class LyricsChordsView extends Component {
   setNotationSystem(notation) {
     this.notationSystem = notation;
     localStorage.setItem('app_notation', notation);
+    this.queuePracticeAutosave();
     this.render();
     toast.show(`Cifrado: ${notation === 'latin' ? 'Latino (Do, Re, Mi)' : 'Americano (C, D, E)'}`, 'info', 800);
   }
 
   toggleAutoScroll() {
     this.autoScroller.toggle();
+    this.queuePracticeAutosave();
     this.render();
     this.syncContextualState();
   }
@@ -420,6 +765,7 @@ export class LyricsChordsView extends Component {
 
   setViewMode(mode) {
     this.viewMode = mode;
+    this.queuePracticeAutosave();
     const alphatabEl = document.getElementById('alphatab');
     const lyricsContent = this.container.querySelector('#lyricsBodyContent');
     const lyricsToolbar = this.container.querySelector('.lyrics-essential-toolbar');
@@ -441,6 +787,7 @@ export class LyricsChordsView extends Component {
   setFontSizeScale(delta) {
     this.fontSizeScale = Math.max(80, Math.min(180, this.fontSizeScale + delta));
     localStorage.setItem('lyrics_font_scale', this.fontSizeScale);
+    this.queuePracticeAutosave();
     this.updateFontSizeInDOM();
     const badge = this.container?.querySelector('#lblFontScalePercent');
     if (badge) badge.textContent = `${this.fontSizeScale}%`;
@@ -452,6 +799,70 @@ export class LyricsChordsView extends Component {
     if (container) {
       container.style.setProperty('--lyrics-font-scale', String(scale));
       container.style.setProperty('--lyrics-font-size', `${1.12 * scale}rem`);
+    }
+  }
+
+  getPracticeSessionKey(song = this.currentSong) {
+    if (!song) return '';
+    return `tabs_practice_session_${karaokeSongKey(song)}`;
+  }
+
+  restorePracticeSession(song) {
+    try {
+      const raw = localStorage.getItem(this.getPracticeSessionKey(song));
+      if (!raw) return;
+      const saved = JSON.parse(raw);
+      if (Number.isFinite(Number(saved.transpose))) this.transposeSemitones = Math.max(-12, Math.min(12, Number(saved.transpose)));
+      if (Number.isFinite(Number(saved.capo))) this.capoFret = Math.max(0, Math.min(7, Number(saved.capo)));
+      if (['guitar', 'piano', 'ukulele'].includes(saved.instrument)) this.currentInstrument = saved.instrument;
+      if (['anglo', 'latin'].includes(saved.notation)) this.notationSystem = saved.notation;
+      if (Number.isFinite(Number(saved.fontSize))) this.fontSizeScale = Math.max(80, Math.min(180, Number(saved.fontSize)));
+      if (Number.isFinite(saved.scrollSpeed)) this.autoScroller.setSpeed(saved.scrollSpeed);
+      chordEngine.setInstrument(this.currentInstrument);
+    } catch (_) {
+      // A damaged preference must never prevent a song from opening.
+    }
+  }
+
+  queuePracticeAutosave() {
+    if (!this.currentSong) return;
+    clearTimeout(this._sessionSaveTimer);
+    this._sessionSaveTimer = setTimeout(() => this.savePracticeSession(), 180);
+  }
+
+  savePracticeSession() {
+    clearTimeout(this._sessionSaveTimer);
+    if (!this.currentSong) return;
+    const session = {
+      id: this.currentSong.id || null,
+      title: this.currentSong.title || '',
+      artist: this.currentSong.artist || '',
+      transpose: this.transposeSemitones,
+      capo: this.capoFret,
+      instrument: this.currentInstrument,
+      notation: this.notationSystem,
+      fontSize: this.fontSizeScale,
+      viewMode: this.viewMode,
+      scrollSpeed: this.autoScroller?.speedPercent || 25,
+      savedAt: Date.now()
+    };
+    try {
+      localStorage.setItem(this.getPracticeSessionKey(), JSON.stringify(session));
+      localStorage.setItem('tabs_last_session', JSON.stringify(session));
+      const saved = this.sessionRecovery.flush({ song: this.currentSong,
+        transposeSemitones: this.transposeSemitones, capoFret: this.capoFret,
+        fontSizeScale: this.fontSizeScale, instrument: this.currentInstrument,
+        notationSystem: this.notationSystem, visualTheme: this.visualTheme,
+        hideChordsMode: this.hideChordsMode, isSimplified: this.isSimplified, viewMode: this.viewMode,
+        scrollTop: this.autoScroller.readScrollMetrics().scrollTop,
+        autoScroll: { speedPercent: this.autoScroller?.speedPercent } });
+      if (!saved) throw new Error('Session storage unavailable');
+      this._saveWarningShown = false;
+    } catch (_) {
+      if (!this._saveWarningShown) {
+        toast.show('No se pudo guardar la sesión completa en este navegador. Puedes seguir practicando.', 'warning', 3500);
+        this._saveWarningShown = true;
+      }
     }
   }
 
@@ -468,6 +879,8 @@ export class LyricsChordsView extends Component {
 
   render() {
     if (!this.container) return;
+    this._dialogFocusCleanup?.(false);
+    this._dialogFocusCleanup = null;
 
     const title = this.currentSong?.title || 'Selecciona una canción';
     const artist = this.currentSong?.artist || 'Tabs & Chords PRO';
@@ -476,6 +889,7 @@ export class LyricsChordsView extends Component {
     const safeArtist = escapeHTML(artist);
     const safeTuning = escapeHTML(tuning);
     const rawLyrics = this.currentSong?.lyricsChords || '';
+    const quality = assessSong(this.currentSong || {});
     this.visualTheme = localStorage.getItem('app_visual_theme') || 'paper';
 
     const uniqueChords = ChordProParser.extractUniqueChords(rawLyrics, this.transposeSemitones, this.capoFret);
@@ -503,29 +917,33 @@ export class LyricsChordsView extends Component {
             <button class="btn-stage-autoscroll ${this.autoScroller.isRunning ? 'active' : ''}" id="btnStageToggleAutoScroll">
               ${this.autoScroller.isRunning ? 'Pausa' : 'Auto-Scroll'} (<span id="lblStageAutoScrollPercent">${this.autoScroller.speedPercent}%</span>)
             </button>
+            <button class="btn-stage-metronome ${this.songMetronome.isRunning ? 'active' : ''}" id="btnStageMetronomeToggle" aria-pressed="${this.songMetronome.isRunning}">
+              ${this.songMetronome.isRunning ? 'Pausa' : 'Metrónomo'} <span id="lblStageMetronomeBpm">${this.songMetronome.bpm}</span>
+            </button>
+            <button class="btn-stage-zoom-btn" id="btnStageMetronomeIncr" aria-label="Aumentar BPM">+</button>
             <div class="stage-zoom-stepper">
-              <button class="btn-stage-zoom-btn" id="btnStageFontDecr">-</button>
+              <button class="btn-stage-zoom-btn" id="btnStageFontDecr" aria-label="Reducir letra del atril">-</button>
               <span class="stage-hud-font-badge">${this.fontSizeScale}%</span>
-              <button class="btn-stage-zoom-btn" id="btnStageFontIncr">+</button>
+              <button class="btn-stage-zoom-btn" id="btnStageFontIncr" aria-label="Aumentar letra del atril">+</button>
             </div>
           </div>
         ` : ''}
 
         <!-- BARRA FLOTANTE MODO CANTO -->
         ${this.performanceMode === 'sing' ? `
-          <div class="sing-floating-hud" style="position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 16px; background: rgba(20, 16, 30, 0.95); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); padding: 12px 24px; border-radius: 40px; box-shadow: 0 16px 40px rgba(0,0,0,0.6); z-index: 2000;">
-            <button id="btnToggleSmartPause" style="background: transparent; border: none; color: ${this.smartPauseEnabled ? '#22c55e' : '#aaa'}; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 50%; transition: all 0.2s;" title="Pausa Inteligente (Smart Pause)">
+          <div class="sing-floating-hud" role="group" aria-label="Controles de canto">
+            <button id="btnToggleSmartPause" aria-label="Pausa automática al dejar de cantar" aria-pressed="${Boolean(this.smartPauseEnabled)}" title="Pausa Inteligente (Smart Pause)">
               <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/></svg>
             </button>
-            <button id="btnSingRestart" style="background: transparent; border: none; color: #aaa; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 50%; transition: all 0.2s;">
+            <button id="btnSingRestart" aria-label="Volver al inicio del ensayo" title="Volver al inicio">
               <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/></svg>
             </button>
-            <button id="btnSingPlayPause" style="background: var(--accent-primary, #007aff); border: none; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 64px; height: 64px; border-radius: 50%; box-shadow: 0 4px 16px rgba(0, 122, 255, 0.4); transition: all 0.2s;">
+            <button id="btnSingPlayPause" aria-label="Reproducir base">
               <svg viewBox="0 0 24 24" width="36" height="36" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
             </button>
-            <button id="btnFinishVocalSession" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 50%; transition: all 0.2s; font-size: 1.25rem;" title="Finalizar Ensayo y Ver Puntuación">🏆</button>
+            <button id="btnFinishVocalSession" aria-label="Finalizar ensayo y ver resumen" title="Finalizar ensayo y ver resumen">✓</button>
             <div style="display: flex; flex-direction: column; align-items: center; width: 60px;">
-              <span style="font-size: 0.65rem; color: #aaa; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; margin-bottom: 4px;">Micrófono</span>
+              <span class="sing-meter-label">Micrófono</span>
               <div style="width: 100%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden;">
                 <div id="singMicMeterBar" style="width: 0%; height: 100%; background: #22c55e; transition: width 0.1s linear;"></div>
               </div>
@@ -555,6 +973,20 @@ export class LyricsChordsView extends Component {
                 <button id="btnQuickExportPdf" class="quick-tool-pill tool-pdf-pill desktop-header-tool" type="button" aria-label="Exportar PDF o Imprimir" title="Exportar o Imprimir PDF">
                   <span class="tool-btn-icon">📄</span>
                   <span class="tool-btn-label">PDF</span>
+                </button>
+
+                <button id="btnShareSong" class="quick-tool-pill desktop-header-tool" type="button" aria-label="Compartir canción" title="Compartir canción">
+                  <span class="tool-btn-icon">↗</span>
+                  <span class="tool-btn-label">Compartir</span>
+                </button>
+
+                <button id="btnSongTopMetronome" class="quick-tool-pill desktop-header-tool" type="button" aria-pressed="${this.songMetronome.isRunning}" aria-label="${this.songMetronome.isRunning ? 'Pausar' : 'Iniciar'} metrónomo" title="Metrónomo de canción">
+                  <span class="tool-btn-icon">⏱</span><span class="tool-btn-label">${this.songMetronome.bpm} BPM</span>
+                </button>
+
+                <button id="btnQuickRecordAction" class="quick-tool-pill desktop-header-tool ${this.audioRecorder.isRecording ? 'active' : ''}" type="button" aria-pressed="${this.audioRecorder.isRecording}" aria-label="${this.audioRecorder.isRecording ? 'Detener grabación' : 'Grabar ensayo'}" title="${this.audioRecorder.isRecording ? 'Detener grabación' : 'Grabar ensayo'}">
+                  <span class="tool-btn-icon">${this.audioRecorder.isRecording ? '■' : '●'}</span>
+                  <span class="tool-btn-label">${this.audioRecorder.isRecording ? 'Parar' : 'Grabar'}</span>
                 </button>
 
                 <!-- Cejilla / Capo -->
@@ -652,16 +1084,16 @@ export class LyricsChordsView extends Component {
                       <span class="suboption-bridge-arrow">↳</span>
                       <span class="suboption-bridge-text">Instrumento:</span>
                     </div>
-                    <div class="hero-instrument-selector" role="radiogroup" aria-label="Instrumento de interpretación">
-                      <button class="btn-hero-inst-pill ${this.currentInstrument === 'guitar' ? 'active' : ''}" data-inst="guitar" type="button" title="Guitarra">
+                    <div class="hero-instrument-selector" role="group" aria-label="Instrumento de interpretación">
+                      <button class="btn-hero-inst-pill ${this.currentInstrument === 'guitar' ? 'active' : ''}" aria-pressed="${this.currentInstrument === 'guitar'}" data-inst="guitar" type="button" title="Guitarra">
                         <span class="inst-pill-icon">🎸</span>
                         <span class="inst-pill-label">Guitarra</span>
                       </button>
-                      <button class="btn-hero-inst-pill ${this.currentInstrument === 'ukulele' ? 'active' : ''}" data-inst="ukulele" type="button" title="Ukelele">
+                      <button class="btn-hero-inst-pill ${this.currentInstrument === 'ukulele' ? 'active' : ''}" aria-pressed="${this.currentInstrument === 'ukulele'}" data-inst="ukulele" type="button" title="Ukelele">
                         <span class="inst-pill-icon">🏝️</span>
                         <span class="inst-pill-label">Ukelele</span>
                       </button>
-                      <button class="btn-hero-inst-pill ${this.currentInstrument === 'piano' ? 'active' : ''}" data-inst="piano" type="button" title="Piano">
+                      <button class="btn-hero-inst-pill ${this.currentInstrument === 'piano' ? 'active' : ''}" aria-pressed="${this.currentInstrument === 'piano'}" data-inst="piano" type="button" title="Piano">
                         <span class="inst-pill-icon">🎹</span>
                         <span class="inst-pill-label">Piano</span>
                       </button>
@@ -680,13 +1112,13 @@ export class LyricsChordsView extends Component {
 
           <!-- BOTTOM SHEET ESTILO iOS (Herramientas avanzadas) -->
           <div id="lyricsToolsBottomSheetOverlay" style="display: ${this.isOptionsMenuOpen ? 'flex' : 'none'}; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); z-index: 9999; justify-content: center; align-items: flex-end; animation: fadeIn 0.2s;">
-            <div class="bottom-sheet-content" style="background: var(--bg-surface-solid, #1c1c1e); width: 100%; max-width: 600px; max-height: 80vh; border-radius: 24px 24px 0 0; padding: 20px 24px 32px; overflow-y: auto; box-shadow: 0 -4px 32px rgba(0,0,0,0.5); animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1); border: 1px solid rgba(255,255,255,0.1); border-bottom: none;">
+            <div class="bottom-sheet-content" role="dialog" aria-modal="true" aria-labelledby="songOptionsTitle">
               
               <div style="width: 40px; height: 5px; background: rgba(255,255,255,0.2); border-radius: 3px; margin: 0 auto 16px;"></div>
               
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <h3 style="margin: 0; font-size: 1.1rem; color: var(--text-primary); font-weight: 800;">Más opciones</h3>
-                <button id="btnCloseToolsSheet" style="background: rgba(255,255,255,0.1); border: none; color: var(--text-primary); border-radius: 50%; width: 32px; height: 32px; cursor: pointer; display: flex; justify-content: center; align-items: center; font-size: 1.2rem; line-height: 1;">&times;</button>
+                <h3 id="songOptionsTitle" style="margin: 0; font-size: 1.1rem; color: var(--text-primary); font-weight: 800;">Ajusta tu ensayo</h3>
+                <button id="btnCloseToolsSheet" aria-label="Cerrar más opciones" style="background: rgba(255,255,255,0.1); border: none; color: var(--text-primary); border-radius: 50%; width: 32px; height: 32px; cursor: pointer; display: flex; justify-content: center; align-items: center; font-size: 1.2rem; line-height: 1;">&times;</button>
               </div>
 
               <!-- Modo de interpretación: Tocar o Cantar -->
@@ -703,7 +1135,8 @@ export class LyricsChordsView extends Component {
               </div>
               ` : ''}
 
-              <!-- Acciones rápidas en fila -->
+              <details class="song-advanced-options" ${this._advancedOptionsOpen ? 'open' : ''}>
+              <summary>Herramientas y exportación <span>Grabación, escenario, PDF y más</span></summary>
               <div style="display: flex; flex-direction: column; gap: 6px; margin-bottom: 20px;">
                 <button id="btnEnterStageMode" class="btn-menu-action" style="justify-content: flex-start; padding: 12px 16px;">🎭 Modo Atril (Pantalla Completa)</button>
                 <button id="btnOpenBandRoomQuick" class="btn-menu-action" style="justify-content: flex-start; padding: 12px 16px;">🌐 BandRoom Multijugador P2P</button>
@@ -721,12 +1154,14 @@ export class LyricsChordsView extends Component {
                 <button id="btnExportSongbookPDF" class="btn-menu-action" style="justify-content: flex-start; padding: 12px 16px;">📚 Exportar Cancionero Completo (PDF con Índice)</button>
                 <button id="btnOpenShortcutsGuide" class="btn-menu-action" style="justify-content: flex-start; padding: 12px 16px;">⌨️ Pedales Bluetooth y Atajos de Escenario</button>
                 <button id="btnOpenTunerQuick" class="btn-menu-action" style="justify-content: flex-start; padding: 12px 16px;">🎼 Afinador Cromático</button>
+                <button id="btnToggleLiveListen" class="btn-menu-action ${this.isLiveListening ? 'active' : ''}" aria-pressed="${this.isLiveListening}" style="justify-content: flex-start; padding: 12px 16px;">🎤 ${this.isLiveListening ? 'Desactivar escucha activa' : 'Activar escucha activa'}</button>
               </div>
+              </details>
 
               <!-- Ajustes de notación y acordes -->
               <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px;">
                 <div style="background: var(--bg-surface-raised); border: 1px solid var(--border-subtle); border-radius: 12px; padding: 12px;">
-                  <span style="display: block; font-size: 0.7rem; color: var(--text-secondary); text-transform: uppercase; font-weight: 800; margin-bottom: 6px;">Cifrado</span>
+                  <label for="selSongNotation" style="display: block; font-size: 0.7rem; color: var(--text-secondary); text-transform: uppercase; font-weight: 800; margin-bottom: 6px;">Cifrado</label>
                   <select id="selSongNotation" style="background: transparent; border: none; color: var(--text-primary); font-size: 0.9rem; font-weight: 600; cursor: pointer; outline: none; width: 100%;">
                     <option value="anglo" ${this.notationSystem === 'anglo' ? 'selected' : ''}>C, D, E (Anglo)</option>
                     <option value="latin" ${this.notationSystem === 'latin' ? 'selected' : ''}>Do, Re, Mi (Latino)</option>
@@ -735,9 +1170,9 @@ export class LyricsChordsView extends Component {
                 <div style="background: var(--bg-surface-raised); border: 1px solid var(--border-subtle); border-radius: 12px; padding: 12px;">
                   <span style="display: block; font-size: 0.7rem; color: var(--text-secondary); text-transform: uppercase; font-weight: 800; margin-bottom: 6px;">Transponer</span>
                   <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 4px;">
-                    <button id="btnTransposeDown" style="background: rgba(255,255,255,0.1); border: none; color: var(--text-primary); width: 28px; height: 28px; border-radius: 6px; cursor: pointer; font-size: 1rem;">↓</button>
+                    <button id="btnSongTransposeDown" type="button" aria-label="Bajar un semitono" ${this.transposeSemitones <= -12 ? 'disabled' : ''} style="background: rgba(255,255,255,0.1); border: none; color: var(--text-primary); width: 44px; height: 44px; border-radius: 6px; cursor: pointer; font-size: 1rem;">−</button>
                     <span style="font-weight: 700; font-size: 0.9rem;">${this.transposeSemitones > 0 ? '+' : ''}${this.transposeSemitones} st</span>
-                    <button id="btnTransposeUp" style="background: rgba(255,255,255,0.1); border: none; color: var(--text-primary); width: 28px; height: 28px; border-radius: 6px; cursor: pointer; font-size: 1rem;">↑</button>
+                    <button id="btnSongTransposeUp" type="button" aria-label="Subir un semitono" ${this.transposeSemitones >= 12 ? 'disabled' : ''} style="background: rgba(255,255,255,0.1); border: none; color: var(--text-primary); width: 44px; height: 44px; border-radius: 6px; cursor: pointer; font-size: 1rem;">+</button>
                   </div>
                 </div>
               </div>
@@ -749,6 +1184,25 @@ export class LyricsChordsView extends Component {
 
             </div>
           </div>
+
+          ${this.isShortcutsGuideOpen ? `
+            <div class="shortcuts-guide-overlay" id="shortcutsGuideOverlay" role="dialog" aria-modal="true" aria-labelledby="shortcutsGuideTitle">
+              <div class="shortcuts-guide-card">
+                <div class="shortcuts-guide-head"><div><span class="view-header-badge">CONTROL RÁPIDO</span><h2 id="shortcutsGuideTitle">Atajos de ensayo</h2></div><button type="button" id="btnCloseShortcutsGuide" aria-label="Cerrar atajos">×</button></div>
+                <p>Funcionan cuando no estás escribiendo en un campo de texto. También son compatibles con pedales Bluetooth que envían teclas.</p>
+                <div class="shortcuts-guide-grid">
+                  <div><kbd>Espacio</kbd><span>Auto-scroll / pausa</span></div>
+                  <div><kbd>Page ↑/↓</kbd><span>Pasar página</span></div>
+                  <div><kbd>↑ / ↓</kbd><span>Ajustar velocidad</span></div>
+                  <div><kbd>← / →</kbd><span>Cambiar compás</span></div>
+                  <div><kbd>M</kbd><span>Metrónomo</span></div>
+                  <div><kbd>A</kbd><span>Afinador</span></div>
+                  <div><kbd>G</kbd><span>Modo directo</span></div>
+                  <div><kbd>Esc</kbd><span>Cerrar paneles</span></div>
+                </div>
+              </div>
+            </div>
+          ` : ''}
           
           <style>
             @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -757,8 +1211,9 @@ export class LyricsChordsView extends Component {
 
 
           <!-- Singer Live Pitch Ribbon Overlay (Modo Cantar) -->
-          <!-- Singer Live Pitch Ribbon Overlay (Modo Cantar) -->
           ${this.performanceMode === 'sing' ? `
+            ${this.renderKaraokePanel()}
+
             <div class="singer-pitch-lane-wrapper" style="width: 100%; height: 380px; position: relative; border-radius: 20px; overflow: hidden; margin-top: 12px; border: 1px solid rgba(255,255,255,0.05); box-shadow: 0 12px 32px rgba(0,0,0,0.3);">
               <canvas id="pitchLaneCanvas" style="display:block; width:100%; height:100%;"></canvas>
             </div>
@@ -816,17 +1271,34 @@ export class LyricsChordsView extends Component {
           timeSignature: this.currentSong?.timeSignature || '4/4'
         }) : ''}
 
-          <!-- CUERPO DE LETRA (Oculto en modo cantar) -->
+        <!-- CUERPO DE LETRA (Oculto en modo cantar) -->
         <div id="lyricsBodyContent" style="display: ${this.viewMode === 'score' || this.performanceMode === 'sing' ? 'none' : 'block'};">
-          ${this.currentSong?.youtubeVideoId ? `
-            <div class="youtube-pip-container" style="margin-bottom: 24px; border-radius: 16px; overflow: hidden; box-shadow: 0 12px 32px rgba(0,0,0,0.4); max-width: 480px;">
-              <div class="youtube-ai-banner" style="background: linear-gradient(90deg, #ff0050, #7c3aed); color: #fff; padding: 6px 12px; font-size: 0.75rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; justify-content: space-between;">
-                <span>🎵 Acordes por IA (Sincronizados)</span>
-                <span style="font-size: 0.65rem; background: rgba(0,0,0,0.3); padding: 2px 6px; border-radius: 8px;">AUTO-SCROLL ON</span>
-              </div>
-              <iframe width="100%" height="270" src="https://www.youtube-nocookie.com/embed/${this.currentSong.youtubeVideoId}?autoplay=0&rel=0&modestbranding=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="display: block;"></iframe>
-            </div>
+          <aside class="song-content-audit" aria-label="Estado de verificación">
+            <strong>${escapeHTML(quality.label)}</strong>
+            <span>${quality.hasTempo ? 'Tempo declarado, sin contrastar con la grabación.' : 'Tempo de la canción sin documentar.'} ${quality.hasChords ? 'Autenticidad y letra completa pendientes de revisión.' : 'No se añadirán acordes inventados.'}</span>
+          </aside>
+          ${this.isGeneratedChordGuide ? `
+            <aside class="generated-guide-notice" role="note" aria-label="Guía armónica aproximada">
+              <span class="generated-guide-icon" aria-hidden="true">✦</span>
+              <div><strong>Guía armónica aproximada</strong><span>Los acordes se han colocado para ayudarte a practicar y pueden no coincidir con la grabación original.</span></div>
+            </aside>
           ` : ''}
+          <div class="youtube-companion ${this.isYouTubeCompanionOpen ? 'is-open' : ''}" id="youtubeCompanion" role="dialog" aria-modal="true" aria-label="Vídeo de referencia" ${this.isYouTubeCompanionOpen ? '' : 'hidden'}>
+            <div class="youtube-companion-header"><div><strong>Vídeo original</strong><span>Referencia opcional para practicar</span></div><button type="button" id="btnCloseYouTube" aria-label="Cerrar vídeo">×</button></div>
+            <form id="youtubeCompanionForm" class="youtube-companion-form" ${this.isYouTubeEditorOpen ? '' : 'hidden'}>
+              <label for="youtubeCompanionUrl">Enlace de YouTube</label>
+              <div class="youtube-companion-form-row"><input id="youtubeCompanionUrl" type="url" value="${this.currentSong?.youtubeVideoId ? `https://youtu.be/${this.currentSong.youtubeVideoId}` : ''}" placeholder="https://youtu.be/..." autocomplete="off"><button type="submit">Guardar</button></div>
+              <p id="youtubeCompanionStatus" role="status" aria-live="polite"></p>
+              <button type="button" class="btn-link-subtle" id="btnOpenYouTubeSearch">Buscar versión en YouTube</button>
+            </form>
+            ${this.isYouTubeCompanionOpen && /^[A-Za-z0-9_-]{11}$/.test(this.currentSong?.youtubeVideoId || '') ? `
+            <div class="youtube-pip-container">
+              <p class="youtube-reference-note">Vídeo de referencia · reproducción independiente de la letra</p>
+              <iframe title="Vídeo de referencia" width="100%" height="270" src="https://www.youtube-nocookie.com/embed/${this.currentSong.youtubeVideoId}?autoplay=0&rel=0" frameborder="0" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen style="display: block;"></iframe>
+            </div>
+          ` : '<div class="youtube-companion-empty">Añade un vídeo para tener una referencia visual durante el ensayo.</div>'}
+          </div>
+          <button type="button" id="btnToggleYouTube" class="youtube-companion-trigger">${this.currentSong?.youtubeVideoId ? 'Abrir vídeo original' : 'Añadir vídeo original'}</button>
           ${parsedHtml}
         </div>
       </div>
@@ -847,13 +1319,21 @@ export class LyricsChordsView extends Component {
         if (this.pitchLane) {
           this.pitchLane.stop();
         }
-        import('./lyrics/PitchLaneCanvas.js').then(({ PitchLaneCanvas }) => {
-          this.pitchLane = new PitchLaneCanvas(canvasEl);
-          if (this.currentSong?.lyricsChords) {
-            const songTempo = Number(this.currentSong.tempo) || 72;
-            this.pitchLane.setTargetLyrics(this.currentSong.lyricsChords, songTempo);
+        {
+          this.pitchLane = new PitchLaneCanvas(canvasEl, {
+            clock: () => this.getKaraokeClockMs()
+          });
+          if (this.currentSong?.lyricsChords || this.currentSong?.title) {
+            const songTempo = Number(this.currentSong?.tempo) || 72;
+            this.pitchLane.setTargetLyrics(this.currentSong?.lyricsChords, songTempo, this.currentSong);
           }
           this.pitchLane.start();
+          this.pitchLane.seek(this.getKaraokeClockMs());
+          if (this.backing.playing) this.pitchLane.play();
+          if (typeof window !== 'undefined') {
+            window.__PITCH_LANE_INSTANCE__ = this.pitchLane;
+            window.__ACTIVE_LYRICS_VIEW__ = this;
+          }
           this._setSingerRibbonPausedState();
           if (this.autoScroller && this.autoScroller.isRunning) {
             this.autoScroller.stop('explicit');
@@ -866,7 +1346,7 @@ export class LyricsChordsView extends Component {
               this.showVocalScorecard({ reason: 'completed' });
             }
           });
-        });
+        }
       }
     } else {
       if (globalBottomNav) globalBottomNav.style.display = '';
@@ -876,25 +1356,49 @@ export class LyricsChordsView extends Component {
         this.pitchLane = null;
       }
     }
+    this.updateKaraokeState();
+    if (this.isYouTubeCompanionOpen) {
+      this._dialogFocusCleanup = trapModalFocus(this.container.querySelector('#youtubeCompanion'), {
+        onClose: () => this.closeYouTubePanel(), returnFocus: () => this.container.querySelector('#btnToggleYouTube'),
+      });
+    }
+    if (this.isOptionsMenuOpen) {
+      this._dialogFocusCleanup?.(false);
+      this._dialogFocusCleanup = trapModalFocus(this.container.querySelector('#lyricsToolsBottomSheetOverlay [role="dialog"]'), {
+        onClose: () => this.closeOptionsMenu(), returnFocus: () => this.container.querySelector('#btnMoreOptions'),
+      });
+    }
+  }
+
+  closeOptionsMenu() {
+    this.isOptionsMenuOpen = false;
+    this.render();
+    this.container.querySelector('#btnMoreOptions')?.focus({ preventScroll: true });
   }
 
   bindEvents() {
+    this.container.querySelector('#btnAssociateLegacyBacking')?.addEventListener('click', async () => {
+      if (await this.backing.useLegacyRecording()) {
+        this.pitchLane?.setTargetLyrics(this.currentSong.lyricsChords, this.currentSong.tempo, this.currentSong);
+        this.updateKaraokeState();
+        toast.show('Base asociada. Comprueba que sus tiempos correspondan a esta versión.', 'info', 3000);
+      }
+    });
     
     this.container.querySelector('#btnOpenToolsSheet')?.addEventListener('click', () => {
       this.isOptionsMenuOpen = true;
       this.render();
     });
 
-    this.container.querySelector('#btnCloseToolsSheet')?.addEventListener('click', () => {
-      this.isOptionsMenuOpen = false;
-      this.render();
+    this.container.querySelector('#btnCloseToolsSheet')?.addEventListener('click', () => this.closeOptionsMenu());
+    this.container.querySelector('.song-advanced-options')?.addEventListener('toggle', event => {
+      this._advancedOptionsOpen = event.currentTarget.open;
     });
 
     // Close when clicking the overlay background
     this.container.querySelector('#lyricsToolsBottomSheetOverlay')?.addEventListener('click', (e) => {
       if (e.target.id === 'lyricsToolsBottomSheetOverlay') {
-        this.isOptionsMenuOpen = false;
-        this.render();
+        this.closeOptionsMenu();
       }
     });
 
@@ -930,6 +1434,11 @@ export class LyricsChordsView extends Component {
     });
 
     this.container.querySelector('#btnBackToExplore')?.addEventListener('click', () => {
+      // Detener cualquier loop antes de cambiar de vista evita que el
+      // auto-scroll siga moviendo el viewport mientras se navega atrás.
+      this.autoScroller?.stop('navigation');
+      this.songMetronome?.stop('navigation');
+      this.stopSinging();
       if (this.performanceMode === 'sing') {
         const frames = vocalCoachEngine.sessionStats.totalSingingFrames || 0;
         if (frames >= 25 && !this._scorecardShown) {
@@ -950,37 +1459,11 @@ export class LyricsChordsView extends Component {
     });
 
     this.container.querySelector('#btnGuiderPlay')?.addEventListener('click', () => {
-      this.performanceMode = 'play';
-      localStorage.setItem('app_performance_mode', 'play');
-      this.fontSizeScale = 100;
-      localStorage.setItem('lyrics_font_scale', 100);
-      pitchDetector.stop();
-      vocalCoachEngine.stop();
-      this.render();
-      toast.show('🎸 Modo Instrumento: Acordes, tablatura y acompañamiento listos', 'info', 1500);
+      void this.setPerformanceMode('play');
     });
 
     this.container.querySelector('#btnGuiderSing')?.addEventListener('click', async () => {
-      this.performanceMode = 'sing';
-      localStorage.setItem('app_performance_mode', 'sing');
-      this.fontSizeScale = 135;
-      localStorage.setItem('lyrics_font_scale', 135);
-      this.render();
-
-      // Arrancar motores de audio (PitchLaneCanvas ya ha sido arrancado por render())
-      const [pitchOk] = await Promise.allSettled([
-        pitchDetector.start(),
-        vocalCoachEngine.start(),
-      ]);
-      import('./Toast.js').then(({ toast }) => {
-        if (pitchOk?.status !== 'fulfilled' || !pitchOk.value) {
-          const warningEl = this.container?.querySelector('#micPermissionWarning');
-          if (warningEl) warningEl.style.display = 'flex';
-          toast.show('⚠️ Permiso de micrófono requerido para afinación vocal en tiempo real', 'warning', 3000);
-        } else {
-          toast.show('🎤 Modo Guía Cantante: Micrófono activo. ¡Canta para afinar en directo!', 'success', 2500);
-        }
-      });
+      await this.setPerformanceMode('sing');
     });
 
     this.container.querySelector('#btnOpenRangeFinder')?.addEventListener('click', () => {
@@ -995,30 +1478,8 @@ export class LyricsChordsView extends Component {
     // --- Toggle Real Deslizante Tocar / Cantar ---
     const handleToggleMode = async (targetMode) => {
       if (targetMode === this.performanceMode) return;
-      if (targetMode === 'play') {
-        this.performanceMode = 'play';
-        localStorage.setItem('app_performance_mode', 'play');
-        this.fontSizeScale = 100;
-        localStorage.setItem('lyrics_font_scale', 100);
-        pitchDetector.stop();
-        vocalCoachEngine.stop();
-        this.render();
-        toast.show('🎸 Modo Tocar: Acordes y tablatura listos', 'info', 1500);
-      } else if (targetMode === 'sing') {
-        this.performanceMode = 'sing';
-        localStorage.setItem('app_performance_mode', 'sing');
-        this.fontSizeScale = 135;
-        localStorage.setItem('lyrics_font_scale', 135);
-        this.render();
-        const [pitchOk] = await Promise.allSettled([pitchDetector.start(), vocalCoachEngine.start()]);
-        if (pitchOk?.status !== 'fulfilled' || !pitchOk.value) {
-          const warningEl = this.container?.querySelector('#micPermissionWarning');
-          if (warningEl) warningEl.style.display = 'flex';
-          toast.show('⚠️ Permiso de micrófono requerido para afinación vocal', 'warning', 3000);
-        } else {
-          toast.show('🎤 Modo Cantar: Micrófono activo. ¡Canta en directo!', 'success', 2500);
-        }
-      }
+      await this.setPerformanceMode(targetMode);
+      if (targetMode === 'sing') toast.show('Pulsa reproducir para ensayar. Activa el micrófono cuando quieras.', 'info', 2500);
     };
 
     const playSingToggle = this.container.querySelector('#btnPlaySingToggle');
@@ -1051,6 +1512,67 @@ export class LyricsChordsView extends Component {
       window.print();
     });
 
+    this.container.querySelector('#btnShareSong')?.addEventListener('click', async () => {
+      const songTitle = this.currentSong?.title || 'Canción';
+      const shareData = {
+        title: `${songTitle} · Tabs & Chords PRO`,
+        text: `Estoy practicando ${songTitle}${this.currentSong?.artist ? ` de ${this.currentSong.artist}` : ''} en Tabs & Chords PRO.`,
+        url: window.location.href
+      };
+      try {
+        if (typeof navigator.share === 'function') {
+          await navigator.share(shareData);
+          return;
+        }
+        if (navigator.clipboard?.writeText) {
+          await navigator.clipboard.writeText(`${shareData.text} ${shareData.url}`);
+          toast.show('Enlace de práctica copiado', 'success', 1400);
+        } else {
+          toast.show('Copia el enlace desde la barra del navegador', 'info', 1800);
+        }
+      } catch (error) {
+        if (error?.name !== 'AbortError') toast.show('No se pudo compartir todavía', 'warning', 1400);
+      }
+    });
+
+    this.container.querySelector('#btnSongTopMetronome')?.addEventListener('click', () => this.openSongMetronomePanel());
+    this.container.querySelector('#btnStageMetronomeToggle')?.addEventListener('click', () => this.songMetronome.toggle());
+    this.container.querySelector('#btnStageMetronomeIncr')?.addEventListener('click', () => this.songMetronome.stepBpm(1));
+
+    this.container.querySelector('#btnToggleYouTube')?.addEventListener('click', () => {
+      this.isYouTubeCompanionOpen = true;
+      this.isYouTubeEditorOpen = true;
+      this.render();
+      this.container.querySelector('#youtubeCompanionUrl')?.focus();
+    });
+    this.container.querySelector('#btnCloseYouTube')?.addEventListener('click', () => {
+      this.closeYouTubePanel();
+    });
+    this.container.querySelector('#youtubeCompanionForm')?.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const form = event.currentTarget;
+      const input = form.querySelector('#youtubeCompanionUrl');
+      const status = form.querySelector('#youtubeCompanionStatus');
+      const videoId = extractYouTubeVideoId(input?.value || '');
+      if (!videoId) {
+        input?.setAttribute('aria-invalid', 'true');
+        if (status) status.textContent = 'Introduce un enlace válido de YouTube.';
+        return;
+      }
+      input?.setAttribute('aria-invalid', 'false');
+      if (this.currentSong) {
+        this.currentSong.youtubeVideoId = saveSongYouTubeVideoId(this.currentSong, videoId) || videoId;
+      }
+      if (status) status.textContent = 'Vídeo guardado para esta canción.';
+      this.isYouTubeEditorOpen = false;
+      const iframe = this.container.querySelector('.youtube-companion iframe');
+      if (iframe) iframe.src = `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=0&rel=0&modestbranding=1`;
+      else this.render();
+    });
+    this.container.querySelector('#btnOpenYouTubeSearch')?.addEventListener('click', () => {
+      window.open(buildYouTubeSearchUrl(this.currentSong), '_blank', 'noopener,noreferrer');
+    });
+
     // --- Selector de Instrumento Integrado en Hero Cluster ---
     this.container.querySelectorAll('.btn-hero-inst-pill').forEach(btn => {
       btn.addEventListener('click', () => {
@@ -1081,35 +1603,107 @@ export class LyricsChordsView extends Component {
       this.render();
     });
 
-    // --- Canto: Controles Flotantes y Smart Pause ---
-    this.container.querySelector('#btnSingPlayPause')?.addEventListener('click', () => {
-      if (vocalCoachEngine.audioContext && vocalCoachEngine.audioContext.state === 'suspended') {
-        vocalCoachEngine.audioContext.resume();
+    this.container.querySelector('#btnImportKaraokeBacking')?.addEventListener('click', () => {
+      this.container.querySelector('#karaokeBackingFile')?.click();
+    });
+
+    this.container.querySelector('#karaokeBackingFile')?.addEventListener('change', async (event) => {
+      const file = event.target.files?.[0];
+      if (!file) return;
+      const ok = await this.backing.importFile(file);
+      event.target.value = '';
+      this.updateKaraokeState();
+      toast.show(ok ? 'Base guardada para esta canción' : (this.backing.error || 'No se pudo importar la base'), ok ? 'success' : 'warning', 1800);
+    });
+
+    this.container.querySelectorAll('[name="karaokeSource"]').forEach((input) => {
+      input.addEventListener('change', (event) => {
+        this.backing.setMode(event.currentTarget.value);
+        this.updateKaraokeState();
+      });
+    });
+
+    this.container.querySelectorAll('[data-karaoke-track]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const nextMode = button.dataset.karaokeTrack;
+        if (!['original', 'instrumental'].includes(nextMode) || nextMode === this.karaokeTrackMode) return;
+        this.karaokeTrackMode = nextMode;
+        this.render();
+      });
+    });
+
+    this.container.querySelector('#karaokeVolume')?.addEventListener('input', (event) => {
+      this.backing.setVolume(Number(event.currentTarget.value));
+    });
+    this.container.querySelector('#karaokeVolume')?.addEventListener('change', () => void this.backing.saveSettings());
+
+    this.container.querySelector('#karaokeOffset')?.addEventListener('input', (event) => {
+      this.backing.setOffsetMs(Number(event.currentTarget.value) * 1000);
+      if (this.pitchLane) this.pitchLane.seek(this.backing.lyricTimeMs);
+      this.updateKaraokeState();
+    });
+    this.container.querySelector('#karaokeOffset')?.addEventListener('change', () => void this.backing.saveSettings());
+
+    this.container.querySelector('#karaokeTempo')?.addEventListener('change', (event) => {
+      if (!event.currentTarget.value || !event.currentTarget.validity.valid) {
+        toast.show('Elige un tempo entre 40 y 220 BPM.', 'warning', 2000);
+        event.currentTarget.value = this.backing.tempoBpm;
+        return;
       }
-      if (this.pitchLane) {
-        if (this.pitchLane.isPlaying) {
-          this.pitchLane.pause();
-          this._setSingerRibbonPausedState();
-          if (this.autoScroller && this.autoScroller.isRunning) this.autoScroller.stop('explicit');
-        } else {
-          this.pitchLane.play();
-          const labelEl = this.container?.querySelector('#singerPitchNoteLabel');
-          if (labelEl) labelEl.textContent = '🎤 Escuchando tu voz... ¡Canta!';
-        }
+      this.backing.setTempoBpm(Number(event.currentTarget.value));
+      void this.backing.saveSettings();
+      toast.show(`Tempo de práctica: ${Math.round(this.backing.tempoBpm)} BPM`, 'info', 900);
+    });
+
+    this.container.querySelector('#btnImportKaraokeLyrics')?.addEventListener('click', () => this.container.querySelector('#karaokeLyricsFile')?.click());
+    this.container.querySelector('#karaokeLyricsFile')?.addEventListener('change', async event => {
+      const file = event.currentTarget.files?.[0];
+      event.currentTarget.value = '';
+      if (!file) return;
+      if (await this.backing.importLyrics(file)) {
+        this.pitchLane?.setTargetLyrics(this.currentSong.lyricsChords, this.currentSong.tempo, this.currentSong);
+        this.pauseSinging();
+        toast.show('Letra con tiempos guardada. Lista para ensayar.', 'success', 2200);
       }
-      const isRunning = this.pitchLane ? this.pitchLane.isPlaying : false;
-      const btn = this.container.querySelector('#btnSingPlayPause');
-      if (btn) btn.innerHTML = isRunning 
-        ? '<svg viewBox="0 0 24 24" width="36" height="36" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>' // Pause
-        : '<svg viewBox="0 0 24 24" width="36" height="36" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>'; // Play
+    });
+
+    this.container.querySelector('#karaokeSeek')?.addEventListener('input', (event) => {
+      this.backing.seek(Number(event.currentTarget.value) * 1000);
+      if (this.pitchLane) this.pitchLane.seek(this.backing.lyricTimeMs);
+      this.updateKaraokeState();
+    });
+
+    this.container.querySelector('#btnRemoveKaraokeBacking')?.addEventListener('click', async () => {
+      const removed = await this.backing.removeFile();
+      this.updateKaraokeState();
+      if (removed) toast.show('Base eliminada. Tus letras con tiempos se conservan.', 'info', 1800);
+    });
+
+    this.container.querySelector('#btnKaraokeMic')?.addEventListener('click', async () => {
+      if (vocalCoachEngine.isRunning) {
+        vocalCoachEngine.stop();
+        this.micStatus = 'Micrófono desactivado';
+        this.updateKaraokeState();
+      } else {
+        await this.startSingingMicrophone();
+      }
+    });
+
+    // --- Canto: Controles Flotantes y Sincronización de Audio ---
+    this.container.querySelector('#btnSingPlayPause')?.addEventListener('click', async () => {
+      if (this.backing?.playing || this.pitchLane?.isPlaying) {
+        this.pauseSinging();
+        if (this.autoScroller?.isRunning) this.autoScroller.stop('explicit');
+      } else {
+        await this.playSinging();
+      }
+      this.updateKaraokeState();
     });
 
     this.container.querySelector('#btnSingRestart')?.addEventListener('click', () => {
-      if (this.pitchLane) {
-        this.pitchLane.pause();
-        this.pitchLane.seek(0);
-        this._setSingerRibbonPausedState();
-      }
+      this.pauseSinging();
+      this.backing?.seek(0);
+      this.pitchLane?.seek(0);
       this._scorecardShown = false;
       try { vocalCoachEngine.resetSessionStats(); } catch (_) {}
       if (this.autoScroller) {
@@ -1117,23 +1711,19 @@ export class LyricsChordsView extends Component {
         const el = this.container?.querySelector('#lyricsBodyScroll');
         if (el) el.scrollTop = 0;
       }
-      const btn = this.container.querySelector('#btnSingPlayPause');
-      if (btn) btn.innerHTML = '<svg viewBox="0 0 24 24" width="36" height="36" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>'; // Play
+      this._setSingerRibbonPausedState();
+      this.updateKaraokeState();
     });
 
     this.container.querySelector('#btnToggleSmartPause')?.addEventListener('click', (e) => {
       this.smartPauseEnabled = !this.smartPauseEnabled;
       const btn = e.currentTarget;
-      btn.style.color = this.smartPauseEnabled ? '#22c55e' : '#aaa';
+      btn.setAttribute('aria-pressed', String(this.smartPauseEnabled));
       import('./Toast.js').then(({ toast }) => toast.show(this.smartPauseEnabled ? 'Pausa Inteligente Activada' : 'Pausa Inteligente Desactivada', 'info', 2000));
     });
 
     this.container.querySelector('#btnFinishVocalSession')?.addEventListener('click', () => {
-      const frames = vocalCoachEngine.sessionStats.totalSingingFrames || 0;
-      if (frames < 20) {
-        import('./Toast.js').then(({ toast }) => toast.show('Canta al menos unas notas antes de finalizar el ensayo', 'info', 2500));
-        return;
-      }
+      this.pauseSinging();
       this.showVocalScorecard({ reason: 'user_finish' });
     });
 
@@ -1224,13 +1814,19 @@ export class LyricsChordsView extends Component {
     });
 
     // Cerrar el panel al hacer clic fuera
-    document.addEventListener('click', (e) => {
+    this._removeSpeedPanelOutsideListener?.();
+    const closeSpeedPanelOnOutsideClick = (e) => {
       if (speedPanel && speedPanel.style.display === 'flex') {
         if (!speedPanel.contains(e.target) && e.target !== speedBtn) {
           speedPanel.style.display = 'none';
         }
       }
-    }, { once: false });
+    };
+    document.addEventListener('click', closeSpeedPanelOnOutsideClick);
+    this._removeSpeedPanelOutsideListener = () => {
+      document.removeEventListener('click', closeSpeedPanelOnOutsideClick);
+      this._removeSpeedPanelOutsideListener = null;
+    };
 
     // Botón Iniciar/Parar dentro del panel
     this.container.querySelector('#btnToggleAutoScrollPanel')?.addEventListener('click', () => {
@@ -1279,8 +1875,8 @@ export class LyricsChordsView extends Component {
     this.container.querySelector('#btnTransposeMinus')?.addEventListener('click', () => this.setTranspose(this.transposeSemitones - 1));
     this.container.querySelector('#btnTransposePlus')?.addEventListener('click', () => this.setTranspose(this.transposeSemitones + 1));
     this.container.querySelector('#btnTransposeReset')?.addEventListener('click', () => this.setTranspose(0));
-    this.container.querySelector('#btnTransposeDown')?.addEventListener('click', () => this.setTranspose(this.transposeSemitones - 1));
-    this.container.querySelector('#btnTransposeUp')?.addEventListener('click', () => this.setTranspose(this.transposeSemitones + 1));
+    this.container.querySelector('#btnSongTransposeDown')?.addEventListener('click', () => this.setTranspose(this.transposeSemitones - 1));
+    this.container.querySelector('#btnSongTransposeUp')?.addEventListener('click', () => this.setTranspose(this.transposeSemitones + 1));
 
     this.container.querySelector('#btnFontDecr')?.addEventListener('click', () => this.setFontSizeScale(-10));
     this.container.querySelector('#btnFontIncr')?.addEventListener('click', () => this.setFontSizeScale(10));
@@ -1306,6 +1902,22 @@ export class LyricsChordsView extends Component {
       this.isOptionsMenuOpen = !this.isOptionsMenuOpen;
       this.isInstrumentMenuOpen = false;
       this.render();
+    });
+
+    this.container.querySelector('#btnOpenShortcutsGuide')?.addEventListener('click', () => {
+      this.isOptionsMenuOpen = false;
+      this.isShortcutsGuideOpen = true;
+      this.render();
+    });
+    this.container.querySelector('#btnCloseShortcutsGuide')?.addEventListener('click', () => {
+      this.isShortcutsGuideOpen = false;
+      this.render();
+    });
+    this.container.querySelector('#shortcutsGuideOverlay')?.addEventListener('click', (event) => {
+      if (event.target.id === 'shortcutsGuideOverlay') {
+        this.isShortcutsGuideOpen = false;
+        this.render();
+      }
     });
 
     this.container.querySelector('#btnEnterStageMode')?.addEventListener('click', () => {
@@ -1357,55 +1969,6 @@ export class LyricsChordsView extends Component {
       this.isOptionsMenuOpen = false;
       this.render();
       events.emit('arcade:open');
-    });
-
-    this.container.querySelector('#btnOpenLooperQuick')?.addEventListener('click', () => {
-      this.isOptionsMenuOpen = false;
-      this.render();
-      
-      const res = confirm("Entrenador Adaptativo (Smart Looper):\n¿Deseas iniciar el entrenamiento de bucle con Web Audio API?\n\n- Toca/Canta por encima del 95% de precisión para aumentar la velocidad un 5%.\n- Falla (<70%) y la reduciremos automáticamente.\n\n¿Empezar?");
-      if(res) {
-        toast.show('🔁 Bucle Adaptativo Activo. Escuchando micrófono...', 'success', 3000);
-        
-        let hits = 0;
-        let misses = 0;
-        
-        // Simulated AI Loop evaluation logic (using real pitchDetector events if available)
-        const unregister = events.on('tuner:pitch', (pitch) => {
-          if (!this.autoScroller.isRunning) this.autoScroller.start();
-          
-          const errorCents = Math.abs(pitch.cents || 0);
-          if (errorCents <= 15) hits++;
-          else if (errorCents > 40) misses++;
-          
-          // Evalúa cada 50 muestras (~2-3 segundos de audio)
-          if (hits + misses > 50) {
-            const accuracy = hits / (hits + misses);
-            if (accuracy >= 0.95) {
-              toast.show('🔥 ¡Perfecto! Subiendo velocidad (+5%)', 'success', 1500);
-              this.autoScroller.stepSpeed(5);
-            } else if (accuracy < 0.70) {
-              toast.show('📉 Vamos a intentarlo más despacio (-5%)', 'warning', 1500);
-              this.autoScroller.stepSpeed(-5);
-            } else {
-              toast.show(`✅ Vas bien (Precisión: ${Math.round(accuracy*100)}%). Manteniendo velocidad.`, 'info', 1500);
-            }
-            hits = 0;
-            misses = 0;
-          }
-        });
-        
-        import('../audio/PitchDetector.js').then(({ pitchDetector }) => {
-          pitchDetector.start();
-        });
-
-        // Autodestrucción del loop si sale de la vista
-        const cleanup = () => {
-          unregister();
-          events.off('ui:switchTab', cleanup);
-        };
-        events.on('ui:switchTab', cleanup);
-      }
     });
 
     this.container.querySelector('#btnOpenPedalboardQuick')?.addEventListener('click', () => {
@@ -1488,6 +2051,14 @@ export class LyricsChordsView extends Component {
     });
   }
 
+  getSingModeVideoId() {
+    if (!this.currentSong) return null;
+    if (this.karaokeTrackMode === 'instrumental') {
+      return this.currentSong.karaokeVideoId || this.currentSong.backingTrackVideoId || this.currentSong.youtubeVideoId || null;
+    }
+    return this.currentSong.youtubeVideoId || null;
+  }
+
   showVocalScorecard(options = {}) {
     import('./lyrics/VocalScorecardModal.js').then(({ VocalScorecardModal }) => {
       import('../audio/VocalCoachEngine.js').then(({ vocalCoachEngine }) => {
@@ -1495,6 +2066,7 @@ export class LyricsChordsView extends Component {
           songTitle: this.currentSong?.title || 'Canción Actual',
           artist: this.currentSong?.artist || '',
           sessionStats: vocalCoachEngine.sessionStats,
+          hasMelodyReference: Boolean(this.pitchLane?.targetBlocks.length),
           onClose: () => {
             this._scorecardShown = true;
             if (options.onClose) options.onClose();
@@ -1502,17 +2074,115 @@ export class LyricsChordsView extends Component {
           onRetry: () => {
             try { vocalCoachEngine.resetSessionStats(); } catch (_) {}
             this._scorecardShown = false;
-            if (this.pitchLane) {
-              this.pitchLane.pause();
-              this.pitchLane.seek(0);
-              this._setSingerRibbonPausedState();
-              this.pitchLane.play();
-            }
+            this.pauseSinging();
+            this.backing.seek(0);
+            this.pitchLane?.seek(0);
+            void this.playSinging();
             if (options.onRetry) options.onRetry();
           }
         });
       });
     });
+  }
+
+  openSongMetronomePanel() {
+    if (!this.currentSong || !this.container) return;
+    let overlay = this.container.querySelector('#songMetronomeOverlay');
+    if (!overlay) {
+      overlay = document.createElement('div');
+      overlay.id = 'songMetronomeOverlay';
+      overlay.className = 'studio-modal-overlay song-metronome-overlay';
+      overlay.innerHTML = `
+        <section class="studio-modal-card song-metronome-card" role="dialog" aria-modal="true" aria-labelledby="songMetroTitle">
+          <button type="button" class="studio-modal-close" id="btnCloseSongMetronome" aria-label="Cerrar metrónomo">×</button>
+          <p class="eyebrow">Ritmo de práctica</p>
+          <h2 id="songMetroTitle">Metrónomo de canción</h2>
+          <div class="song-metro-display"><span id="songMetroTempoName">${this.songMetronome.getTempoName()}</span><strong id="songMetroBpmDisplay">${this.songMetronome.bpm}</strong><span>BPM</span></div>
+          <div class="song-metro-stepper"><button type="button" id="songMetroMinus">−</button><input id="songMetroBpmRange" type="range" min="30" max="280" value="${this.songMetronome.bpm}" aria-label="Tempo del metrónomo"><button type="button" id="songMetroPlus">+</button></div>
+          <div class="song-metro-options" role="group" aria-label="Compás">
+            ${['2/4','3/4','4/4','6/8','12/8'].map(ts => `<button type="button" class="metro-option ${this.songMetronome.timeSignature === ts ? 'active' : ''}" data-metro-signature="${ts}">${ts}</button>`).join('')}
+          </div>
+          <div class="song-metro-options" role="group" aria-label="Cuenta atrás"><span class="song-metro-label">Cuenta atrás</span>${[0,1,2,4].map(n => `<button type="button" class="metro-option ${this.songMetronome.countInMeasures === n ? 'active' : ''}" data-metro-countin="${n}">${n === 0 ? 'No' : `${n} compás${n > 1 ? 'es' : ''}`}</button>`).join('')}</div>
+          <button type="button" class="btn-primary studio-modal-main-action" id="btnSongMetroToggle">${this.songMetronome.isRunning ? 'Pausar metrónomo' : 'Iniciar metrónomo'}</button>
+        </section>`;
+      this.container.appendChild(overlay);
+      overlay.addEventListener('click', (event) => { if (event.target === overlay) this.closeSongMetronomePanel(); });
+      overlay.querySelector('#btnCloseSongMetronome')?.addEventListener('click', () => this.closeSongMetronomePanel());
+      overlay.querySelector('#songMetroMinus')?.addEventListener('click', () => this.songMetronome.stepBpm(-1));
+      overlay.querySelector('#songMetroPlus')?.addEventListener('click', () => this.songMetronome.stepBpm(1));
+      overlay.querySelector('#songMetroBpmRange')?.addEventListener('input', (event) => this.songMetronome.setBpm(event.target.value));
+      overlay.querySelector('#btnSongMetroToggle')?.addEventListener('click', () => this.songMetronome.toggle());
+      overlay.querySelectorAll('[data-metro-signature]').forEach(btn => btn.addEventListener('click', () => this.songMetronome.setTimeSignature(btn.dataset.metroSignature)));
+      overlay.querySelectorAll('[data-metro-countin]').forEach(btn => btn.addEventListener('click', () => this.songMetronome.setCountIn(btn.dataset.metroCountin)));
+    }
+    overlay.hidden = false;
+    overlay.classList.add('active');
+    this.updateSongMetronomeDOM();
+    this._dialogFocusCleanup?.(false);
+    this._dialogFocusCleanup = trapModalFocus(overlay, {
+      onClose: () => this.closeSongMetronomePanel(), returnFocus: () => this.container.querySelector('#btnSongTopMetronome'),
+    });
+  }
+
+  closeSongMetronomePanel() {
+    const overlay = this.container?.querySelector('#songMetronomeOverlay');
+    if (overlay && !overlay.hidden) {
+      overlay.hidden = true; overlay.classList.remove('active');
+      this._dialogFocusCleanup?.(); this._dialogFocusCleanup = null;
+    }
+  }
+
+  closeYouTubePanel() {
+    this.isYouTubeCompanionOpen = this.isYouTubeEditorOpen = false;
+    this.render();
+    this.container.querySelector('#btnToggleYouTube')?.focus({ preventScroll: true });
+  }
+
+  updateSongMetronomeDOM() {
+    const topButton = this.container?.querySelector('#btnSongTopMetronome');
+    const stageButton = this.container?.querySelector('#btnStageMetronomeToggle');
+    const label = this.songMetronome.isRunning ? 'Pausar metrónomo' : 'Iniciar metrónomo';
+    if (topButton) {
+      topButton.setAttribute('aria-pressed', String(this.songMetronome.isRunning));
+      topButton.setAttribute('aria-label', label);
+      const text = topButton.querySelector('.tool-btn-label');
+      if (text) text.textContent = `${this.songMetronome.bpm} BPM`;
+      topButton.classList.toggle('active', this.songMetronome.isRunning);
+    }
+    if (stageButton) {
+      if (stageButton.firstChild?.nodeType === Node.TEXT_NODE) {
+        stageButton.firstChild.textContent = this.songMetronome.isRunning ? 'Pausa ' : 'Metrónomo ';
+      }
+      const bpmLabel = stageButton.querySelector('#lblStageMetronomeBpm');
+      if (bpmLabel) bpmLabel.textContent = String(this.songMetronome.bpm);
+      stageButton.classList.toggle('active', this.songMetronome.isRunning);
+      stageButton.setAttribute('aria-label', label);
+      stageButton.setAttribute('aria-pressed', String(this.songMetronome.isRunning));
+    }
+    const root = this.container?.querySelector('#songMetronomeOverlay');
+    if (!root) return;
+    const m = this.songMetronome;
+    const bpm = root.querySelector('#songMetroBpmDisplay');
+    const tempo = root.querySelector('#songMetroTempoName');
+    const range = root.querySelector('#songMetroBpmRange');
+    const toggle = root.querySelector('#btnSongMetroToggle');
+    if (bpm) bpm.textContent = String(m.bpm);
+    if (tempo) tempo.textContent = m.getTempoName();
+    if (range) range.value = String(m.bpm);
+    if (toggle) toggle.textContent = m.isRunning ? 'Pausar metrónomo' : 'Iniciar metrónomo';
+    root.querySelectorAll('[data-metro-signature]').forEach(btn => btn.classList.toggle('active', btn.dataset.metroSignature === m.timeSignature));
+    root.querySelectorAll('[data-metro-countin]').forEach(btn => btn.classList.toggle('active', Number(btn.dataset.metroCountin) === m.countInMeasures));
+  }
+
+  destroy() {
+    this._dialogFocusCleanup?.(false);
+    this.savePracticeSession();
+    this.stopSinging();
+    this.autoScroller?.stop('explicit');
+    this._removeSpeedPanelOutsideListener?.();
+    this.songMetronome?.destroy();
+    this.backing?.destroy();
+    super.destroy();
   }
 }
 

@@ -10,6 +10,14 @@ const MAX_LYRICS_LENGTH = 600000;
 const MAX_SCORE_BYTES = 2000000;
 const MAX_VERSIONS = 24;
 
+// Keep supplied musical references, not arbitrary user-object properties.
+const sanitizeCues = (cues, melody = false) => Array.isArray(cues) ? cues.slice(0, 10000)
+  .filter(c => c && Number.isFinite(c.startTime) && c.startTime >= 0 &&
+    Number.isFinite(c.duration) && c.duration > 0 &&
+    (!melody || (Number.isFinite(c.midi) && c.midi >= 36 && c.midi <= 96)))
+  .map(c => ({ startTime: c.startTime, duration: c.duration, text: boundedString(c.text, 2000),
+    ...(melody ? { midi: c.midi, isInterlude: Boolean(c.isInterlude) } : {}) })) : undefined;
+
 const finiteNumber = (value, fallback = 0) => {
   const number = Number(value);
   return Number.isFinite(number) ? number : fallback;
@@ -100,6 +108,7 @@ const sanitizeVersion = (version, index) => {
   return {
     id: version.id ?? null,
     versionId: version.versionId ?? version.id ?? `version-${index + 1}`,
+    recordingId: boundedString(version.recordingId, 240),
     versionName: boundedString(
       version.versionName || version.label || version.name || version.arrangement || version.version,
       120
@@ -114,6 +123,8 @@ const sanitizeVersion = (version, index) => {
     timeSignature: boundedString(version.timeSignature, 20),
     capo: Math.max(0, Math.min(12, finiteNumber(version.capo ?? version.capoFret, 0))),
     contentSource: boundedString(version.contentSource, 80),
+    lyricCues: sanitizeCues(version.lyricCues),
+    vocalMelody: sanitizeCues(version.vocalMelody, true),
     lyricsChords: boundedString(
       version.lyricsChords || version.chordpro || version.lyrics,
       MAX_LYRICS_LENGTH
@@ -159,6 +170,8 @@ const sanitizeSong = (song) => {
   return {
     id: song.id ?? null,
     versionId: song.versionId ?? song.selectedVersionId ?? null,
+    recordingId: boundedString(song.recordingId, 240),
+    versionIndex: Math.max(0, Math.min(MAX_VERSIONS - 1, finiteNumber(song.versionIndex, 0))),
     versionName: boundedString(song.versionName || song.versionLabel || song.arrangement, 120),
     title,
     artist: boundedString(song.artist, 240),
@@ -167,6 +180,8 @@ const sanitizeSong = (song) => {
     tempo: finiteNumber(song.tempo, 0),
     timeSignature: boundedString(song.timeSignature, 20),
     contentSource: boundedString(song.contentSource, 80),
+    lyricCues: sanitizeCues(song.lyricCues),
+    vocalMelody: sanitizeCues(song.vocalMelody, true),
     lyricsChords: boundedString(
       song.lyricsChords || song.chordpro || song.lyrics,
       MAX_LYRICS_LENGTH
@@ -238,7 +253,8 @@ export class SessionRecovery {
     };
 
     try {
-      this.storage?.setItem(STORAGE_KEY, JSON.stringify(payload));
+      if (!this.storage?.setItem) return false;
+      this.storage.setItem(STORAGE_KEY, JSON.stringify(payload));
       return true;
     } catch (error) {
       console.warn('[SessionRecovery] No se pudo guardar la sesión:', error);

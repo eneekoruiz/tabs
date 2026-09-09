@@ -500,13 +500,15 @@ export class ChordSvgRenderer {
           const x = startX + i * whiteKeyWidth;
           const active = isWhiteActive(k);
           return `
-            <rect x="${x}" y="${startY}" width="${whiteKeyWidth}" height="${whiteKeyHeight}" rx="2" fill="${active ? 'var(--accent-primary, #ff5722)' : 'var(--piano-white-key, #ffffff)'}" stroke="var(--border-strong, #444444)" stroke-width="1.5"/>
-            ${active ? `
-              <circle cx="${x + whiteKeyWidth / 2}" cy="${startY + whiteKeyHeight - 12}" r="4" fill="#100d1c"/>
-              <text x="${x + whiteKeyWidth / 2}" y="${startY + whiteKeyHeight - 9.5}" text-anchor="middle" fill="#ffffff" font-size="6.5" font-weight="900">${k.note}</text>
-            ` : `
-              <text x="${x + whiteKeyWidth / 2}" y="${startY + whiteKeyHeight - 4}" text-anchor="middle" fill="#222222" font-size="6" font-weight="700">${k.note}</text>
-            `}
+            <g class="chord-interactive-key chord-piano-key" data-note="${k.note}" data-oct="${k.oct}" style="cursor: pointer;">
+              <rect class="piano-key-rect" x="${x}" y="${startY}" width="${whiteKeyWidth}" height="${whiteKeyHeight}" rx="2" fill="${active ? 'var(--accent-primary, #ff5722)' : 'var(--piano-white-key, #ffffff)'}" stroke="var(--border-strong, #444444)" stroke-width="1.5"/>
+              ${active ? `
+                <circle cx="${x + whiteKeyWidth / 2}" cy="${startY + whiteKeyHeight - 12}" r="4" fill="#100d1c"/>
+                <text x="${x + whiteKeyWidth / 2}" y="${startY + whiteKeyHeight - 9.5}" text-anchor="middle" fill="#ffffff" font-size="6.5" font-weight="900">${k.note}</text>
+              ` : `
+                <text x="${x + whiteKeyWidth / 2}" y="${startY + whiteKeyHeight - 4}" text-anchor="middle" fill="#222222" font-size="6" font-weight="700">${k.note}</text>
+              `}
+            </g>
           `;
         }).join('')}
 
@@ -514,11 +516,13 @@ export class ChordSvgRenderer {
           const x = startX + (k.pos + 1) * whiteKeyWidth - (blackKeyWidth / 2);
           const active = isBlackActive(k);
           return `
-            <rect x="${x}" y="${startY}" width="${blackKeyWidth}" height="${blackKeyHeight}" rx="2" fill="${active ? 'var(--accent-secondary, #00e5ff)' : 'var(--piano-black-key, #141420)'}" stroke="var(--border-strong, #333333)" stroke-width="1"/>
-            ${active ? `
-              <circle cx="${x + blackKeyWidth / 2}" cy="${startY + blackKeyHeight - 10}" r="3.5" fill="#100d1c"/>
-              <text x="${x + blackKeyWidth / 2}" y="${startY + blackKeyHeight - 7.5}" text-anchor="middle" fill="#ffffff" font-size="5.5" font-weight="900">${k.note}</text>
-            ` : ''}
+            <g class="chord-interactive-key chord-piano-key chord-piano-black-key" data-note="${k.note}" data-oct="${k.oct}" style="cursor: pointer;">
+              <rect class="piano-key-rect" x="${x}" y="${startY}" width="${blackKeyWidth}" height="${blackKeyHeight}" rx="2" fill="${active ? 'var(--accent-primary, #ff5722)' : 'var(--piano-black-key, #141420)'}" stroke="var(--border-strong, #333333)" stroke-width="1"/>
+              ${active ? `
+                <circle cx="${x + blackKeyWidth / 2}" cy="${startY + blackKeyHeight - 10}" r="3.5" fill="#100d1c"/>
+                <text x="${x + blackKeyWidth / 2}" y="${startY + blackKeyHeight - 7.5}" text-anchor="middle" fill="#ffffff" font-size="5.5" font-weight="900">${k.note}</text>
+              ` : ''}
+            </g>
           `;
         }).join('')}
       </svg>

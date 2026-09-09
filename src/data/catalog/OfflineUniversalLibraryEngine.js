@@ -7,6 +7,7 @@
 import { ARTIST_DISCOGRAPHIES } from './ArtistDiscographies.js';
 import { getKnownSongLyrics } from '../lyrics/KnownSongLyrics.js';
 import { resolveSongMetadata } from './SongMetadataResolver.js';
+import { assessSong } from './CatalogQuality.js';
 
 // Base de datos de géneros, progresiones armónicas de éxito mundial y estilos líricos
 const GENRE_HARMONY_PATTERNS = {
@@ -160,11 +161,10 @@ export class OfflineUniversalLibraryEngine {
             id: 'offline_' + Math.abs(this._hashString(uniqueKey)),
             title: item.title,
             artist: item.artist,
-            difficulty: calculateDifficulty(item.title, item.artist),
-            capo: 0,
+            difficulty: resolveSongMetadata(item.title, item.artist).difficulty,
             genre: item.genre,
             source: item.source,
-            contentKind: 'curated_lyrics',
+            contentKind: 'repository_unverified',
             hasCuratedLyrics: true,
             isOfflineReady: true
           });
@@ -188,15 +188,13 @@ export class OfflineUniversalLibraryEngine {
       return {
         title,
         artist,
-        key: 'C',
-        capo: 0,
-        tuning: 'Standard (E A D G B E)',
         tempo: meta.tempo,
+        tempoSource: meta.tempoSource,
         difficulty: meta.difficulty,
-        strumming: '↓ ↓↑ ↑↓↑ (Pop Ballad Standard)',
-        chords: ['C', 'G', 'Am', 'F', 'Em', 'D'],
         chordpro: exactLyrics,
-        source: 'curated_lyrics'
+        source: 'repository_unverified',
+        contentSource: 'repository_unverified',
+        quality: assessSong({ lyricsChords: exactLyrics, tempo: meta.tempo })
       };
     }
 

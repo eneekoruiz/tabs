@@ -1,3 +1,5 @@
+import { matchesSong } from "../catalog/SongIdentity.js";
+
 /**
  * @file KnownSongLyricsUrbanLatin.js
  * @description Base de datos de letras 100% auténticas, completas y acordes oficiales
@@ -15,7 +17,7 @@ export function getUrbanLatinSongLyrics(title, artist) {
   // ==========================================
   // 1. Bad Bunny - Ojitos Lindos
   // ==========================================
-  if (t.includes('ojitos lindos') || norm.includes('ojitos lindos')) {
+  if (matchesSong(t, a, ["ojitos lindos"], ["bad bunny"])) {
     return `[Intro]
 [Gm] [Eb] [Bb] [F]
 [Gm] [Eb] [Bb] [F]
@@ -67,7 +69,7 @@ Hoy he vuelto a na[F]cer
   // ==========================================
   // 2. Bad Bunny - Me Porto Bonito
   // ==========================================
-  if (t.includes('me porto bonito') || norm.includes('me porto bonito')) {
+  if (matchesSong(t, a, ["me porto bonito"], ["bad bunny"])) {
     return `[Intro]
 [G#m] [E] [B] [F#]
 [G#m] [E] [B] [F#]
@@ -112,7 +114,7 @@ Yo me porto bo[B]nito [F#]
   // ==========================================
   // 3. Bad Bunny - Tití Me Preguntó
   // ==========================================
-  if (t.includes('titi me pregunto') || norm.includes('titi me pregunto')) {
+  if (matchesSong(t, a, ["titi me pregunto"], ["bad bunny"])) {
     return `[Intro]
 [Fm] [Db] [Ab] [Eb]
 [Fm] [Db] [Ab] [Eb]
@@ -165,7 +167,7 @@ Hoy tengo a una, ma[Eb]ñana otra
   // ==========================================
   // 4. Bad Bunny - Moscow Mule
   // ==========================================
-  if (t.includes('moscow mule') || norm.includes('moscow mule')) {
+  if (matchesSong(t, a, ["moscow mule"], ["bad bunny"])) {
     return `[Intro]
 [F#m] [D] [A] [E]
 [F#m] [D] [A] [E]
@@ -212,7 +214,7 @@ Olvidando las penas y [A]el dolor [E]
   // ==========================================
   // 5. Bad Bunny - Yonaguni
   // ==========================================
-  if (t.includes('yonaguni') || norm.includes('yonaguni')) {
+  if (matchesSong(t, a, ["yonaguni"], ["bad bunny"])) {
     return `[Intro]
 [G#m] [E] [B] [F#]
 [G#m] [E] [B] [F#]
@@ -257,7 +259,7 @@ Dime qué vamo' a ha[G#m]cer [E] [B] [F#]
   // ==========================================
   // 6. Bad Bunny - Callaíta
   // ==========================================
-  if (t.includes('callaita') || norm.includes('callaita') || t.includes('callaíta')) {
+  if (matchesSong(t, a, ["callaita"], ["bad bunny"])) {
     return `[Intro]
 [D#m] [B] [F#] [C#]
 [D#m] [B] [F#] [C#]
@@ -308,7 +310,7 @@ Gozándose la vida, como [D#m]e'
   // ==========================================
   // 7. Bad Bunny - Dakiti
   // ==========================================
-  if (t.includes('dakiti') || norm.includes('dakiti') || t.includes('dákiti')) {
+  if (matchesSong(t, a, ["dakiti"], ["bad bunny"])) {
     return `[Intro]
 [Em] [C] [G] [D]
 [Em] [C] [G] [D]
@@ -353,7 +355,7 @@ Que por ti me muero si no tengo tus [C]besos [G] [D]
   // ==========================================
   // 8. Bad Bunny - La Canción
   // ==========================================
-  if (t.includes('la cancion') || norm.includes('la cancion') || t.includes('la canción')) {
+  if (matchesSong(t, a, ["la cancion"], ["bad bunny"])) {
     return `[Intro]
 [Dm] [Bb] [F] [C]
 [Dm] [Bb] [F] [C]
@@ -396,7 +398,7 @@ Y me acordé de [Bb]ti, llorando te lla[F]mé [C]
   // ==========================================
   // 9. Rosalía - Saoko
   // ==========================================
-  if (t.includes('saoko') || norm.includes('saoko')) {
+  if (matchesSong(t, a, ["saoko"], ["rosalia"])) {
     return `[Intro]
 [Cm] [Bb] [Ab] [G7]
 [Cm] [Bb] [Ab] [G7]
@@ -444,7 +446,7 @@ Y me acordé de [Bb]ti, llorando te lla[F]mé [C]
   // ==========================================
   // 10. Rosalía - Bizcochito
   // ==========================================
-  if (t.includes('bizcochito') || norm.includes('bizcochito')) {
+  if (matchesSong(t, a, ["bizcochito"], ["rosalia"])) {
     return `[Intro]
 [A] [F#m] [D] [E]
 [A] [F#m] [D] [E]
@@ -487,7 +489,7 @@ Yo no soy ni voy a ser tu bizco[A]chito [F#m] [D] [E]
   // ==========================================
   // 11. Rosalía - Motomami
   // ==========================================
-  if (t.includes('motomami') || norm.includes('motomami')) {
+  if (matchesSong(t, a, ["motomami"], ["rosalia"])) {
     return `[Intro]
 [E] [G] [A]
 [E] [G] [A]
@@ -529,7 +531,7 @@ Yo no soy ni voy a ser tu bizco[A]chito [F#m] [D] [E]
   // ==========================================
   // 12. Rosalía - Di Mi Nombre
   // ==========================================
-  if (t.includes('di mi nombre') || norm.includes('di mi nombre')) {
+  if (matchesSong(t, a, ["di mi nombre"], ["rosalia"])) {
     return `[Intro]
 [Am] [G] [F] [E]
 [Am] [G] [F] [E]
@@ -576,7 +578,7 @@ Y la noche se vuelva [E]quieta
   // ==========================================
   // 13. Rosalía - Con Altura
   // ==========================================
-  if (t.includes('con altura') || norm.includes('con altura')) {
+  if (matchesSong(t, a, ["con altura"], ["rosalia"])) {
     return `[Intro]
 [Dm] [Bb] [C] [Dm]
 [Dm] [Bb] [C] [Dm]
@@ -625,7 +627,7 @@ Flores azules, quilates en la figura
   // ==========================================
   // 14. C. Tangana - Ingobernable
   // ==========================================
-  if (t.includes('ingobernable') || norm.includes('ingobernable')) {
+  if (matchesSong(t, a, ["ingobernable"], ["c tangana"])) {
     return `[Intro]
 [Am] [G] [F] [E]
 [Am] [G] [F] [E]
@@ -672,7 +674,7 @@ De este veneno dulce e incu[E]rable
   // ==========================================
   // 15. C. Tangana - Comerte Entera
   // ==========================================
-  if (t.includes('comerte entera') || norm.includes('comerte entera')) {
+  if (matchesSong(t, a, ["comerte entera"], ["c tangana"])) {
     return `[Intro]
 [Dm] [Gm7] [A7] [Dm]
 [Dm] [Gm7] [A7] [Dm]
@@ -719,7 +721,7 @@ Y me derrito en este frenes[Dm]í
   // ==========================================
   // 16. C. Tangana - Nunca Estoy
   // ==========================================
-  if (t.includes('nunca estoy') || norm.includes('nunca estoy')) {
+  if (matchesSong(t, a, ["nunca estoy"], ["c tangana"])) {
     return `[Intro]
 [Cm] [Ab] [Eb] [Bb]
 [Cm] [Ab] [Eb] [Bb]
@@ -766,7 +768,7 @@ Te vas, te vas y yo me quedo en ll[Bb]anto
   // ==========================================
   // 17. Rauw Alejandro - Punto 40
   // ==========================================
-  if (t.includes('punto 40') || norm.includes('punto 40') || t.includes('punto cuarenta')) {
+  if (matchesSong(t, a, ["punto 40","punto cuarenta"], ["rauw alejandro"])) {
     return `[Intro]
 [F#m] [D] [A] [E]
 [F#m] [D] [A] [E]
@@ -813,7 +815,7 @@ Moviendo la chapa sin freno
   // ==========================================
   // 18. Rauw Alejandro - Desesperados
   // ==========================================
-  if (t.includes('desesperados') || norm.includes('desesperados')) {
+  if (matchesSong(t, a, ["desesperados"], ["rauw alejandro"])) {
     return `[Intro]
 [Gm] [Eb] [Bb] [F]
 [Gm] [Eb] [Bb] [F]
@@ -860,7 +862,7 @@ Esa boquita me tiene en[F]fermo de amor
   // ==========================================
   // 19. Rauw Alejandro - Tiroteo
   // ==========================================
-  if (t.includes('tiroteo') || norm.includes('tiroteo')) {
+  if (matchesSong(t, a, ["tiroteo"], ["rauw alejandro"])) {
     return `[Intro]
 [C] [G] [Am] [F]
 [C] [G] [Am] [F]
@@ -907,7 +909,7 @@ Y no me queda otra que beber pa' olvi[F]dar
   // ==========================================
   // 20. Rauw Alejandro - Curame
   // ==========================================
-  if (t.includes('curame') || norm.includes('curame') || t.includes('cúrame')) {
+  if (matchesSong(t, a, ["curame"], ["rauw alejandro"])) {
     return `[Intro]
 [Bm] [G] [D] [A]
 [Bm] [G] [D] [A]
@@ -954,7 +956,7 @@ Ven y sálvame de la sole[A]dad
   // ==========================================
   // 21. Quevedo - Punto G
   // ==========================================
-  if (t.includes('punto g') || norm.includes('punto g')) {
+  if (matchesSong(t, a, ["punto g"], ["quevedo"])) {
     return `[Intro]
 [Dm] [Bb] [F] [C]
 [Dm] [Bb] [F] [C]
@@ -1001,7 +1003,7 @@ Dime si te quedas conmigo hasta el fi[C]nal
   // ==========================================
   // 22. Quevedo - Playa del Inglés
   // ==========================================
-  if (t.includes('playa del ingles') || norm.includes('playa del ingles') || t.includes('playa del inglés')) {
+  if (matchesSong(t, a, ["playa del ingles"], ["quevedo"])) {
     return `[Intro]
 [F#m] [D] [A] [E]
 [F#m] [D] [A] [E]
@@ -1048,7 +1050,7 @@ Tú y yo solitos frente a la ma[E]rea
   // ==========================================
   // 23. Quevedo - Vista al Mar
   // ==========================================
-  if (t.includes('vista al mar') || norm.includes('vista al mar')) {
+  if (matchesSong(t, a, ["vista al mar"], ["quevedo"])) {
     return `[Intro]
 [Cm] [Ab] [Eb] [Bb]
 [Cm] [Ab] [Eb] [Bb]
@@ -1095,7 +1097,7 @@ La lluvia golpeando la ventana y tú a[Bb]quí
   // ==========================================
   // 24. Quevedo - Bzrp Music Sessions 52 (Quédate)
   // ==========================================
-  if (norm.includes('quedate') || (norm.includes('bzrp') && norm.includes('52')) || (t.includes('52') && (normA.includes('quevedo') || normA.includes('bizarrap')))) {
+  if (matchesSong(t, a, ["52","bzrp music sessions 52 quedate"], ["quevedo"])) {
     return `[Intro]
 [D] [A] [Bm] [G]
 [D] [A] [Bm] [G]
@@ -1140,7 +1142,7 @@ Tengo en la mente las pose' y to' lo que hicimo' a[Bm]yer [G]
   // ==========================================
   // 25. Shakira - Hips Don't Lie
   // ==========================================
-  if (t.includes('hips don') || norm.includes('hips dont lie')) {
+  if (matchesSong(t, a, ["hips don","hips dont lie"], ["shakira"])) {
     return `[Intro]
 [Bbm] [Gb] [Ab] [Bbm]
 [Bbm] [Gb] [Ab] [Bbm]
@@ -1191,7 +1193,7 @@ And I'm on tonight, you know my hips don't [Bbm]lie
   // ==========================================
   // 26. Shakira - Antología
   // ==========================================
-  if (t.includes('antologia') || norm.includes('antologia') || t.includes('antología')) {
+  if (matchesSong(t, a, ["antologia"], ["shakira"])) {
     return `[Intro]
 [A] [E] [F#m] [D]
 [A] [E] [F#m] [D]
@@ -1240,7 +1242,7 @@ Lo que es a[F#m]mar [D]
   // ==========================================
   // 27. Shakira - Inevitable
   // ==========================================
-  if (t.includes('inevitable') || norm.includes('inevitable')) {
+  if (matchesSong(t, a, ["inevitable"], ["shakira"])) {
     return `[Intro]
 [D] [A] [Bm] [G]
 [D] [A] [Bm] [G]
@@ -1289,7 +1291,7 @@ Es inevi[A]table [Bm] [G]
   // ==========================================
   // 28. Shakira - Ojos Así
   // ==========================================
-  if (t.includes('ojos asi') || norm.includes('ojos asi') || t.includes('ojos así')) {
+  if (matchesSong(t, a, ["ojos asi"], ["shakira"])) {
     return `[Intro]
 [Em] [Am] [D] [G] [B7]
 [Em] [Am] [D] [G] [B7]
@@ -1338,7 +1340,7 @@ Ojos a[Am]sí como los que tienes [D]tú [G] [B7]
   // ==========================================
   // 29. Shakira - Ciega, Sordomuda
   // ==========================================
-  if (t.includes('ciega, sordomuda') || t.includes('ciega sordomuda') || norm.includes('ciega sordomuda')) {
+  if (matchesSong(t, a, ["ciega sordomuda"], ["shakira"])) {
     return `[Intro]
 [D] [G] [A] [D]
 [D] [G] [A] [D]
@@ -1385,7 +1387,7 @@ Es todo lo que he sido por ti
   // ==========================================
   // 30. Shakira - Día de Enero
   // ==========================================
-  if (t.includes('dia de enero') || norm.includes('dia de enero') || t.includes('día de enero')) {
+  if (matchesSong(t, a, ["dia de enero"], ["shakira"])) {
     return `[Intro]
 [D] [A] [G] [A]
 [D] [A] [G] [A]
@@ -1431,7 +1433,7 @@ Y en tus días grises ser tu luz so[G]lar [A] [D]
   // ==========================================
   // 31. Shakira - Bzrp Music Sessions 53
   // ==========================================
-  if (t.includes('bzrp') && (t.includes('53') || a.includes('shakira')) || (t.includes('pa tipos como tu') || norm.includes('pa tipos como tu'))) {
+  if (matchesSong(t, a, ["bzrp","53","pa tipos como tu","bzrp music sessions 53"], ["shakira"])) {
     return `[Intro]
 [Em] [C] [G] [D]
 [Em] [C] [G] [D]
@@ -1484,7 +1486,7 @@ Yo solo hago música, perdón que te sal-[D]pique
   // ==========================================
   // 32. Karol G - Provenza
   // ==========================================
-  if (t.includes('provenza') || norm.includes('provenza')) {
+  if (matchesSong(t, a, ["provenza"], ["karol g"])) {
     return `[Intro]
 [G] [C] [D] [G]
 [G] [C] [D] [G]
@@ -1531,7 +1533,7 @@ Una cervecita fría y la música sonando [D]fuerte [G]
   // ==========================================
   // 33. Karol G - Tusa
   // ==========================================
-  if (t.includes('tusa') || norm.includes('tusa')) {
+  if (matchesSong(t, a, ["tusa"], ["karol g"])) {
     return `[Intro]
 [D] [Em] [A] [G]
 [D] [Em] [A] [G]
@@ -1580,7 +1582,7 @@ Pero ella no se va a que[G]dar llorando en un rin[D]cón
   // ==========================================
   // 34. Karol G - TQG
   // ==========================================
-  if (t.includes('tqg') || norm.includes('tqg')) {
+  if (matchesSong(t, a, ["tqg"], ["karol g"])) {
     return `[Intro]
 [Em] [C] [G] [D]
 [Em] [C] [G] [D]
@@ -1627,7 +1629,7 @@ Que deje de estar tirando, que al menos yo te tenía bo[G]nito [D]
   // ==========================================
   // 35. Karol G - Bichota
   // ==========================================
-  if (t.includes('bichota') || norm.includes('bichota')) {
+  if (matchesSong(t, a, ["bichota"], ["karol g"])) {
     return `[Intro]
 [C#m] [A] [B] [G#m]
 [C#m] [A] [B] [G#m]
@@ -1674,7 +1676,7 @@ Bichota, mami, bi[G#m]chota
   // ==========================================
   // 36. Karol G - Mamiii
   // ==========================================
-  if (t.includes('mamiii') || norm.includes('mamiii') || t.includes('mami')) {
+  if (matchesSong(t, a, ["mamiii","mami"], ["karol g"])) {
     return `[Intro]
 [Gm] [Eb] [F] [Dm]
 [Gm] [Eb] [F] [Dm]
@@ -1721,7 +1723,7 @@ Mamiii, ya no estoy pa' ti [Dm]
   // ==========================================
   // 37. Karol G - Amargura
   // ==========================================
-  if (t.includes('amargura') || norm.includes('amargura')) {
+  if (matchesSong(t, a, ["amargura"], ["karol g"])) {
     return `[Intro]
 [G] [D] [Em] [C]
 [G] [D] [Em] [C]
@@ -1766,7 +1768,7 @@ Esta amargura me mata cuando te veo pa[Em]sar [C]
   // ==========================================
   // 38. J Balvin - Mi Gente
   // ==========================================
-  if (t.includes('mi gente') || norm.includes('mi gente')) {
+  if (matchesSong(t, a, ["mi gente"], ["j balvin"])) {
     return `[Intro]
 [F#m] [Bm] [C#7] [F#m]
 [F#m] [Bm] [C#7] [F#m]
@@ -1815,7 +1817,7 @@ Hago música que entre[C#7]tiene [F#m]
   // ==========================================
   // 39. J Balvin - Rojo
   // ==========================================
-  if (t.includes('rojo') && (a.includes('balvin') || !a)) {
+  if (matchesSong(t, a, ["rojo"], ["j balvin"])) {
     return `[Intro]
 [G] [D] [Em] [C]
 [G] [D] [Em] [C]
@@ -1862,7 +1864,7 @@ Que nunca se apagará entre los [Em]dos [C]
   // ==========================================
   // 40. J Balvin - Ginza
   // ==========================================
-  if (t.includes('ginza') || norm.includes('ginza')) {
+  if (matchesSong(t, a, ["ginza"], ["j balvin"])) {
     return `[Intro]
 [Fm] [Db] [Ab] [Eb]
 [Fm] [Db] [Ab] [Eb]
@@ -1909,7 +1911,7 @@ Sigue bailando, mami, no [Ab]pare' [Eb]
   // ==========================================
   // 41. J Balvin - Ay Vamos
   // ==========================================
-  if (t.includes('ay vamos') || norm.includes('ay vamos')) {
+  if (matchesSong(t, a, ["ay vamos"], ["j balvin"])) {
     return `[Intro]
 [Em] [C] [G] [D]
 [Em] [C] [G] [D]
@@ -1956,7 +1958,7 @@ Y nadie como tú me cura [D]
   // ==========================================
   // 42. Luis Miguel - La Incondicional
   // ==========================================
-  if (t.includes('la incondicional') || norm.includes('la incondicional')) {
+  if (matchesSong(t, a, ["la incondicional"], ["luis miguel"])) {
     return `[Intro]
 [G] [Em] [C] [D]
 [G] [Em] [C] [D]
@@ -2003,7 +2005,7 @@ En la calma de tu a[D]brazo protector [G]
   // ==========================================
   // 43. Luis Miguel - Culpable o No
   // ==========================================
-  if (t.includes('culpable o no') || norm.includes('culpable o no')) {
+  if (matchesSong(t, a, ["culpable o no"], ["luis miguel"])) {
     return `[Intro]
 [C] [Em] [F] [G]
 [C] [Em] [F] [G]
@@ -2049,7 +2051,7 @@ Que to[Em]davía me quieres con locura
   // ==========================================
   // 44. Luis Miguel - Hasta Que Me Olvides
   // ==========================================
-  if (t.includes('hasta que me olvides') || norm.includes('hasta que me olvides')) {
+  if (matchesSong(t, a, ["hasta que me olvides"], ["luis miguel"])) {
     return `[Intro]
 [E] [G#m] [A] [B]
 [E] [G#m] [A] [B]
@@ -2098,7 +2100,7 @@ Hasta que me olvides te ama[B]ré [E]
   // ==========================================
   // 45. Luis Miguel - Ahora Te Puedes Marchar
   // ==========================================
-  if (t.includes('ahora te puedes marchar') || norm.includes('ahora te puedes marchar')) {
+  if (matchesSong(t, a, ["ahora te puedes marchar"], ["luis miguel"])) {
     return `[Intro]
 [E] [C#m] [F#m] [B]
 [E] [C#m] [F#m] [B]
@@ -2141,7 +2143,7 @@ Ni tus ruegos de per[F#m]dón, ahora te puedes mar[B]char [E]
   // ==========================================
   // 46. Alejandro Sanz - Corazón Partío
   // ==========================================
-  if (t.includes('corazon partio') || norm.includes('corazon partio') || t.includes('corazón partío')) {
+  if (matchesSong(t, a, ["corazon partio"], ["alejandro sanz"])) {
     return `[Intro]
 [Dm] [Gm] [C] [F] [Bb] [A7]
 [Dm] [Gm] [C] [F] [Bb] [A7]
@@ -2186,7 +2188,7 @@ Si este amor se esfumó por la ven[F]tana [A7]
   // ==========================================
   // 47. Alejandro Sanz - Amiga Mía
   // ==========================================
-  if (t.includes('amiga mia') || norm.includes('amiga mia') || t.includes('amiga mía')) {
+  if (matchesSong(t, a, ["amiga mia"], ["alejandro sanz"])) {
     return `[Intro]
 [G] [C] [D] [Em]
 [G] [C] [D] [Em]
@@ -2233,7 +2235,7 @@ Que tus ojos volvieran a sonre[D]ír otra vez [Em]
   // ==========================================
   // 48. Alejandro Sanz - Y, ¿Si Fuera Ella?
   // ==========================================
-  if (t.includes('si fuera ella') || norm.includes('si fuera ella')) {
+  if (matchesSong(t, a, ["si fuera ella","y si fuera ella"], ["alejandro sanz"])) {
     return `[Intro]
 [Am] [Dm] [G] [C] [F] [E7]
 [Am] [Dm] [G] [C] [F] [E7]
@@ -2282,7 +2284,7 @@ La que Dios puso en mi [Dm]camino para amar
   // ==========================================
   // 49. Extremoduro - So Payaso
   // ==========================================
-  if (t.includes('so payaso') || norm.includes('so payaso')) {
+  if (matchesSong(t, a, ["so payaso"], ["extremoduro"])) {
     return `[Intro]
 [Em] [D] [C] [B7]
 [Em] [D] [C] [B7]
@@ -2330,7 +2332,7 @@ Este amor canalla que me hace mo[B7]rir [Em]
   // ==========================================
   // 50. Extremoduro - Standby
   // ==========================================
-  if (t.includes('standby') || norm.includes('standby')) {
+  if (matchesSong(t, a, ["standby"], ["extremoduro"])) {
     return `[Intro]
 [Am] [F] [C] [G]
 [Am] [F] [C] [G]
@@ -2376,7 +2378,7 @@ Con la tristeza cosida a la [C]cama [G]
   // ==========================================
   // 51. Extremoduro - Salir
   // ==========================================
-  if (t.includes('salir') && (a.includes('extremoduro') || !a)) {
+  if (matchesSong(t, a, ["salir"], ["extremoduro"])) {
     return `[Intro]
 [G] [D] [Em] [C]
 [G] [D] [Em] [C]
@@ -2422,7 +2424,7 @@ Rocanrol canalla en la oscuri[Em]dad [C]
   // ==========================================
   // 52. Extremoduro - La Vereda de la Puerta de Atrás
   // ==========================================
-  if (t.includes('vereda de la puerta de atras') || norm.includes('vereda de la puerta de atras') || t.includes('la vereda de la puerta de atrás')) {
+  if (matchesSong(t, a, ["vereda de la puerta de atras","la vereda de la puerta de atras"], ["extremoduro"])) {
     return `[Intro]
 [G] [D] [Em] [C]
 [G] [D] [Em] [C]
@@ -2468,7 +2470,7 @@ Dejo mi piel enredada a tus [Em]pies [C]
   // ==========================================
   // 53. Extremoduro - Si Te Vas
   // ==========================================
-  if (t.includes('si te vas') && (a.includes('extremoduro') || !a)) {
+  if (matchesSong(t, a, ["si te vas"], ["extremoduro"])) {
     return `[Intro]
 [Am] [G] [F] [E]
 [Am] [G] [F] [E]
@@ -2516,7 +2518,7 @@ No me dejes en la oscuri[E]dad [Am]
   // ==========================================
   // 54. Extremoduro - Jesucristo García
   // ==========================================
-  if (t.includes('jesucristo garcia') || norm.includes('jesucristo garcia') || t.includes('jesucristo garcía')) {
+  if (matchesSong(t, a, ["jesucristo garcia"], ["extremoduro"])) {
     return `[Intro]
 [Em] [G] [D] [C]
 [Em] [G] [D] [C]
@@ -2562,7 +2564,7 @@ Quemando las noches de cara al [D]sol [C]
   // ==========================================
   // 55. Marea - Corazón de Mimbre
   // ==========================================
-  if (t.includes('corazon de mimbre') || norm.includes('corazon de mimbre') || t.includes('corazón de mimbre')) {
+  if (matchesSong(t, a, ["corazon de mimbre"], ["marea"])) {
     return `[Intro]
 [Em] [C] [G] [D]
 [Em] [C] [G] [D]
@@ -2606,7 +2608,7 @@ Sin saber si mañana volveré a na[G]cer [D] [Em]
   // ==========================================
   // 56. Marea - La Rueca
   // ==========================================
-  if (t.includes('la rueca') || norm.includes('la rueca')) {
+  if (matchesSong(t, a, ["la rueca"], ["marea"])) {
     return `[Intro]
 [Am] [F] [C] [G]
 [Am] [F] [C] [G]
@@ -2650,7 +2652,7 @@ Con hilos de luna y de liber[C]tad [G] [Am]
   // ==========================================
   // 57. Marea - En Tu Agujero
   // ==========================================
-  if (t.includes('en tu agujero') || norm.includes('en tu agujero')) {
+  if (matchesSong(t, a, ["en tu agujero"], ["marea"])) {
     return `[Intro]
 [Em] [C] [G] [D]
 [Em] [C] [G] [D]
@@ -2694,7 +2696,7 @@ Preso de tus ojos hasta el mo[G]rir [D] [Em]
   // ==========================================
   // 58. Mecano - Hijo de la Luna
   // ==========================================
-  if (t.includes('hijo de la luna') || norm.includes('hijo de la luna')) {
+  if (matchesSong(t, a, ["hijo de la luna"], ["mecano"])) {
     return `[Intro]
 [Am] [Dm] [E7] [Am]
 [Am] [Dm] [E7] [Am]
@@ -2738,7 +2740,7 @@ Con un niño de [Am]piel
   // ==========================================
   // 59. Mecano - Barco a Venus
   // ==========================================
-  if (t.includes('barco a venus') || norm.includes('barco a venus')) {
+  if (matchesSong(t, a, ["barco a venus"], ["mecano"])) {
     return `[Intro]
 [Am] [F] [G] [Em]
 [Am] [F] [G] [Em]
@@ -2783,7 +2785,7 @@ Y en el barco a Venus no hay dónde esca[G]par [Em] [Am]
   // ==========================================
   // 60. Mecano - Mujer Contra Mujer
   // ==========================================
-  if (t.includes('mujer contra mujer') || norm.includes('mujer contra mujer')) {
+  if (matchesSong(t, a, ["mujer contra mujer"], ["mecano"])) {
     return `[Intro]
 [C] [F] [G] [C]
 [C] [F] [G] [C]
@@ -2830,7 +2832,7 @@ Amamos sin te[C]mer
   // ==========================================
   // 61. Mecano - Me Cuesta Tanto Olvidarte
   // ==========================================
-  if (t.includes('me cuesta tanto olvidarte') || norm.includes('me cuesta tanto olvidarte')) {
+  if (matchesSong(t, a, ["me cuesta tanto olvidarte"], ["mecano"])) {
     return `[Intro]
 [C] [G] [Am] [F]
 [C] [G] [Am] [F]
@@ -2877,7 +2879,7 @@ Con el fuego que dejaste en mi ho[F]gar [C]
   // ==========================================
   // 62. Hombres G - Devuélveme a Mi Chica
   // ==========================================
-  if (t.includes('devuelveme a mi chica') || norm.includes('devuelveme a mi chica') || t.includes('sufre mamon') || norm.includes('sufre mamon')) {
+  if (matchesSong(t, a, ["devuelveme a mi chica","sufre mamon"], ["hombres g"])) {
     return `[Intro]
 [G] [Em] [C] [D]
 [G] [Em] [C] [D]
@@ -2922,7 +2924,7 @@ Y no dormirás esta [G]noche [Em] [C] [D]
   // ==========================================
   // 63. Hombres G - Venezia
   // ==========================================
-  if (t.includes('venezia') || norm.includes('venezia') || t.includes('venecia')) {
+  if (matchesSong(t, a, ["venezia","venecia"], ["hombres g"])) {
     return `[Intro]
 [D] [Bm] [G] [A]
 [D] [Bm] [G] [A]
@@ -2969,7 +2971,7 @@ Grabadas en mi cora[A]zón [D]
   // ==========================================
   // 64. Hombres G - Marta Tiene un Marcapasos
   // ==========================================
-  if (t.includes('marta tiene un marcapasos') || norm.includes('marta tiene un marcapasos')) {
+  if (matchesSong(t, a, ["marta tiene un marcapasos"], ["hombres g"])) {
     return `[Intro]
 [C] [Am] [F] [G]
 [C] [Am] [F] [G]
@@ -3014,7 +3016,7 @@ Bailando en la pista hasta el [F]fin [G] [C]
   // ==========================================
   // 65. El Canto del Loco - Zapatillas
   // ==========================================
-  if (t.includes('zapatillas') || norm.includes('zapatillas')) {
+  if (matchesSong(t, a, ["zapatillas"], ["el canto del loco"])) {
     return `[Intro]
 [A] [E] [F#m] [D]
 [A] [E] [F#m] [D]
@@ -3059,7 +3061,7 @@ Sino por lo bien que nos diver[F#m]timos [D] [A]
   // ==========================================
   // 66. El Canto del Loco - Foto en Blanco y Negro
   // ==========================================
-  if (t.includes('foto en blanco y negro') || norm.includes('foto en blanco y negro')) {
+  if (matchesSong(t, a, ["foto en blanco y negro"], ["el canto del loco"])) {
     return `[Intro]
 [G] [D] [Em] [C]
 [G] [D] [Em] [C]
@@ -3104,7 +3106,7 @@ Que sin tu calor me muero de [Em]frío [C] [G]
   // ==========================================
   // 67. El Canto del Loco - Volverá
   // ==========================================
-  if (t.includes('volvera') || norm.includes('volvera') || t.includes('volverá')) {
+  if (matchesSong(t, a, ["volvera"], ["el canto del loco"])) {
     return `[Intro]
 [E] [B] [C#m] [A]
 [E] [B] [C#m] [A]
@@ -3149,7 +3151,7 @@ Y tus ojos tristes de nuevo brilla[C#m]rán [A] [E]
   // ==========================================
   // 68. Enrique Bunbury - Lady Blue
   // ==========================================
-  if (t.includes('lady blue') || norm.includes('lady blue')) {
+  if (matchesSong(t, a, ["lady blue"], ["enrique bunbury"])) {
     return `[Intro]
 [Dm] [Bb] [F] [C]
 [Dm] [Bb] [F] [C]
@@ -3194,7 +3196,7 @@ En este viaje cósmico y pro[F]fundo [C] [Dm]
   // ==========================================
   // 69. Enrique Bunbury - Frente a Frente
   // ==========================================
-  if (t.includes('frente a frente') || norm.includes('frente a frente')) {
+  if (matchesSong(t, a, ["frente a frente"], ["enrique bunbury"])) {
     return `[Intro]
 [Am] [Dm] [G] [C] [E7]
 [Am] [Dm] [G] [C] [E7]
@@ -3238,7 +3240,7 @@ Se nos muere esta [G]loca pasión [C] [E7] [Am]
   // ==========================================
   // 70. Enrique Bunbury - Infinito
   // ==========================================
-  if (t.includes('infinito') && (a.includes('bunbury') || !a)) {
+  if (matchesSong(t, a, ["infinito"], ["enrique bunbury"])) {
     return `[Intro]
 [C] [G] [Am] [F]
 [C] [G] [Am] [F]
@@ -3285,7 +3287,7 @@ En brazos de la sole[F]dad [C]
   // ==========================================
   // 71. Fito & Fitipaldis - Soldadito Marinero
   // ==========================================
-  if (t.includes('soldadito marinero') || norm.includes('soldadito marinero')) {
+  if (matchesSong(t, a, ["soldadito marinero"], ["fito fitipaldis"])) {
     return `[Intro]
 [G] [D] [Em] [C]
 [G] [D] [Em] [C]
@@ -3330,7 +3332,7 @@ Varado y solo con tu pena [Em] [C] [G]
   // ==========================================
   // 72. Fito & Fitipaldis - Acabo de llegar
   // ==========================================
-  if (t.includes('acabo de llegar') || norm.includes('acabo de llegar')) {
+  if (matchesSong(t, a, ["acabo de llegar"], ["fito fitipaldis"])) {
     return `[Intro]
 [A] [E] [F#m] [D]
 [A] [E] [F#m] [D]
@@ -3375,7 +3377,7 @@ Hasta que la luna deje de bri[F#m]llar [D] [A]
   // ==========================================
   // 73. Joaquín Sabina - Pongamos que hablo de Madrid
   // ==========================================
-  if (t.includes('pongamos que hablo de madrid') || norm.includes('pongamos que hablo de madrid')) {
+  if (matchesSong(t, a, ["pongamos que hablo de madrid"], ["joaquin sabina"])) {
     return `[Intro]
 [C] [G] [Am] [F]
 [C] [G] [Am] [F]
@@ -3420,7 +3422,7 @@ Pongamos que hablo de Ma[Am]drid [F] [C]
   // ==========================================
   // 74. Joaquín Sabina - Nos sobran los motivos
   // ==========================================
-  if (t.includes('nos sobran los motivos') || norm.includes('nos sobran los motivos')) {
+  if (matchesSong(t, a, ["nos sobran los motivos"], ["joaquin sabina"])) {
     return `[Intro]
 [G] [D] [Em] [C]
 [G] [D] [Em] [C]
@@ -3465,7 +3467,7 @@ Para volver a empezar otra [Em]vez [C] [G]
   // ==========================================
   // 75. Joaquín Sabina - Peces de ciudad
   // ==========================================
-  if (t.includes('peces de ciudad') || norm.includes('peces de ciudad')) {
+  if (matchesSong(t, a, ["peces de ciudad"], ["joaquin sabina"])) {
     return `[Intro]
 [Am] [Dm] [G] [C] [E7]
 [Am] [Dm] [G] [C] [E7]
@@ -3511,7 +3513,7 @@ Perdiendo la cuenta del bien y del [G]mal [C] [E7] [Am]
   // ==========================================
   // 76. Andrés Calamaro - Flaca
   // ==========================================
-  if (t.includes('flaca') && (a.includes('calamaro') || !a)) {
+  if (matchesSong(t, a, ["flaca"], ["andres calamaro"])) {
     return `[Intro]
 [G] [B7] [Em] [C] [G] [D] [G]
 [G] [B7] [Em] [C] [G] [D] [G]
@@ -3554,7 +3556,7 @@ Te sigo amando igual, te sigo amando i[G]gual [D] [G]
   // ==========================================
   // 77. Andrés Calamaro - Paloma
   // ==========================================
-  if (t.includes('paloma') && (a.includes('calamaro') || !a)) {
+  if (matchesSong(t, a, ["paloma"], ["andres calamaro"])) {
     return `[Intro]
 [C] [G] [Am] [F]
 [C] [G] [Am] [F]
@@ -3599,7 +3601,7 @@ Que yo me quedo aquí en la oscuri[Am]dad [F] [C]
   // ==========================================
   // 78. Andrés Calamaro - Estadio Azteca
   // ==========================================
-  if (t.includes('estadio azteca') || norm.includes('estadio azteca')) {
+  if (matchesSong(t, a, ["estadio azteca"], ["andres calamaro"])) {
     return `[Intro]
 [G] [D] [Em] [C]
 [G] [D] [Em] [C]
@@ -3642,7 +3644,7 @@ Dime qué jugada me faltó por ha[C]cer
   // ==========================================
   // 79. Maná - Clavado en un Rincón
   // ==========================================
-  if (t.includes('clavado en un rincon') || norm.includes('clavado en un rincon') || t.includes('clavado en un rincón')) {
+  if (matchesSong(t, a, ["clavado en un rincon"], ["mana"])) {
     return `[Intro]
 [Bm] [G] [D] [A]
 [Bm] [G] [D] [A]
@@ -3689,7 +3691,7 @@ Maldiciendo la hora en que te per[D]dí [A] [Bm]
   // ==========================================
   // 80. Maná - Rayando el Sol
   // ==========================================
-  if (t.includes('rayando el sol') || norm.includes('rayando el sol')) {
+  if (matchesSong(t, a, ["rayando el sol"], ["mana"])) {
     return `[Intro]
 [G] [D] [Em] [C]
 [G] [D] [Em] [C]
@@ -3736,7 +3738,7 @@ Es más fácil llegar al sol que a tu cora[Em]zón [C] [G]
   // ==========================================
   // 81. Maná - Vivir Sin Aire
   // ==========================================
-  if (t.includes('vivir sin aire') || norm.includes('vivir sin aire')) {
+  if (matchesSong(t, a, ["vivir sin aire"], ["mana"])) {
     return `[Intro]
 [Am] [G] [F] [E]
 [Am] [G] [F] [E]

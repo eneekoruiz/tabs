@@ -17,7 +17,7 @@ test.describe('🎛️ Neural DSP, Stem Separation & Smart Looper - Suite E2E', 
       }
     });
 
-    await page.goto('http://localhost:3000/index.html');
+    await page.goto('/index.html');
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(600);
   });
@@ -168,7 +168,7 @@ test.describe('🎛️ Neural DSP, Stem Separation & Smart Looper - Suite E2E', 
 
   test('4. Menú de Opciones de Canción: Acceso Rápido a Pedalera, Stems y Smart Looper', async ({ page }) => {
     // Cargar una canción del catálogo
-    const songCard = page.locator('.btn-load-explore-song').first();
+    const songCard = page.locator('.song-card .btn-select-song').first();
     await songCard.click();
     await page.waitForTimeout(500);
 
@@ -177,6 +177,7 @@ test.describe('🎛️ Neural DSP, Stem Separation & Smart Looper - Suite E2E', 
     await page.waitForTimeout(200);
 
     // 1. Abrir Pedalera desde el Menú de Canción
+    await page.locator('.song-advanced-options summary').click();
     await page.click('#btnOpenPedalboardQuick');
     await expect(page.locator('#modal-virtual-pedalboard')).toBeVisible();
     await page.click('#btnClosePedalboard');

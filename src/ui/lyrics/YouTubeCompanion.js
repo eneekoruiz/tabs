@@ -289,6 +289,53 @@ export const KNOWN_SONG_YOUTUBE_VIDEOS = {
   'ladygagashallow': 'bo_efYhAK2A'
 };
 
+export const KNOWN_KARAOKE_VIDEOS = {
+  // Queen
+  'bohemianrhapsody': '1G4isv_Fylg',
+  'queenbohemianrhapsody': '1G4isv_Fylg',
+  'killerqueen': 'mUeL1Z_05gM',
+  'queenkillerqueen': 'mUeL1Z_05gM',
+  'dontstopmenow': 'Z3e1z4zJ91g',
+  'queendontstopmenow': 'Z3e1z4zJ91g',
+  'wearethechampions': 'Tz2FhXbXkQk',
+  'queenwearethechampions': 'Tz2FhXbXkQk',
+  'wewillrockyou': 'Bpn4e7J05Wc',
+  'queenwewillrockyou': 'Bpn4e7J05Wc',
+
+  // The Beatles
+  'blackbird': '8M1s2rL2l68',
+  'thebeatlesblackbird': '8M1s2rL2l68',
+  'yesterday': '_Xv3lK4mK8E',
+  'thebeatlesyesterday': '_Xv3lK4mK8E',
+  'letitbe': 'uE2M1T5Q1u8',
+  'thebeatlesletitbe': 'uE2M1T5Q1u8',
+
+  // Imagine Dragons / Rock
+  'believer': 'sCg7nJ26yM4',
+  'imaginedragonsbeliever': 'sCg7nJ26yM4',
+  'wonderwall': 'O3kU2L4z3wA',
+  'oasiswonderwall': 'O3kU2L4z3wA',
+  'yellow': 'yP9V2lqV8zQ',
+  'coldplayyellow': 'yP9V2lqV8zQ'
+};
+
+export function findKnownKaraokeVideoId(title, artist) {
+  const normTitle = normalizeKey(title);
+  const normArtist = normalizeKey(artist);
+  if (!normTitle) return '';
+
+  return KNOWN_KARAOKE_VIDEOS[normArtist + normTitle]
+    || KNOWN_KARAOKE_VIDEOS[normTitle + normArtist]
+    || KNOWN_KARAOKE_VIDEOS[normTitle]
+    || '';
+}
+
+export function getSongKaraokeVideoId(song, storage = globalThis.localStorage) {
+  const specific = findKnownKaraokeVideoId(song?.title, song?.artist);
+  if (specific) return specific;
+  return getSongYouTubeVideoId(song, storage);
+}
+
 export function findKnownYouTubeVideoId(title, artist) {
   const normTitle = normalizeKey(title);
   const normArtist = normalizeKey(artist);

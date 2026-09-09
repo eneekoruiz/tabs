@@ -20,6 +20,8 @@ export class ArcadeHighwayVisualizer extends Component {
     this.animFrameId = null;
     this.isRunning = false;
     this.isListeningMic = false;
+    this.micRequestId = 0;
+    this.isPreparingMic = false;
 
     // Object Pools (Zero GC 60 FPS)
     this.NOTE_POOL_SIZE = 160;
@@ -127,6 +129,10 @@ export class ArcadeHighwayVisualizer extends Component {
   }
 
   close(host) {
+    this.micRequestId++;
+    if (this.isListeningMic || this.isPreparingMic) vocalCoachEngine.stop();
+    this.isListeningMic = false;
+    this.isPreparingMic = false;
     this.stopHighway();
     if (host) host.innerHTML = '';
   }
@@ -148,8 +154,8 @@ export class ArcadeHighwayVisualizer extends Component {
 
             <div class="arcade-song-title-pill">
               <span class="arcade-live-dot"></span>
-              <span id="arcadeSongName">${currentSong?.title || 'Highway Jam'}</span>
-              <span class="arcade-tempo-badge">${currentSong?.tempo || 120} BPM</span>
+              <span id="arcadeSongName">Ejercicio de práctica</span>
+              <span class="arcade-tempo-badge">Secuencia de demostración</span>
             </div>
 
             <div class="arcade-combo-badge" id="arcadeComboBadge">
@@ -240,20 +246,38 @@ export class ArcadeHighwayVisualizer extends Component {
     // Micrófono
     const btnMic = card.querySelector('#btnToggleArcadeMic');
     btnMic?.addEventListener('click', async () => {
-      this.isListeningMic = !this.isListeningMic;
+      if (this.isPreparingMic) return;
+      const requestId = ++this.micRequestId;
       const lbl = card.querySelector('#lblMicStatus');
-      if (this.isListeningMic) {
+      if (!this.isListeningMic) {
+        this.isPreparingMic = true;
+        btnMic.disabled = true;
         try {
           await vocalCoachEngine.start();
+          if (requestId !== this.micRequestId) {
+            if (!this.isPreparingMic && !this.isListeningMic) vocalCoachEngine.stop();
+            return;
+          }
+          if (!vocalCoachEngine.isRunning) throw new Error('No se pudo iniciar la captura de audio.');
+          this.isListeningMic = true;
           btnMic.classList.add('active');
           if (lbl) lbl.textContent = 'ON';
           toast.show('🎤 Escucha en vivo activada. Toca las notas para puntuar.', 'success');
         } catch (e) {
           this.isListeningMic = false;
           toast.show('Error al acceder al micrófono: ' + e.message, 'error');
+        } finally {
+          if (requestId === this.micRequestId) {
+            this.isPreparingMic = false;
+            btnMic.disabled = false;
+            btnMic.setAttribute('aria-pressed', String(this.isListeningMic));
+            if (lbl) lbl.textContent = this.isListeningMic ? 'ON' : 'OFF';
+          }
         }
       } else {
         vocalCoachEngine.stop();
+        this.isListeningMic = false;
+        btnMic.setAttribute('aria-pressed', 'false');
         btnMic.classList.remove('active');
         if (lbl) lbl.textContent = 'OFF';
       }
@@ -282,6 +306,7 @@ export class ArcadeHighwayVisualizer extends Component {
   }
 
   startHighway() {
+    if (this.animFrameId) cancelAnimationFrame(this.animFrameId);
     gamificationEngine.startSession();
     this.isRunning = true;
     this.songProgressMs = 0;

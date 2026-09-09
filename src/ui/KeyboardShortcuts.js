@@ -52,6 +52,7 @@ class KeyboardShortcuts {
 
   bindGlobalKeys() {
     window.addEventListener('keydown', (e) => {
+      if (e.defaultPrevented) return;
       // 0. ESC -> Cerrar cualquier modal u overlay abierto o salir de búsqueda
       if (e.code === 'Escape' || e.key === 'Escape') {
         if (this.isUserTyping(e)) {
@@ -67,6 +68,8 @@ class KeyboardShortcuts {
       if (this.isUserTyping(e)) {
         return;
       }
+      // Space/Enter belong to the focused control; never replace native activation.
+      if (e.target?.closest?.('button, a, summary, [role="button"], [role="dialog"]')) return;
 
       // Si hay teclas modificadoras activas (excepto combinaciones específicas como Ctrl+B), permitir comportamiento nativo (copiar, pegar, etc.)
       if (e.ctrlKey || e.metaKey || e.altKey) {

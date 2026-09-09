@@ -83,7 +83,7 @@ test.describe('🎷 Smart Band & Modo Arcade Inmersivo (Synthesia/Hero) - Suite 
       };
     });
 
-    await page.goto('http://localhost:3000/index.html');
+    await page.goto('/index.html');
     await page.waitForSelector('.bottom-nav-bar', { timeout: 10000 });
   });
 
@@ -215,13 +215,14 @@ test.describe('🎷 Smart Band & Modo Arcade Inmersivo (Synthesia/Hero) - Suite 
 
   test('4. Acceso Rápido a The Smart Band y Modo Arcade desde Menú de Opciones de Canción', async ({ page }) => {
     // 1. Abrir primera canción de la biblioteca
-    const songCard = page.locator('.btn-load-explore-song').first();
+    const songCard = page.locator('.song-card .btn-select-song').first();
     await songCard.click();
     await page.waitForTimeout(500);
 
     // 2. Abrir menú de opciones y lanzar Smart Band
     await page.click('#btnMoreOptions');
     await page.waitForTimeout(200);
+    await page.locator('.song-advanced-options summary').click();
     await page.click('#btnOpenSmartBandQuick');
     await expect(page.locator('#modal-smart-band')).toBeVisible();
     await page.click('#btnCloseSmartBand');

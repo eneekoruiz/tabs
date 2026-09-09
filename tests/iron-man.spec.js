@@ -49,7 +49,7 @@ test.describe('⚡ Fase Iron Man: Stage Automation, WebRTC Jamming y WebXR - Sui
       window.BroadcastChannel = MockBroadcastChannel;
     });
 
-    await page.goto('http://localhost:3000/index.html');
+    await page.goto('/index.html');
     await page.waitForSelector('.bottom-nav-bar', { timeout: 10000 });
   });
 
@@ -160,13 +160,14 @@ test.describe('⚡ Fase Iron Man: Stage Automation, WebRTC Jamming y WebXR - Sui
 
   test('4. Acceso Rápido a BandRoom, Stage Automation y Spatial XR desde Opciones de Canción', async ({ page }) => {
     // 1. Abrir primera canción
-    const songCard = page.locator('.btn-load-explore-song').first();
+    const songCard = page.locator('.song-card .btn-select-song').first();
     await songCard.click();
     await page.waitForTimeout(500);
 
     // 2. Probar BandRoom desde Opciones
     await page.click('#btnMoreOptions');
     await page.waitForTimeout(200);
+    await page.locator('.song-advanced-options summary').click();
     await page.click('#btnOpenBandRoomQuick');
     await expect(page.locator('#modal-band-room')).toBeVisible();
     await page.click('#btnCloseBandRoom');

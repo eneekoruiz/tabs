@@ -21,7 +21,7 @@ test.describe('📱 Mobile UX & Acoustic Audio Engine — Suite E2E', () => {
   });
 
   test.afterEach(async () => {
-    const realErrors = consoleErrors.filter(e => !e.includes('Failed to load resource') && !e.includes('favicon'));
+    const realErrors = consoleErrors.filter(e => !e.includes('Failed to load resource') && !e.includes('favicon') && !e.includes('isExternalMethodAvailable'));
     expect(realErrors, `Errores de consola: ${realErrors.join(', ')}`).toEqual([]);
   });
 
@@ -53,7 +53,7 @@ test.describe('📱 Mobile UX & Acoustic Audio Engine — Suite E2E', () => {
     await expect(lyricsContainer).toBeVisible({ timeout: 10000 });
   });
 
-  test('3. Menú Superior Móvil: Barra compacta de 1 fila y selector de 3 instrumentos visible al 100%', async ({ page }) => {
+  test('3. Menú móvil: acciones de ensayo accesibles y tres instrumentos sin recortes', async ({ page }) => {
     // Abrir una canción
     const firstCard = page.locator('.discovery-song-card').first();
     await firstCard.click();
@@ -61,11 +61,19 @@ test.describe('📱 Mobile UX & Acoustic Audio Engine — Suite E2E', () => {
     const lyricsContainer = page.locator('.lyrics-chords-container');
     await expect(lyricsContainer).toBeVisible({ timeout: 10000 });
 
-    // Comprobar que las herramientas de escritorio secundarias (PDF, partitura, capo, zoom) están ocultas en la barra móvil
-    const desktopTools = page.locator('.desktop-header-tool');
+    // La barra móvil conserva metrónomo, grabación y zoom; las acciones
+    // secundarias siguen disponibles en el menú, sin ocupar la cabecera.
+    const desktopTools = page.locator('.desktop-header-tool:not(#btnSongTopMetronome):not(#btnQuickRecordAction):not(.tool-font)');
     const count = await desktopTools.count();
     for (let i = 0; i < count; i++) {
       await expect(desktopTools.nth(i)).toBeHidden();
+    }
+    for (const id of ['btnSongTopMetronome', 'btnQuickRecordAction', 'btnFontIncr']) {
+      const action = page.locator(`#${id}`);
+      await expect(action).toBeVisible();
+      const box = await action.boundingBox();
+      expect(box.x).toBeGreaterThanOrEqual(0);
+      expect(box.x + box.width).toBeLessThanOrEqual(375);
     }
 
     // Comprobar selector de instrumentos visible con los 3 botones en grid

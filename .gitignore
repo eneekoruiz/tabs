@@ -22,3 +22,8 @@ Thumbs.db
 .gemini/
 
 recordatorios/
+
+# Handoff e informes generados
+handoff/
+reports/
+*.log

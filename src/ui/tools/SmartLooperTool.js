@@ -9,6 +9,7 @@ import { events } from '../../core/EventBus.js';
 import { state } from '../../core/State.js';
 import { smartLooperEngine } from '../../audio/SmartLooperEngine.js';
 import { toast } from '../Toast.js';
+import { audioEngine } from '../../core/AudioEngine.js';
 
 export class SmartLooperTool extends Component {
   constructor() {
@@ -18,7 +19,7 @@ export class SmartLooperTool extends Component {
   }
 
   initEvents() {
-    events.on('looper:open', () => this.open('#looper-modal-container'));
+    this.registerUnsub(events.on('looper:open', () => this.open('#looper-modal-container')));
   }
 
   open(targetContainerSelector = '#looper-modal-container') {
@@ -28,13 +29,16 @@ export class SmartLooperTool extends Component {
     }
     if (!host) return;
 
-    this.currentHost = targetContainerSelector;
+    this.currentHost = `#${host.id}`;
+    this.unsubCycle?.();
 
     host.innerHTML = this.renderModal();
     this.attachListeners(host);
   }
 
   close(host) {
+    this.unsubCycle?.();
+    this.unsubCycle = null;
     if (host) host.innerHTML = '';
   }
 
@@ -42,7 +46,7 @@ export class SmartLooperTool extends Component {
     const isEnabled = this.engine.isEnabled;
     const isSpeedTrainer = this.engine.isSpeedTrainerActive;
     const currentSong = state.get('activeSong');
-    const totalBars = (state.get('score')?.masterBars?.length) || 32;
+    const totalBars = audioEngine.score?.masterBars?.length || 0;
 
     return `
       <div class="modal-looper-backdrop" role="dialog" aria-modal="true" aria-labelledby="looperTitle">
@@ -99,10 +103,10 @@ export class SmartLooperTool extends Component {
               <div class="trainer-header-line">
                 <div class="trainer-title-group">
                   <h3 class="section-card-title">2. Speed Trainer (+5% Automático por Vuelta)</h3>
-                  <p class="trainer-desc">Incrementa la velocidad de reproducción de forma adaptativa tras cada ciclo completado sin fallos.</p>
+                  <p class="trainer-desc">Incremento automático por vuelta. No evalúa los errores al tocar.</p>
                 </div>
                 <label class="toggle-switch">
-                  <input type="checkbox" id="chkEnableSpeedTrainer" ${isSpeedTrainer ? 'checked' : ''}>
+                  <input type="checkbox" id="chkEnableSpeedTrainer" aria-label="Aumentar velocidad por vuelta" ${isSpeedTrainer ? 'checked' : ''}>
                   <span class="toggle-slider"></span>
                 </label>
               </div>
@@ -145,7 +149,7 @@ export class SmartLooperTool extends Component {
           <div class="looper-modal-footer">
             <button class="btn-looper-action secondary" id="btnLooperReset">Restablecer Bucle</button>
             <button class="btn-looper-action primary ${isEnabled ? 'is-active' : ''}" id="btnLooperToggle">
-              ${isEnabled ? '⏹️ Detener Bucle A-B' : '▶️ Activar Bucle & Speed Trainer'}
+              ${isEnabled ? '⏹️ Detener Bucle A-B' : totalBars ? '▶️ Activar Bucle & Speed Trainer' : 'Carga una partitura para activar el bucle'}
             </button>
           </div>
         </div>
@@ -156,6 +160,12 @@ export class SmartLooperTool extends Component {
   attachListeners(container) {
     const card = container.querySelector('#modal-smart-looper');
     if (!card) return;
+    card.querySelector('#btnLooperToggle').disabled = !audioEngine.score?.masterBars?.length;
+    card.addEventListener('keydown', event => {
+      if (event.key === 'Escape') this.close(container);
+    });
+    card.querySelector('#btnCloseLooper')?.focus();
+    [['btnDecrStartBar', 'Compás inicial anterior'], ['btnIncrStartBar', 'Compás inicial siguiente'], ['btnDecrEndBar', 'Compás final anterior'], ['btnIncrEndBar', 'Compás final siguiente']].forEach(([id, label]) => card.querySelector(`#${id}`)?.setAttribute('aria-label', label));
 
     // Cerrar
     card.querySelector('#btnCloseLooper')?.addEventListener('click', () => this.close(container));
@@ -235,7 +245,7 @@ export class SmartLooperTool extends Component {
     toggleBtn?.addEventListener('click', () => {
       this._updateRange();
       const newState = this.engine.toggleLooper();
-      this.open('#looper-modal-container');
+      this.open(this.currentHost);
       if (newState) {
         toast.show(`Smart Looper activo: Compases ${this.engine.startBar} a ${this.engine.endBar} al ${Math.round(this.engine.currentSpeed * 100)}%`, 'success');
       } else {
@@ -248,12 +258,12 @@ export class SmartLooperTool extends Component {
       this.engine.toggleLooper(false);
       this.engine.setBarRange(1, 4);
       this.engine.configureSpeedTrainer(0.70, 1.00, 0.05);
-      this.open('#looper-modal-container');
+      this.open(this.currentHost);
       toast.show('Looper restablecido', 'info');
     });
 
     // Escuchar actualizaciones de ciclo
-    events.on('looper:cycleCompleted', ({ cycleNumber, currentSpeed, targetSpeed, isTargetReached }) => {
+    this.unsubCycle = events.on('looper:cycleCompleted', ({ cycleNumber, currentSpeed, targetSpeed, isTargetReached }) => {
       const statusEl = card.querySelector('#lblLooperLiveStatus');
       if (statusEl) {
         statusEl.textContent = `Vuelta ${cycleNumber} completada · Velocidad actual: ${Math.round(currentSpeed * 100)}% BPM ${isTargetReached ? '(¡Objetivo alcanzado! 🏆)' : ''}`;
@@ -269,6 +279,8 @@ export class SmartLooperTool extends Component {
     const s = parseInt(startInp?.value || 1);
     const e = parseInt(endInp?.value || 4);
     this.engine.setBarRange(s, e);
+    if (startInp) startInp.value = this.engine.startBar;
+    if (endInp) endInp.value = this.engine.endBar;
   }
 }
 

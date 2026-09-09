@@ -4,6 +4,9 @@
  * Soporta transposición cromática, cejillas (capo) y notación anglo/latina (Do, Re, Mi).
  */
 
+import { escapeHTML } from '../../utils/sanitize.js';
+
+const CHORD_PATTERN = '[A-G][#b]?(?:(?:maj|min|dim|aug|sus|add|m|M|\\d|\\+|\\(|\\)|°)*)(?:/[A-G][#b]?)?';
 const NOTES_SHARP = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
 const NOTES_FLAT = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
 
@@ -44,28 +47,18 @@ export class ChordProParser {
    * @returns {string}
    */
   static transposeChord(chordName, semitones, capoFret = 0) {
-    const totalSemitones = semitones - capoFret;
+    const totalSemitones = Math.round(Number(semitones) - Number(capoFret));
+    if (!Number.isFinite(totalSemitones)) return chordName;
     if (totalSemitones === 0 || !chordName) return chordName;
 
-    const match = chordName.match(/^([A-G][#b]?)(.*)$/);
-    if (!match) return chordName;
-
-    const root = match[1];
-    const suffix = match[2];
-
-    let idx = NOTES_SHARP.indexOf(root);
-    let useSharps = true;
-    if (idx === -1) {
-      idx = NOTES_FLAT.indexOf(root);
-      useSharps = false;
-    }
-    if (idx === -1) return chordName;
-
-    let newIdx = (idx + totalSemitones) % 12;
-    if (newIdx < 0) newIdx += 12;
-
-    const newRoot = useSharps ? NOTES_SHARP[newIdx] : NOTES_FLAT[newIdx];
-    return `${newRoot}${suffix}`;
+    // Transpose both the root and an explicitly notated bass, preserving extensions.
+    return String(chordName).split('/').map(part => part.replace(/^([A-G][#b]?)/, (root) => {
+      let idx = NOTES_SHARP.indexOf(root);
+      const notes = idx < 0 ? NOTES_FLAT : NOTES_SHARP;
+      if (idx < 0) idx = NOTES_FLAT.indexOf(root);
+      if (idx < 0) return root;
+      return notes[((idx + totalSemitones) % 12 + 12) % 12];
+    })).join('/');
   }
 
   /**
@@ -81,7 +74,7 @@ export class ChordProParser {
     }
     if (!rawText || typeof rawText !== 'string') return [];
     const chords = new Set();
-    const regex = /\[([A-G0-9#b\/\+msusdimmaj]+)\]/g;
+    const regex = new RegExp(`\\[(${CHORD_PATTERN})\\]`, 'g');
     let match;
     while ((match = regex.exec(rawText)) !== null) {
       if (match[1]) {
@@ -103,13 +96,8 @@ export class ChordProParser {
     const spelledChord = this.spellAccidentals(chord, accidentalPreference);
     if (notation !== 'latin') return spelledChord;
 
-    const match = spelledChord.match(/^([A-G][#b]?)(.*)$/);
-    if (!match) return spelledChord;
-
-    const root = match[1];
-    const suffix = match[2];
-    const latinRoot = LATIN_MAP[root] || root;
-    return `${latinRoot}${suffix}`;
+    return spelledChord.split('/').map(part => part.replace(/^([A-G][#b]?)/,
+      root => LATIN_MAP[root] || root)).join('/');
   }
 
   /**
@@ -122,7 +110,7 @@ export class ChordProParser {
     if (typeof rawText === 'object' && rawText !== null) {
       rawText = rawText.chordpro || rawText.lyrics || rawText.text || '';
     }
-    if (!rawText || typeof rawText !== 'string') return '<p class="lyrics-empty">Cargando letra oficial...</p>';
+    if (!rawText || typeof rawText !== 'string') return '<div class="lyrics-empty-state" role="status"><strong>Letra no disponible todavía</strong><span>Prueba otra versión o importa tu propia tablatura.</span></div>';
 
     const lines = rawText.split('\n');
     let html = '<div class="lyrics-content-body" id="lyricsContentBodyInner">';
@@ -132,9 +120,9 @@ export class ChordProParser {
 
       if (/^\[[^\[\]]+\]$/.test(line)) {
         const inner = line.slice(1, -1).trim();
-        const isSingleChord = /^[A-G][#b]?(m|maj|min|dim|aug|sus|add|\d|\+)*(\/[A-G][#b]?)?$/i.test(inner);
+        const isSingleChord = new RegExp(`^${CHORD_PATTERN}$`).test(inner);
         if (!isSingleChord) {
-          html += `<div class="lyrics-section-header">${inner}</div>`;
+          html += `<div class="lyrics-section-header">${escapeHTML(inner)}</div>`;
           continue;
         }
       }
@@ -146,7 +134,7 @@ export class ChordProParser {
 
       html += '<div class="lyrics-line">';
 
-      const regex = /\[([A-G0-9#b\/\+msusdimmaj]+)\]|([^\[]+)/g;
+      const regex = new RegExp(`\\[(${CHORD_PATTERN})\\]|([^\\[]+)`, 'g');
       let match;
       let currentChord = null;
 
@@ -169,7 +157,9 @@ export class ChordProParser {
           for (const w of words) {
             const trimmedWord = w.trim();
             if (trimmedWord === '') {
-              html += `<span class="lyrics-space" style="display: inline-block; width: 6px;"></span>`;
+              // Mantener un espacio real en el texto accesible y en copiado,
+              // aunque visualmente el espaciador se controle con CSS.
+              html += `<span class="lyrics-space" aria-hidden="true" style="display: inline-block; width: 6px;"> </span>`;
             } else if (/^\.+$/.test(trimmedWord)) {
               // Filtrar puntos de ritmo o compás para que no se muestren como letras sueltas
               html += `<span class="lyrics-space" style="display: inline-block; width: 8px;"></span>`;
@@ -178,7 +168,7 @@ export class ChordProParser {
               html += `
                 <div class="lyrics-chord-word-pair">
                   ${!hideChords && currentChord ? `<button class="chord-badge btn-chord-popover" data-chord="${currentChord}" data-original-chord="${currentChord}" aria-label="Ver acorde ${displayChord}">${displayChord}</button>` : (!hideChords ? '<span class="chord-placeholder" style="height: 20px; display: block;"></span>' : '')}
-                  <span class="lyrics-word">${w}</span>
+                  <span class="lyrics-word">${escapeHTML(w)}</span>
                 </div>
               `;
               currentChord = null;

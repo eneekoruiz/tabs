@@ -25,12 +25,21 @@ export class AudioTranscriberTool extends Component {
     this.isPlayingPreview = false;
     this.previewTimeoutId = null;
     this.animationId = null;
+    this.operationId = 0;
+    this.isPreparing = false;
 
     this.initEvents();
   }
 
   initEvents() {
-    events.on('transcriber:open', () => this.open('#transcription-modal-container'));
+    this.registerUnsub(events.on('transcriber:open', () => this.open('#transcription-modal-container')));
+    this.registerUnsub(events.on('transcriber:error', ({ error }) => {
+      if (this.isRecording && this.host?.querySelector('#modal-audio-transcriber')) {
+        this.isRecording = false;
+        this._showError(this.host, error);
+        this._setBusy(this.host, false);
+      }
+    }));
   }
 
   open(targetContainerSelector = '#transcription-modal-container') {
@@ -39,22 +48,25 @@ export class AudioTranscriberTool extends Component {
       host = document.querySelector('#transcription-modal-container') || document.querySelector('#toolModalHost');
     }
     if (!host) return;
-
+    this.host = host;
+    if (this.animationId) cancelAnimationFrame(this.animationId);
     host.innerHTML = this.renderModal();
     this.attachListeners(host);
   }
 
   close(host) {
+    this.operationId++;
     this.stopPreview();
-    if (this.isRecording) {
-      this.engine.stopLiveRecording();
-      this.isRecording = false;
-    }
+    this.engine.cancelRecording();
+    this.isRecording = false;
+    this.isProcessing = false;
+    this.isPreparing = false;
     if (this.animationId) {
       cancelAnimationFrame(this.animationId);
       this.animationId = null;
     }
     if (host) host.innerHTML = '';
+    this.host = null;
   }
 
   renderModal() {
@@ -64,9 +76,9 @@ export class AudioTranscriberTool extends Component {
           <!-- CABECERA -->
           <div class="transcriber-header">
             <div class="transcriber-title-group">
-              <span class="transcriber-badge">AI DSP · MAGIC SCRATCHPAD</span>
+              <span class="transcriber-badge">ANÁLISIS LOCAL DE AUDIO</span>
               <h2 class="transcriber-title">Transcripción de Audio a Acordes</h2>
-              <p class="transcriber-subtitle">Graba un acorde o idea con tu guitarra o sube un archivo para extraer la progresión automáticamente.</p>
+              <p class="transcriber-subtitle">Estimación de acordes para revisar de oído. Las mezclas completas y la voz sola pueden dar resultados imprecisos.</p>
             </div>
             <button class="btn-close-transcriber" id="btnCloseTranscriber" aria-label="Cerrar Transcriptor">✕</button>
           </div>
@@ -75,7 +87,7 @@ export class AudioTranscriberTool extends Component {
           <div class="transcriber-wave-viewport">
             <canvas id="transcriptionWaveCanvas" class="transcription-wave-canvas" width="680" height="140"></canvas>
             <div class="transcriber-wave-overlay-info" id="waveStatusOverlay">
-              <span class="wave-status-text" id="lblWaveStatus">${this.isRecording ? '🔴 Grabando idea...' : 'Listo para grabar o importar audio'}</span>
+              <span class="wave-status-text" id="lblWaveStatus" role="status" aria-live="polite">${this.isRecording ? '🔴 Grabando idea...' : 'Listo para grabar o importar audio'}</span>
             </div>
           </div>
 
@@ -86,7 +98,7 @@ export class AudioTranscriberTool extends Component {
               <span id="lblTranscribeRec">${this.isRecording ? 'Detener y Analizar' : '🎙️ Grabar con Micrófono'}</span>
             </button>
 
-            <label class="btn-transcriber-upload" for="fileAudioUpload" id="lblAudioUpload">
+            <label class="btn-transcriber-upload" for="fileAudioUpload" id="lblAudioUpload" role="button" tabindex="0">
               <span>📁 Subir Archivo Audio</span>
               <input type="file" id="fileAudioUpload" accept="audio/*,video/*" style="display: none;" />
             </label>
@@ -140,7 +152,7 @@ export class AudioTranscriberTool extends Component {
     if (!chords || chords.length === 0) {
       return `
         <div class="chord-card-empty">
-          <span>🎙️ Canta o toca una progresión (ej. C - G - Am - F) para ver los acordes aquí.</span>
+          <span>No se han detectado acordes con suficiente señal. Prueba una toma instrumental más clara.</span>
         </div>
       `;
     }
@@ -164,6 +176,16 @@ export class AudioTranscriberTool extends Component {
     this.canvas = card.querySelector('#transcriptionWaveCanvas');
     this.ctx = this.canvas ? this.canvas.getContext('2d') : null;
     this._startWaveformLoop();
+    card.addEventListener('keydown', event => {
+      if (event.key === 'Escape') this.close(container);
+    });
+    card.querySelector('#btnCloseTranscriber')?.focus();
+    card.querySelector('#lblAudioUpload')?.addEventListener('keydown', event => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        card.querySelector('#fileAudioUpload').click();
+      }
+    });
 
     // Botón Cerrar
     card.querySelector('#btnCloseTranscriber')?.addEventListener('click', () => {
@@ -204,17 +226,27 @@ export class AudioTranscriberTool extends Component {
     });
 
     // Botón Copiar ChordPro
-    card.querySelector('#btnCopyChordPro')?.addEventListener('click', () => {
+    card.querySelector('#btnCopyChordPro')?.addEventListener('click', async () => {
       if (this.lastTranscription?.chordPro) {
-        navigator.clipboard.writeText(this.lastTranscription.chordPro);
-        toast.show('Progresión ChordPro copiada al portapapeles', 'success');
+        try {
+          await navigator.clipboard.writeText(this.lastTranscription.chordPro);
+          toast.show('Progresión ChordPro copiada al portapapeles', 'success');
+        } catch {
+          toast.show('No se pudo copiar al portapapeles.', 'warning');
+        }
       }
     });
   }
 
   async _handleStartRecording(container) {
+    if (this.isPreparing || this.isProcessing) return;
+    const operationId = ++this.operationId;
+    this.stopPreview();
+    this.isPreparing = true;
+    this._setBusy(container, true);
     try {
-      await this.engine.startLiveRecording();
+      const started = await this.engine.startLiveRecording();
+      if (!started || operationId !== this.operationId) return;
       this.isRecording = true;
       const btn = container.querySelector('#btnToggleTranscribeRec');
       const lbl = container.querySelector('#lblTranscribeRec');
@@ -225,32 +257,56 @@ export class AudioTranscriberTool extends Component {
     } catch (err) {
       console.warn('[AudioTranscriberTool] Error iniciando grabación:', err);
       toast.show('No se pudo acceder al micrófono', 'error');
+      this._showError(container, err);
+    } finally {
+      if (operationId === this.operationId) {
+        this.isPreparing = false;
+        this._setBusy(container, false);
+      }
     }
   }
 
   async _handleStopRecording(container) {
+    if (this.isProcessing) return;
+    const operationId = ++this.operationId;
+    this.isProcessing = true;
+    this.isRecording = false;
+    this._setBusy(container, true);
     const progressBox = container.querySelector('#transcriberProgressBox');
     const status = container.querySelector('#lblWaveStatus');
     if (progressBox) progressBox.style.display = 'flex';
     if (status) status.textContent = 'Procesando espectrograma...';
 
-    const result = await this.engine.stopLiveRecording();
-    this.isRecording = false;
-
-    if (progressBox) progressBox.style.display = 'none';
-    if (result) {
-      this.lastTranscription = result;
-      this._updateResultsUI(container);
-      toast.show(`¡Transcripción completada! ${result.chords.length} acordes identificados`, 'success');
+    try {
+      const result = await this.engine.stopLiveRecording();
+      if (operationId !== this.operationId) return;
+      if (result) {
+        this.lastTranscription = result;
+        this._updateResultsUI(container);
+      }
+    } catch (error) {
+      if (operationId === this.operationId) this._showError(container, error);
+    } finally {
+      if (operationId === this.operationId) {
+        this.isProcessing = false;
+        this._setBusy(container, false);
+        if (progressBox) progressBox.style.display = 'none';
+      }
     }
   }
 
   async _handleFileUpload(file, container) {
+    if (this.isRecording || this.isPreparing || this.isProcessing) return;
+    const operationId = ++this.operationId;
+    this.stopPreview();
+    this.isProcessing = true;
+    this._setBusy(container, true);
     const progressBox = container.querySelector('#transcriberProgressBox');
     if (progressBox) progressBox.style.display = 'flex';
 
     try {
       const result = await this.engine.transcribeAudioBlob(file);
+      if (operationId !== this.operationId) return;
       if (progressBox) progressBox.style.display = 'none';
       if (result) {
         this.lastTranscription = result;
@@ -258,12 +314,23 @@ export class AudioTranscriberTool extends Component {
         toast.show(`Archivo procesado: ${result.chords.length} acordes detectados`, 'success');
       }
     } catch (err) {
-      if (progressBox) progressBox.style.display = 'none';
-      toast.show('Error al procesar el archivo de audio', 'error');
+      if (operationId === this.operationId) this._showError(container, err);
+    } finally {
+      if (operationId === this.operationId) {
+        this.isProcessing = false;
+        this._setBusy(container, false);
+        if (progressBox) progressBox.style.display = 'none';
+        const input = container.querySelector('#fileAudioUpload');
+        if (input) input.value = '';
+      }
     }
   }
 
   _updateResultsUI(container) {
+    const hasChords = Boolean(this.lastTranscription?.chords.length);
+    container.querySelectorAll('.transcription-export-bar button, #btnPlayTranscriptionPreview').forEach(button => {
+      button.disabled = !hasChords;
+    });
     const resultsSec = container.querySelector('#transcriptionResultsSection');
     const keyEl = container.querySelector('#lblDetectedKey');
     const gridEl = container.querySelector('#chordTimelineGrid');
@@ -325,7 +392,7 @@ export class AudioTranscriberTool extends Component {
   }
 
   _loadInSongViewer() {
-    if (!this.lastTranscription) return;
+    if (!this.lastTranscription?.chords.length) return;
 
     const newSong = {
       title: 'Idea Transcrita ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
@@ -344,7 +411,7 @@ export class AudioTranscriberTool extends Component {
   }
 
   async _saveToMyTabs() {
-    if (!this.lastTranscription) return;
+    if (!this.lastTranscription?.chords.length) return;
 
     const record = {
       title: 'Idea Transcrita ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
@@ -357,12 +424,40 @@ export class AudioTranscriberTool extends Component {
       addedAt: Date.now()
     };
 
-    await db.saveSong(record);
-    toast.show('Canción guardada en Mis Tabs', 'success');
+    try {
+      await db.saveSong(record);
+      toast.show('Canción guardada en Mis Tabs', 'success');
+    } catch {
+      toast.show('No se pudo guardar la transcripción. Revisa el espacio disponible.', 'error');
+    }
+  }
+
+  _setBusy(container, busy) {
+    const button = container.querySelector('#btnToggleTranscribeRec');
+    if (button) button.disabled = busy;
+    const input = container.querySelector('#fileAudioUpload');
+    if (input) input.disabled = busy || this.isRecording;
+    container.querySelector('#modal-audio-transcriber')?.setAttribute('aria-busy', String(busy));
+    container.querySelector('#lblAudioUpload')?.setAttribute('aria-disabled', String(busy || this.isRecording));
+  }
+
+  _showError(container, error) {
+    if (error.name === 'AbortError') return;
+    const status = container.querySelector('#lblWaveStatus');
+    if (status) status.textContent = error.message || 'No se pudo analizar el audio.';
+    const label = container.querySelector('#lblTranscribeRec');
+    if (label) label.textContent = 'Grabar con Micrófono';
+    container.querySelector('#btnToggleTranscribeRec')?.classList.remove('recording');
+  }
+
+  destroy() {
+    this.close(this.host);
+    super.destroy();
   }
 
   _startWaveformLoop() {
     const draw = () => {
+      if (!this.canvas?.isConnected) return;
       if (this.ctx && this.canvas) {
         const width = this.canvas.width;
         const height = this.canvas.height;
@@ -382,14 +477,16 @@ export class AudioTranscriberTool extends Component {
         this.ctx.lineWidth = 2.5;
         this.ctx.beginPath();
 
-        const points = 64;
+        const analyser = this.isRecording ? this.engine.analyserNode : null;
+        if (analyser && this.waveData?.length !== analyser.fftSize) this.waveData = new Float32Array(analyser.fftSize);
+        if (analyser) analyser.getFloatTimeDomainData(this.waveData);
+        const points = 128;
         const sliceWidth = width / points;
         let x = 0;
-        const time = Date.now() * 0.004;
 
         for (let i = 0; i <= points; i++) {
-          const amp = this.isRecording ? (25 + Math.sin(i * 0.5 + time * 3) * 18) : (8 + Math.sin(i * 0.2 + time) * 5);
-          const y = height / 2 + Math.sin(i * 0.4 + time * 2) * amp;
+          const sample = analyser ? this.waveData[Math.min(this.waveData.length - 1, Math.floor(i * this.waveData.length / points))] : 0;
+          const y = height / 2 + sample * height * 0.45;
           if (i === 0) this.ctx.moveTo(x, y);
           else this.ctx.lineTo(x, y);
           x += sliceWidth;

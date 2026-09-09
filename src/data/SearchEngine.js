@@ -6,7 +6,8 @@
 
 import { db } from './Database.js';
 import { offlineUniversalLibrary } from './catalog/OfflineUniversalLibraryEngine.js';
-import { getKnownSongLyrics } from './lyrics/KnownSongLyrics.js';
+import { getKnownSongLyrics, getSuppliedSongLyrics } from './lyrics/KnownSongLyrics.js';
+import { assessSong, plainLyricText, summarizeQuality } from './catalog/CatalogQuality.js';
 import { MEGA_CATALOG } from './CatalogDataset.js';
 import { events } from '../core/EventBus.js';
 import { state } from '../core/State.js';
@@ -35,53 +36,61 @@ class SearchEngine {
   async reloadIndex() {
     try {
       const localSongs = await db.getAllSongsMetadata();
-      const localGroups = new Set(localSongs.map((song) => this.getGroupKey(song)));
       const catalogSongs = [];
+      const catalogIds = new Set(localSongs.map(song => song.catalogOriginId).filter(Boolean));
 
       const megaMap = new Map();
       if (Array.isArray(MEGA_CATALOG)) {
         for (const m of MEGA_CATALOG) {
           const k = `${(m.title || '').toLowerCase()} --- ${(m.artist || '').toLowerCase()}`;
-          megaMap.set(k, m);
+          if (!megaMap.has(k)) megaMap.set(k, []);
+          megaMap.get(k).push(m);
         }
       }
 
       for (const item of offlineUniversalLibrary.searchIndex.values()) {
         const groupKey = this.getGroupKey(item);
-        if (localGroups.has(groupKey)) continue;
-        const hasCuratedLyrics = true;
-
-        const mega = megaMap.get(`${(item.title || '').toLowerCase()} --- ${(item.artist || '').toLowerCase()}`);
+        const arrangements = megaMap.get(`${(item.title || '').toLowerCase()} --- ${(item.artist || '').toLowerCase()}`) || [];
         const meta = resolveSongMetadata(item.title, item.artist, item.genre, (s) => this.hash(s));
-
-        catalogSongs.push({
-          id: `catalog_${this.hash(groupKey)}`,
-          title: item.title,
-          artist: item.artist,
-          genre: mega?.genre || item.genre || 'Pop',
-          tuning: mega?.tuning || 'Standard E',
-          tempo: Number(mega?.tempo || meta.tempo),
-          difficulty: mega?.difficulty || meta.difficulty,
-          isFavorite: false,
-          isCatalogEntry: true,
-          isOfflineReady: true,
-          hasCuratedLyrics,
-          contentKind: hasCuratedLyrics ? 'curated_lyrics' : 'generated_chord_guide',
-          contentSource: hasCuratedLyrics ? 'curated_lyrics' : 'generated_chord_guide',
+        const known = getKnownSongLyrics(item.title, item.artist) || '';
+        const supplied = getSuppliedSongLyrics(item.title, item.artist) || '';
+        const variants = [{ ...meta, lyricsChords: known, versionId: 'repository-sheet', versionLabel: 'Texto del repositorio' }];
+        if (supplied && plainLyricText(supplied) !== plainLyricText(known)) {
+          variants.push({ ...meta, lyricsChords: supplied, versionId: 'repository-text', versionLabel: 'Letra alternativa del repositorio' });
+        }
+        arrangements.forEach((arrangement, index) => {
+          if (arrangement.lyricsChords && !variants.some(version => version.lyricsChords === arrangement.lyricsChords)) {
+            variants.push({ ...arrangement, versionId: `repository-arrangement-${index}`, versionLabel: `Arreglo del repositorio ${index + 1}` });
+          }
         });
+        for (const variant of variants) {
+          const song = { ...item, ...variant, id: `catalog_${this.hash(`${groupKey}:${variant.versionId}`)}`,
+            isFavorite: false, isCatalogEntry: true, tempo: Number(variant.tempo) > 0 ? Number(variant.tempo) : null,
+            tempoSource: variant.tempoSource || (variant.tempo ? 'repository_metadata' : 'unknown'),
+            contentSource: 'repository_unverified' };
+          song.quality = assessSong(song);
+          song.hasLyrics = song.quality.hasLyrics;
+          song.hasChords = song.quality.hasChords;
+          song.hasCuratedLyrics = false;
+          song.isOfflineReady = song.quality.offlineTextAvailable;
+          song.contentKind = song.contentSource;
+          // Missing or placeholder text stays in the audit, not in playable results.
+          if (song.hasLyrics && !catalogIds.has(song.id)) { catalogSongs.push(song); catalogIds.add(song.id); }
+        }
       }
 
       // Asegurar que localSongs también tengan difficulty y tempo consistentes
       localSongs.forEach((song) => {
-        if (!song.difficulty || !song.tempo || song.tempo === 120) {
+        if (!song.difficulty || !song.tempo) {
           const meta = resolveSongMetadata(song.title, song.artist, song.genre, (s) => this.hash(s));
           if (!song.difficulty) song.difficulty = meta.difficulty;
-          if (!song.tempo || song.tempo === 120) song.tempo = meta.tempo;
+          if (!song.tempo && meta.tempo) { song.tempo = meta.tempo; song.tempoSource = meta.tempoSource; }
         }
       });
 
       this.index = localSongs;
       this.catalogIndex = catalogSongs;
+      this.qualitySummary = summarizeQuality([...localSongs, ...catalogSongs]);
       this.searchDocuments = new WeakMap();
       [...this.index, ...this.catalogIndex].forEach((song) => this.searchDocuments.set(song, this.createSearchDocument(song)));
       this.isLoaded = true;
@@ -101,7 +110,7 @@ class SearchEngine {
       .toLowerCase()
       .normalize('NFD')
       .replace(/[\u0300-\u036f]/g, '')
-      .replace(/[^a-z0-9\s]/g, ' ')
+      .replace(/[^\p{L}\p{N}\s]/gu, ' ')
       .replace(/\s+/g, ' ')
       .trim();
   }
@@ -122,7 +131,7 @@ class SearchEngine {
   getContentSource(song) {
     if (song?.contentSource) return song.contentSource;
     if (song?.contentKind) return song.contentKind;
-    return song?.hasCuratedLyrics ? 'curated_lyrics' : 'generated_chord_guide';
+    return song?.hasCuratedLyrics ? 'repository_unverified' : 'metadata_only';
   }
 
   getVersionLabel(song, fallbackIndex = 0) {
@@ -314,7 +323,7 @@ class SearchEngine {
     };
   }
 
-  search({ query = '', filter = 'all', genre = 'all', difficulty = 'all', contentSource = 'all', sortBy = 'popular', groupBySong = false, includeCatalog = false, page = 1, pageSize = 50 } = {}) {
+  search({ query = '', filter = 'all', qualityFilter = 'all', genre = 'all', difficulty = 'all', contentSource = 'all', sortBy = 'popular', groupBySong = false, includeCatalog = false, page = 1, pageSize = 50 } = {}) {
     if (!this.isLoaded) {
       return { results: [], groups: [], totalCount: 0, totalVersions: 0, totalPages: 1, facets: this.getFacets([]) };
     }
@@ -322,6 +331,9 @@ class SearchEngine {
     const normalizedQuery = this.normalize(query);
     const sourceIndex = includeCatalog ? [...this.index, ...this.catalogIndex] : this.index;
     let results = sourceIndex.filter((song) => {
+      if (qualityFilter === 'chords' && !song.quality?.hasChords) return false;
+      if (qualityFilter === 'timed' && !song.quality?.hasTiming) return false;
+      if (qualityFilter === 'verified') return false; // No independent musical certification has been supplied.
       if (filter === 'favorites' && !song.isFavorite) return false;
       if (genre !== 'all' && this.normalize(song.genre) !== this.normalize(genre)) return false;
       if (difficulty !== 'all' && this.normalize(song.difficulty) !== this.normalize(difficulty)) return false;

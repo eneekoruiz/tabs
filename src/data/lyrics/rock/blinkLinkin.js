@@ -1,3 +1,5 @@
+import { matchesSong } from "../../catalog/SongIdentity.js";
+
 /**
  * @file blinkLinkin.js
  * @description Blink-182 & Linkin Park - Letras y acordes 100% completos y oficiales en formato ChordPro.
@@ -7,7 +9,7 @@ export function getBlinkLinkinLyrics(t, a) {
   // ==========================================
   // 50. Blink-182 - What's My Age Again?
   // ==========================================
-  if (t.includes("what's my age again") || t.includes('whats my age again')) {
+  if (matchesSong(t, a, ["whats my age again"], ["blink 182"])) {
     return `[Intro]
 [F#] [C#] [D#m] [B]
 [F#] [C#] [D#m] [B]
@@ -70,7 +72,7 @@ export function getBlinkLinkinLyrics(t, a) {
   // ==========================================
   // 51. Blink-182 - First Date
   // ==========================================
-  if (t.includes('first date')) {
+  if (matchesSong(t, a, ["first date"], ["blink 182"])) {
     return `[Intro]
 [C] [G] [Am] [F]
 [C] [G] [Am] [F]
@@ -118,7 +120,7 @@ I'll [Am]make you laugh, I hope you [F]stay
   // ==========================================
   // 52. Blink-182 - Adam's Song
   // ==========================================
-  if (t.includes("adam's song") || t.includes('adams song')) {
+  if (matchesSong(t, a, ["adams song"], ["blink 182"])) {
     return `[Intro]
 [C] [G] [Am] [F]
 [C] [G] [Am] [F]
@@ -165,7 +167,7 @@ I'll [Am]make you laugh, I hope you [F]stay
   // ==========================================
   // 53. Blink-182 - Dammit
   // ==========================================
-  if (t.includes('dammit')) {
+  if (matchesSong(t, a, ["dammit"], ["blink 182"])) {
     return `[Intro]
 [C] [G] [Am] [F]
 [C] [G] [Am] [F]
@@ -215,7 +217,7 @@ I'll [Am]make you laugh, I hope you [F]stay
   // ==========================================
   // 54. Blink-182 - The Rock Show
   // ==========================================
-  if (t.includes('the rock show') || t.includes('rock show')) {
+  if (matchesSong(t, a, ["the rock show","rock show"], ["blink 182"])) {
     return `[Intro]
 [A] [E] [F#m] [D]
 [A] [E] [F#m] [D]
@@ -271,7 +273,7 @@ I'll [Am]make you laugh, I hope you [F]stay
   // ==========================================
   // 55. Linkin Park - In The End
   // ==========================================
-  if (t.includes('in the end')) {
+  if (matchesSong(t, a, ["in the end"], ["linkin park"])) {
     return `[Intro]
 [Em] [C] [D] [Em]
 
@@ -337,7 +339,7 @@ I'm surpris[D]ed it got so far
   // ==========================================
   // 56. Linkin Park - Numb
   // ==========================================
-  if (t === 'numb' || (t.includes('numb') && (a.includes('linkin park') || !a))) {
+  if (matchesSong(t, a, ["numb"], ["linkin park"])) {
     return `[Intro]
 [F#m] [D] [A] [E]
 [F#m] [D] [A] [E]
@@ -392,7 +394,7 @@ Is be more like [E]me and be less like [F#m]you [D] [A] [E] [F#m]`;
   // ==========================================
   // 57. Linkin Park - Faint
   // ==========================================
-  if (t.includes('faint')) {
+  if (matchesSong(t, a, ["faint"], ["linkin park"])) {
     return `[Intro]
 [Dm] [F] [Bb] [C]
 [Dm] [F] [Bb] [C]
@@ -457,7 +459,7 @@ Don't turn your [Bb]back on me, I won't be [C]ignored
   // ==========================================
   // 58. Linkin Park - Crawling
   // ==========================================
-  if (t.includes('crawling')) {
+  if (matchesSong(t, a, ["crawling"], ["linkin park"])) {
     return `[Intro]
 [C#m] [A] [E] [B]
 
@@ -521,7 +523,7 @@ Con[B]fusing what is [C#m]real`;
   // ==========================================
   // 59. Linkin Park - What I've Done
   // ==========================================
-  if (t.includes("what i've done") || t.includes('what ive done')) {
+  if (matchesSong(t, a, ["what ive done"], ["linkin park"])) {
     return `[Intro]
 [Gm] [Bb] [F] [C]
 [Gm] [Bb] [F] [C]

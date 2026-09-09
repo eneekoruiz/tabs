@@ -34,6 +34,9 @@ export class SmartLooperEngine {
 
     this.checkIntervalId = null;
     this.lastCheckedPosition = 0;
+    this.previousSpeed = null;
+    this.previousLooping = false;
+    this.cycleStartedAt = null;
     this.initEvents();
   }
 
@@ -48,6 +51,7 @@ export class SmartLooperEngine {
     });
 
     events.on('score:loaded', ({ score }) => {
+      if (this.isEnabled) this.toggleLooper(false);
       if (score && score.masterBars && score.masterBars.length > 0) {
         this.startBar = 1;
         this.endBar = Math.min(8, score.masterBars.length);
@@ -61,6 +65,11 @@ export class SmartLooperEngine {
   setBarRange(startBar, endBar) {
     this.startBar = Math.max(1, parseInt(startBar) || 1);
     this.endBar = Math.max(this.startBar, parseInt(endBar) || (this.startBar + 3));
+    const count = audioEngine.score?.masterBars?.length;
+    if (count) {
+      this.startBar = Math.min(count, this.startBar);
+      this.endBar = Math.min(count, this.endBar);
+    }
 
     if (this.isEnabled) {
       this._applyToAudioEngine();
@@ -90,16 +99,29 @@ export class SmartLooperEngine {
    * Activa o desactiva el Smart Looper
    */
   toggleLooper(forceState = null) {
-    this.isEnabled = forceState !== null ? forceState : !this.isEnabled;
+    const enabled = forceState !== null ? Boolean(forceState) : !this.isEnabled;
+    if (enabled === this.isEnabled) return this.isEnabled;
+    if (enabled && (!audioEngine.api || !audioEngine.score?.masterBars?.length)) {
+      events.emit('looper:unavailable', { message: 'Carga una partitura con reproducción para activar el bucle.' });
+      return false;
+    }
+    this.isEnabled = enabled;
 
     if (this.isEnabled) {
       this.currentCycle = 1;
-      this.currentSpeed = this.initialSpeed;
+      this.previousSpeed = state.get('playback')?.playbackSpeed || 1;
+      this.previousLooping = Boolean(audioEngine.api.isLooping);
+      this.currentSpeed = this.isSpeedTrainerActive ? this.initialSpeed : this.previousSpeed;
+      this.setBarRange(this.startBar, this.endBar);
       this._applyToAudioEngine();
+      audioEngine.api.isLooping = true;
       audioEngine.setPlaybackSpeed(this.currentSpeed);
       this._startLoopMonitor();
     } else {
       audioEngine.clearLoop();
+      if (audioEngine.api) audioEngine.api.isLooping = this.previousLooping;
+      if (this.previousSpeed !== null) audioEngine.setPlaybackSpeed(this.previousSpeed);
+      this.previousSpeed = null;
       this._stopLoopMonitor();
     }
 
@@ -119,10 +141,12 @@ export class SmartLooperEngine {
    * Configuración del Speed Trainer (+5% por ciclo)
    */
   configureSpeedTrainer(initialSpeed = 0.70, targetSpeed = 1.00, stepIncrease = 0.05) {
+    if (![initialSpeed, targetSpeed, stepIncrease].every(Number.isFinite)) return;
     this.initialSpeed = Math.max(0.3, Math.min(1.5, initialSpeed));
     this.targetSpeed = Math.max(this.initialSpeed, Math.min(2.0, targetSpeed));
     this.stepIncrease = Math.max(0.01, Math.min(0.20, stepIncrease));
     this.currentSpeed = this.initialSpeed;
+    if (this.isEnabled && this.isSpeedTrainerActive) audioEngine.setPlaybackSpeed(this.currentSpeed);
 
     events.emit('looper:speedTrainerConfigured', {
       initialSpeed: this.initialSpeed,
@@ -140,21 +164,24 @@ export class SmartLooperEngine {
    * Notificación cuando se completa un ciclo del bucle
    */
   handleLoopCycleCompleted() {
+    if (!this.isEnabled) return;
     this.totalLoopsCompleted++;
     this.currentCycle++;
 
     // Registrar en analíticas silenciosas
     const song = state.get('activeSong');
-    if (song && song.title) {
+    const elapsedMinutes = this.cycleStartedAt === null ? 0 : (performance.now() - this.cycleStartedAt) / 60000;
+    this.cycleStartedAt = performance.now();
+    if (song && song.title && elapsedMinutes > 0) {
       practiceTrackerService.recordSession({
         songTitle: song.title,
-        minutes: 0.5,
+        minutes: elapsedMinutes,
         speedTrainerTarget: Math.round(this.currentSpeed * 100)
       });
     }
 
     // Si el Speed Trainer está activo, subir velocidad
-    if (this.isSpeedTrainerActive && this.currentSpeed < this.targetSpeed) {
+    if (this.isSpeedTrainerActive && this.currentSpeed < this.targetSpeed && this.totalLoopsCompleted % this.cyclesPerStep === 0) {
       const nextSpeed = Math.min(this.targetSpeed, Math.round((this.currentSpeed + this.stepIncrease) * 100) / 100);
       this.currentSpeed = nextSpeed;
 
@@ -163,8 +190,6 @@ export class SmartLooperEngine {
 
       // Feedback sonoro motivacional
       audioFeedback.playSuccess();
-    } else if (this.currentSpeed >= this.targetSpeed) {
-      audioFeedback.playAchievement();
     }
 
     events.emit('looper:cycleCompleted', {
@@ -183,13 +208,15 @@ export class SmartLooperEngine {
 
   _startLoopMonitor() {
     this._stopLoopMonitor();
+    if (state.get('playback')?.state !== 'playing') return;
+    this.cycleStartedAt = performance.now();
 
     // Monitorear finalización de bucle por tiempo / ticks
     this.checkIntervalId = setInterval(() => {
       if (!this.isEnabled || !audioEngine.api) return;
 
       const playback = state.get('playback');
-      if (playback.state !== 'playing') return;
+      if (playback?.state !== 'playing') return;
 
       // Si AlphaTab vuelve al inicio del bucle, detectar ciclo
       const curTick = audioEngine.api.tickPosition;
@@ -206,6 +233,7 @@ export class SmartLooperEngine {
       this.checkIntervalId = null;
     }
     this.lastCheckedPosition = 0;
+    this.cycleStartedAt = null;
   }
 
   dispose() {

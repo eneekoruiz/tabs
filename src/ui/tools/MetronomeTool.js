@@ -20,10 +20,13 @@ export class MetronomeTool {
     this.currentBeat = 0;
     this.schedulerTimer = null;
     this.tapTimes = [];
+    this.visualTimers = new Set();
+    this.activeNotes = new Set();
   }
 
   setBpm(bpm, container) {
-    this.bpm = Math.max(30, Math.min(280, bpm));
+    if (!Number.isFinite(Number(bpm))) return;
+    this.bpm = Math.max(30, Math.min(280, Math.round(Number(bpm))));
     localStorage.setItem('metronome_bpm', this.bpm);
     const bpmVal = container?.querySelector('#metronomeBpmDisplay');
     const bpmSlider = container?.querySelector('#rngMetronomeBpm');
@@ -33,6 +36,7 @@ export class MetronomeTool {
 
   handleTapTempo(container) {
     const now = performance.now();
+    if (this.tapTimes.length && now - this.tapTimes.at(-1) > 2000) this.tapTimes = [];
     this.tapTimes.push(now);
     if (this.tapTimes.length > 4) this.tapTimes.shift();
 
@@ -65,11 +69,15 @@ export class MetronomeTool {
   }
 
   start(container) {
+    this.stop(container);
     const ctx = this.getAudioContext();
+    this.isRunning = true;
     this.currentBeat = 0;
     this.nextNoteTime = ctx.currentTime + 0.05;
 
     const schedule = () => {
+      if (!this.isRunning) return;
+      if (this.nextNoteTime < ctx.currentTime - 0.1) this.nextNoteTime = ctx.currentTime + 0.01;
       while (this.nextNoteTime < ctx.currentTime + 0.1) {
         this.scheduleBeat(this.currentBeat, this.nextNoteTime, container);
         
@@ -88,6 +96,11 @@ export class MetronomeTool {
   }
 
   stop(container) {
+    this.isRunning = false;
+    this.visualTimers.forEach(timer => clearTimeout(timer));
+    this.visualTimers.clear();
+    this.activeNotes.forEach(note => { try { note.stop(); } catch (_) {} });
+    this.activeNotes.clear();
     if (this.schedulerTimer) {
       clearInterval(this.schedulerTimer);
       this.schedulerTimer = null;
@@ -95,6 +108,7 @@ export class MetronomeTool {
     this.currentBeat = 0;
     const leds = container?.querySelectorAll('.metronome-beat-dot');
     if (leds) leds.forEach(l => l.classList.remove('active', 'accent'));
+    this.updateUI(container);
   }
 
   scheduleBeat(beatNumber, time, container) {
@@ -112,6 +126,12 @@ export class MetronomeTool {
 
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
+    this.activeNotes.add(osc);
+    osc.onended = () => {
+      osc.disconnect();
+      gain.disconnect();
+      this.activeNotes.delete(osc);
+    };
     osc.connect(gain);
     gain.connect(ctx.destination);
 
@@ -141,7 +161,9 @@ export class MetronomeTool {
 
     if (isMainBeat && this.flash) {
       const delayMs = Math.max(0, (time - ctx.currentTime) * 1000);
-      setTimeout(() => {
+      const timer = setTimeout(() => {
+        this.visualTimers.delete(timer);
+        if (!this.isRunning) return;
         const leds = container?.querySelectorAll('.metronome-beat-dot');
         if (leds && leds.length > 0) {
           leds.forEach((led, idx) => {
@@ -153,6 +175,7 @@ export class MetronomeTool {
           });
         }
       }, delayMs);
+      this.visualTimers.add(timer);
     }
   }
 
@@ -179,7 +202,7 @@ export class MetronomeTool {
                 <h2>Metrónomo de Precisión Pro</h2>
               </div>
             </div>
-            <button class="btn-close-tool-modal" id="btnCloseToolModal">✕</button>
+            <button class="btn-close-tool-modal" id="btnCloseToolModal" aria-label="Cerrar metrónomo">✕</button>
           </div>
 
           <div class="tool-panoramic-layout">
@@ -199,7 +222,7 @@ export class MetronomeTool {
               <div class="metronome-stepper-row">
                 <button class="btn-bpm-step" data-delta="-5">-5</button>
                 <button class="btn-bpm-step" data-delta="-1">-1</button>
-                <input type="range" class="bpm-slider-full" id="rngMetronomeBpm" min="30" max="280" value="${this.bpm}">
+                <input type="range" class="bpm-slider-full" id="rngMetronomeBpm" aria-label="Tempo en BPM" min="30" max="280" value="${this.bpm}">
                 <button class="btn-bpm-step" data-delta="1">+1</button>
                 <button class="btn-bpm-step" data-delta="5">+5</button>
               </div>

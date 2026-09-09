@@ -1,3 +1,5 @@
+import { matchesSong } from "../../catalog/SongIdentity.js";
+
 /**
  * @file pinkFloydLedZep.js
  * @description Pink Floyd & Led Zeppelin - Letras y acordes 100% completos y oficiales en formato ChordPro.
@@ -7,7 +9,7 @@ export function getPinkFloydLedZepLyrics(t, a) {
   // ==========================================
   // 18. Pink Floyd - Another Brick in the Wall (Part 2)
   // ==========================================
-  if (t.includes('another brick in the wall')) {
+  if (matchesSong(t, a, ["another brick in the wall","another brick in the wall part 2"], ["pink floyd"])) {
     return `[Intro]
 [Dm] [Dm] [Dm] [Dm]
 
@@ -49,7 +51,7 @@ You! Yes, you behind the bike sheds, stand still, laddy! [Dm]`;
   // ==========================================
   // 19. Pink Floyd - Time
   // ==========================================
-  if (t === 'time' && (a.includes('pink floyd') || !a)) {
+  if (matchesSong(t, a, ["time"], ["pink floyd"])) {
     return `[Intro]
 [F#m] [A] [E] [F#m]
 [F#m] [A] [E] [F#m]
@@ -102,7 +104,7 @@ To [G]hear the softly spoken [D7#9]magic [D7b9]spells [Bm]`;
   // ==========================================
   // 20. Pink Floyd - Money
   // ==========================================
-  if (t === 'money' && (a.includes('pink floyd') || !a)) {
+  if (matchesSong(t, a, ["money"], ["pink floyd"])) {
     return `[Intro]
 [Bm] [Bm] [Bm] [Bm]
 
@@ -148,7 +150,7 @@ Money, it's a crime [Bm]`;
   // ==========================================
   // 21. Pink Floyd - Shine On You Crazy Diamond
   // ==========================================
-  if (t.includes('shine on you crazy diamond')) {
+  if (matchesSong(t, a, ["shine on you crazy diamond"], ["pink floyd"])) {
     return `[Intro]
 [Gm] [Gbaug] [Bb/F] [C/E]
 [Eb] [Dm] [Cm] [F] [Gm]
@@ -189,7 +191,7 @@ Well, you [Gm]wore out your welcome with [Gm/F#]random precision
   // ==========================================
   // 22. Pink Floyd - Breathe
   // ==========================================
-  if (t === 'breathe' || t.includes('breathe (in the air)') || (t.includes('breathe') && a.includes('pink floyd'))) {
+  if (matchesSong(t, a, ["breathe","breathe in the air"], ["pink floyd"])) {
     return `[Intro]
 [Em9] [A7]
 [Em9] [A7]
@@ -229,7 +231,7 @@ You [G]race towards an early [D7#9]grave [D7b9]
   // ==========================================
   // 23. Led Zeppelin - Whole Lotta Love
   // ==========================================
-  if (t.includes('whole lotta love')) {
+  if (matchesSong(t, a, ["whole lotta love"], ["led zeppelin"])) {
     return `[Intro]
 [E5] [D5] [E5] [D5]
 [E5] [D5] [E5] [D5]
@@ -282,7 +284,7 @@ Love, love, love [E5]`;
   // ==========================================
   // 24. Led Zeppelin - Kashmir
   // ==========================================
-  if (t.includes('kashmir')) {
+  if (matchesSong(t, a, ["kashmir"], ["led zeppelin"])) {
     return `[Intro]
 [D5] [D5/C#] [D5/C] [D5/B] [D5/Bb] [D5/A]
 [D5] [D5/C#] [D5/C] [D5/B] [D5/Bb] [D5/A]
@@ -326,7 +328,7 @@ Let me take you there, come on
   // ==========================================
   // 25. Led Zeppelin - Black Dog
   // ==========================================
-  if (t.includes('black dog')) {
+  if (matchesSong(t, a, ["black dog"], ["led zeppelin"])) {
     return `[Intro]
 [A]
 
@@ -382,7 +384,7 @@ Gonna make you sweat, gonna make you groove [A]`;
   // ==========================================
   // 26. Led Zeppelin - Immigrant Song
   // ==========================================
-  if (t.includes('immigrant song')) {
+  if (matchesSong(t, a, ["immigrant song"], ["led zeppelin"])) {
     return `[Intro]
 [F#m] [F#m] [F#m] [F#m]
 
@@ -422,7 +424,7 @@ Ooh-ooh, ooh-ooh, ooh-ooh [F#m]`;
   // ==========================================
   // 27. Led Zeppelin - Going to California
   // ==========================================
-  if (t.includes('going to california')) {
+  if (matchesSong(t, a, ["going to california"], ["led zeppelin"])) {
     return `[Intro]
 [D] [Dm7] [D] [Dm7]
 

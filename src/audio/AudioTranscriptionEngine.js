@@ -22,6 +22,9 @@ export class AudioTranscriptionEngine {
     this.analyserNode = null;
     this.sourceNode = null;
     this.animationFrameId = null;
+    this.isPreparing = false;
+    this.requestId = 0;
+    this.processingId = 0;
 
     // Configuración DSP
     this.sampleRate = 44100;
@@ -38,7 +41,7 @@ export class AudioTranscriptionEngine {
   getAudioContext() {
     if (this.audioContextGetter) {
       this.audioCtx = this.audioContextGetter();
-    } else if (!this.audioCtx) {
+    } else if (!this.audioCtx || this.audioCtx.state === 'closed') {
       const AudioCtx = window.AudioContext || window.webkitAudioContext;
       this.audioCtx = new AudioCtx({ sampleRate: 44100 });
     }
@@ -114,10 +117,16 @@ export class AudioTranscriptionEngine {
    * Inicia la grabación en tiempo real desde el micrófono para transcripción.
    */
   async startLiveRecording() {
-    if (this.isRecording) return;
+    if (this.isRecording || this.isPreparing) return false;
+    const requestId = ++this.requestId;
+    this.isPreparing = true;
+    try {
+    if (!navigator.mediaDevices?.getUserMedia || typeof MediaRecorder === 'undefined') {
+      throw new Error('La grabación de audio no está disponible en este navegador.');
+    }
     const audioCtx = this.getAudioContext();
 
-    this.mediaStream = await navigator.mediaDevices.getUserMedia({
+    const stream = await navigator.mediaDevices.getUserMedia({
       audio: {
         echoCancellation: false,
         noiseSuppression: false,
@@ -125,6 +134,11 @@ export class AudioTranscriptionEngine {
       }
     });
 
+    if (requestId !== this.requestId) {
+      stream.getTracks().forEach(track => track.stop());
+      return false;
+    }
+    this.mediaStream = stream;
     this.sourceNode = audioCtx.createMediaStreamSource(this.mediaStream);
     this.analyserNode = audioCtx.createAnalyser();
     this.analyserNode.fftSize = this.fftSize;
@@ -132,20 +146,28 @@ export class AudioTranscriptionEngine {
     this.sourceNode.connect(this.analyserNode);
 
     this.audioChunks = [];
-    try {
       this.mediaRecorder = new MediaRecorder(this.mediaStream);
       this.mediaRecorder.ondataavailable = (e) => {
         if (e.data && e.data.size > 0) {
           this.audioChunks.push(e.data);
         }
       };
+      this.mediaRecorder.onerror = (event) => {
+        const error = event.error || new Error('La grabación se interrumpió.');
+        this.cancelRecording();
+        events.emit('transcriber:error', { error });
+      };
       this.mediaRecorder.start(250);
-    } catch (e) {
-      console.warn('[AudioTranscriptionEngine] MediaRecorder no disponible o simulado:', e);
-    }
 
     this.isRecording = true;
+    this.isPreparing = false;
     events.emit('transcriber:recordingStarted');
+    return true;
+    } catch (error) {
+      if (requestId !== this.requestId) return false;
+      this.cancelRecording();
+      throw error;
+    }
   }
 
   /**
@@ -156,31 +178,62 @@ export class AudioTranscriptionEngine {
     if (!this.isRecording) return null;
     this.isRecording = false;
 
-    if (this.mediaStream) {
-      this.mediaStream.getTracks().forEach(t => t.stop());
-    }
-
+    const requestId = this.requestId;
+    try {
     if (this.mediaRecorder && this.mediaRecorder.state !== 'inactive') {
-      await new Promise(resolve => {
+      await new Promise((resolve, reject) => {
         this.mediaRecorder.onstop = resolve;
+        this.mediaRecorder.onerror = (event) => reject(event.error || new Error('La grabación se interrumpió.'));
         this.mediaRecorder.stop();
       });
     }
 
+    if (requestId !== this.requestId) return null;
     const mimeType = this.audioChunks.length > 0 && this.audioChunks[0].type ? this.audioChunks[0].type : 'audio/webm';
     this.recordedBlob = new Blob(this.audioChunks, { type: mimeType });
+    this.releaseCapture();
 
     events.emit('transcriber:recordingStopped', { blob: this.recordedBlob });
 
     // Transcribir el blob capturado
     return await this.transcribeAudioBlob(this.recordedBlob);
+    } finally {
+      if (requestId === this.requestId) this.releaseCapture();
+    }
+  }
+
+  releaseCapture() {
+    this.mediaStream?.getTracks().forEach(track => track.stop());
+    this.sourceNode?.disconnect();
+    this.analyserNode?.disconnect();
+    this.mediaStream = null;
+    this.sourceNode = null;
+    this.analyserNode = null;
+    this.mediaRecorder = null;
+    this.audioChunks = [];
+  }
+
+  cancelRecording() {
+    this.requestId++;
+    this.processingId++;
+    this.isPreparing = false;
+    this.isRecording = false;
+    if (this.mediaRecorder?.state === 'recording') {
+      this.mediaRecorder.ondataavailable = null;
+      this.mediaRecorder.stop();
+    }
+    this.releaseCapture();
   }
 
   /**
    * Transcribe un Blob de audio (archivo subido o grabado).
    */
   async transcribeAudioBlob(audioBlob) {
+    const processingId = ++this.processingId;
     events.emit('transcriber:processingStarted');
+    try {
+    if (!audioBlob?.size) throw new Error('El audio está vacío. Graba una nueva toma.');
+    if (audioBlob.size > 50 * 1024 * 1024) throw new Error('El archivo supera el límite de 50 MB.');
     const audioCtx = this.getAudioContext();
     const arrayBuffer = await audioBlob.arrayBuffer();
 
@@ -188,13 +241,17 @@ export class AudioTranscriptionEngine {
     try {
       audioBuffer = await audioCtx.decodeAudioData(arrayBuffer.slice(0));
     } catch (err) {
-      // Fallback para streams sintéticos o mocks en pruebas
-      audioBuffer = this._createFallbackBuffer(audioCtx, 4.0);
+      throw new Error('No se pudo leer el audio. Prueba con un archivo WAV, MP3 u OGG válido.', { cause: err });
     }
 
-    const transcription = await this.transcribeAudioBuffer(audioBuffer);
+    if (processingId !== this.processingId) throw new DOMException('Análisis cancelado', 'AbortError');
+    const transcription = await this.transcribeAudioBuffer(audioBuffer, processingId);
     events.emit('transcriber:processingFinished', transcription);
     return transcription;
+    } catch (error) {
+      if (error.name !== 'AbortError') events.emit('transcriber:error', { error });
+      throw error;
+    }
   }
 
   /**
@@ -213,20 +270,27 @@ export class AudioTranscriptionEngine {
   /**
    * Núcleo del algoritmo DSP de Transcripción de AudioBuffer a Acordes.
    */
-  async transcribeAudioBuffer(audioBuffer) {
+  async transcribeAudioBuffer(audioBuffer, processingId = this.processingId) {
+    if (!audioBuffer?.length || audioBuffer.duration > 300) {
+      throw new Error('Selecciona una toma de audio de hasta 5 minutos.');
+    }
     const channelData = audioBuffer.getChannelData(0);
     const sampleRate = audioBuffer.sampleRate;
     const duration = audioBuffer.duration;
 
     const frameSize = 4096;
     const hopSize = 2048; // ~46ms por frame
-    const numFrames = Math.max(1, Math.floor((channelData.length - frameSize) / hopSize));
+    const numFrames = Math.max(1, Math.ceil(channelData.length / hopSize));
 
     const rawChords = [];
     const window = this._createHanningWindow(frameSize);
 
     // 1. Extraer cromagrama por cada ventana
     for (let f = 0; f < numFrames; f++) {
+      if (f % 16 === 0) {
+        await new Promise(resolve => setTimeout(resolve, 0));
+        if (processingId !== this.processingId) throw new DOMException('Análisis cancelado', 'AbortError');
+      }
       const offset = f * hopSize;
       const time = offset / sampleRate;
 
@@ -234,7 +298,7 @@ export class AudioTranscriptionEngine {
       const frame = new Float32Array(frameSize);
       let rms = 0;
       for (let i = 0; i < frameSize; i++) {
-        const val = channelData[offset + i] * window[i];
+        const val = (channelData[offset + i] || 0) * window[i];
         frame[i] = val;
         rms += val * val;
       }
@@ -359,13 +423,7 @@ export class AudioTranscriptionEngine {
    */
   _smoothAndSegmentChords(rawChords, totalDuration) {
     if (!rawChords || rawChords.length === 0) {
-      // Fallback predeterminado armónico
-      return [
-        { chord: 'C', startTime: 0.0, endTime: totalDuration * 0.25, duration: totalDuration * 0.25, confidence: 0.85 },
-        { chord: 'G', startTime: totalDuration * 0.25, endTime: totalDuration * 0.5, duration: totalDuration * 0.25, confidence: 0.85 },
-        { chord: 'Am', startTime: totalDuration * 0.5, endTime: totalDuration * 0.75, duration: totalDuration * 0.25, confidence: 0.85 },
-        { chord: 'F', startTime: totalDuration * 0.75, endTime: totalDuration, duration: totalDuration * 0.25, confidence: 0.85 },
-      ];
+      return [];
     }
 
     const segments = [];
@@ -405,7 +463,7 @@ export class AudioTranscriptionEngine {
     }
 
     // Último segmento
-    const finalEnd = Math.max(startTime + minChordDuration, totalDuration);
+    const finalEnd = totalDuration;
     segments.push({
       chord: currentChord,
       startTime: parseFloat(startTime.toFixed(2)),
@@ -421,7 +479,7 @@ export class AudioTranscriptionEngine {
    * Estima la tonalidad general predominante de la progresión.
    */
   _estimateOverallKey(segments) {
-    if (!segments || segments.length === 0) return 'C Mayor';
+    if (!segments || segments.length === 0) return 'Sin determinar';
     const counts = {};
     for (const s of segments) {
       counts[s.chord] = (counts[s.chord] || 0) + s.duration;

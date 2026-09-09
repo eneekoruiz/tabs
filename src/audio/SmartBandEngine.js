@@ -18,6 +18,8 @@ export class SmartBandEngine {
     this.stepInterval = null;
     this.nextNoteTime = 0;
     this.timerId = null;
+    this.visualTimers = new Set();
+    this.activeSources = new Set();
 
     // Volúmenes y Mutes
     this.masterVolume = 0.85;
@@ -73,15 +75,17 @@ export class SmartBandEngine {
   initEvents() {
     // Sincronizar tempo y acordes al cargar partitura
     events.on('score:loaded', ({ score }) => {
-      if (score.tempo) this.bpm = score.tempo;
+      if (score?.tempo) this.setTempo(score.tempo);
       this._extractChordsFromSong(score);
     });
 
     events.on('song:loaded', (song) => {
-      if (song.tempo) this.bpm = song.tempo;
-      if (song.chords && song.chords.length > 0) {
-        this.chordProgression = song.chords.map(c => typeof c === 'string' ? c : c.name);
-      }
+      if (!song) return;
+      if (song.tempo) this.setTempo(song.tempo);
+      const inlineChords = typeof song.lyricsChords === 'string'
+        ? Array.from(song.lyricsChords.matchAll(/\[([^\]]+)\]/g), match => match[1]) : [];
+      const chords = inlineChords.length ? inlineChords : song.chords?.map(c => typeof c === 'string' ? c : c.name);
+      if (chords?.length) this.setProgression(chords);
     });
 
     // Sincronizar con reproducción global si el usuario lo desea
@@ -110,24 +114,28 @@ export class SmartBandEngine {
   }
 
   setProgression(chordsArray) {
-    if (Array.isArray(chordsArray) && chordsArray.length > 0) {
-      this.chordProgression = chordsArray;
+    const chords = Array.isArray(chordsArray) ? chordsArray.filter(chord => typeof chord === 'string' && /^[A-G][#b]?(?:m|maj|min|dim|aug|sus|add|\d|\/|[A-G#b])*$/.test(chord.trim())).map(chord => chord.trim()) : [];
+    if (chords.length > 0) {
+      this.chordProgression = chords;
       this.currentChordIndex = 0;
       events.emit('smartBand:progressionUpdated', { progression: this.chordProgression });
     }
   }
 
   setStyle(styleName) {
+    if (!['rock', 'jazz', 'funk', 'pop', 'metronome'].includes(styleName)) return;
     this.style = styleName;
     events.emit('smartBand:styleChanged', { style: this.style });
   }
 
   setTempo(newBpm) {
+    if (!Number.isFinite(Number(newBpm))) return;
     this.bpm = Math.max(40, Math.min(260, Math.round(newBpm)));
     events.emit('smartBand:tempoChanged', { bpm: this.bpm });
   }
 
   setDrumsVolume(val) {
+    if (!Number.isFinite(Number(val))) return;
     this.drumsVolume = Math.max(0, Math.min(1, val));
     if (this.drumsGainNode && !this.drumsMuted) {
       this.drumsGainNode.gain.setTargetAtTime(this.drumsVolume, this.audioCtx.currentTime, 0.02);
@@ -135,6 +143,7 @@ export class SmartBandEngine {
   }
 
   setBassVolume(val) {
+    if (!Number.isFinite(Number(val))) return;
     this.bassVolume = Math.max(0, Math.min(1, val));
     if (this.bassGainNode && !this.bassMuted) {
       this.bassGainNode.gain.setTargetAtTime(this.bassVolume, this.audioCtx.currentTime, 0.02);
@@ -171,6 +180,10 @@ export class SmartBandEngine {
 
   stop() {
     this.isPlaying = false;
+    this.visualTimers.forEach(timer => clearTimeout(timer));
+    this.visualTimers.clear();
+    this.activeSources.forEach(source => { try { source.stop(); } catch (_) {} });
+    this.activeSources.clear();
     if (this.timerId) {
       clearTimeout(this.timerId);
       this.timerId = null;
@@ -189,6 +202,7 @@ export class SmartBandEngine {
     const ctx = this.getAudioContext();
     const lookahead = 0.1; // 100ms
     const secondsPer16th = (60.0 / this.bpm) / 4.0;
+    if (this.nextNoteTime < ctx.currentTime - lookahead) this.nextNoteTime = ctx.currentTime + 0.01;
 
     while (this.nextNoteTime < ctx.currentTime + lookahead) {
       this._playStepAtTime(this.currentStep, this.nextNoteTime);
@@ -207,13 +221,20 @@ export class SmartBandEngine {
     const rootFreq = this._getChordRootFrequency(currentChord);
 
     // Disparar eventos visuales de metrónomo y pulso
-    events.emit('smartBand:step', {
+    const chordIndex = this.currentChordIndex;
+    const timer = setTimeout(() => {
+      this.visualTimers.delete(timer);
+      if (!this.isPlaying) return;
+      events.emit('smartBand:step', {
       step,
       isQuarterBeat: step % 4 === 0,
       beatNumber: Math.floor(step / 4) + 1,
       currentChord,
+      chordIndex,
       style: this.style
-    });
+      });
+    }, Math.max(0, (time - this.audioCtx.currentTime) * 1000));
+    this.visualTimers.add(timer);
 
     // 1. Sintetizar Batería según Estilo
     if (!this.drumsMuted) {
@@ -234,6 +255,7 @@ export class SmartBandEngine {
     const ctx = this.audioCtx;
     const osc = ctx.createOscillator();
     const gainNode = ctx.createGain();
+    this._trackSource(osc, [gainNode]);
 
     osc.frequency.setValueAtTime(140, time);
     osc.frequency.exponentialRampToValueAtTime(38, time + 0.08);
@@ -254,6 +276,7 @@ export class SmartBandEngine {
     // Cuerpo tonal de la caja (180Hz)
     const osc = ctx.createOscillator();
     const oscGain = ctx.createGain();
+    this._trackSource(osc, [oscGain]);
     osc.frequency.setValueAtTime(185, time);
     oscGain.gain.setValueAtTime(gain * 0.7, time);
     oscGain.gain.exponentialRampToValueAtTime(0.001, time + 0.12);
@@ -284,6 +307,7 @@ export class SmartBandEngine {
     noise.connect(filter);
     filter.connect(noiseGain);
     noiseGain.connect(this.drumsGainNode);
+    this._trackSource(noise, [filter, noiseGain]);
 
     noise.start(time);
     noise.stop(time + 0.2);
@@ -312,6 +336,7 @@ export class SmartBandEngine {
     noise.connect(filter);
     filter.connect(noiseGain);
     noiseGain.connect(this.drumsGainNode);
+    this._trackSource(noise, [filter, noiseGain]);
 
     noise.start(time);
     noise.stop(time + (isOpen ? 0.25 : 0.05));
@@ -389,6 +414,8 @@ export class SmartBandEngine {
     oscSaw.connect(filter);
     filter.connect(gainNode);
     gainNode.connect(this.bassGainNode);
+    this._trackSource(oscSub);
+    this._trackSource(oscSaw, [filter, gainNode]);
 
     oscSub.start(time);
     oscSaw.start(time);
@@ -444,7 +471,7 @@ export class SmartBandEngine {
 
   _getChordRootFrequency(chordName) {
     if (!chordName) return 110.0; // A2
-    const clean = chordName.replace(/m|maj|min|dim|aug|7|9|sus4|sus2|\/.*$/gi, '').trim();
+    const clean = chordName.match(/\/([A-G][#b]?)$/)?.[1] || chordName.match(/^([A-G][#b]?)/)?.[1];
     const noteMap = {
       'C': 65.41,  // C2
       'C#': 69.30, 'Db': 69.30,
@@ -471,6 +498,15 @@ export class SmartBandEngine {
     this.masterGainNode = null;
     this.drumsGainNode = null;
     this.bassGainNode = null;
+  }
+
+  _trackSource(source, nodes = []) {
+    this.activeSources.add(source);
+    source.onended = () => {
+      source.disconnect();
+      nodes.forEach(node => node.disconnect());
+      this.activeSources.delete(source);
+    };
   }
 }
 

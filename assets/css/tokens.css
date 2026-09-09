@@ -22,7 +22,7 @@
   --transition-modal: transform var(--duration-normal) var(--ease-spring), opacity var(--duration-normal) var(--ease-spring);
   
   /* Tipografía */
-  --font-serif: 'Playfair Display', 'Merriweather', 'Georgia', serif;
+  --font-serif: var(--font-sans);
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
   --font-main: var(--font-sans);
@@ -40,9 +40,9 @@
   --radius-xs: 4px;
   --radius-sm: 6px;
   --radius-md: 8px;
-  --radius-lg: 12px;
-  --radius-xl: 16px;
-  --radius-2xl: 24px;
+  --radius-lg: 8px;
+  --radius-xl: 8px;
+  --radius-2xl: 8px;
   --radius-pill: 9999px;
   --radius-full: 50%;
   --space-1: 4px;
@@ -65,34 +65,34 @@
    ========================================================= */
 body, body.theme-charcoal {
   /* Fondos Principales */
-  --bg-app: #060608;
-  --bg-surface: #12141a;
-  --bg-surface-solid: #16181e;
-  --bg-surface-raised: #1c1f26;
-  --bg-surface-hover: #232730;
-  --bg-viewport: #0a0c10;
-  --bg-paper: #14161d;
-  --bg-card-subtle: #151720;
+  --bg-app: #101616;
+  --bg-surface: #172020;
+  --bg-surface-solid: #172020;
+  --bg-surface-raised: #212c2c;
+  --bg-surface-hover: #2c3939;
+  --bg-viewport: #101616;
+  --bg-paper: #172020;
+  --bg-card-subtle: #1c2727;
 
   /* Glassmorphism con Reflejo Especular */
-  --glass-blur: blur(20px) saturate(190%);
+  --glass-blur: none;
   --glass-border: rgba(255, 255, 255, 0.08);
   --glass-border-hover: rgba(255, 255, 255, 0.18);
   --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
   --glass-specular: inset 0 1px 0 rgba(255, 255, 255, 0.12);
 
   /* Acentos Vibrantes */
-  --accent-primary: #ff5722; /* Deep Orange */
-  --accent-primary-hover: #ff7043;
+  --accent-primary: #65d6bb; /* Deep Orange */
+  --accent-primary-hover: #8ae6d0;
   --accent-primary-glow: rgba(255, 87, 34, 0.4);
-  --accent-secondary: #00e5ff; /* Cyan */
+  --accent-secondary: #ffb4a5; /* Cyan */
   --accent-secondary-glow: rgba(0, 229, 255, 0.4);
-  --accent-amber: #ffb300;
+  --accent-amber: #ebbf66;
   
   /* Texto (Alto Contraste) */
   --text-primary: #ffffff;
-  --text-secondary: #a8b0bd;
-  --text-muted: #8b929e;
+  --text-secondary: #c0cecc;
+  --text-muted: #a4b6b2;
   --text-inverse: #000000;
 
   /* Bordes */
@@ -120,34 +120,34 @@ body, body.theme-charcoal {
    ========================================================= */
 body.theme-ivory {
   /* Fondos Principales (Cálidos, naturales tipo Anthropic/Claude) */
-  --bg-app: #f0ebe4;
+  --bg-app: #f2f5f5;
   --bg-surface: #ffffff;
   --bg-surface-solid: #ffffff;
-  --bg-surface-raised: #faf8f5;
-  --bg-surface-hover: #f5f2ec;
-  --bg-viewport: #f4f0eb;
+  --bg-surface-raised: #f5f7f7;
+  --bg-surface-hover: #e7efed;
+  --bg-viewport: #f2f5f5;
   --bg-paper: #ffffff;
-  --bg-card-subtle: #faf8f5;
+  --bg-card-subtle: #f5f7f7;
 
   /* Sombra Natural Suave (0 glow artificial) */
-  --glass-blur: blur(24px) saturate(120%);
+  --glass-blur: none;
   --glass-border: rgba(0, 0, 0, 0.06);
   --glass-border-hover: rgba(0, 0, 0, 0.12);
   --glass-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 4px 12px rgba(0, 0, 0, 0.03);
   --glass-specular: inset 0 1px 0 rgba(255, 255, 255, 0.7);
 
   /* Acentos Elegantes (Terracota Natural) */
-  --accent-primary: #b54826;
-  --accent-primary-hover: #9c3a1c;
+  --accent-primary: #087466;
+  --accent-primary-hover: #065e53;
   --accent-primary-glow: rgba(218, 119, 86, 0.15);
-  --accent-secondary: #5a6b5c; /* Verde musgo suave */
+  --accent-secondary: #a73d51; /* Verde musgo suave */
   --accent-secondary-glow: rgba(90, 107, 92, 0.15);
-  --accent-amber: #d99a4e;
+  --accent-amber: #8a5900;
   
   /* Texto (Marrón muy oscuro, elegante y legible) */
-  --text-primary: #2d2b29;
-  --text-secondary: #4a4642;
-  --text-muted: #524e4a;
+  --text-primary: #172b2a;
+  --text-secondary: #425957;
+  --text-muted: #526965;
   --text-inverse: #ffffff;
 
   /* Bordes sutiles y limpios */
@@ -161,9 +161,9 @@ body.theme-ivory {
   /* Diagramas en Ivory */
   --chord-fret-color: rgba(0, 0, 0, 0.3);
   --chord-string-color: rgba(0, 0, 0, 0.75);
-  --chord-nut-color: #2d2b29;
+  --chord-nut-color: #172b2a;
   --piano-white-key: #ffffff;
-  --piano-black-key: #2d2b29;
+  --piano-black-key: #172b2a;
   --chord-diagram-bg: rgba(0, 0, 0, 0.03);
 
   background-color: var(--bg-app);
@@ -197,12 +197,12 @@ body.theme-amber {
   --accent-primary-glow: rgba(255, 152, 0, 0.45);
   --accent-secondary: #ffd54f;
   --accent-secondary-glow: rgba(255, 213, 79, 0.35);
-  --accent-amber: #ffb300;
+  --accent-amber: #ebbf66;
 
   /* Texto Cálido de Alto Contraste */
   --text-primary: #fff8e1;
   --text-secondary: #d7ccc8;
-  --text-muted: #a1887f;
+  --text-muted: #c2ada1;
   --text-inverse: #120e0a;
 
   /* Bordes */

@@ -159,7 +159,7 @@ test.describe('Certificación de 4 Mejoras Maestras de Nivel Profesional', () =>
     });
 
     const bronzeModal = global.document.getElementById('vocalScorecardModal');
-    expect(bronzeModal.innerHTML).toContain('Buen Calentamiento Vocal');
+    expect(bronzeModal.innerHTML).toContain('Ensayo Vocal en Proceso (Bronce)');
     expect(bronzeModal.innerHTML).toContain('45%');
     bronzeModal.remove();
   });
