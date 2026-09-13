@@ -1,9 +1,10 @@
 # 🎸 Tabs & Chords PRO - Visor, Reproductor & DAW de Tablaturas Offline
 
 [![Quality and desktop build](https://github.com/eneekoruiz/tabs/actions/workflows/quality.yml/badge.svg)](https://github.com/eneekoruiz/tabs/actions/workflows/quality.yml)
-[![Live Demo](https://img.shields.io/badge/Demo-tabs--eight--blond.vercel.app-0070f3?style=flat&logo=vercel&logoColor=white)](https://tabs-eight-blond.vercel.app)
+[![Live Demo](https://img.shields.io/badge/Demo-tabsandchords.vercel.app-0070f3?style=flat&logo=vercel&logoColor=white)](https://tabsandchords.vercel.app)
 
-> 🌐 **Despliegue en vivo:** [https://tabs-eight-blond.vercel.app](https://tabs-eight-blond.vercel.app)
+> 🌐 **Despliegue en vivo:** [https://tabsandchords.vercel.app](https://tabsandchords.vercel.app)
+
 >
 > **Plataforma Mobile-First (Estilo Ultimate Guitar) & DAW de Tablaturas Offline: Navegación Inferior, Buscador Hero "¿Qué quieres tocar?", Afinador de Oído, Acordes con IA, Reproductor Limpio (90% Lienzo), Backing Tracks (MP3/WAV Sync), Visualizadores Multi-Instrumento, Modo Directo (Gig Mode) y Exportación (PDF, MIDI, MusicXML).**
 
