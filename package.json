@@ -18,11 +18,11 @@
   "devDependencies": {
     "@axe-core/playwright": "^4.10.1",
     "@coderline/alphatab": "^1.8.4",
-    "@playwright/test": "^1.49.1",
-    "@tauri-apps/cli": "^2.0.0",
+    "@playwright/test": "^1.63.0",
+    "@tauri-apps/cli": "^2.11.5",
     "axe-core": "^4.10.2",
-    "lucide": "0.468.0",
-    "selenium-webdriver": "^4.47.0",
+    "lucide": "0.577.0",
+    "selenium-webdriver": "^4.49.0",
     "serve": "^14.2.4"
   }
 }
