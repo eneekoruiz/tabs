@@ -1,7 +1,8 @@
 /**
  * @file ChordDefinitions.js
  * @description Base de datos estática pre-verificada de digitaciones y voicings de acordes
- * para Guitarra (EADGBe), Ukelele (GCEA) y Piano. Cero alucinaciones algorítmicas.
+ * para Guitarra (EADGBe), Ukelele (GCEA) y Piano. Las formas se contrastan
+ * con afinación e intervalos; esto no certifica los arreglos de una canción.
  */
 
 // Mapeo canónico de notación latina a anglosajona
@@ -123,9 +124,9 @@ export const GUITAR_CHORDS = Object.freeze({
   'E7#9': { frets: [0, 2, 0, 1, 3, 3], fingers: [0, 2, 0, 1, 3, 4], baseFret: 1 },
   'C9': { frets: [-1, 3, 2, 3, 3, -1], fingers: [0, 2, 1, 3, 4, 0], baseFret: 1 },
   'Bb6': { frets: [-1, 1, 3, 3, 3, 3], fingers: [0, 1, 2, 3, 4, 4], baseFret: 1, barres: [1] },
-  'C#dim': { frets: [-1, 4, 5, 3, 5, 3], fingers: [0, 2, 4, 1, 3, 1], baseFret: 3 },
-  'D#dim': { frets: [-1, -1, 1, 2, 1, 2], fingers: [0, 0, 1, 3, 2, 4], baseFret: 1 },
-  'F#dim': { frets: [2, -1, 1, 2, 1, -1], fingers: [3, 0, 1, 4, 2, 0], baseFret: 1 },
+  'C#dim': { frets: [-1, 4, 5, -1, 5, 3], fingers: [0, 2, 3, 0, 4, 1], baseFret: 3 },
+  'D#dim': { frets: [-1, -1, 1, 2, -1, 2], fingers: [0, 0, 1, 2, 0, 3], baseFret: 1 },
+  'F#dim': { frets: [2, -1, -1, 2, 1, -1], fingers: [2, 0, 0, 3, 1, 0], baseFret: 1 },
   'G+': { frets: [3, 2, 1, 0, 0, 3], fingers: [3, 2, 1, 0, 0, 4], baseFret: 1 },
   'Gaug': { frets: [3, 2, 1, 0, 0, 3], fingers: [3, 2, 1, 0, 0, 4], baseFret: 1 },
   'Cadd9': { frets: [-1, 3, 2, 0, 3, 0], fingers: [0, 2, 1, 0, 3, 0], baseFret: 1 },
@@ -136,7 +137,19 @@ export const GUITAR_CHORDS = Object.freeze({
   'F7/C': { frets: [-1, 3, 1, 2, 1, 1], fingers: [0, 3, 1, 2, 1, 1], baseFret: 1, barres: [1] },
   'Eb/G': { frets: [3, 1, 1, 3, 4, 3], fingers: [2, 1, 1, 3, 4, 3], baseFret: 1 },
   'D/A': { frets: [-1, 0, 0, 2, 3, 2], fingers: [0, 0, 0, 1, 3, 2], baseFret: 1 },
-  'Bb/D': { frets: [-1, -1, 0, 3, 3, 1], fingers: [0, 0, 0, 2, 3, 1], baseFret: 1 }
+  'Bb/D': { frets: [-1, -1, 0, 3, 3, 1], fingers: [0, 0, 0, 2, 3, 1], baseFret: 1 },
+  'C/E': { frets: [0, 3, 2, 0, 1, 0], fingers: [0, 3, 2, 0, 1, 0], baseFret: 1 },
+  'E/G#': { frets: [4, 2, 2, 1, 0, 0], fingers: [4, 2, 3, 1, 0, 0], baseFret: 1 },
+  'A/E': { frets: [0, 0, 2, 2, 2, 0], fingers: [0, 0, 1, 2, 3, 0], baseFret: 1 },
+  'B/F#': { frets: [2, 2, 4, 4, 4, 2], fingers: [1, 1, 2, 3, 4, 1], baseFret: 2, barres: [2] },
+  'C#m/E': { frets: [0, 4, 6, 6, 5, 4], fingers: [0, 1, 3, 4, 2, 1], baseFret: 4, barres: [4] },
+  'Dm/C': { frets: [-1, 3, 0, 2, 3, 1], fingers: [0, 3, 0, 2, 4, 1], baseFret: 1 },
+  'E7sus4': { frets: [0, 2, 0, 2, 0, 0], fingers: [0, 1, 0, 2, 0, 0], baseFret: 1 },
+  'Em6': { frets: [0, 2, 2, 0, 2, 0], fingers: [0, 1, 2, 0, 3, 0], baseFret: 1 },
+  'Ammaj7': { frets: [-1, 0, 2, 1, 1, 0], fingers: [0, 0, 3, 1, 2, 0], baseFret: 1 },
+  'Em9': { frets: [0, 2, 0, 0, 0, 2], fingers: [0, 1, 0, 0, 0, 2], baseFret: 1 },
+  'Em11': { frets: [0, 0, 0, 0, 0, 0], fingers: [0, 0, 0, 0, 0, 0], baseFret: 1 },
+  'C#dim7': { frets: [-1, 4, 5, 3, 5, 3], fingers: [0, 2, 3, 1, 4, 1], baseFret: 3 }
 });
 
 // Base de datos de digitaciones estándar y verificadas de UKELELE (G C E A)
@@ -184,7 +197,7 @@ export const UKULELE_CHORDS = Object.freeze({
   'C7': { frets: [0, 0, 0, 1], fingers: [0, 0, 0, 1], baseFret: 1 },
   'C#7': { frets: [1, 1, 1, 2], fingers: [1, 1, 1, 2], baseFret: 1, barres: [1] },
   'Db7': { frets: [1, 1, 1, 2], fingers: [1, 1, 1, 2], baseFret: 1, barres: [1] },
-  'D7': { frets: [2, 0, 2, 0], fingers: [1, 0, 2, 0], baseFret: 1 },
+  'D7': { frets: [2, 0, 2, 0], fingers: [1, 0, 2, 0], baseFret: 1, omittedRoot: true },
   'D#7': { frets: [3, 3, 3, 4], fingers: [1, 1, 1, 2], baseFret: 3, barres: [3] },
   'Eb7': { frets: [3, 3, 3, 4], fingers: [1, 1, 1, 2], baseFret: 3, barres: [3] },
   'E7': { frets: [1, 2, 0, 2], fingers: [1, 2, 0, 3], baseFret: 1 },
@@ -201,6 +214,7 @@ export const UKULELE_CHORDS = Object.freeze({
 
   // Maj7
   'Cmaj7': { frets: [0, 0, 0, 2], fingers: [0, 0, 0, 1], baseFret: 1 },
+  'C6': { frets: [0, 0, 0, 0], fingers: [0, 0, 0, 0], baseFret: 1 },
   'Dmaj7': { frets: [2, 2, 2, 4], fingers: [1, 1, 1, 3], baseFret: 1, barres: [2] },
   'Ebmaj7': { frets: [3, 3, 3, 5], fingers: [1, 1, 1, 3], baseFret: 1, barres: [3] },
   'Emaj7': { frets: [1, 3, 0, 2], fingers: [1, 3, 0, 2], baseFret: 1 },
@@ -227,11 +241,11 @@ export const UKULELE_CHORDS = Object.freeze({
   'Gsus4': { frets: [0, 2, 3, 3], fingers: [0, 1, 2, 3], baseFret: 1 },
   'Asus4': { frets: [2, 2, 0, 0], fingers: [1, 2, 0, 0], baseFret: 1 },
   'Csus2': { frets: [0, 2, 3, 3], fingers: [0, 1, 2, 3], baseFret: 1 },
-  'Dsus2': { frets: [2, 2, 2, 5], fingers: [1, 1, 1, 4], baseFret: 1 },
+  'Dsus2': { frets: [2, 2, 0, 5], fingers: [1, 2, 0, 4], baseFret: 1 },
   'Gsus2': { frets: [0, 2, 3, 0], fingers: [0, 1, 2, 0], baseFret: 1 },
-  'Asus2': { frets: [2, 4, 0, 0], fingers: [1, 3, 0, 0], baseFret: 1 },
+  'Asus2': { frets: [2, 4, 0, 2], fingers: [1, 3, 0, 2], baseFret: 1 },
   'A7sus4': { frets: [0, 2, 0, 0], fingers: [0, 2, 0, 0], baseFret: 1 },
-  'D7sus4': { frets: [0, 2, 1, 3], fingers: [0, 2, 1, 3], baseFret: 1 },
+  'D7sus4': { frets: [2, 2, 3, 3], fingers: [1, 1, 2, 3], baseFret: 1, barres: [2] },
   'Cadd9': { frets: [0, 2, 0, 3], fingers: [0, 1, 0, 2], baseFret: 1 },
 
   // Power Chords (5)
@@ -246,10 +260,16 @@ export const UKULELE_CHORDS = Object.freeze({
   'Db5': { frets: [1, 1, 4, 4], fingers: [1, 1, 3, 4], baseFret: 1 },
 
   // Especiales
-  'Bm7b5': { frets: [2, 3, 2, 3], fingers: [1, 3, 2, 4], baseFret: 1 },
-  'Cdim': { frets: [2, 3, 2, 3], fingers: [1, 3, 2, 4], baseFret: 1 },
-  'E7#9': { frets: [1, 2, 0, 2], fingers: [1, 2, 0, 3], baseFret: 1 },
-  'C9': { frets: [0, 2, 0, 1], fingers: [0, 2, 0, 1], baseFret: 1 }
+  'Bm7b5': { frets: [2, 2, 1, 2], fingers: [2, 3, 1, 4], baseFret: 1 },
+  'Cdim': { frets: [-1, 3, 2, 3], fingers: [0, 2, 1, 3], baseFret: 1 },
+  'E7#9': { frets: [1, 2, 3, 2], fingers: [1, 2, 4, 3], baseFret: 1, omittedRoot: true },
+  'C9': { frets: [0, 2, 0, 1], fingers: [0, 2, 0, 1], baseFret: 1, omittedRoot: true },
+  'Gm6': { frets: [0, 2, 0, 1], fingers: [0, 2, 0, 1], baseFret: 1 },
+  'Ammaj7': { frets: [1, 0, 0, 0], fingers: [1, 0, 0, 0], baseFret: 1 },
+  'Em9': { frets: [0, 2, 2, 2], fingers: [0, 1, 2, 3], baseFret: 1, omittedRoot: true },
+  'F#m11': { frets: [2, 4, 2, 2], fingers: [1, 3, 1, 1], baseFret: 1, barres: [2] },
+  'Caug': { frets: [1, 0, 0, 3], fingers: [1, 0, 0, 3], baseFret: 1 },
+  'Cdim7': { frets: [2, 3, 2, 3], fingers: [1, 3, 2, 4], baseFret: 1 }
 });
 
 // Notas reales por acorde de Piano
@@ -259,7 +279,7 @@ export const PIANO_VOICINGS = Object.freeze({
   'Cm': [{ key: 'C', oct: 4 }, { key: 'Eb', oct: 4 }, { key: 'G', oct: 4 }],
   'C7': [{ key: 'C', oct: 4 }, { key: 'E', oct: 4 }, { key: 'G', oct: 4 }, { key: 'Bb', oct: 4 }],
   'Cmaj7': [{ key: 'C', oct: 4 }, { key: 'E', oct: 4 }, { key: 'G', oct: 4 }, { key: 'B', oct: 4 }],
-  'Cadd9': [{ key: 'C', oct: 4 }, { key: 'D', oct: 4 }, { key: 'E', oct: 4 }, { key: 'G', oct: 4 }],
+  'Cadd9': [{ key: 'C', oct: 4 }, { key: 'E', oct: 4 }, { key: 'G', oct: 4 }, { key: 'D', oct: 5 }],
   'Csus4': [{ key: 'C', oct: 4 }, { key: 'F', oct: 4 }, { key: 'G', oct: 4 }],
   'Csus2': [{ key: 'C', oct: 4 }, { key: 'D', oct: 4 }, { key: 'G', oct: 4 }],
   'Cdim': [{ key: 'C', oct: 4 }, { key: 'Eb', oct: 4 }, { key: 'Gb', oct: 4 }],
@@ -466,7 +486,7 @@ export const ALTERNATE_GUITAR_VOICINGS = Object.freeze({
   'F7': [
     { name: 'Con Cejilla (Traste 1)', detail: 'Traste 1 · Cejilla de séptima completa', frets: [1, 3, 1, 2, 1, 1], fingers: [1, 3, 1, 2, 1, 1], baseFret: 1, barres: [1] },
     { name: 'Con Cejilla (Traste 8)', detail: 'Traste 8 · Forma de A7 con cejilla', frets: [-1, 8, 10, 8, 10, 8], fingers: [0, 1, 3, 1, 4, 1], baseFret: 8, barres: [8] },
-    { name: 'Registro Agudo (Traste 10)', detail: 'Trastes 10 - 12 · Agudo de blues', frets: [-1, -1, 10, 12, 11, 12], fingers: [0, 0, 1, 3, 2, 4], baseFret: 10 }
+    { name: 'Registro Agudo (Traste 10)', detail: 'Trastes 10 - 11 · Séptima', frets: [-1, -1, 10, 10, 10, 11], fingers: [0, 0, 1, 1, 1, 2], baseFret: 10, barres: [10] }
   ],
   'F#': [
     { name: 'Con Cejilla (Traste 2)', detail: 'Traste 2 · Forma de E con cejilla', frets: [2, 4, 4, 3, 2, 2], fingers: [1, 3, 4, 2, 1, 1], baseFret: 2, barres: [2] },
@@ -535,7 +555,7 @@ export const ALTERNATE_UKULELE_VOICINGS = Object.freeze({
   'C7': [
     { name: 'Posición Abierta', detail: 'Traste 1 en cuerda 1 · Sencillo y abierto', frets: [0, 0, 0, 1], fingers: [0, 0, 0, 1], baseFret: 1 },
     { name: 'Con Cejilla (Traste 3)', detail: 'Trastes 3 - 5 · Forma cerrada de 7ª', frets: [3, 4, 3, 3], fingers: [1, 2, 1, 1], baseFret: 3, barres: [3] },
-    { name: 'Registro Agudo (Traste 7)', detail: 'Trastes 7 - 10 · Registro solista', frets: [9, 7, 8, 10], fingers: [3, 1, 2, 4], baseFret: 7 }
+    { name: 'Registro Agudo (Traste 8)', detail: 'Trastes 8 - 10 · Registro solista', frets: [9, 10, 8, 10], fingers: [2, 3, 1, 4], baseFret: 8 }
   ],
   'D': [
     { name: 'Posición Abierta', detail: 'Trastes 2 en cuerdas 4, 3 y 2', frets: [2, 2, 2, 0], fingers: [1, 2, 3, 0], baseFret: 1 },
@@ -543,7 +563,7 @@ export const ALTERNATE_UKULELE_VOICINGS = Object.freeze({
     { name: 'Registro Agudo (Traste 9)', detail: 'Traste 9 · Sonido campana', frets: [11, 9, 10, 9], fingers: [3, 1, 2, 1], baseFret: 9, barres: [9] }
   ],
   'D7': [
-    { name: 'Posición Abierta', detail: 'Trastes 2-0-2-0 · Tonalidad clásica hawaiana', frets: [2, 0, 2, 0], fingers: [1, 0, 2, 0], baseFret: 1 },
+    { name: 'Posición Abierta', detail: 'Trastes 2-0-2-0 · Sin fundamental', frets: [2, 0, 2, 0], fingers: [1, 0, 2, 0], baseFret: 1, omittedRoot: true },
     { name: 'Con Cejilla (Traste 2)', detail: 'Traste 2 · Forma de barra 2-2-2-3', frets: [2, 2, 2, 3], fingers: [1, 1, 1, 2], baseFret: 1, barres: [2] },
     { name: 'Registro Agudo (Traste 5)', detail: 'Trastes 5 - 7 · Séptima brillante', frets: [5, 6, 5, 5], fingers: [1, 2, 1, 1], baseFret: 5, barres: [5] }
   ],

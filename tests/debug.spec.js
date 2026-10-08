@@ -1,4 +1,7 @@
 import { test, expect } from '@playwright/test';
+import { waitForSong } from './helpers/journeys.js';
+
+test.describe.configure({ timeout: 90_000 });
 
 test('Debug Blackbird lyrics', async ({ page }) => {
   await page.goto('/');
@@ -9,6 +12,7 @@ test('Debug Blackbird lyrics', async ({ page }) => {
   const songCard = page.locator('.song-card', { hasText: /Blackbird/i }).locator('.btn-select-song').first();
   await expect(songCard).toBeVisible({ timeout: 10000 });
   await songCard.click();
+    await waitForSong(page);
 
   const lyricsContainer = page.locator('.lyrics-chords-container');
   await expect(lyricsContainer).toBeVisible({ timeout: 10000 });

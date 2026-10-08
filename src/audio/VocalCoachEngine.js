@@ -1,55 +1,23 @@
 /**
- * @file VocalCoachEngine.js
- * @description Motor DSP de Asistencia y Entrenamiento Vocal en tiempo real.
- * Utiliza Web Audio API y algoritmo YIN optimizado para la voz humana.
- * Proporciona:
- * - Detección de Frecuencia Fundamental (F0) y Afinación en Cents en rango vocal (65Hz a 1200Hz / C2 a D6).
- * - Análisis de Estabilidad Vocal (Vocal Jitter / Tremor score).
- * - Detección de Apoyo Respiratorio (Breath Support & Decay Tracker para detectar caídas de aire).
- * - Detección de Registro y Tessitura (Rango vocal alcanzado durante la sesión).
- * - Motor Didáctico de Consejos Vocales en Tiempo Real (Didactic Guidance Engine).
- * - Generador de Tonos Guía y Ejercicios de Calentamiento Vocal.
+ * Recorded-signal pitch analysis using Pitchy's McLeod detector (80–1100 Hz).
+ * Measures periodicity, tuning, pitch fluctuation and signal-level consistency.
+ * These measurements do not identify a human voice or diagnose breathing,
+ * resonance, laryngeal control or vocal health. Use headphones during karaoke.
  */
 
 import { events } from '../core/EventBus.js';
+import { PitchDetector as PeriodicPitchDetector } from '../../assets/vendor/pitchy/4.1.0/pitchy.js';
 
 const NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
 const LATIN_NAMES = ['Do', 'Do#', 'Re', 'Re#', 'Mi', 'Fa', 'Fa#', 'Sol', 'Sol#', 'La', 'La#', 'Si'];
 
 // Consejos didácticos categorizados
 const DIDACTIC_TIPS = {
-  PERFECT: [
-    '🎯 ¡Afinación clavada! Mantén la columna de aire constante.',
-    '✨ Excelente resonancia y afinación impecable.',
-    '💎 Tono centrado y limpio. Buen control laríngeo.'
-  ],
-  FLAT: [
-    '⬆️ Ligeramente bajo (Flat): Sonríe internamente y proyecta hacia los resonadores faciales.',
-    '⬆️ Estás por debajo del tono: Eleva el velo del paladar y piensa la nota "desde arriba".',
-    '⬆️ Apoyo: Empuja suavemente con el diafragma para dar energía al tono.'
-  ],
-  SHARP: [
-    '⬇️ Ligeramente alto (Sharp): Relaja la laringe y no aprietes la garganta.',
-    '⬇️ Estás por encima del tono: Suelta la tensión del cuello y deja fluir el aire.',
-    '⬇️ Demasiada presión de aire: Modera el empuje para no subir el tono.'
-  ],
-  BREATH_DROP: [
-    '🌬️ Apoyo diafragmático: Tu volumen cae al final del verso. Inhala hondo expandiendo las costillas.',
-    '🫁 Falta de aire: No dejes que la presión decaiga antes de terminar la frase.',
-    '💨 Mantén el caudal de aire continuo hasta la última sílaba.'
-  ],
-  UNSTABLE: [
-    '🌊 Estabilidad: Tu tono fluctúa. Concéntrate en un flujo de aire uniforme y constante.',
-    '🧘 Relaja la mandíbula inferior y mantén la lengua apoyada tras los dientes inferiores.'
-  ],
-  HIGH_STRAIN: [
-    '🔥 Registro agudo: Proyecta la "voz mixta" hacia el paladar blando sin empujar desde el cuello.',
-    '🕊️ Nota aguda: Abre más la boca verticalmente y mantén los hombros bajos.'
-  ],
-  POSTURE: [
-    '🧘 Postura vocal: Barbilla paralela al suelo, pecho abierto y columna erguida.',
-    '💧 Hidratación: Bebe pequeños sorbos de agua templada para mantener las cuerdas elásticas.'
-  ]
+  PERFECT: ['🎯 Tono centrado en la referencia.', '✨ Afinación dentro del margen elegido.'],
+  FLAT: ['⬆️ La señal está por debajo de la nota de referencia.'],
+  SHARP: ['⬇️ La señal está por encima de la nota de referencia.'],
+  BREATH_DROP: ['🔉 El nivel de la señal ha bajado. Revisa la distancia al micrófono.'],
+  UNSTABLE: ['🌊 El tono fluctúa; puede ser vibrato, una transición o ruido.']
 };
 
 export class VocalCoachEngine {
@@ -60,11 +28,17 @@ export class VocalCoachEngine {
     this.sourceNode = null;
     this.buffer = null;
     this.isRunning = false;
+    this.starting = false;
+    this.captureGeneration = 0;
+    this.minimumRms = 0.005;
     this.animationFrameId = null;
 
     // Estado en tiempo real
     this.targetNote = null; // { note, octave, midi, freq, noteWithOctave }
     this.lastPitch = null;
+    this.referenceMode = false;
+    this.targetProvider = null;
+    this.inputLatencyMs = 0;
     this.centsTolerance = 15; // +/- 15 cents se considera "in-tune" perfecto
 
     // Buffers de métricas para análisis temporal
@@ -83,6 +57,9 @@ export class VocalCoachEngine {
       highestPitch: null,
       inTuneFrames: 0,
       totalSingingFrames: 0,
+      expectedReferenceFrames: 0,
+      referenceFrames: 0,
+      inTuneReferenceFrames: 0,
       stabilityScore: null,
       breathSupportScore: null,
     };
@@ -98,34 +75,47 @@ export class VocalCoachEngine {
    * @param {MediaStream} [mockStream] 
    */
   async start(mockStream = null) {
-    if (this.isRunning) return;
+    if (this.isRunning) return true;
+    if (this.starting) return this.startPromise;
+    const generation = ++this.captureGeneration;
+    this.starting = true;
+    this.startPromise = this._startCapture(mockStream, generation);
+    return this.startPromise;
+  }
+
+  async _startCapture(mockStream, generation) {
+    let context, stream, source, oscillator;
+    let attached = false;
+    const current = () => generation === this.captureGeneration;
 
     try {
       const AudioCtx = window.AudioContext || window.webkitAudioContext;
-      this.audioContext = new AudioCtx({ sampleRate: 44100 });
+      context = new AudioCtx({ sampleRate: 44100 });
+      this.pendingContext = context;
 
-      if (this.audioContext.state === 'suspended') {
-        await this.audioContext.resume();
+      if (context.state === 'suspended') {
+        await context.resume();
       }
+      if (!current()) return false;
 
       if (window.__IS_TESTING__) {
         console.log('[VocalCoachEngine] TESTING MODE: Inyectando OscillatorNode (440Hz -> 523.25Hz)');
-        this.testOscillator = this.audioContext.createOscillator();
-        this.testOscillator.type = 'sine';
-        this.testOscillator.frequency.value = 440; // A4
-        this.testOscillator.start();
+        oscillator = context.createOscillator();
+        oscillator.type = 'sine';
+        oscillator.frequency.value = 440; // A4
+        oscillator.start();
         
         // Simular cambio a C5 (523.25Hz) a los 2 segundos
         setTimeout(() => {
-          if (this.testOscillator) this.testOscillator.frequency.value = 523.25;
+          if (current() && this.testOscillator) this.testOscillator.frequency.value = 523.25;
         }, 2000);
 
-        this.sourceNode = this.testOscillator;
+        source = oscillator;
       } else if (mockStream) {
-        this.mediaStream = mockStream;
-        this.sourceNode = this.audioContext.createMediaStreamSource(this.mediaStream);
+        stream = mockStream;
+        source = context.createMediaStreamSource(stream);
       } else {
-        this.mediaStream = await navigator.mediaDevices.getUserMedia({
+        stream = await navigator.mediaDevices.getUserMedia({
           audio: {
             echoCancellation: true,
             autoGainControl: true,
@@ -133,23 +123,45 @@ export class VocalCoachEngine {
             latency: 0,
           },
         });
-        this.sourceNode = this.audioContext.createMediaStreamSource(this.mediaStream);
+        if (!current()) return false;
+        source = context.createMediaStreamSource(stream);
       }
 
-      this.analyser = this.audioContext.createAnalyser();
+      this.analyser = context.createAnalyser();
       this.analyser.fftSize = 2048;
       this.analyser.smoothingTimeConstant = 0.25;
 
-      this.sourceNode.connect(this.analyser);
+      source.connect(this.analyser);
+      this.audioContext = context;
+      this.mediaStream = stream || null;
+      this.sourceNode = source;
+      this.testOscillator = oscillator || null;
       this.buffer = new Float32Array(this.analyser.fftSize);
+      attached = true;
       this.isRunning = true;
+      this.starting = false;
 
       events.emit('vocalCoach:started');
       this.loop();
+      return true;
     } catch (err) {
-      this.isRunning = false;
-      events.emit('vocalCoach:error', err);
-      console.warn('[VocalCoachEngine] Error al iniciar captura:', err);
+      if (current()) {
+        this.isRunning = false;
+        events.emit('vocalCoach:error', err);
+        console.warn('[VocalCoachEngine] Error al iniciar captura:', err);
+      }
+      return false;
+    } finally {
+      if (!attached) {
+        stream?.getTracks().forEach(track => track.stop());
+        try { oscillator?.stop(); source?.disconnect(); } catch (_) {}
+        if (context && context.state !== 'closed') await context.close().catch(() => {});
+      }
+      if (current()) {
+        this.starting = false;
+        this.startPromise = null;
+        this.pendingContext = null;
+      }
     }
   }
 
@@ -157,6 +169,13 @@ export class VocalCoachEngine {
    * Detiene el motor de audio vocal.
    */
   stop() {
+    ++this.captureGeneration;
+    this.starting = false;
+    this.startPromise = null;
+    if (this.pendingContext && this.pendingContext !== this.audioContext && this.pendingContext.state !== 'closed') {
+      this.pendingContext.close().catch(() => {});
+    }
+    this.pendingContext = null;
     this.isRunning = false;
     if (this.animationFrameId) {
       cancelAnimationFrame(this.animationFrameId);
@@ -180,7 +199,7 @@ export class VocalCoachEngine {
     }
 
     if (this.audioContext && this.audioContext.state !== 'closed') {
-      this.audioContext.close();
+      this.audioContext.close().catch(() => {});
       this.audioContext = null;
     }
 
@@ -204,6 +223,9 @@ export class VocalCoachEngine {
       highestPitch: null,
       inTuneFrames: 0,
       totalSingingFrames: 0,
+      expectedReferenceFrames: 0,
+      referenceFrames: 0,
+      inTuneReferenceFrames: 0,
       stabilityScore: null,
       breathSupportScore: null,
     };
@@ -236,7 +258,7 @@ export class VocalCoachEngine {
   }
 
   /**
-   * Procesa un frame de audio donde se ha detectado voz humana.
+   * Procesa un frame de audio donde se ha detectado una señal periódica.
    * @param {{frequency: number, clarity: number, rms: number}} detection - Datos de pitch detectados.
    * @private
    */
@@ -245,14 +267,15 @@ export class VocalCoachEngine {
     this.consecutiveVocalFrames++;
     this.singingDurationFrames++;
 
+    this._countReferenceFrame();
     const noteInfo = this.frequencyToNote(detection.frequency);
     this._updateHistoryBuffers(detection);
 
     const stability = this.calculateStability();
     const breathSupport = this.calculateBreathSupport();
 
-    // Solo actualizar tesitura si es voz humana sostenida (mínimo 3 frames y volumen vocal real)
-    if (this.consecutiveVocalFrames >= 3 && detection.rms >= 0.020) {
+    // Solo actualizar tesitura si es señal periódica sostenida (mínimo 3 frames y volumen vocal real)
+    if (this.consecutiveVocalFrames >= 3 && detection.rms >= this.minimumRms) {
       this.updateTessitura(noteInfo);
     }
 
@@ -262,7 +285,7 @@ export class VocalCoachEngine {
 
     // CRÍTICO: Registrar en estadísticas de sesión ÚNICAMENTE cuando la canción se está reproduciendo
     // y el usuario está cantando de verdad de forma sostenida (evita que el ruido ambiente invente datos)
-    if (this.isPlaybackActive && this.consecutiveVocalFrames >= 3 && detection.rms >= 0.020) {
+    if (this.isPlaybackActive && this.consecutiveVocalFrames >= 3 && detection.rms >= this.minimumRms) {
       this._updateSessionStats(accuracyStatus, stability, breathSupport);
     }
 
@@ -330,6 +353,10 @@ export class VocalCoachEngine {
   _updateSessionStats(accuracyStatus, stability, breathSupport) {
     this.sessionStats.totalSingingFrames++;
     if (accuracyStatus === 'in-tune') this.sessionStats.inTuneFrames++;
+    if (this.referenceMode && this.targetNote) {
+      this.sessionStats.referenceFrames++;
+      if (accuracyStatus === 'in-tune') this.sessionStats.inTuneReferenceFrames++;
+    }
     if (typeof stability === 'number' && stability > 0) {
       this.stabilitySamples.push(stability);
       if (this.stabilitySamples.length > 200) this.stabilitySamples.shift();
@@ -348,7 +375,13 @@ export class VocalCoachEngine {
    * Procesa un frame de silencio o señal no vocal.
    * @private
    */
+  _countReferenceFrame() {
+    if (this.targetProvider) this.setTargetNote(this.targetProvider(this.inputLatencyMs));
+    if (this.isPlaybackActive && this.referenceMode && this.targetNote) this.sessionStats.expectedReferenceFrames++;
+  }
+
   _handleSilence() {
+    this._countReferenceFrame();
     this.consecutiveSilenceFrames++;
     this.consecutiveVocalFrames = 0;
     if (this.consecutiveSilenceFrames > 8) {
@@ -363,97 +396,26 @@ export class VocalCoachEngine {
   }
 
   /**
-   * Algoritmo de detección de tono YIN optimizado para voz humana (65Hz - 1200Hz).
+   * Detector McLeod de señal periódica (80–1100 Hz).
    * @param {Float32Array} buffer 
    * @param {number} sampleRate 
    * @returns {{ frequency: number, clarity: number, rms: number } | null}
    */
   detectVocalPitch(buffer, sampleRate) {
-    const SIZE = buffer.length;
-    let rms = 0;
-
-    for (let i = 0; i < SIZE; i++) {
-      const v = buffer[i];
-      rms += v * v;
+    const size = buffer?.length;
+    if (!size || size < 256 || (size & (size - 1)) || !Number.isFinite(sampleRate) || sampleRate <= 0) return null;
+    let energy = 0;
+    for (let i = 0; i < size; i++) energy += buffer[i] * buffer[i];
+    const rms = Math.sqrt(energy / size);
+    if (!Number.isFinite(rms) || rms < this.minimumRms) return null;
+    if (this.periodicDetector?.inputLength !== size) {
+      this.periodicDetector = PeriodicPitchDetector.forFloat32Array(size);
     }
-    rms = Math.sqrt(rms / SIZE);
-
-    // Umbral de volumen para descartar ruido ambiente (AC, ventiladores, clicks). El canto supera 0.020
-    if (rms < 0.020) return null;
-
-    const minPeriod = Math.floor(sampleRate / 1100); // ~1100Hz (C6)
-    const maxPeriod = Math.floor(sampleRate / 80);   // ~80Hz (E2) - evita zumbidos de red de 50/60Hz
-    const halfSize = Math.floor(SIZE / 2);
-    const difference = new Float32Array(maxPeriod + 1);
-
-    // Paso 1: Función de diferencia d(t)
-    for (let tau = minPeriod; tau <= maxPeriod && tau < halfSize; tau++) {
-      let sum = 0;
-      for (let i = 0; i < halfSize; i++) {
-        const delta = buffer[i] - buffer[i + tau];
-        sum += delta * delta;
-      }
-      difference[tau] = sum;
-    }
-
-    // Paso 2: Función de diferencia media acumulada normalizada d'(t)
-    const cmndf = new Float32Array(maxPeriod + 1);
-    cmndf[0] = 1;
-    let runningSum = 0;
-    for (let tau = 1; tau <= maxPeriod && tau < halfSize; tau++) {
-      runningSum += difference[tau];
-      cmndf[tau] = runningSum > 0 ? (difference[tau] * tau) / runningSum : 1;
-    }
-
-    // Paso 3: Búsqueda del primer valle bajo el umbral de YIN (0.15)
-    const threshold = 0.15;
-    let tauEstimate = -1;
-    for (let tau = minPeriod; tau <= maxPeriod && tau < halfSize; tau++) {
-      if (cmndf[tau] < threshold) {
-        while (tau + 1 <= maxPeriod && cmndf[tau + 1] < cmndf[tau]) {
-          tau++;
-        }
-        tauEstimate = tau;
-        break;
-      }
-    }
-
-    // Si ningún valle cae bajo el umbral, buscar el mínimo global
-    if (tauEstimate === -1) {
-      let minVal = 1;
-      for (let tau = minPeriod; tau <= maxPeriod && tau < halfSize; tau++) {
-        if (cmndf[tau] < minVal) {
-          minVal = cmndf[tau];
-          tauEstimate = tau;
-        }
-      }
-      if (minVal > 0.35) return null; // No es tono periódico claro
-    }
-
-    if (tauEstimate <= 0 || tauEstimate >= halfSize - 1) return null;
-
-    // Paso 4: Interpolación parabólica para precisión sub-cent
-    const x0 = tauEstimate;
-    const x1 = tauEstimate - 1;
-    const x2 = tauEstimate + 1;
-    const y0 = cmndf[x0];
-    const y1 = cmndf[x1];
-    const y2 = cmndf[x2];
-
-    const denom = 2 * (2 * y0 - y1 - y2);
-    let betterTau = tauEstimate;
-    if (Math.abs(denom) > 1e-6) {
-      betterTau = tauEstimate + (y1 - y2) / (2 * (y1 - 2 * y0 + y2));
-    }
-
-    const frequency = sampleRate / betterTau;
-    const clarity = Math.max(0, Math.min(1, 1 - cmndf[tauEstimate]));
-
-    if (frequency >= 80 && frequency <= 1100) {
-      return { frequency, clarity, rms };
-    }
-
-    return null;
+    this.periodicDetector.minVolumeAbsolute = this.minimumRms;
+    const [frequency, clarity] = this.periodicDetector.findPitch(buffer, sampleRate);
+    // Periodicity cannot distinguish a singer from a loudspeaker or instrument.
+    return Number.isFinite(frequency) && frequency >= 80 && frequency <= 1100
+      ? { frequency, clarity, rms } : null;
   }
 
   /**
@@ -509,8 +471,8 @@ export class VocalCoachEngine {
   }
 
   /**
-   * Calcula la consistencia del apoyo respiratorio real (0 - 100%).
-   * Evalúa la curva envolvente de presión SPL a lo largo del verso.
+   * Calcula la consistencia del nivel de señal (0 - 100%), no el apoyo respiratorio.
+   * Compara RMS relativo; influyen el micrófono, la distancia y el control de ganancia.
    */
   calculateBreathSupport() {
     if (this.rmsHistory.length < 8) return null;
@@ -553,12 +515,10 @@ export class VocalCoachEngine {
 
     let selectedTip = null;
 
-    if (breathSupport < 60 && duration > 25) {
+    if (breathSupport !== null && breathSupport < 60 && duration > 25) {
       selectedTip = this.getRandomTip(DIDACTIC_TIPS.BREATH_DROP);
-    } else if (stability < 65 && duration > 15) {
+    } else if (stability !== null && stability < 65 && duration > 15) {
       selectedTip = this.getRandomTip(DIDACTIC_TIPS.UNSTABLE);
-    } else if (noteInfo.midi >= 72 && accuracyStatus !== 'in-tune') { // C5 o superior
-      selectedTip = this.getRandomTip(DIDACTIC_TIPS.HIGH_STRAIN);
     } else if (accuracyStatus === 'flat') {
       selectedTip = this.getRandomTip(DIDACTIC_TIPS.FLAT);
     } else if (accuracyStatus === 'sharp') {
@@ -583,6 +543,7 @@ export class VocalCoachEngine {
    * @param {string|number} noteOrMidi - Ej: 'A4', 'C#3' o número MIDI (69)
    */
   setTargetNote(noteOrMidi) {
+    if (typeof noteOrMidi === 'number' && (!Number.isFinite(noteOrMidi) || noteOrMidi < 0 || noteOrMidi > 127)) noteOrMidi = null;
     if (typeof noteOrMidi === 'number') {
       const freq = this.midiToFrequency(noteOrMidi);
       this.targetNote = { ...this.frequencyToNote(freq), freq };
@@ -609,7 +570,10 @@ export class VocalCoachEngine {
     } else {
       this.targetNote = null;
     }
-    events.emit('vocalCoach:targetChanged', this.targetNote);
+    if (this.lastTargetMidi !== this.targetNote?.midi) {
+      this.lastTargetMidi = this.targetNote?.midi;
+      events.emit('vocalCoach:targetChanged', this.targetNote);
+    }
   }
 
   /**
@@ -620,6 +584,7 @@ export class VocalCoachEngine {
   playReferenceTone(frequency, durationSec = 1.5) {
     try {
       const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      const ownsContext = !this.audioContext;
       const ctx = this.audioContext || new AudioCtx();
       if (ctx.state === 'suspended') ctx.resume();
 
@@ -637,6 +602,7 @@ export class VocalCoachEngine {
       osc.connect(gain);
       gain.connect(ctx.destination);
 
+      osc.onended = () => { osc.disconnect(); gain.disconnect(); if (ownsContext) ctx.close().catch(() => {}); };
       osc.start();
       osc.stop(ctx.currentTime + durationSec);
     } catch (e) {

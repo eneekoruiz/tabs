@@ -50,7 +50,7 @@ export class ExportModal extends Component {
           <div class="modal-header">
             <div class="modal-title-group">
               <span class="modal-icon" aria-hidden="true">📤</span>
-              <h2>Exportación Grado Publicación</h2>
+              <h2>Exportar partitura</h2>
             </div>
             <button class="btn-close-modal" id="btnCloseExportModal" aria-label="Cerrar ventana de exportación">✖</button>
           </div>
@@ -60,8 +60,8 @@ export class ExportModal extends Component {
             <button class="export-option-card" id="btnExportOptionPdf" aria-label="Exportar o imprimir partitura en PDF">
               <div class="export-option-icon" aria-hidden="true">📄</div>
               <div class="export-option-info">
-                <span class="export-option-title">Documento PDF (Imprenta A4)</span>
-                <span class="export-option-desc">Calidad vectorial de publicación, saltos de página inteligentes y maquetación en blanco y negro.</span>
+                <span class="export-option-title">Imprimir o guardar PDF</span>
+                <span class="export-option-desc">Abre la impresión del navegador; selecciona guardar como PDF si está disponible.</span>
               </div>
               <span class="export-badge">PDF</span>
             </button>
@@ -77,11 +77,11 @@ export class ExportModal extends Component {
             </button>
 
             <!-- Opción MusicXML -->
-            <button class="export-option-card" id="btnExportOptionXml" aria-label="Exportar archivo MusicXML">
+            <button class="export-option-card" id="btnExportOptionXml" disabled aria-label="Exportación MusicXML no disponible">
               <div class="export-option-icon" aria-hidden="true">🎼</div>
               <div class="export-option-info">
                 <span class="export-option-title">Formato MusicXML (.xml)</span>
-                <span class="export-option-desc">Intercambio universal de partituras para Sibelius, Finale, MuseScore y Dorico.</span>
+                <span class="export-option-desc">La exportación MusicXML todavía no está disponible.</span>
               </div>
               <span class="export-badge">XML</span>
             </button>

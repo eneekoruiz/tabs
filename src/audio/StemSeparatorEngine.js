@@ -113,7 +113,7 @@ export class StemSeparatorEngine {
       const drumsR = drumsBuffer.getChannelData(1);
       this._extractDrums(leftOriginal, rightOriginal, drumsL, drumsR, length);
 
-      onProgress(65, 'Aislando campo vocal y armónicos medios (Voz)...');
+      onProgress(65, 'Filtrando centro y medios...');
       await this._yieldToUI();
 
       // 3. EXTRAER VOZ (Vocals): Mid-Side Center Channel Isolation + Filtro vocal 220Hz - 4200Hz
@@ -122,7 +122,7 @@ export class StemSeparatorEngine {
       const vocalsR = vocalsBuffer.getChannelData(1);
       this._extractVocals(leftOriginal, rightOriginal, vocalsL, vocalsR, drumsL, bassL, length, this.sampleRate);
 
-      onProgress(85, 'Aislando guitarras, teclados y elementos armónicos...');
+      onProgress(85, 'Calculando el resto estéreo...');
       await this._yieldToUI();
 
       // 4. EXTRAER GUITARRAS / OTROS (Guitar / Instrumental): Residual harmónico estéreo
@@ -131,7 +131,7 @@ export class StemSeparatorEngine {
       const guitarR = guitarBuffer.getChannelData(1);
       this._extractGuitarAndOther(leftOriginal, rightOriginal, vocalsL, vocalsR, drumsL, drumsR, bassL, bassR, guitarL, guitarR, length);
 
-      onProgress(100, '¡Separación de 4 pistas completada con éxito!');
+      onProgress(100, 'Cuatro bandas preparadas.');
 
       this.stems = {
         vocals: vocalsBuffer,
@@ -329,6 +329,7 @@ export class StemSeparatorEngine {
     this.sourceNodes = {};
     this.gainNodes = {};
     this.analyserNodes = {};
+    this.isPlaying = false;
     if (this.animationFrameId) {
       cancelAnimationFrame(this.animationFrameId);
       this.animationFrameId = null;
@@ -389,7 +390,13 @@ export class StemSeparatorEngine {
     const update = () => {
       if (!this.isPlaying) return;
       const ctx = this.audioContext;
-      const currentTime = ctx ? (ctx.currentTime - this.playbackStartTime) % (this.duration || 1) : 0;
+      const currentTime = ctx ? Math.min(this.duration, ctx.currentTime - this.playbackStartTime) : 0;
+      if (currentTime >= this.duration) {
+        this.pauseOffset = 0; this.stopPlayback();
+        events.emit('stems:playbackState', {isPlaying:false,currentTime});
+        events.emit('stems:timeUpdate', {currentTime,duration:this.duration,levels:{}});
+        return;
+      }
 
       const levels = {};
       const dataArray = new Uint8Array(32);

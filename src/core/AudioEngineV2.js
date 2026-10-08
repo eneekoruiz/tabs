@@ -75,9 +75,10 @@ class AudioEngineV2 {
     this.isInitialized = true;
 
     // Renderizar partitura inicial por defecto usando api.tex()
+    this._demoScorePending = true;
     try {
       this.api.tex('\\title "Tabs & Chords PRO"\n\\tempo 120\n.\n:4 0.6 2.5 2.4 0.3 | :4 3.6 5.5 5.4 3.3 | :1 0.6 |');
-    } catch (e) {}
+    } catch (e) { this._demoScorePending = false; }
 
     soundFontCache.getSoundFontSource().catch(err => {
       console.warn('[AudioEngineV2] Caché offline de SoundFont:', err);
@@ -106,6 +107,8 @@ class AudioEngineV2 {
     });
 
     this.api.scoreLoaded.on((score) => {
+      const isDemo = Boolean(this._demoScorePending && score.title === 'Tabs & Chords PRO');
+      this._demoScorePending = false;
       this.score = score;
       this.tracks = score.tracks || [];
 
@@ -127,7 +130,14 @@ class AudioEngineV2 {
       });
 
       state.set('tracksState', tracksMeta);
-      state.set('activeSong', {
+      const selected = state.get('activeSong');
+      const sameTitle = selected?.title?.trim().toLocaleLowerCase() === score.title?.trim().toLocaleLowerCase();
+      const requestMatches = this._scoreRequestSong === selected && this._scoreRequestData === selected?.data;
+      const preserved = !isDemo && (sameTitle || requestMatches) ? selected : {};
+      // The startup exercise must not replace a song selected while it was loading.
+      if (!isDemo || !selected || selected.isDemo) state.set('activeSong', {
+        ...preserved,
+        isDemo,
         title: score.title || 'Sin título',
         artist: score.artist || 'Artista desconocido',
         album: score.album || '',
@@ -139,7 +149,7 @@ class AudioEngineV2 {
 
       state.set('isScoreLoaded', true);
       state.set('systemStatus', { text: 'Listo', type: 'ready' });
-      events.emit('score:loaded', { score, tracks: tracksMeta });
+      events.emit('score:loaded', { score, tracks: tracksMeta, isDemo });
     });
 
     this.api.playerReady.on(() => {
@@ -195,6 +205,9 @@ class AudioEngineV2 {
   loadScoreToAlphaTab(data) {
     if (!this.api) throw new Error('AudioEngineV2 no inicializado.');
 
+    const loadGeneration = this._scoreLoadGeneration = (this._scoreLoadGeneration || 0) + 1;
+    this._scoreRequestSong = state.get('activeSong');
+    this._scoreRequestData = data;
     state.set('systemStatus', { text: 'Cargando partitura...', type: 'loading' });
 
     try {
@@ -204,14 +217,14 @@ class AudioEngineV2 {
       }
 
       if (data instanceof Blob) {
-        data.arrayBuffer().then(buf => this.loadScoreToAlphaTab(buf));
+        data.arrayBuffer().then(buf => { if (this._scoreLoadGeneration === loadGeneration) this.loadScoreToAlphaTab(buf); }).catch(error => events.emit('error', error));
         return;
       }
 
       let bytes = null;
       if (data instanceof ArrayBuffer) bytes = new Uint8Array(data);
       else if (data instanceof Uint8Array) bytes = data;
-      else if (data && typeof data === 'object' && data.buffer instanceof ArrayBuffer) bytes = new Uint8Array(data.buffer);
+      else if (data && typeof data === 'object' && data.buffer instanceof ArrayBuffer) bytes = new Uint8Array(data.buffer, data.byteOffset || 0, data.byteLength || data.buffer.byteLength);
       else if (Array.isArray(data)) bytes = new Uint8Array(data);
 
       if (bytes) {

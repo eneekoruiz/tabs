@@ -1,6 +1,8 @@
 import { KaraokeBackingStore, karaokeSongKey } from '../data/KaraokeBackingStore.js';
-import { PIANO_VOICINGS, NOTE_FREQ } from '../tools/chord/ChordDefinitions.js';
+import { NOTE_FREQ } from '../tools/chord/ChordDefinitions.js';
+import { ChordSvgRenderer } from '../tools/chord/ChordSvgRenderer.js';
 import { buildKaraokeTimeline, parseLrc, getKaraokeTempo } from './KaraokeTimeline.js';
+import { parseVocalReference } from './VocalReference.js';
 
 const bounded = (value, min, max, fallback = min) => Number.isFinite(Number(value))
   ? Math.min(max, Math.max(min, Number(value))) : fallback;
@@ -8,23 +10,8 @@ const bounded = (value, min, max, fallback = min) => Number.isFinite(Number(valu
 // Chords and lyrics share one score-time timeline; harmony is never a vocal target.
 export function buildChordBacking(song) {
   return buildKaraokeTimeline(song).chords.map(event => {
-    const chord = event.chord.replace(/\/.*$/, '');
-    const root = chord.match(/^[A-G][#b]?/)?.[0] || chord;
-    const quality = chord.slice(root.length);
-    // Prefer the exact verified voicing, then fall back to a verified root
-    // voicing. This keeps generated practice audio musical for chords such as
-    // add9, slash chords and uncommon extensions without inventing notes.
-    const voicing = PIANO_VOICINGS[chord]
-      || PIANO_VOICINGS[`${root}${/^(m(?!aj)|min)/.test(quality) ? 'm' : ''}`]
-      || PIANO_VOICINGS[root]
-      || [];
+    const voicing = ChordSvgRenderer.getPianoChord(event.chord) || [];
     const frequencies = voicing.map(note => NOTE_FREQ[note.key] * 2 ** (note.oct - 4)).filter(Number.isFinite);
-    const bass = event.chord.match(/\/([A-G][#b]?)$/)?.[1];
-    if (bass && frequencies.length && NOTE_FREQ[bass]) {
-      let bassFrequency = NOTE_FREQ[bass] / 2;
-      while (bassFrequency >= Math.min(...frequencies)) bassFrequency /= 2;
-      frequencies.unshift(bassFrequency);
-    }
     return {
       ...event,
       chord: event.chord,
@@ -116,6 +103,8 @@ export class KaraokeBackingEngine {
       }
       this.volume = bounded(record?.volume, 0, 1, 0.65);
       this.tempoBpm = bounded(record?.tempoBpm, 40, 220, this.baseTempoBpm);
+      if (record?.vocalMelody?.length) song.vocalMelody = record.vocalMelody;
+      if (record?.referenceInfo) song.referenceInfo = record.referenceInfo;
       if (record?.lyricCues?.length) {
         song.lyricCues = record.lyricCues;
         this.timeline = buildKaraokeTimeline(song);
@@ -129,14 +118,10 @@ export class KaraokeBackingEngine {
         this.volume = bounded(record.volume, 0, 1, 0.65);
         this.offsetMs = bounded(record.offsetMs, -600000, 600000);
         this.attachMedia();
-      } else {
-        // A song without an imported file starts with its tempo-aware
-        // generated backing, so singing mode is useful on first launch.
-        this.mode = 'synth';
-      }
+      } // A karaoke recording must be supplied explicitly; the chord guide is optional.
     } catch (error) {
       if (token === this.generation && error.name !== 'AbortError') {
-        this.mode = 'synth';
+        this.mode = 'local';
         this.error = 'No se pudo recuperar la base guardada. Puedes practicar con la guía o volver a importarla.';
       }
     } finally {
@@ -220,7 +205,7 @@ export class KaraokeBackingEngine {
       media = await this.prepareMedia(file);
       if (token !== this.generation) return false;
       const record = { blob: file, name: file.name || 'Base local', volume: this.volume, offsetMs: 0,
-        tempoBpm: this.tempoBpm, lyricCues: this.song.lyricCues || [] };
+        tempoBpm: this.tempoBpm, lyricCues: this.song.lyricCues || [], vocalMelody: this.song.vocalMelody || [], referenceInfo: this.song.referenceInfo || null };
       await this.store.put(song, record);
       if (token !== this.generation) return false;
       this.releaseMedia();
@@ -255,7 +240,7 @@ export class KaraokeBackingEngine {
       if (token !== this.generation) return false;
       this.releaseMedia();
       this.record = null;
-      this.mode = 'synth';
+      this.mode = 'local';
       this.position = 0;
       this.offsetMs = 0;
       this.error = '';
@@ -409,6 +394,25 @@ export class KaraokeBackingEngine {
     } finally {
       if (token === this.generation) { this.loading = false; this.notify(); }
     }
+  }
+
+  async importReference(file) {
+    if (!this.song || this.loading) return false;
+    const song = this.song, token = this.generation;
+    this.loading = true; this.error = ''; this.notify();
+    try {
+      if (!file?.size || file.size > 1024 * 1024) throw new Error('Elige una referencia TXT o JSON de hasta 1 MB.');
+      const reference = parseVocalReference(await file.text());
+      if (token !== this.generation) return false;
+      const settings = { vocalMelody: reference.vocalMelody, referenceSource: reference.source, referenceInfo: reference.referenceInfo };
+      if (reference.lyricCues) settings.lyricCues = reference.lyricCues;
+      await this.store.updateSettings(song, settings);
+      if (token !== this.generation) return false;
+      this.pause(); Object.assign(song, settings);
+      this.timeline = buildKaraokeTimeline(song); this.chords = buildChordBacking(song);
+      return true;
+    } catch (error) { if (token === this.generation) this.error = error.message; return false; }
+    finally { if (token === this.generation) { this.loading = false; this.notify(); } }
   }
 
   schedule() {

@@ -1,3 +1,4 @@
+import { escapeHTML } from '../../utils/sanitize.js';
 /**
  * @file PracticeAnalyticsTool.js
  * @description Panel de Analíticas y Progresión del Músico (Practice Dashboard):
@@ -132,8 +133,8 @@ export class PracticeAnalyticsTool extends Component {
                   <div class="top-song-row">
                     <span class="song-rank">#${idx + 1}</span>
                     <div class="song-meta-col">
-                      <strong class="song-row-title">${s.title}</strong>
-                      <span class="song-row-sub">${s.artist} · ${s.count} ensayos · Max BPM: ${s.maxBpm}</span>
+                      <strong class="song-row-title">${escapeHTML(s.title)}</strong>
+                      <span class="song-row-sub">${escapeHTML(s.artist)} · ${s.count} ensayos · Max BPM: ${s.maxBpm}</span>
                     </div>
                     <span class="song-row-time">${s.totalMinutes}m</span>
                   </div>

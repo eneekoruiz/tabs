@@ -15,6 +15,8 @@ export class VFXEngine {
     this.score = 0;
     this.animationFrameId = null;
     this.isActive = false;
+    this.showScore = false;
+    this.reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches || false;
 
     this.width = 0;
     this.height = 0;
@@ -48,8 +50,9 @@ export class VFXEngine {
     this._loop();
 
     // Suscribirse a eventos de pitch para generar partículas
-    events.on('vocalCoach:pitch', this._handlePitch.bind(this));
-    events.on('vocalCoach:silence', this._handleSilence.bind(this));
+    window.addEventListener('resize', this._resize);
+    this._pitchUnsub = events.on('vocalCoach:pitch', this._handlePitch.bind(this));
+    this._silenceUnsub = events.on('vocalCoach:silence', this._handleSilence.bind(this));
   }
 
   stop() {
@@ -59,6 +62,10 @@ export class VFXEngine {
       cancelAnimationFrame(this.animationFrameId);
     }
     this.particles = [];
+    this._pitchUnsub?.(); this._silenceUnsub?.();
+    this._pitchUnsub = this._silenceUnsub = null;
+    window.removeEventListener('resize', this._resize);
+    this.ctx.clearRect(0, 0, this.width, this.height);
   }
 
   /** Called by PitchLaneCanvas.play() / .pause() to gate scoring. */
@@ -102,6 +109,7 @@ export class VFXEngine {
   }
 
   spawnParticle(x, y, color) {
+    if (this.reducedMotion || this.particles.length >= 100) return;
     this.particles.push({
       x, y,
       vx: (Math.random() - 0.5) * 4,
@@ -114,6 +122,8 @@ export class VFXEngine {
   }
 
   spawnExplosion(x, y, color, count = 20) {
+    if (this.reducedMotion) return;
+    count = Math.min(count, Math.max(0, 100-this.particles.length));
     for (let i = 0; i < count; i++) {
       this.particles.push({
         x, y,
@@ -132,7 +142,8 @@ export class VFXEngine {
 
     this.ctx.clearRect(0, 0, this.width, this.height);
 
-    // Dibujar UI Gamificada (Score y Combo)
+    if (this.showScore) {
+    // Optional gamification stays separate from measured session accuracy.
     this.ctx.fillStyle = '#ffffff';
     this.ctx.font = 'bold 24px system-ui';
     this.ctx.textAlign = 'right';
@@ -144,12 +155,14 @@ export class VFXEngine {
       this.ctx.textAlign = 'center';
       
       // Efecto pulso para el combo
-      const scale = 1 + Math.sin(Date.now() / 100) * 0.1;
+      const scale = this.reducedMotion ? 1 : 1 + Math.sin(Date.now() / 100) * 0.1;
       this.ctx.save();
       this.ctx.translate(this.width / 2, 60);
       this.ctx.scale(scale, scale);
       this.ctx.fillText(`${this.combo}x COMBO!`, 0, 0);
       this.ctx.restore();
+    }
+
     }
 
     // Actualizar y dibujar partículas (Efecto Bloom aproximado)

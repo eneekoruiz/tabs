@@ -63,7 +63,7 @@ export class StageAutomationTool extends Component {
             <div class="stage-section-card">
               <h3 class="section-title">1. Dispositivo MIDI Físico de Salida (USB)</h3>
               <div class="midi-select-row">
-                <select class="midi-device-select" id="selMidiOutput">
+                <select class="midi-device-select" id="selMidiOutput" aria-label="Salida MIDI">
                   ${outputs.length === 0 ? '<option value="">⚠️ No se detectaron pedaleras USB (Conecta Kemper/Helix por USB)</option>' : ''}
                   ${outputs.map(o => `<option value="${o.id}" ${o.id === selectedId ? 'selected' : ''}>${o.name} (${o.manufacturer})</option>`).join('')}
                 </select>

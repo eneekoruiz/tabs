@@ -12,7 +12,7 @@ permissions:
 jobs:
   web-quality:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 90
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -26,6 +26,13 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Run musical unit tests
+        run: |
+          npm run test:karaoke
+          npm run test:catalog
+          npm run test:references
+          npm run test:transcription
+
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps chromium
 
@@ -36,4 +43,12 @@ jobs:
         run: node scripts/build-static.mjs
 
       - name: Run E2E Test Suite
-        run: npx playwright test tests/iron-man.spec.js tests/smart-band-arcade.spec.js tests/neural-dsp-looper.spec.js tests/transcription-analytics.spec.js tests/vocal-coach.spec.js
+        run: npx playwright test --workers=2 --retries=0
+
+      - name: Upload browser evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: chromium-results
+          path: test-results/
+          retention-days: 7

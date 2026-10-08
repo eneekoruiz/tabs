@@ -15,6 +15,8 @@ import { db } from '../data/Database.js';
 import { backupSyncEngine } from '../data/BackupSyncEngine.js';
 import { practiceTrackerService } from '../data/PracticeTrackerService.js';
 import { toast } from './Toast.js';
+import { escapeHTML } from '../utils/sanitize.js';
+import { foldControls } from './ProgressiveDisclosure.js';
 
 export class SettingsView extends Component {
   constructor(container) {
@@ -75,7 +77,7 @@ export class SettingsView extends Component {
 
       // Abrir Analíticas desde Ajustes
       if (e.target.id === 'btnOpenAnalyticsFromSettings') {
-        events.emit('analytics:open');
+        events.emit('ui:openTool', 'analytics');
       }
     });
   }
@@ -103,22 +105,22 @@ export class SettingsView extends Component {
           </div>
           <div class="settings-user-meta">
             <div class="settings-user-title-line">
-              <h1 class="settings-user-name">${this.userName}</h1>
-              <span class="pro-membership-pill">${this.userName === 'Perfil local' ? 'SIN CUENTA' : 'STUDIO PRO'}</span>
+              <h1 class="settings-user-name">${escapeHTML(this.userName)}</h1>
+              <span class="pro-membership-pill">${this.userName === 'Perfil local' ? 'SIN CUENTA' : 'PERFIL LOCAL'}</span>
             </div>
-            <span class="settings-user-email">${this.userEmail}</span>
+            <span class="settings-user-email">${escapeHTML(this.userEmail)}</span>
           </div>
         </div>
 
         <div class="settings-sections-list">
-          <!-- 1. Cuenta y Seguridad -->
+          <!-- 1. Perfil local -->
           <div class="settings-card-group">
             <h2 class="settings-group-title">Cuenta y Seguridad</h2>
             
             <div class="settings-row-item">
               <div class="settings-row-info">
                 <strong>Perfil del Músico</strong>
-                <span>${this.userName} • ${this.userEmail}</span>
+                <span>${escapeHTML(this.userName)} • ${escapeHTML(this.userEmail)}</span>
               </div>
               <button class="btn-settings-action" id="btnChangeProfile">Editar Perfil</button>
             </div>
@@ -145,10 +147,10 @@ export class SettingsView extends Component {
             <h2 class="settings-group-title">Rendimiento y Hábito</h2>
             <div class="settings-row-item">
               <div class="settings-row-info">
-                <strong>Dashboard de Práctica Personal</strong>
+                <strong>Resumen de práctica</strong>
                 <span>${statsSummary.totalHours}h acumuladas • Racha de ${statsSummary.currentStreak} días</span>
               </div>
-              <button class="btn-settings-action btn-settings-accent" id="btnOpenAnalyticsFromSettings">Ver dashboard</button>
+              <button class="btn-settings-action btn-settings-accent" id="btnOpenAnalyticsFromSettings">Ver práctica</button>
             </div>
           </div>
 
@@ -171,7 +173,7 @@ export class SettingsView extends Component {
             <!-- Instrumento Predeterminado -->
             <div class="settings-row-item">
               <div class="settings-row-info">
-                <strong>Instrumento Predeterminado</strong>
+                <label for="selSettingsDefaultInst"><strong>Instrumento Predeterminado</strong></label>
                 <span>Se cargará automáticamente al abrir cualquier canción</span>
               </div>
               <select id="selSettingsDefaultInst" class="sel-settings-control">
@@ -184,19 +186,19 @@ export class SettingsView extends Component {
             <!-- Calibración Maestra 440Hz vs 432Hz -->
             <div class="settings-row-item">
               <div class="settings-row-info">
-                <strong>Frecuencia Maestra de Afinación (A4)</strong>
+                <label for="selSettingsMasterTuning"><strong>Frecuencia Maestra de Afinación (A4)</strong></label>
                 <span>Afecta a los afinadores y tonos de referencia</span>
               </div>
               <select id="selSettingsMasterTuning" class="sel-settings-control">
                 <option value="440" ${this.masterTuning === '440' ? 'selected' : ''}>440 Hz (Estándar Internacional)</option>
-                <option value="432" ${this.masterTuning === '432' ? 'selected' : ''}>432 Hz (Afinación Natural / Verdi)</option>
+                <option value="432" ${this.masterTuning === '432' ? 'selected' : ''}>432 Hz</option>
               </select>
             </div>
 
             <!-- Notación de Alteraciones: Sostenidos (#) vs Bemoles (b) -->
             <div class="settings-row-item">
               <div class="settings-row-info">
-                <strong>Notación de Alteraciones</strong>
+                <label for="selSettingsAccidentals"><strong>Notación de Alteraciones</strong></label>
                 <span>Unifica los acordes: elige si prefieres ver siempre sostenidos (#) o bemoles (b) sin mezclar</span>
               </div>
               <select id="selSettingsAccidentals" class="sel-settings-control">
@@ -208,12 +210,12 @@ export class SettingsView extends Component {
             <!-- Estilo Visual -->
             <div class="settings-row-item">
               <div class="settings-row-info">
-                <strong>Estilo Visual Anti-Fatiga</strong>
+                <label for="selSettingsVisualTheme"><strong>Estilo Visual Anti-Fatiga</strong></label>
                 <span>Modo de visualización predeterminado para ensayos</span>
               </div>
               <select id="selSettingsVisualTheme" class="sel-settings-control">
-                <option value="oled" ${this.visualTheme === 'oled' ? 'selected' : ''}>OLED Dark (Negro puro)</option>
-                <option value="amber" ${this.visualTheme === 'amber' ? 'selected' : ''}>Ámbar Cálido (Sin luz azul)</option>
+                <option value="oled" ${this.visualTheme === 'oled' ? 'selected' : ''}>OLED Dark</option>
+                <option value="amber" ${this.visualTheme === 'amber' ? 'selected' : ''}>Ámbar Cálido</option>
                 <option value="paper" ${this.visualTheme === 'paper' ? 'selected' : ''}>Atril Papel (Cancionero)</option>
               </select>
             </div>
@@ -237,16 +239,16 @@ export class SettingsView extends Component {
 
             <div class="settings-row-item">
               <div class="settings-row-info">
-                <strong>Exportar Respaldo Completo Cifrado (1-Clic)</strong>
-                <span>Empaqueta todas tus canciones, grabaciones, analíticas y ajustes en un archivo .agytab</span>
+                <strong>Guardar copia de seguridad</strong>
+                <span>Conserva canciones, partituras, estadísticas y ajustes incluidos. Los audios de karaoke y repertorios se guardan por separado.</span>
               </div>
-              <button class="btn-settings-action" id="btnExportBackup">Crear Backup</button>
+              <button class="btn-settings-action" id="btnExportBackup">Crear copia</button>
             </div>
 
             <div class="settings-row-item">
               <div class="settings-row-info">
                 <strong>Restaurar desde Copia de Seguridad</strong>
-                <span>Recupera instantáneamente toda tu información en este dispositivo</span>
+                <span>Restaura las canciones y los datos incluidos en tu copia</span>
               </div>
               <button class="btn-settings-action" id="btnImportBackup">Restaurar Copia</button>
               <input type="file" id="fileBackupInput" accept=".agytab,.json,.tabsbackup" style="display: none;">
@@ -256,6 +258,11 @@ export class SettingsView extends Component {
       </div>
     `;
 
+    const rows = ['#btnChangeProfile', '#btnLogout', '#btnRecoverPassword', '#btnOpenAnalyticsFromSettings', '#selSettingsMasterTuning', '#selSettingsAccidentals', '#chkSettingsAudioFeedback', '#btnImportBackup'].map(selector => this.container.querySelector(selector)?.closest('.settings-row-item'));
+    const fileInput = this.container.querySelector('#fileBackupInput');
+    if (fileInput && !rows.some(row => row?.contains(fileInput))) rows.push(fileInput);
+    foldControls(this.container, rows, { id: 'settingsAdvanced', label: 'Opciones avanzadas · perfil, afinación y recuperación', owner: this, parent: this.container.querySelector('.settings-sections-list') });
+    this.container.querySelectorAll('.settings-card-group').forEach(group => { if (!group.querySelector('.settings-row-item')) group.remove(); });
     this.bindEvents();
   }
 

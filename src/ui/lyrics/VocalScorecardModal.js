@@ -1,18 +1,18 @@
 /**
  * @file VocalScorecardModal.js
  * @description Tarjeta de rendimiento vocal post-interpretación (Simply Sing / Yousician style).
- * Muestra porcentaje de afinación global, medalla, notas extremas y apoyo respiratorio con datos 100% reales.
+ * Muestra porcentaje de afinación global, medalla, notas extremas y consistencia de nivel de señal; no evalúa la salud ni la técnica respiratoria.
  */
 import { escapeHTML } from '../../utils/sanitize.js';
 import { trapModalFocus } from '../ModalFocus.js';
 
 export class VocalScorecardModal {
-  static show({ songTitle = '', artist = '', sessionStats = {}, hasMelodyReference = false, onRetry, onClose }) {
+  static show({ songTitle = '', artist = '', sessionStats = {}, hasMelodyReference = false, centsTolerance = 15, onRetry, onClose }) {
     const existing = document.getElementById('vocalScorecardModal');
     if (existing) existing.remove();
 
-    const total = sessionStats.totalSingingFrames || 0;
-    const inTune = sessionStats.inTuneFrames || 0;
+    const total = (hasMelodyReference ? sessionStats.expectedReferenceFrames : sessionStats.totalSingingFrames) || 0;
+    const inTune = (hasMelodyReference ? sessionStats.inTuneReferenceFrames : sessionStats.inTuneFrames) || 0;
     // Se requieren al menos ~25 frames sostenidos (~0.5s) para considerar que el usuario cantó de verdad
     const hasSufficientData = total >= 25;
 
@@ -24,7 +24,7 @@ export class VocalScorecardModal {
 
     let medalEmoji = '🎤';
     let medalTitle = 'Sin Canto Detectado';
-    let medalDesc = 'No se ha registrado canto suficiente durante la reproducción. Activa el micrófono y canta las notas de la canción.';
+    let medalDesc = 'No se han registrado muestras suficientes durante la reproducción. Activa el micrófono y usa auriculares.';
     let medalColor = '#94a3b8';
 
     if (hasSufficientData) {
@@ -64,14 +64,14 @@ export class VocalScorecardModal {
         <p class="scorecard-song-name">${safeTitle} ${safeArtist ? `· ${safeArtist}` : ''}</p>
         <p class="scorecard-desc">${escapeHTML(medalDesc)}</p>
         <p class="scorecard-reference-note">${hasMelodyReference
-          ? 'Referencia vocal aportada; en los intervalos sin nota se mide afinación cromática.'
+          ? 'Melodía aportada: se puntúan sus notas; los silencios y las secciones sin nota quedan fuera. Cantar en otra octava está permitido.'
           : 'Afinación cromática: compara tu voz con la nota más cercana. No evalúa la melodía original de la canción.'}</p>
 
         <div class="scorecard-stats-grid">
           <div class="scorecard-stat-box">
-            <span class="stat-label">${hasMelodyReference ? 'Afinación medida' : 'Afinación cromática'}</span>
+            <span class="stat-label">${hasMelodyReference ? 'Melodía aportada' : 'Afinación cromática'}</span>
             <span class="stat-number ${accuracy >= 70 ? 'stat-good' : ''}">${accuracy}%</span>
-            <span class="stat-sub">${hasSufficientData ? 'Dentro del margen de afinación' : 'Sin muestras de voz'}</span>
+            <span class="stat-sub">${hasSufficientData ? `Margen ±${Number(centsTolerance) || 15} cents${hasMelodyReference ? ' · silencios en notas cuentan como fallos' : ''}` : 'Sin muestras suficientes'}</span>
           </div>
           <div class="scorecard-stat-box">
             <span class="stat-label">Estabilidad de tono</span>

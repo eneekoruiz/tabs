@@ -1,5 +1,5 @@
 // All times are milliseconds in the original song, independent of playback speed.
-const CHORD = /\[([A-G][#b]?(?:(?:maj|min|dim|aug|sus|add|m|M|\d|\+|\(|\)|°)*)(?:\/[A-G][#b]?)?)\]/g;
+const CHORD = /\[([A-G][#b]?(?:(?:maj|min|dim|aug|sus|add|m|M|[#b]?\d|\+|\(|\)|°)*)(?:\/[A-G][#b]?)?)\]/g;
 
 export function getKaraokeTempo(value) {
   const tempo = Number(value);
@@ -15,8 +15,9 @@ export function validLyricCues(cues) {
 
 export function buildKaraokeTimeline(song = {}) {
   const beatMs = 60000 / getKaraokeTempo(song.tempo);
-  const signature = String(song.timeSignature || '4/4').match(/^(\d+)\/(\d+)$/);
-  const beatsPerBar = signature ? Math.max(1, Math.min(12, Number(signature[1]) * 4 / Number(signature[2]))) : 4;
+  const signature = String(song.timeSignature || '4/4').match(/^(\d{1,2})\/(1|2|4|8|16)$/);
+  const validMeter = signature && Number(signature[1]) >= 1 && Number(signature[1]) <= 12;
+  const beatsPerBar = validMeter ? Number(signature[1]) * 4 / Number(signature[2]) : 4;
   const barMs = beatMs * beatsPerBar;
   const lines = [];
   const chords = [];
@@ -41,7 +42,8 @@ export function buildKaraokeTimeline(song = {}) {
   }
   const supplied = validLyricCues(song.lyricCues);
   const lyricLines = supplied.length ? supplied : lines;
-  const durationMs = Math.max(cursor, ...lyricLines.map(c => c.startTime + c.duration), 0);
+  const suppliedMelodyEnds = Array.isArray(song.vocalMelody) ? song.vocalMelody.filter(n=>Number.isFinite(n.startTime)&&n.startTime>=0&&Number.isFinite(n.duration)&&n.duration>0).map(n=>n.startTime+n.duration) : [];
+  const durationMs = Math.max(cursor, ...lyricLines.map(c => c.startTime + c.duration), ...suppliedMelodyEnds, 0);
   // Hold existing harmony through unciphered lines. No invented chord progression.
   chords.forEach((chord, i) => { chord.duration = (chords[i + 1]?.time ?? durationMs) - chord.time; });
   return { beatMs, beatsPerBar, chords, lyricLines, durationMs, timingIsEstimated: !supplied.length };

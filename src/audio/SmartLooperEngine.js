@@ -7,7 +7,7 @@
 
 import { events } from '../core/EventBus.js';
 import { state } from '../core/State.js';
-import { audioEngine } from '../core/AudioEngine.js';
+import { audioEngine } from '../core/AudioEngineV2.js';
 import { practiceTrackerService } from '../data/PracticeTrackerService.js';
 import { audioFeedback } from './AudioFeedback.js';
 

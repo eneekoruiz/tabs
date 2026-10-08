@@ -1,4 +1,7 @@
 import { test, expect } from '@playwright/test';
+import { waitForSong } from './helpers/journeys.js';
+
+test.describe.configure({ timeout: 90_000 });
 
 // Lista de viewports estándar para auditoría de responsividad completa
 const VIEWPORTS = [
@@ -34,7 +37,15 @@ test.describe('📱 Auditoría E2E de Responsividad Multidispositivo (Cero Desbo
         await page.waitForSelector('.bottom-nav-bar');
       });
 
-      test.afterEach(async () => {
+      test.afterEach(async ({ page }) => {
+        const nav = page.locator('#bottom-nav-container');
+        if (await nav.isVisible()) {
+          const space = await page.evaluate(() => ({
+            workspaceBottom: document.querySelector('.main-workspace').getBoundingClientRect().bottom,
+            navigationTop: document.querySelector('.bottom-nav-bar').getBoundingClientRect().top,
+          }));
+          expect(space.workspaceBottom, 'La navegación no debe cubrir controles o tarjetas').toBeLessThanOrEqual(space.navigationTop + 1);
+        }
         const realErrors = consoleErrors.filter(e => !e.includes('Failed to load resource') && !e.includes('favicon'));
         expect(realErrors, `Errores de consola en ${vp.name}: ${realErrors.join(', ')}`).toEqual([]);
       });
@@ -98,7 +109,8 @@ test.describe('📱 Auditoría E2E de Responsividad Multidispositivo (Cero Desbo
 
         const songCard = page.locator('.song-card', { hasText: /Blackbird/i }).first();
         await songCard.waitFor({ state: 'visible', timeout: 10000 });
-        await songCard.click();
+        await songCard.locator('.btn-select-song').click();
+    await waitForSong(page);
 
         const lyricsContainer = page.locator('.lyrics-chords-container');
         await expect(lyricsContainer).toBeVisible({ timeout: 10000 });

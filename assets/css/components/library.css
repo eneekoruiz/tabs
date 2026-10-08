@@ -186,7 +186,7 @@ body.theme-ivory .lib-tab {
 
 .lib-tab.active {
   background: var(--accent-primary) !important;
-  color: #ffffff !important;
+  color: var(--text-inverse) !important;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
@@ -223,7 +223,7 @@ body.theme-ivory .btn-import {
 .btn-import:hover {
   background-color: var(--accent-primary);
   border-color: var(--accent-primary);
-  color: #ffffff;
+  color: var(--text-inverse);
 }
 
 .btn-demo-quick {

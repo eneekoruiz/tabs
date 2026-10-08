@@ -1,0 +1,13 @@
+import fs from 'node:fs/promises';
+import path from 'node:path';
+const root = path.resolve(import.meta.dirname, '..');
+const out = path.join(root, 'assets/vendor/pitchy/4.1.0');
+const pitchy = await fs.readFile(path.join(root, 'node_modules/pitchy/index.js'), 'utf8');
+const fft = await fs.readFile(path.join(root, 'node_modules/fft.js/lib/fft.js'), 'utf8');
+if (!pitchy.includes('import FFT from "fft.js";') || !fft.includes('module.exports = FFT;') || /require\(/.test(fft)) throw new Error('Vendor sources changed; review the browser conversion.');
+await fs.mkdir(out, { recursive: true });
+await fs.writeFile(path.join(out, 'pitchy.js'), pitchy.replace('import FFT from "fft.js";', 'import FFT from "./fft.js";'));
+await fs.writeFile(path.join(out, 'fft.js'), fft.replace('module.exports = FFT;', 'export default FFT;'));
+await fs.copyFile(path.join(root, 'node_modules/pitchy/LICENSE'), path.join(out, 'LICENSE.pitchy'));
+await fs.copyFile(path.join(root, 'node_modules/fft.js/README.md'), path.join(out, 'fft.README.md'));
+await fs.writeFile(path.join(out, 'README.md'), 'Pitchy 4.1.0 (0BSD) and fft.js 4.0.4 (MIT). Browser ESM conversion, rebuilt with node scripts/vendor-pitch.mjs. Sources: https://github.com/ianprime0509/pitchy and https://github.com/indutny/fft.js . FFT license is included at the end of fft.README.md. No CDN or microphone uploads.\n');

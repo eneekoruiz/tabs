@@ -26,8 +26,13 @@ import { SongMetronomeCompanion } from './lyrics/SongMetronomeCompanion.js';
 import { extractYouTubeVideoId, saveSongYouTubeVideoId, buildYouTubeSearchUrl } from './lyrics/YouTubeCompanion.js';
 import { escapeHTML } from '../utils/sanitize.js';
 import { trapModalFocus } from './ModalFocus.js';
+import { foldControls } from './ProgressiveDisclosure.js';
+import { findPublicVocalReferences, loadPublicVocalReference } from '../data/PublicVocalReferences.js';
+import { loadReadyKaraoke } from '../data/ReadyKaraokePractice.js';
+import { findOnlineKaraoke, buildKaraokeProviderSearch } from '../data/OnlineKaraokeCatalog.js';
+import { OnlineKaraokePlayer } from './lyrics/OnlineKaraokePlayer.js';
 
-const CHORD_MARKER_RE = /\[[A-G][#b]?(?:m|min|maj|dim|aug|sus|add|\d|\+)*(?:\/[A-G][#b]?)?\]/i;
+const CHORD_MARKER_RE = /\[[A-G][#b]?(?:m|min|maj|dim|aug|sus|add|[#b]?\d|\+)*(?:\/[A-G][#b]?)?\]/i;
 
 export class LyricsChordsView extends Component {
   constructor(container) {
@@ -133,7 +138,7 @@ export class LyricsChordsView extends Component {
      * @param {Object} song - Modelo de canción activo.
      */
     const handleSongLoad = async (song) => {
-      if (!song) return;
+      if (!song || song.isDemo) return;
       
       const isSameSong = this.currentSong === song && this.currentSong.lyricsChords;
 
@@ -146,6 +151,8 @@ export class LyricsChordsView extends Component {
       clearTimeout(this._sessionSaveTimer);
       this.stopSinging();
       this.currentSong = song;
+      this.publicVocalReferences = [];
+      void findPublicVocalReferences(song).then(refs => { if (this.currentSong === song) { this.publicVocalReferences = refs; this.updatePublicReferenceOptions(); } }).catch(() => {});
       this.transposeSemitones = 0;
       this.capoFret = 0;
       this.visualTheme = localStorage.getItem('app_visual_theme') || 'paper';
@@ -184,6 +191,10 @@ export class LyricsChordsView extends Component {
           if (this.currentSong !== song) return;
           this.currentSong.youtubeVideoId = getSongYouTubeVideoId(this.currentSong);
           this.currentSong.karaokeVideoId = getSongKaraokeVideoId(this.currentSong);
+          const online = await findOnlineKaraoke(song).catch(()=>null);
+          if (this.currentSong !== song) return;
+          this.currentSong.onlineKaraokeSource = online;
+          if (!this.currentSong.karaokeVideoId && online?.videoId) this.currentSong.karaokeVideoId = online.videoId;
         }
       } catch (e) {
         console.warn('[LyricsChordsView] Error obteniendo acordes online:', e);
@@ -193,6 +204,7 @@ export class LyricsChordsView extends Component {
       if (this.currentSong !== song) return;
       const recovered = song._practiceRecovery;
       if (recovered) {
+        this.performanceMode = recovered.performanceMode === 'sing' ? 'sing' : 'play';
         if (Number.isFinite(recovered.transposeSemitones)) this.transposeSemitones = Math.max(-12, Math.min(12, Math.round(recovered.transposeSemitones)));
         if (Number.isFinite(recovered.capoFret)) this.capoFret = Math.max(0, Math.min(7, Math.round(recovered.capoFret)));
         if (Number.isFinite(recovered.fontSizeScale)) this.fontSizeScale = Math.max(80, Math.min(180, recovered.fontSizeScale));
@@ -206,21 +218,26 @@ export class LyricsChordsView extends Component {
       }
       this.songMetronome.setSong(song);
       void this.backing.loadSong(song).then(() => {
+        if (this.currentSong === song) {
+          if (recovered?.karaokeMode === 'synth') this.backing.setMode('synth');
+          if (Number.isFinite(recovered?.karaokePositionMs)) this.backing.seek(recovered.karaokePositionMs);
+        }
         if (this.currentSong === song && this.pitchLane) {
           this.pitchLane.setTargetLyrics(song.lyricsChords, song.tempo, song);
           this.updateKaraokeState();
         }
       });
       this.backing.setTranspose(this.transposeSemitones);
+      this.onlineKaraokeOpen = Boolean(song._openOnlineKaraoke && song.karaokeVideoId);
+      delete song._openOnlineKaraoke;
       this.setViewMode('lyrics');
       this.render();
-      if (recovered && Number.isFinite(recovered.scrollTop)) {
-        this.autoScroller.writeScrollTop(this.autoScroller.readScrollMetrics(), recovered.scrollTop);
-      }
+      this.autoScroller.writeScrollTop(this.autoScroller.readScrollMetrics(), Number.isFinite(recovered?.scrollTop) ? recovered.scrollTop : 0);
       this.syncContextualState();
     };
 
-    this.registerUnsub(events.on('score:loaded', ({ score }) => {
+    this.registerUnsub(events.on('score:loaded', ({ score, isDemo }) => {
+      if (isDemo) return;
       const activeSong = state.get('activeSong');
       if (activeSong) handleSongLoad(activeSong);
     }));
@@ -362,7 +379,7 @@ export class LyricsChordsView extends Component {
       // Actualizar medidor de volumen (RMS) en la UI solo si la canción está reproduciendo
       const bar = this.container?.querySelector('#singMicMeterBar');
       if (bar) {
-        if (!this.isSingingPlaying()) {
+        if (!this.isSingingPlaying() && !this.onlineKaraokeOpen) {
           bar.style.width = '0%';
         } else {
           const rms = pitchData.rms || 0;
@@ -376,6 +393,7 @@ export class LyricsChordsView extends Component {
     // Vocal Coach Engine: actualizar colores y afinación SOLO cuando la canción está reproduciendo
     this.registerUnsub(events.on('vocalCoach:pitch', (pitch) => {
       if (this.performanceMode !== 'sing' || !pitch) return;
+      if (this.onlineKaraokeOpen) { this._updateSingerRibbonColor({...pitch,centsOffset:pitch.cents});return; }
       if (!this.isSingingPlaying()) {
         this._setSingerRibbonPausedState();
         return;
@@ -393,6 +411,36 @@ export class LyricsChordsView extends Component {
         ribbon.classList.remove('in-tune', 'near-tune', 'out-tune');
       }
     }));
+  }
+
+  renderOnlineKaraoke() {
+    const id=extractYouTubeVideoId(this.currentSong?.karaokeVideoId || '');
+    if (!this.onlineKaraokeOpen || !id) return '';
+    const source=this.currentSong?.onlineKaraokeSource;
+    return '<section class="online-karaoke-player" aria-label="Karaoke online"><div class="online-karaoke-heading"><strong>Karaoke online</strong><button type="button" id="btnCloseOnlineKaraoke" aria-label="Cerrar karaoke online">×</button></div><iframe id="onlineKaraokeIframe" title="Karaoke del proveedor" width="100%" height="200" src="https://www.youtube-nocookie.com/embed/'+id+'?autoplay=0&rel=0&enablejsapi=1&origin='+encodeURIComponent(location.origin)+'" referrerpolicy="strict-origin-when-cross-origin" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe><p>Letra y reproducción del vídeo · afinación libre</p><p id="onlineKaraokeStatus" role="status">Conectando con el proveedor…</p><a href="https://www.youtube.com/watch?v='+id+'" target="_blank" rel="noopener noreferrer">Abrir en YouTube si el vídeo no se reproduce</a>'+(source?'<span class="online-karaoke-credit">Proveedor: '+escapeHTML(source.channel || source.brand || 'KaraokeNerds')+'</span>':'')+'</section>';
+  }
+
+  syncOnlineKaraokeStage() {
+    const stage=this.container?.querySelector('#singStageWorkspace');
+    stage?.classList.toggle('uses-online-karaoke',Boolean(this.onlineKaraokeOpen));
+    if (this.onlineKaraokeOpen) {
+      this.pitchLane?.stop();
+      vocalCoachEngine.targetProvider=null;
+      vocalCoachEngine.referenceMode=false;
+      vocalCoachEngine.setTargetNote(null);
+      vocalCoachEngine.setPlaybackActive(false);
+      const label=this.container?.querySelector('#singerPitchNoteLabel');
+      if(label)label.textContent=vocalCoachEngine.isRunning?'Escuchando · afinación libre':'Activa el micrófono para ver tu afinación';
+    }
+  }
+
+  setOnlineKaraoke(open) {
+    this.pauseSinging();
+    vocalCoachEngine.resetSessionStats();
+    this.onlineKaraokeOpen=Boolean(open);
+    this.render();
+    if (open) this.container?.querySelector('#btnCloseOnlineKaraoke')?.focus({preventScroll:true});
+    else this.container?.querySelector('#btnOpenOnlineKaraoke')?.focus({preventScroll:true});
   }
 
   renderKaraokePanel() {
@@ -416,39 +464,47 @@ export class LyricsChordsView extends Component {
           </div>
 
           <div class="karaoke-quick-actions">
-            <button type="button" id="btnToggleVocalComfort" class="karaoke-comfort-pill ${isVocalComfort ? 'active' : ''}" aria-pressed="${isVocalComfort}" title="Modo Voz Fácil: curva suave y menor fatiga vocal">
-              🎙️ Voz Fácil: ${isVocalComfort ? 'ON' : 'OFF'}
+            <button type="button" id="btnToggleVocalComfort" class="karaoke-comfort-pill ${isVocalComfort ? 'active' : ''}" aria-pressed="${isVocalComfort}" title="Reduce algunas frecuencias de la base generada">
+              Base suave: ${isVocalComfort ? 'ON' : 'OFF'}
             </button>
             <div class="karaoke-mic-row">
-              <button type="button" id="btnKaraokeMic" aria-pressed="false">Activar micrófono</button>
+              <button type="button" id="btnKaraokeMic" aria-pressed="false" aria-label="Activar micrófono">Micrófono</button>
               <span id="karaokeMicStatus" role="status">Micrófono desactivado</span>
             </div>
           </div>
         </div>
 
-        <!-- Opciones Secundarias Condensadas en Acordeón de Estudio -->
-        <details class="karaoke-secondary-drawer" id="karaokeSecondaryDrawer" open>
+              <div class="karaoke-online-actions">
+                ${instrumentalVideoId ? '<button type="button" id="btnOpenOnlineKaraoke">Karaoke online</button>' : ''}
+                <a href="${escapeHTML(this.currentSong?.onlineKaraokeSource?.sourceUrl || buildKaraokeProviderSearch(this.currentSong))}" target="_blank" rel="noopener noreferrer">${this.currentSong?.onlineKaraokeSource ? 'Más pistas del proveedor' : 'Buscar karaoke real'}</a>
+              </div>
+              <div class="karaoke-actions-inline">
+                <button type="button" id="btnImportKaraokeBacking" ${this.backing?.loading ? 'disabled' : ''}>Importar audio</button>
+                <input type="file" id="karaokeBackingFile" accept="audio/*,.wav,.mp3,.m4a,.ogg,.flac" hidden>
+              </div>
+              <p class="karaoke-error" id="karaokeBackingError" role="alert" hidden></p>
+        <p class="karaoke-source-note" id="karaokeTimingNote">Letra con avance estimado. Sin melodía vocal de referencia.</p>
+        <div id="publicReferenceOptions" class="public-reference-options"></div>
+        <!-- Opciones secundarias en la misma vista -->
+        <details class="karaoke-secondary-drawer" id="karaokeSecondaryDrawer" ${this._karaokeAdvancedOpen ? 'open' : ''}>
           <summary class="karaoke-drawer-summary">
-            <span class="karaoke-drawer-title">⚙️ Ajustes de Pista y Archivos</span>
-            <span class="karaoke-drawer-sub">Importar audio/LRC, tempo, desfase y vídeo</span>
+            <span class="karaoke-drawer-title">Más opciones de canto</span>
+            <span class="karaoke-drawer-sub">Melodía, mezcla, sincronización y vídeo</span>
           </summary>
 
           <div class="karaoke-drawer-content">
+            ${this.currentSong?.practicePackId ? '<div class="karaoke-actions-inline"><button type="button" data-practice-audio="original">Escuchar voz original</button>' + (this.currentSong.practiceHasInstrumental !== false ? '<button type="button" data-practice-audio="instrumental">Usar instrumental</button>' : '<span>Esta grabación incluye la voz del artista.</span>') + '<a href="' + escapeHTML(/^https:\/\/github\.com\/UltraStar-Deluxe\/songs\//.test(this.currentSong.referenceInfo?.sourceUrl || '') ? this.currentSong.referenceInfo.sourceUrl : 'https://github.com/UltraStar-Deluxe/songs') + '" target="_blank" rel="noopener noreferrer">' + escapeHTML(this.currentSong.artist) + ' · ' + escapeHTML(this.currentSong.referenceInfo?.license || 'Licencia del paquete') + '</a></div>' : ''}
             <!-- Bloque 1: Fuente y Archivo de Audio -->
             <div class="karaoke-card-group">
               <span class="karaoke-group-label">Pista y Archivo de Audio</span>
               <div class="karaoke-source-switch" role="group" aria-label="Fuente de acompañamiento">
-                <label><input type="radio" name="karaokeSource" value="local" checked> Base importada</label>
+                <label><input type="radio" name="karaokeSource" value="local" checked> Pista real</label>
                 <label><input type="radio" name="karaokeSource" value="synth"> Guía de práctica</label>
               </div>
               <p class="karaoke-source-note" id="karaokeSourceNote">Audio guardado en este dispositivo.</p>
-              <div class="karaoke-actions-inline">
-                <button type="button" id="btnImportKaraokeBacking" ${this.backing?.loading ? 'disabled' : ''}>Importar audio</button>
-                <input type="file" id="karaokeBackingFile" accept="audio/*,.wav,.mp3,.m4a,.ogg,.flac" hidden>
                 <button type="button" id="btnRemoveKaraokeBacking" ${this.backing?.loading || !this.backing?.record ? 'disabled' : ''}>Borrar base</button>
-              </div>
               <button type="button" id="btnAssociateLegacyBacking" hidden>Asociar base anterior a esta versión</button>
-              <p class="karaoke-error" id="karaokeBackingError" role="alert" hidden></p>
+
             </div>
 
             <!-- Bloque 2: Mezcla y Sincronización -->
@@ -459,7 +515,12 @@ export class LyricsChordsView extends Component {
                 <label>Tempo de práctica <input type="number" id="karaokeTempo" min="40" max="220" step="1" value="${Number(this.backing?.tempoBpm || this.currentSong?.tempo) || 72}" ${this.backing?.loading ? 'disabled' : ''}></label>
                 <label>Inicio de letra (s) <input type="number" id="karaokeOffset" min="-600" max="600" step="0.1" value="0" ${this.backing?.mode !== 'local' || !this.backing?.record ? 'disabled' : ''}></label>
               </div>
-              <p class="karaoke-source-note" id="karaokeTimingNote">Letra con avance estimado. Sin melodía vocal de referencia.</p>
+              <div class="karaoke-mixer">
+                <label>Margen de afinación (cents) <select id="karaokeTolerance"><option value="15" ${vocalCoachEngine.centsTolerance === 15 ? 'selected' : ''}>15 · estricto</option><option value="25" ${vocalCoachEngine.centsTolerance === 25 ? 'selected' : ''}>25 · normal</option><option value="50" ${vocalCoachEngine.centsTolerance === 50 ? 'selected' : ''}>50 · amplio</option></select></label>
+                <label>Retraso del micrófono (ms) <input id="karaokeMicLatency" type="number" min="0" max="500" step="10" value="${vocalCoachEngine.inputLatencyMs}"></label>
+              </div>
+              <p class="karaoke-source-note">Usa auriculares: el detector también puede seguir instrumentos y altavoces. Si las entradas llegan tarde, ajusta el retraso del micrófono. Importa una referencia de la misma versión del audio.</p>
+
             </div>
 
             <!-- Bloque 3: Letra LRC y Vídeo de Referencia -->
@@ -468,14 +529,16 @@ export class LyricsChordsView extends Component {
               <div class="karaoke-lyrics-import">
                 <button type="button" id="btnImportKaraokeLyrics" ${this.backing?.loading ? 'disabled' : ''}>Importar letra con tiempos · LRC</button>
                 <input type="file" id="karaokeLyricsFile" accept=".lrc,text/plain" hidden>
+                <button type="button" id="btnImportVocalReference">Importar melodía · UltraStar / JSON</button>
+                <input type="file" id="vocalReferenceFile" accept=".txt,.json,text/plain,application/json" hidden>
               </div>
-              ${activeVideoId ? `
+              ${activeVideoId && !this.onlineKaraokeOpen ? `
                 <div class="karaoke-video-block" aria-label="Referencia de vídeo">
                   <div class="karaoke-track-switch" role="group" aria-label="Fuente de vídeo de la pista">
                     <button type="button" id="btnKaraokeTrackOriginal" class="${this.karaokeTrackMode === 'original' ? 'active' : ''}" data-karaoke-track="original" ${originalVideoId ? '' : 'disabled'}>Original</button>
                     <button type="button" id="btnKaraokeTrackInstrumental" class="${this.karaokeTrackMode === 'instrumental' ? 'active' : ''}" data-karaoke-track="instrumental" ${instrumentalVideoId ? '' : 'disabled'}>Instrumental</button>
                   </div>
-                  <iframe id="karaokeYouTubeIframe" title="Vídeo de referencia de la canción" width="100%" height="150" src="https://www.youtube-nocookie.com/embed/${activeVideoId}?autoplay=0&rel=0&modestbranding=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                  <iframe id="karaokeYouTubeIframe" loading="lazy" title="Vídeo de referencia de la canción" width="100%" height="240" referrerpolicy="strict-origin-when-cross-origin" src="https://www.youtube-nocookie.com/embed/${activeVideoId}?autoplay=0&rel=0&modestbranding=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
                 </div>
               ` : ''}
               ${/^[A-Za-z0-9_-]{11}$/.test(this.currentSong?.youtubeVideoId || '') ? `<a class="karaoke-video-link" href="https://www.youtube.com/watch?v=${this.currentSong.youtubeVideoId}" target="_blank" rel="noopener noreferrer">Vídeo opcional en YouTube</a>` : ''}
@@ -484,6 +547,26 @@ export class LyricsChordsView extends Component {
         </details>
       </section>
     `;
+  }
+
+  updatePublicReferenceOptions() {
+    const host = this.container?.querySelector('#publicReferenceOptions');
+    if (!host) return;
+    if (this.currentSong?.vocalMelody?.length) { host.innerHTML = ''; return; }
+    const refs = this.publicVocalReferences || [];
+    host.innerHTML = refs.length ? '<p>Melodía comunitaria disponible. Necesita el audio de la misma versión.</p>' + refs.map((ref,index) => '<button type="button" data-public-reference="' + index + '">Usar melodía disponible' + (refs.length > 1 ? ' · ' + (index+1) : '') + '</button>').join('') : '';
+    host.querySelectorAll('[data-public-reference]').forEach(button => button.addEventListener('click',async () => {
+      const song = this.currentSong; button.disabled = true;
+      try {
+        const file = await loadPublicVocalReference(refs[Number(button.dataset.publicReference)]);
+        if (this.currentSong !== song) return;
+        if (await this.backing.importReference(file)) {
+          vocalCoachEngine.resetSessionStats(); this.pauseSinging(); this.updateKaraokeState(); this.updatePublicReferenceOptions();
+          toast.show('Referencia comunitaria guardada. Comprueba que corresponde a tu grabación.', 'success', 2500);
+        }
+      } catch(error) { toast.show(error.message, 'error', 2500); }
+      finally { if (button.isConnected) button.disabled = false; }
+    }));
   }
 
   updateKaraokeState() {
@@ -511,11 +594,19 @@ export class LyricsChordsView extends Component {
       error.hidden = !engine.error;
     }
     const importBtn = panel.querySelector('#btnImportKaraokeBacking');
+    const importRow = importBtn?.closest('.karaoke-actions-inline');
+    const extras = panel.querySelector('.karaoke-drawer-content');
+    if(importRow && extras) {
+      if(engine.record && importRow.parentElement !== extras) extras.prepend(importRow);
+      else if(!engine.record && importRow.parentElement === extras) panel.insertBefore(importRow,panel.querySelector('#karaokeBackingError'));
+    }
     const associate = panel.querySelector('#btnAssociateLegacyBacking');
     if (associate) { associate.hidden = !engine.legacyRecord; associate.disabled = engine.loading; }
     if (importBtn) importBtn.disabled = engine.loading;
     const lyricsImportBtn = panel.querySelector('#btnImportKaraokeLyrics');
     if (lyricsImportBtn) lyricsImportBtn.disabled = engine.loading;
+    const referenceBtn = panel.querySelector('#btnImportVocalReference');
+    if (referenceBtn) referenceBtn.disabled = engine.loading;
     const removeBtn = panel.querySelector('#btnRemoveKaraokeBacking');
     if (removeBtn) removeBtn.disabled = engine.loading || !engine.record;
     const volume = panel.querySelector('#karaokeVolume');
@@ -543,7 +634,7 @@ export class LyricsChordsView extends Component {
     if (micStatusEl) micStatusEl.textContent = this.micStatus;
     const play = this.container.querySelector('#btnSingPlayPause');
     if (play) {
-      play.disabled = !engine.ready;
+      play.disabled = !engine.ready || this.onlineKaraokeOpen;
       play.setAttribute('aria-label', engine.playing ? 'Pausar canto' : 'Reproducir base');
       play.title = engine.playing ? 'Pausar canto' : 'Reproducir base';
       play.textContent = engine.playing ? 'Ⅱ' : '▶';
@@ -551,7 +642,8 @@ export class LyricsChordsView extends Component {
     const mic = panel.querySelector('#btnKaraokeMic');
     if (mic) {
       mic.disabled = Boolean(vocalCoachEngine.starting);
-      mic.textContent = vocalCoachEngine.isRunning ? 'Desactivar micrófono' : 'Activar micrófono';
+      mic.textContent = vocalCoachEngine.isRunning ? 'Micrófono activo' : 'Micrófono';
+      mic.setAttribute('aria-label', vocalCoachEngine.isRunning ? 'Desactivar micrófono' : 'Activar micrófono');
       mic.setAttribute('aria-pressed', String(vocalCoachEngine.isRunning));
     }
     const comfortBtn = panel.querySelector('#btnToggleVocalComfort');
@@ -559,19 +651,25 @@ export class LyricsChordsView extends Component {
       const active = Boolean(engine.vocalComfortMode);
       comfortBtn.classList.toggle('active', active);
       comfortBtn.setAttribute('aria-pressed', String(active));
-      comfortBtn.textContent = `🎙️ Voz Fácil: ${active ? 'ON' : 'OFF'}`;
+      comfortBtn.textContent = `Base suave: ${active ? 'ON' : 'OFF'}`;
     }
     const heroLabel = this.container.querySelector('.sing-mic-label');
     if (heroLabel) heroLabel.textContent = vocalCoachEngine.isRunning ? 'Micrófono activo' : 'Micrófono apagado';
+    if(this.onlineKaraokeOpen) {this.syncOnlineKaraokeStage();return;}
     const lane = this.pitchLane;
     if (!lane) return;
+    if (lane._sourceCues !== this.currentSong?.lyricCues || lane._sourceMelody !== this.currentSong?.vocalMelody) {
+      lane.setTargetLyrics(this.currentSong?.lyricsChords, this.currentSong?.tempo, this.currentSong || {});
+      lane._sourceCues = this.currentSong?.lyricCues;
+      lane._sourceMelody = this.currentSong?.vocalMelody;
+    }
     const lines = lane.lyricLines || [];
     const time = this.getKaraokeClockMs();
     const index = lines.findIndex(line => time >= line.startTime && time < line.startTime + line.duration);
     const curLine = this.container?.querySelector('#karaokeCurrentLine');
     if (curLine) {
       curLine.textContent = index >= 0 ? lines[index].text
-        : time < 0 ? 'Introducción instrumental' : lines.length ? (time === 0 ? lines[0].text : '') : 'Sin letra disponible para esta canción.';
+        : time < (lines[0]?.startTime || 0) ? 'Introducción instrumental' : lines.length ? '' : 'Sin letra disponible para esta canción.';
     }
     const nextLine = this.container?.querySelector('#karaokeNextLine');
     if (nextLine) {
@@ -581,7 +679,7 @@ export class LyricsChordsView extends Component {
     if (timingNote) {
       timingNote.textContent = [
         lane.timingIsEstimated ? 'Letra con avance estimado.' : 'Letra con tiempos aportados.',
-        lane.targetBlocks.length ? 'Melodía vocal aportada.' : 'Afinación cromática; sin evaluación de la melodía original.'
+        lane.targetBlocks.length ? (this.currentSong?.referenceInfo?.sourceType === 'community_transcription' ? 'Referencia comunitaria; comprueba la versión del audio.' : 'Melodía vocal aportada.') : 'Afinación cromática; sin evaluación de la melodía original.'
       ].join(' ');
     }
   }
@@ -599,6 +697,7 @@ export class LyricsChordsView extends Component {
   }
 
   async playSinging() {
+    if (this.onlineKaraokeOpen) return;
     if (!this.pitchLane || this.performanceMode !== 'sing') return;
     const lane = this.pitchLane;
     if (await this.backing.play()) {
@@ -607,7 +706,7 @@ export class LyricsChordsView extends Component {
       lane.play();
       this._scorecardShown = false;
       this.container.querySelector('#singerPitchNoteLabel').textContent = vocalCoachEngine.isRunning
-        ? 'Escuchando tu voz · afinación cromática' : 'Base en reproducción · micrófono desactivado';
+        ? (lane.targetBlocks.length ? 'Escuchando la señal · melodía aportada' : 'Escuchando la señal · afinación cromática') : 'Base en reproducción · micrófono desactivado';
     }
     this.updateKaraokeState();
   }
@@ -623,6 +722,10 @@ export class LyricsChordsView extends Component {
   }
 
   stopSinging() {
+    this.onlineKaraokeOpen=false;
+    this.onlinePlayer?.destroy();
+    this.onlinePlayer=null;
+    this.container?.querySelector('#onlineKaraokeIframe')?.remove();
     this.pauseSinging();
     vocalCoachEngine.stop();
     vocalCoachEngine.setTargetNote(null);
@@ -674,7 +777,7 @@ export class LyricsChordsView extends Component {
       noteEl.className = 'ribbon-note-big';
     }
     if (labelEl) {
-      labelEl.textContent = '⏸️ Canción en pausa · Pulsa ▶ para empezar a cantar';
+      labelEl.textContent = 'En pausa';
     }
     if (freqEl) {
       freqEl.textContent = '0 Hz';
@@ -713,7 +816,7 @@ export class LyricsChordsView extends Component {
       noteEl.className = `ribbon-note-big ${tuneClass}`;
     }
     if (labelEl) {
-      labelEl.textContent = `🎤 Cantando: ${pitch.note}${pitch.octave ?? ''} (${statusEmoji} ${statusText})`;
+      labelEl.textContent = this.onlineKaraokeOpen ? 'Afinación libre · '+pitch.note+(pitch.octave ?? '')+' · '+(pitch.cents>0?'+':'')+(pitch.cents||0)+' cents' : `🎤 Cantando: ${pitch.note}${pitch.octave ?? ''} (${statusEmoji} ${statusText})`;
     }
     if (freqEl) {
       freqEl.textContent = `${Math.round(pitch.frequency)} Hz`;
@@ -809,6 +912,7 @@ export class LyricsChordsView extends Component {
   }
 
   setViewMode(mode) {
+    if (mode === 'score' && !this.currentSong?.data) return;
     this.viewMode = mode;
     this.queuePracticeAutosave();
     const alphatabEl = document.getElementById('alphatab');
@@ -816,6 +920,7 @@ export class LyricsChordsView extends Component {
     const lyricsToolbar = this.container.querySelector('.lyrics-essential-toolbar');
     
     if (this.viewMode === 'score') {
+      if(this.onlineKaraokeOpen) this.stopSinging();
       if (alphatabEl) alphatabEl.style.display = 'block';
       if (lyricsContent) lyricsContent.style.display = 'none';
       if (lyricsToolbar) lyricsToolbar.style.display = 'none';
@@ -900,6 +1005,7 @@ export class LyricsChordsView extends Component {
         notationSystem: this.notationSystem, visualTheme: this.visualTheme,
         hideChordsMode: this.hideChordsMode, isSimplified: this.isSimplified, viewMode: this.viewMode,
         scrollTop: this.autoScroller.readScrollMetrics().scrollTop,
+        performanceMode: this.performanceMode, karaokeMode:this.backing?.mode, karaokePositionMs: this.backing?.currentTimeMs || 0,
         autoScroll: { speedPercent: this.autoScroller?.speedPercent } });
       if (!saved) throw new Error('Session storage unavailable');
       this._saveWarningShown = false;
@@ -923,6 +1029,8 @@ export class LyricsChordsView extends Component {
   }
 
   render() {
+    this.onlinePlayer?.destroy();
+    this.onlinePlayer=null;
     if (!this.container) return;
     this._dialogFocusCleanup?.(false);
     this._dialogFocusCleanup = null;
@@ -1009,7 +1117,7 @@ export class LyricsChordsView extends Component {
 
               <div class="lyrics-header-tools-group">
                 <!-- Toggle Directo: Partitura / Letra (Toggle Switch) -->
-                <button id="btnToggleScoreView" class="quick-tool-pill tool-score-toggle desktop-header-tool ${this.viewMode === 'score' ? 'active' : ''}" type="button" aria-pressed="${this.viewMode === 'score'}" title="${this.viewMode === 'score' ? 'Volver a Letra y Acordes' : 'Ver Partitura Interactiva'}">
+                <button id="btnToggleScoreView" class="quick-tool-pill tool-score-toggle desktop-header-tool ${this.viewMode === 'score' ? 'active' : ''}" type="button" ${this.currentSong?.data ? '' : 'hidden disabled'} aria-pressed="${this.viewMode === 'score'}" title="${this.viewMode === 'score' ? 'Volver a Letra y Acordes' : 'Ver Partitura Interactiva'}">
                   <span class="tool-btn-icon">🎼</span>
                   <span class="tool-btn-label">Partitura</span>
                 </button>
@@ -1065,9 +1173,7 @@ export class LyricsChordsView extends Component {
                   <!-- Panel flotante de velocidad -->
                   <div id="autoScrollSpeedPanel" style="
                     display: none;
-                    position: absolute;
-                    top: calc(100% + 8px);
-                    right: 0;
+                    position: static;
                     z-index: 200;
                     background: var(--bg-surface-solid, #1c1c1e);
                     border: 1px solid var(--border-subtle, rgba(255,255,255,0.15));
@@ -1156,8 +1262,8 @@ export class LyricsChordsView extends Component {
           </header>
 
           <!-- BOTTOM SHEET ESTILO iOS (Herramientas avanzadas) -->
-          <div id="lyricsToolsBottomSheetOverlay" style="display: ${this.isOptionsMenuOpen ? 'flex' : 'none'}; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); z-index: 9999; justify-content: center; align-items: flex-end; animation: fadeIn 0.2s;">
-            <div class="bottom-sheet-content" role="dialog" aria-modal="true" aria-labelledby="songOptionsTitle">
+          <div id="lyricsToolsBottomSheetOverlay" role="region" aria-label="Opciones de la canción" style="display: ${this.isOptionsMenuOpen ? 'flex' : 'none'}; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); z-index: 9999; justify-content: center; align-items: flex-end; animation: fadeIn 0.2s;">
+            <div class="bottom-sheet-content" role="region" aria-labelledby="songOptionsTitle">
               
               <div style="width: 40px; height: 5px; background: rgba(255,255,255,0.2); border-radius: 3px; margin: 0 auto 16px;"></div>
               
@@ -1184,13 +1290,13 @@ export class LyricsChordsView extends Component {
               <summary>Herramientas y exportación <span>Grabación, escenario, PDF y más</span></summary>
               <div style="display: flex; flex-direction: column; gap: 6px; margin-bottom: 20px;">
                 <button id="btnEnterStageMode" class="btn-menu-action" style="justify-content: flex-start; padding: 12px 16px;">🎭 Modo Atril (Pantalla Completa)</button>
-                <button id="btnOpenBandRoomQuick" class="btn-menu-action" style="justify-content: flex-start; padding: 12px 16px;">🌐 BandRoom Multijugador P2P</button>
-                <button id="btnOpenStageQuick" class="btn-menu-action" style="justify-content: flex-start; padding: 12px 16px;">🎹 Stage Automation & MIDI</button>
-                <button id="btnOpenSpatialQuick" class="btn-menu-action" style="justify-content: flex-start; padding: 12px 16px;">🥽 HUD Spatial Computing (XR)</button>
+                <button id="btnOpenBandRoomQuick" class="btn-menu-action" style="justify-content: flex-start; padding: 12px 16px;">🌐 Ensayo entre pestañas</button>
+                <button id="btnOpenStageQuick" class="btn-menu-action" style="justify-content: flex-start; padding: 12px 16px;">🎹 Control MIDI</button>
+                <button id="btnOpenSpatialQuick" class="btn-menu-action" style="justify-content: flex-start; padding: 12px 16px;">🥽 Vista flotante</button>
                 <button id="btnOpenPedalboardQuick" class="btn-menu-action" style="justify-content: flex-start; padding: 12px 16px;">🎛️ Pedalera Virtual & Smart Tone</button>
-                <button id="btnOpenStemsQuick" class="btn-menu-action" style="justify-content: flex-start; padding: 12px 16px;">🎚️ Separador de Pistas (Stems)</button>
+                <button id="btnOpenStemsQuick" class="btn-menu-action" style="justify-content: flex-start; padding: 12px 16px;">🎚️ Mezcla por bandas (aproximada)</button>
                 <button id="btnOpenLooperQuick" class="btn-menu-action" style="justify-content: flex-start; padding: 12px 16px;">🔁 Smart Looper & Speed Trainer</button>
-                <button id="btnOpenSmartBandQuick" class="btn-menu-action" style="justify-content: flex-start; padding: 12px 16px;">🥁 The Smart Band (Acompañamiento AI)</button>
+                <button id="btnOpenSmartBandQuick" class="btn-menu-action" style="justify-content: flex-start; padding: 12px 16px;">🥁 Acompañamiento generado</button>
                 <button id="btnOpenArcadeQuick" class="btn-menu-action" style="justify-content: flex-start; padding: 12px 16px;">🎮 Modo Arcade / Jam Session</button>
                 <button id="btnOpenVocalCoachQuick" class="btn-menu-action" style="justify-content: flex-start; padding: 12px 16px;">🎤 Entrenador Vocal (Pitch Lane)</button>
                 <button id="btnOpenTranscriberQuick" class="btn-menu-action" style="justify-content: flex-start; padding: 12px 16px;">🎼 Transcriptor de Audio / YouTube</button>
@@ -1252,9 +1358,12 @@ export class LyricsChordsView extends Component {
           ${this.performanceMode === 'sing' ? `
             <div class="sing-stage-workspace" id="singStageWorkspace">
               <!-- Letra de canto prominente e integrada -->
+              ${this.renderOnlineKaraoke()}
               <div class="karaoke-lyrics" aria-label="Letra de canto">
                 <p id="karaokeCurrentLine"></p><p id="karaokeNextLine"></p>
               </div>
+
+              ${this.renderKaraokePanel()}
 
               <!-- Pista de afinación principal (Pitch Lane) -->
               <div class="singer-pitch-lane-wrapper" style="width: 100%; height: clamp(200px, 28vh, 320px); position: relative; border-radius: 16px; overflow: hidden; margin-top: 8px; border: 1px solid var(--border-subtle); box-shadow: 0 8px 24px rgba(0,0,0,0.25);">
@@ -1265,7 +1374,7 @@ export class LyricsChordsView extends Component {
               <div class="singer-vocal-ribbon" id="singerVocalRibbon" style="margin-top: 8px;">
                 <div class="ribbon-left">
                   <span class="ribbon-live-dot"></span>
-                  <span class="ribbon-status-label" id="singerPitchNoteLabel">⏸️ En pausa · Pulsa ▶ para cantar</span>
+                  <span class="ribbon-status-label" id="singerPitchNoteLabel">En pausa</span>
                 </div>
                 <div class="ribbon-center">
                   <span class="ribbon-note-big" id="singerNoteBig">—</span>
@@ -1278,8 +1387,7 @@ export class LyricsChordsView extends Component {
                 </div>
               </div>
 
-              <!-- Consola de Acompañamiento Condensada y Opciones Secundarias -->
-              ${this.renderKaraokePanel()}
+
 
               <!-- Banner de Permiso de Micrófono si fue Denegado -->
               <div class="mic-permission-warning-banner" id="micPermissionWarning" style="display: none;">
@@ -1342,7 +1450,7 @@ export class LyricsChordsView extends Component {
             ${this.isYouTubeCompanionOpen && /^[A-Za-z0-9_-]{11}$/.test(this.currentSong?.youtubeVideoId || '') ? `
             <div class="youtube-pip-container">
               <p class="youtube-reference-note">Vídeo de referencia · reproducción independiente de la letra</p>
-              <iframe title="Vídeo de referencia" width="100%" height="270" src="https://www.youtube-nocookie.com/embed/${this.currentSong.youtubeVideoId}?autoplay=0&rel=0" frameborder="0" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen style="display: block;"></iframe>
+              <iframe title="Vídeo de referencia" width="100%" height="270" referrerpolicy="strict-origin-when-cross-origin" src="https://www.youtube-nocookie.com/embed/${this.currentSong.youtubeVideoId}?autoplay=0&rel=0" frameborder="0" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen style="display: block;"></iframe>
             </div>
           ` : '<div class="youtube-companion-empty">Añade un vídeo para tener una referencia visual durante el ensayo.</div>'}
           </div>
@@ -1352,6 +1460,27 @@ export class LyricsChordsView extends Component {
       </div>
     `;
 
+    const optionsPanel = this.container.querySelector('.bottom-sheet-content');
+    foldControls(this.container, [...this.container.querySelectorAll('.lyrics-header-tools-group > .desktop-header-tool, .lyrics-header-tools-group > .autoscroll-toolbar-cluster')].filter(node => node.id !== 'btnToggleScoreView'), { id: 'songReadingOptions', owner:this, label: 'Lectura, cejilla y acciones', parent: optionsPanel, before: optionsPanel?.querySelector('.song-advanced-options') });
+    const karaokeExtras = this.container.querySelector('#karaokeSecondaryDrawer .karaoke-drawer-content');
+    if (karaokeExtras) {
+      const hud = this.container.querySelector('.sing-floating-hud');
+      const micRow = this.container.querySelector('.karaoke-mic-row');
+      const play = hud?.querySelector('#btnSingPlayPause');
+      if (play && micRow) micRow.prepend(play);
+      const finish = hud?.querySelector('#btnFinishVocalSession');
+      if (finish && micRow) { finish.textContent = 'Terminar'; micRow.append(finish); }
+      const micStatus = micRow?.querySelector('#karaokeMicStatus'); if (micStatus) micRow.append(micStatus);
+      if (hud) { [...hud.children].forEach(node => karaokeExtras.append(node)); hud.remove(); }
+      [this.container.querySelector('#btnToggleVocalComfort'), this.container.querySelector('.ribbon-right'), this.container.querySelector('#karaokeTimingNote'), this.container.querySelector('#publicReferenceOptions')].filter(Boolean).forEach(node => karaokeExtras.append(node));
+    }
+    const stage = this.container.querySelector('#singStageWorkspace');
+    const companion = stage?.querySelector('.karaoke-audio-companion-panel');
+    const ribbon = stage?.querySelector('.singer-vocal-ribbon');
+    // Keep the live note visible, then audio setup and transport, before the large pitch graph.
+    if (companion && ribbon) stage.insertBefore(ribbon, companion);
+    const quickActions = companion?.querySelector('.karaoke-quick-actions');
+    if(quickActions) companion.querySelector('.karaoke-primary-bar')?.prepend(quickActions);
     this.updateFontSizeInDOM();
     this.bindEvents();
 
@@ -1369,7 +1498,8 @@ export class LyricsChordsView extends Component {
         }
         {
           this.pitchLane = new PitchLaneCanvas(canvasEl, {
-            clock: () => this.getKaraokeClockMs()
+            clock: () => this.getKaraokeClockMs(),
+            rate: () => this.backing.playbackRate
           });
           if (this.currentSong?.lyricsChords || this.currentSong?.title) {
             const songTempo = Number(this.currentSong?.tempo) || 72;
@@ -1405,17 +1535,16 @@ export class LyricsChordsView extends Component {
       }
     }
     this.updateKaraokeState();
+    this.updatePublicReferenceOptions();
+    this.syncOnlineKaraokeStage();
+    const onlineFrame=this.container.querySelector('#onlineKaraokeIframe');
+    if(onlineFrame) this.onlinePlayer=new OnlineKaraokePlayer(onlineFrame,this.container.querySelector('#onlineKaraokeStatus'));
     if (this.isYouTubeCompanionOpen) {
       this._dialogFocusCleanup = trapModalFocus(this.container.querySelector('#youtubeCompanion'), {
         onClose: () => this.closeYouTubePanel(), returnFocus: () => this.container.querySelector('#btnToggleYouTube'),
       });
     }
-    if (this.isOptionsMenuOpen) {
-      this._dialogFocusCleanup?.(false);
-      this._dialogFocusCleanup = trapModalFocus(this.container.querySelector('#lyricsToolsBottomSheetOverlay [role="dialog"]'), {
-        onClose: () => this.closeOptionsMenu(), returnFocus: () => this.container.querySelector('#btnMoreOptions'),
-      });
-    }
+    if (this.isOptionsMenuOpen) this.container.querySelector('#btnCloseToolsSheet')?.focus({ preventScroll: true });
   }
 
   closeOptionsMenu() {
@@ -1425,6 +1554,13 @@ export class LyricsChordsView extends Component {
   }
 
   bindEvents() {
+    this.container.querySelectorAll('[data-practice-audio]').forEach(button => button.addEventListener('click',async () => {
+      const previousSong=this.currentSong, position=this.backing.currentTimeMs; this.pauseSinging(); button.disabled=true;
+      try { const song=await loadReadyKaraoke({instrumental:button.dataset.practiceAudio==='instrumental',packId:previousSong.practicePackId}); if(this.currentSong!==previousSong)return; song._practiceRecovery.karaokePositionMs=position;state.set('activeSong',song);events.emit('ui:loadLyricsSong',song); }
+      catch(error){toast.show(error.message,'error',2500);}finally{if(button.isConnected)button.disabled=false;}
+    }));
+    this.container.querySelector('#karaokeSecondaryDrawer')?.addEventListener('toggle', event => { this._karaokeAdvancedOpen = event.target.open; });
+    this.container.querySelector('#lyricsToolsBottomSheetOverlay')?.addEventListener('keydown', event => { if (event.key === 'Escape') { event.preventDefault(); this.closeOptionsMenu(); } });
     this.container.querySelector('#btnAssociateLegacyBacking')?.addEventListener('click', async () => {
       if (await this.backing.useLegacyRecording()) {
         this.pitchLane?.setTargetLyrics(this.currentSong.lyricsChords, this.currentSong.tempo, this.currentSong);
@@ -1651,6 +1787,8 @@ export class LyricsChordsView extends Component {
       this.render();
     });
 
+    this.container.querySelector('#btnOpenOnlineKaraoke')?.addEventListener('click',()=>this.setOnlineKaraoke(true));
+    this.container.querySelector('#btnCloseOnlineKaraoke')?.addEventListener('click',()=>this.setOnlineKaraoke(false));
     this.container.querySelector('#btnImportKaraokeBacking')?.addEventListener('click', () => {
       this.container.querySelector('#karaokeBackingFile')?.click();
     });
@@ -1659,6 +1797,7 @@ export class LyricsChordsView extends Component {
       const file = event.target.files?.[0];
       if (!file) return;
       const ok = await this.backing.importFile(file);
+      if(ok && this.onlineKaraokeOpen) this.setOnlineKaraoke(false);
       event.target.value = '';
       this.updateKaraokeState();
       toast.show(ok ? 'Base guardada para esta canción' : (this.backing.error || 'No se pudo importar la base'), ok ? 'success' : 'warning', 1800);
@@ -1703,6 +1842,24 @@ export class LyricsChordsView extends Component {
       toast.show(`Tempo de práctica: ${Math.round(this.backing.tempoBpm)} BPM`, 'info', 900);
     });
 
+    this.container.querySelector('#btnImportVocalReference')?.addEventListener('click', () => this.container.querySelector('#vocalReferenceFile')?.click());
+    this.container.querySelector('#vocalReferenceFile')?.addEventListener('change', async event => {
+      const file = event.currentTarget.files?.[0]; event.currentTarget.value = '';
+      if (file && await this.backing.importReference(file)) {
+        vocalCoachEngine.resetSessionStats();
+        this.pitchLane?.setTargetLyrics(this.currentSong.lyricsChords, this.currentSong.tempo, this.currentSong);
+        this.pauseSinging(); this.updateKaraokeState(); this.updatePublicReferenceOptions();
+        toast.show('Melodía de referencia guardada para esta versión.', 'success', 2200);
+      }
+    });
+    this.container.querySelector('#karaokeTolerance')?.addEventListener('change', event => {
+      const value = Number(event.currentTarget.value);
+      if ([15, 25, 50].includes(value)) { vocalCoachEngine.centsTolerance = value; vocalCoachEngine.resetSessionStats(); }
+    });
+    this.container.querySelector('#karaokeMicLatency')?.addEventListener('change', event => {
+      vocalCoachEngine.inputLatencyMs = Math.max(0, Math.min(500, Number(event.currentTarget.value) || 0));
+      event.currentTarget.value = vocalCoachEngine.inputLatencyMs; vocalCoachEngine.resetSessionStats();
+    });
     this.container.querySelector('#btnImportKaraokeLyrics')?.addEventListener('click', () => this.container.querySelector('#karaokeLyricsFile')?.click());
     this.container.querySelector('#karaokeLyricsFile')?.addEventListener('change', async event => {
       const file = event.currentTarget.files?.[0];
@@ -2055,13 +2212,13 @@ export class LyricsChordsView extends Component {
     this.container.querySelector('#btnOpenTranscriberQuick')?.addEventListener('click', () => {
       this.isOptionsMenuOpen = false;
       this.render();
-      events.emit('transcriber:open');
+      events.emit('ui:openTool', 'transcriber');
     });
 
     this.container.querySelector('#btnOpenAnalyticsQuick')?.addEventListener('click', () => {
       this.isOptionsMenuOpen = false;
       this.render();
-      events.emit('analytics:open');
+      events.emit('ui:openTool', 'analytics');
     });
 
     this.container.querySelector('#btnOpenTunerQuick')?.addEventListener('click', () => {
@@ -2110,7 +2267,7 @@ export class LyricsChordsView extends Component {
   getSingModeVideoId() {
     if (!this.currentSong) return null;
     if (this.karaokeTrackMode === 'instrumental') {
-      return this.currentSong.karaokeVideoId || this.currentSong.backingTrackVideoId || this.currentSong.youtubeVideoId || null;
+      return this.currentSong.karaokeVideoId || this.currentSong.backingTrackVideoId || null;
     }
     return this.currentSong.youtubeVideoId || null;
   }
@@ -2122,7 +2279,8 @@ export class LyricsChordsView extends Component {
           songTitle: this.currentSong?.title || 'Canción Actual',
           artist: this.currentSong?.artist || '',
           sessionStats: vocalCoachEngine.sessionStats,
-          hasMelodyReference: Boolean(this.pitchLane?.targetBlocks.length),
+          hasMelodyReference: !this.onlineKaraokeOpen && Boolean(this.pitchLane?.targetBlocks.some(block => !block.isInterlude)),
+          centsTolerance: vocalCoachEngine.centsTolerance,
           onClose: () => {
             this._scorecardShown = true;
             if (options.onClose) options.onClose();
@@ -2154,7 +2312,7 @@ export class LyricsChordsView extends Component {
           <p class="eyebrow">Ritmo de práctica</p>
           <h2 id="songMetroTitle">Metrónomo de canción</h2>
           <div class="song-metro-display"><span id="songMetroTempoName">${this.songMetronome.getTempoName()}</span><strong id="songMetroBpmDisplay">${this.songMetronome.bpm}</strong><span>BPM</span></div>
-          <div class="song-metro-stepper"><button type="button" id="songMetroMinus">−</button><input id="songMetroBpmRange" type="range" min="30" max="280" value="${this.songMetronome.bpm}" aria-label="Tempo del metrónomo"><button type="button" id="songMetroPlus">+</button></div>
+          <div class="song-metro-stepper"><button type="button" id="songMetroMinus" aria-label="Reducir 1 BPM">−</button><input id="songMetroBpmRange" type="range" min="30" max="280" value="${this.songMetronome.bpm}" aria-label="Tempo del metrónomo"><button type="button" id="songMetroPlus" aria-label="Aumentar 1 BPM">+</button></div><button type="button" id="songMetroTap">Tap tempo</button>
           <div class="song-metro-options" role="group" aria-label="Compás">
             ${['2/4','3/4','4/4','6/8','12/8'].map(ts => `<button type="button" class="metro-option ${this.songMetronome.timeSignature === ts ? 'active' : ''}" data-metro-signature="${ts}">${ts}</button>`).join('')}
           </div>
@@ -2164,6 +2322,7 @@ export class LyricsChordsView extends Component {
       this.container.appendChild(overlay);
       overlay.addEventListener('click', (event) => { if (event.target === overlay) this.closeSongMetronomePanel(); });
       overlay.querySelector('#btnCloseSongMetronome')?.addEventListener('click', () => this.closeSongMetronomePanel());
+      overlay.querySelector('#songMetroTap')?.addEventListener('click', () => this.songMetronome.handleTapTempo());
       overlay.querySelector('#songMetroMinus')?.addEventListener('click', () => this.songMetronome.stepBpm(-1));
       overlay.querySelector('#songMetroPlus')?.addEventListener('click', () => this.songMetronome.stepBpm(1));
       overlay.querySelector('#songMetroBpmRange')?.addEventListener('input', (event) => this.songMetronome.setBpm(event.target.value));

@@ -1,0 +1,462 @@
+{
+  "schemaVersion": 1,
+  "revision": "c9246c799050acec96a03183df4b85493d283d51",
+  "packs": [
+    {
+      "id": "shearer-69",
+      "title": "69",
+      "artist": "Shearer",
+      "license": "CC-BY-NC-SA-2.0",
+      "sourceUrl": "https://github.com/UltraStar-Deluxe/songs/tree/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Shearer%20-%2069",
+      "notes": 206,
+      "chart": "reference.txt",
+      "instrumentalChart": "instrumental-reference.txt",
+      "files": {
+        "original": "original.mp3",
+        "instrumental": "instrumental.ogg"
+      }
+    },
+    {
+      "id": "shearer-can-t-stop-it",
+      "title": "Can't stop it",
+      "artist": "Shearer",
+      "license": "CC-BY-NC-SA-2.0",
+      "sourceUrl": "https://github.com/UltraStar-Deluxe/songs/tree/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Shearer%20-%20Can't%20stop%20it",
+      "notes": 243,
+      "chart": "reference.txt",
+      "instrumentalChart": "instrumental-reference.txt",
+      "files": {
+        "original": "original.mp3",
+        "instrumental": "instrumental.mp3"
+      }
+    },
+    {
+      "id": "shearer-man-song",
+      "title": "Man Song",
+      "artist": "Shearer",
+      "license": "CC-BY-NC-SA-2.0",
+      "sourceUrl": "https://github.com/UltraStar-Deluxe/songs/tree/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Shearer%20-%20Man%20Song",
+      "notes": 255,
+      "chart": "reference.txt",
+      "instrumentalChart": "instrumental-reference.txt",
+      "files": {
+        "original": "original.mp3",
+        "instrumental": "instrumental.ogg"
+      }
+    },
+    {
+      "id": "shearer-stay-with-me",
+      "title": "Stay with me",
+      "artist": "Shearer",
+      "license": "CC-BY-NC-SA-2.0",
+      "sourceUrl": "https://github.com/UltraStar-Deluxe/songs/tree/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Shearer%20-%20Stay%20with%20me",
+      "notes": 373,
+      "chart": "reference.txt",
+      "instrumentalChart": "instrumental-reference.txt",
+      "files": {
+        "original": "original.ogg",
+        "instrumental": "instrumental.ogg"
+      }
+    },
+    {
+      "id": "silver-note-chasing-marks",
+      "title": "Chasing Marks",
+      "artist": "Silver Note",
+      "license": "CC-BY-4.0",
+      "sourceUrl": "https://github.com/UltraStar-Deluxe/songs/tree/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Silver%20Note%20-%20Chasing%20Marks",
+      "notes": 241,
+      "chart": "reference.txt",
+      "instrumentalChart": "instrumental-reference.txt",
+      "files": {
+        "original": "original.ogg",
+        "instrumental": "instrumental.mp3"
+      }
+    },
+    {
+      "id": "silver-note-sonic-rainboom-vip",
+      "title": "Sonic Rainboom VIP",
+      "artist": "Silver Note",
+      "license": "CC-BY-4.0",
+      "sourceUrl": "https://github.com/UltraStar-Deluxe/songs/tree/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Silver%20Note%20-%20Sonic%20Rainboom%20VIP",
+      "notes": 274,
+      "chart": "reference.txt",
+      "instrumentalChart": "instrumental-reference.txt",
+      "files": {
+        "original": "original.ogg",
+        "instrumental": "instrumental.mp3"
+      }
+    },
+    {
+      "id": "fairy-bot-orchestra-heaven-can-t-wait",
+      "title": "Heaven can't wait",
+      "artist": "Fairy Bot Orchestra",
+      "license": "Licencias incluidas en el paquete",
+      "sourceUrl": "https://github.com/UltraStar-Deluxe/songs/tree/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Fairy%20Bot%20Orchestra%20-%20Heaven%20can't%20wait",
+      "notes": 218,
+      "chart": "reference.txt",
+      "files": {
+        "original": "original.ogg"
+      }
+    },
+    {
+      "id": "jonathan-coulton-a-talk-with-george",
+      "title": "A Talk with George",
+      "artist": "Jonathan Coulton",
+      "license": "Licencias incluidas en el paquete",
+      "sourceUrl": "https://github.com/UltraStar-Deluxe/songs/tree/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Jonathan%20Coulton%20-%20A%20Talk%20with%20George",
+      "notes": 376,
+      "chart": "reference.txt",
+      "files": {
+        "original": "original.mp3"
+      }
+    },
+    {
+      "id": "jonathan-coulton-better",
+      "title": "Better",
+      "artist": "Jonathan Coulton",
+      "license": "Licencias incluidas en el paquete",
+      "sourceUrl": "https://github.com/UltraStar-Deluxe/songs/tree/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Jonathan%20Coulton%20-%20Better",
+      "notes": 408,
+      "chart": "reference.txt",
+      "files": {
+        "original": "original.mp3"
+      }
+    },
+    {
+      "id": "jonathan-coulton-big-bad-world-one",
+      "title": "Big Bad World One",
+      "artist": "Jonathan Coulton",
+      "license": "Licencias incluidas en el paquete",
+      "sourceUrl": "https://github.com/UltraStar-Deluxe/songs/tree/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Jonathan%20Coulton%20-%20Big%20Bad%20World%20One",
+      "notes": 340,
+      "chart": "reference.txt",
+      "files": {
+        "original": "original.mp3"
+      }
+    },
+    {
+      "id": "jonathan-coulton-chiron-beta-prime",
+      "title": "Chiron Beta Prime",
+      "artist": "Jonathan Coulton",
+      "license": "Licencias incluidas en el paquete",
+      "sourceUrl": "https://github.com/UltraStar-Deluxe/songs/tree/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Jonathan%20Coulton%20-%20Chiron%20Beta%20Prime",
+      "notes": 385,
+      "chart": "reference.txt",
+      "files": {
+        "original": "original.mp3"
+      }
+    },
+    {
+      "id": "jonathan-coulton-code-monkey",
+      "title": "Code Monkey",
+      "artist": "Jonathan Coulton",
+      "license": "Licencias incluidas en el paquete",
+      "sourceUrl": "https://github.com/UltraStar-Deluxe/songs/tree/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Jonathan%20Coulton%20-%20Code%20Monkey",
+      "notes": 436,
+      "chart": "reference.txt",
+      "files": {
+        "original": "original.mp3"
+      }
+    },
+    {
+      "id": "jonathan-coulton-creepy-doll",
+      "title": "Creepy Doll",
+      "artist": "Jonathan Coulton",
+      "license": "Licencias incluidas en el paquete",
+      "sourceUrl": "https://github.com/UltraStar-Deluxe/songs/tree/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Jonathan%20Coulton%20-%20Creepy%20Doll",
+      "notes": 508,
+      "chart": "reference.txt",
+      "files": {
+        "original": "original.mp3"
+      }
+    },
+    {
+      "id": "jonathan-coulton-dance-soterios-johnson-dance",
+      "title": "Dance, Soterios Johnson, Dance",
+      "artist": "Jonathan Coulton",
+      "license": "Licencias incluidas en el paquete",
+      "sourceUrl": "https://github.com/UltraStar-Deluxe/songs/tree/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Jonathan%20Coulton%20-%20Dance%2C%20Soterios%20Johnson%2C%20Dance",
+      "notes": 528,
+      "chart": "reference.txt",
+      "files": {
+        "original": "original.mp3"
+      }
+    },
+    {
+      "id": "jonathan-coulton-first-of-may",
+      "title": "First of May",
+      "artist": "Jonathan Coulton",
+      "license": "Licencias incluidas en el paquete",
+      "sourceUrl": "https://github.com/UltraStar-Deluxe/songs/tree/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Jonathan%20Coulton%20-%20First%20of%20May",
+      "notes": 587,
+      "chart": "reference.txt",
+      "files": {
+        "original": "original.mp3"
+      }
+    },
+    {
+      "id": "jonathan-coulton-flickr",
+      "title": "Flickr",
+      "artist": "Jonathan Coulton",
+      "license": "Licencias incluidas en el paquete",
+      "sourceUrl": "https://github.com/UltraStar-Deluxe/songs/tree/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Jonathan%20Coulton%20-%20Flickr",
+      "notes": 276,
+      "chart": "reference.txt",
+      "files": {
+        "original": "original.mp3"
+      }
+    },
+    {
+      "id": "jonathan-coulton-furry-old-lobster",
+      "title": "Furry Old Lobster",
+      "artist": "Jonathan Coulton",
+      "license": "Licencias incluidas en el paquete",
+      "sourceUrl": "https://github.com/UltraStar-Deluxe/songs/tree/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Jonathan%20Coulton%20-%20Furry%20Old%20Lobster",
+      "notes": 255,
+      "chart": "reference.txt",
+      "files": {
+        "original": "original.mp3"
+      }
+    },
+    {
+      "id": "jonathan-coulton-i-crush-everything",
+      "title": "I Crush Everything",
+      "artist": "Jonathan Coulton",
+      "license": "Licencias incluidas en el paquete",
+      "sourceUrl": "https://github.com/UltraStar-Deluxe/songs/tree/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Jonathan%20Coulton%20-%20I%20Crush%20Everything",
+      "notes": 394,
+      "chart": "reference.txt",
+      "files": {
+        "original": "original.mp3"
+      }
+    },
+    {
+      "id": "jonathan-coulton-i-feel-fantastic",
+      "title": "I Feel Fantastic",
+      "artist": "Jonathan Coulton",
+      "license": "Licencias incluidas en el paquete",
+      "sourceUrl": "https://github.com/UltraStar-Deluxe/songs/tree/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Jonathan%20Coulton%20-%20I%20Feel%20Fantastic",
+      "notes": 669,
+      "chart": "reference.txt",
+      "files": {
+        "original": "original.mp3"
+      }
+    },
+    {
+      "id": "jonathan-coulton-i-m-your-moon",
+      "title": "I'm Your Moon",
+      "artist": "Jonathan Coulton",
+      "license": "Licencias incluidas en el paquete",
+      "sourceUrl": "https://github.com/UltraStar-Deluxe/songs/tree/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Jonathan%20Coulton%20-%20I'm%20Your%20Moon",
+      "notes": 289,
+      "chart": "reference.txt",
+      "files": {
+        "original": "original.mp3"
+      }
+    },
+    {
+      "id": "jonathan-coulton-ikea",
+      "title": "Ikea",
+      "artist": "Jonathan Coulton",
+      "license": "Licencias incluidas en el paquete",
+      "sourceUrl": "https://github.com/UltraStar-Deluxe/songs/tree/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Jonathan%20Coulton%20-%20Ikea",
+      "notes": 390,
+      "chart": "reference.txt",
+      "files": {
+        "original": "original.mp3"
+      }
+    },
+    {
+      "id": "jonathan-coulton-monkey-shines",
+      "title": "Monkey Shines",
+      "artist": "Jonathan Coulton",
+      "license": "Licencias incluidas en el paquete",
+      "sourceUrl": "https://github.com/UltraStar-Deluxe/songs/tree/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Jonathan%20Coulton%20-%20Monkey%20Shines",
+      "notes": 101,
+      "chart": "reference.txt",
+      "files": {
+        "original": "original.mp3"
+      }
+    },
+    {
+      "id": "jonathan-coulton-mr-fancy-pants",
+      "title": "Mr. Fancy Pants",
+      "artist": "Jonathan Coulton",
+      "license": "Licencias incluidas en el paquete",
+      "sourceUrl": "https://github.com/UltraStar-Deluxe/songs/tree/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Jonathan%20Coulton%20-%20Mr.%20Fancy%20Pants",
+      "notes": 256,
+      "chart": "reference.txt",
+      "files": {
+        "original": "original.mp3"
+      }
+    },
+    {
+      "id": "jonathan-coulton-my-beige-bear",
+      "title": "My Beige Bear",
+      "artist": "Jonathan Coulton",
+      "license": "Licencias incluidas en el paquete",
+      "sourceUrl": "https://github.com/UltraStar-Deluxe/songs/tree/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Jonathan%20Coulton%20-%20My%20Beige%20Bear",
+      "notes": 309,
+      "chart": "reference.txt",
+      "files": {
+        "original": "original.mp3"
+      }
+    },
+    {
+      "id": "jonathan-coulton-not-about-you",
+      "title": "Not About You",
+      "artist": "Jonathan Coulton",
+      "license": "Licencias incluidas en el paquete",
+      "sourceUrl": "https://github.com/UltraStar-Deluxe/songs/tree/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Jonathan%20Coulton%20-%20Not%20About%20You",
+      "notes": 320,
+      "chart": "reference.txt",
+      "files": {
+        "original": "original.mp3"
+      }
+    },
+    {
+      "id": "jonathan-coulton-re-your-brains",
+      "title": "Re: Your Brains",
+      "artist": "Jonathan Coulton",
+      "license": "Licencias incluidas en el paquete",
+      "sourceUrl": "https://github.com/UltraStar-Deluxe/songs/tree/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Jonathan%20Coulton%20-%20Re-%20Your%20Brains",
+      "notes": 525,
+      "chart": "reference.txt",
+      "files": {
+        "original": "original.mp3"
+      }
+    },
+    {
+      "id": "jonathan-coulton-shop-vac",
+      "title": "Shop Vac",
+      "artist": "Jonathan Coulton",
+      "license": "Licencias incluidas en el paquete",
+      "sourceUrl": "https://github.com/UltraStar-Deluxe/songs/tree/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Jonathan%20Coulton%20-%20Shop%20Vac",
+      "notes": 509,
+      "chart": "reference.txt",
+      "files": {
+        "original": "original.mp3"
+      }
+    },
+    {
+      "id": "jonathan-coulton-skullcrusher-mountain",
+      "title": "Skullcrusher Mountain",
+      "artist": "Jonathan Coulton",
+      "license": "Licencias incluidas en el paquete",
+      "sourceUrl": "https://github.com/UltraStar-Deluxe/songs/tree/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Jonathan%20Coulton%20-%20Skullcrusher%20Mountain",
+      "notes": 570,
+      "chart": "reference.txt",
+      "files": {
+        "original": "original.mp3"
+      }
+    },
+    {
+      "id": "jonathan-coulton-that-spells-dna",
+      "title": "That Spells DNA",
+      "artist": "Jonathan Coulton",
+      "license": "Licencias incluidas en el paquete",
+      "sourceUrl": "https://github.com/UltraStar-Deluxe/songs/tree/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Jonathan%20Coulton%20-%20That%20Spells%20DNA",
+      "notes": 500,
+      "chart": "reference.txt",
+      "files": {
+        "original": "original.mp3"
+      }
+    },
+    {
+      "id": "jonathan-coulton-the-future-soon",
+      "title": "The Future Soon",
+      "artist": "Jonathan Coulton",
+      "license": "Licencias incluidas en el paquete",
+      "sourceUrl": "https://github.com/UltraStar-Deluxe/songs/tree/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Jonathan%20Coulton%20-%20The%20Future%20Soon",
+      "notes": 519,
+      "chart": "reference.txt",
+      "files": {
+        "original": "original.mp3"
+      }
+    },
+    {
+      "id": "jonathan-coulton-when-you-go",
+      "title": "When You Go",
+      "artist": "Jonathan Coulton",
+      "license": "Licencias incluidas en el paquete",
+      "sourceUrl": "https://github.com/UltraStar-Deluxe/songs/tree/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Jonathan%20Coulton%20-%20When%20You%20Go",
+      "notes": 261,
+      "chart": "reference.txt",
+      "files": {
+        "original": "original.mp3"
+      }
+    },
+    {
+      "id": "joshua-morin-on-the-run",
+      "title": "On the run",
+      "artist": "Joshua Morin",
+      "license": "Licencias incluidas en el paquete",
+      "sourceUrl": "https://github.com/UltraStar-Deluxe/songs/tree/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Joshua%20Morin%20-%20On%20the%20run",
+      "notes": 333,
+      "chart": "reference.txt",
+      "files": {
+        "original": "original.ogg"
+      }
+    },
+    {
+      "id": "shearer-consequence-of-dawn",
+      "title": "Consequence Of Dawn",
+      "artist": "Shearer",
+      "license": "Licencias incluidas en el paquete",
+      "sourceUrl": "https://github.com/UltraStar-Deluxe/songs/tree/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Shearer%20-%20Consequence%20of%20Dawn",
+      "notes": 193,
+      "chart": "reference.txt",
+      "files": {
+        "original": "original.mp3"
+      }
+    },
+    {
+      "id": "shearer-in-my-hand",
+      "title": "In My Hand",
+      "artist": "Shearer",
+      "license": "Licencias incluidas en el paquete",
+      "sourceUrl": "https://github.com/UltraStar-Deluxe/songs/tree/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Shearer%20-%20In%20My%20Hand",
+      "notes": 371,
+      "chart": "reference.txt",
+      "files": {
+        "original": "original.mp3"
+      }
+    },
+    {
+      "id": "steven-dunston-northern-star",
+      "title": "Northern Star",
+      "artist": "Steven Dunston",
+      "license": "Licencias incluidas en el paquete",
+      "sourceUrl": "https://github.com/UltraStar-Deluxe/songs/tree/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Steven%20Dunston%20-%20Northern%20Star",
+      "notes": 238,
+      "chart": "reference.txt",
+      "files": {
+        "original": "original.ogg"
+      }
+    },
+    {
+      "id": "systemabsturz-verdachtig",
+      "title": "Verdächtig",
+      "artist": "Systemabsturz",
+      "license": "Licencias incluidas en el paquete",
+      "sourceUrl": "https://github.com/UltraStar-Deluxe/songs/tree/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Systemabsturz%20-%20Verd%C3%A4chtig",
+      "notes": 564,
+      "chart": "reference.txt",
+      "files": {
+        "original": "original.ogg"
+      }
+    },
+    {
+      "id": "the-wasteland-wailers-dare-master",
+      "title": "Dare Master",
+      "artist": "Wasteland Wailers",
+      "license": "Licencias incluidas en el paquete",
+      "sourceUrl": "https://github.com/UltraStar-Deluxe/songs/tree/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/The%20Wasteland%20Wailers%20-%20Dare%20Master",
+      "notes": 555,
+      "chart": "reference.txt",
+      "files": {
+        "original": "original.mp3"
+      }
+    }
+  ]
+}

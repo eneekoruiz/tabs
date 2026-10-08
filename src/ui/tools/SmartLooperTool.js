@@ -9,7 +9,7 @@ import { events } from '../../core/EventBus.js';
 import { state } from '../../core/State.js';
 import { smartLooperEngine } from '../../audio/SmartLooperEngine.js';
 import { toast } from '../Toast.js';
-import { audioEngine } from '../../core/AudioEngine.js';
+import { audioEngine } from '../../core/AudioEngineV2.js';
 
 export class SmartLooperTool extends Component {
   constructor() {

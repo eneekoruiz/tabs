@@ -6,7 +6,7 @@
 
 import { escapeHTML } from '../../utils/sanitize.js';
 
-const CHORD_PATTERN = '[A-G][#b]?(?:(?:maj|min|dim|aug|sus|add|m|M|\\d|\\+|\\(|\\)|°)*)(?:/[A-G][#b]?)?';
+const CHORD_PATTERN = '[A-G][#b]?(?:(?:maj|min|dim|aug|sus|add|m|M|[#b]?\\d|\\+|\\(|\\)|°)*)(?:/[A-G][#b]?)?';
 const NOTES_SHARP = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
 const NOTES_FLAT = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
 

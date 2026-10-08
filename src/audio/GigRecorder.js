@@ -14,6 +14,7 @@ export class GigRecorder {
     this.isRecording = false;
     this.isVideoRecording = false;
     this.isPreparing = false;
+    this.isFinalizing = false;
     this.startTime = 0;
     this.timerInterval = null;
     this.currentDuration = 0;
@@ -28,7 +29,7 @@ export class GigRecorder {
   }
 
   async startRecording(songMeta = {}, withCamera = false) {
-    if (this.isRecording || this.isPreparing) return false;
+    if (this.isRecording || this.isPreparing || this.isFinalizing) return false;
 
     const requestId = ++this.requestId;
     this.isPreparing = true;
@@ -76,7 +77,7 @@ export class GigRecorder {
         : new MediaRecorder(stream);
 
       this.mediaRecorder.ondataavailable = (event) => {
-        if (event.data?.size > 0) this.audioChunks.push(event.data);
+        if (requestId === this.requestId && event.data?.size > 0) this.audioChunks.push(event.data);
       };
 
       this.mediaRecorder.onerror = (event) => {
@@ -84,7 +85,9 @@ export class GigRecorder {
         this.handleRuntimeError(error, songMeta);
       };
 
-      this.mediaRecorder.onstop = () => this.finalizeRecording(songMeta);
+      this.mediaRecorder.onstop = () => {
+        if (requestId === this.requestId) this.finalizeRecording(songMeta);
+      };
       this.mediaRecorder.start(250);
       this.isPreparing = false;
       this.isRecording = true;
@@ -135,13 +138,20 @@ export class GigRecorder {
       Math.floor((Date.now() - this.startTime) / 1000)
     );
     this.isRecording = false;
+    this.isFinalizing = true;
+    this.finalizeTimer = setTimeout(() => this.handleRuntimeError(new Error('La grabación no respondió. Graba una nueva toma.')), 10000);
     events.emit('recorder:stopping', {
       duration: this.currentDuration,
       isVideo: this.isVideoRecording
     });
     this.clearTimer();
 
-    if (this.mediaRecorder.state !== 'inactive') this.mediaRecorder.stop();
+    try {
+      if (this.mediaRecorder.state !== 'inactive') this.mediaRecorder.stop();
+    } catch (error) {
+      this.handleRuntimeError(error);
+      return false;
+    }
     this.cleanupStream();
     return true;
   }
@@ -159,6 +169,7 @@ export class GigRecorder {
   }
 
   finalizeRecording(songMeta) {
+    clearTimeout(this.finalizeTimer);
     const isVideo = this.isVideoRecording;
     this.isPreparing = false;
     this.isRecording = false;
@@ -167,7 +178,12 @@ export class GigRecorder {
     const type = this.mediaRecorder?.mimeType
       || this.recordingMimeType
       || (isVideo ? 'video/webm' : 'audio/webm');
-    this.latestRecordingBlob = new Blob(this.audioChunks, { type });
+    const recording = new Blob(this.audioChunks, { type });
+    if (!recording.size) {
+      this.handleRuntimeError(new Error('La toma no contiene audio. Graba una nueva toma.'), songMeta, isVideo);
+      return;
+    }
+    this.latestRecordingBlob = recording;
     if (this.latestAudioUrl) URL.revokeObjectURL(this.latestAudioUrl);
     this.latestAudioUrl = URL.createObjectURL(this.latestRecordingBlob);
     this.latestRecordingIsVideo = isVideo;
@@ -181,6 +197,7 @@ export class GigRecorder {
     };
     this.mediaRecorder = null;
     this.audioChunks = [];
+    this.isFinalizing = false;
     events.emit('recorder:finished', result);
     this.onComplete?.(result.blob, result.url, result.isVideo);
   }
@@ -190,6 +207,8 @@ export class GigRecorder {
     this.requestId += 1;
     this.isPreparing = false;
     this.isRecording = false;
+    this.isFinalizing = false;
+    clearTimeout(this.finalizeTimer);
     this.clearTimer();
     this.cleanupStream();
     if (this.mediaRecorder && this.mediaRecorder.state !== 'inactive') {

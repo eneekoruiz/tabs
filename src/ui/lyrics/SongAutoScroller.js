@@ -17,6 +17,12 @@ export class SongAutoScroller {
     this.hasAnnouncedEnd = false;
     this.onStateChange = options.onStateChange || (() => {});
     this.onEnd = options.onEnd || (() => {});
+    this.manualEvents = ['wheel', 'touchstart', 'focusin'];
+    this.onManualInteraction = event => {
+      // Speed and start/stop controls manage their own scrolling state.
+      if (event.target?.closest?.('[id*="AutoScroll"], [id*="autoscroll"], [id*="ScrollSpeed"]')) return;
+      this.stop('manual');
+    };
   }
 
   setSpeed(percent) {
@@ -37,6 +43,7 @@ export class SongAutoScroller {
     if (this.isRunning) return;
 
     this.isRunning = true;
+    this.manualEvents.forEach(type => document.addEventListener(type, this.onManualInteraction, { passive: true }));
     this.lastTimestamp = performance.now();
     this.endCandidateFrames = 0;
     this.hasAnnouncedEnd = false;
@@ -66,6 +73,7 @@ export class SongAutoScroller {
   stop(reason = 'explicit') {
     const wasRunning = this.isRunning;
     this.isRunning = false;
+    this.manualEvents.forEach(type => document.removeEventListener(type, this.onManualInteraction));
     this.lastTimestamp = null;
     this.endCandidateFrames = 0;
 

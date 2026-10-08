@@ -1,3 +1,4 @@
+import { useGeneratedGuide } from './helpers/journeys.js';
 import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 
@@ -7,6 +8,7 @@ test.use({ serviceWorkers: 'block' });
 test('catalogue shows evidence limits, filters actual chords and exports pending review', async ({ page }) => {
   await page.goto('/');
   await page.locator('.song-card').first().waitFor();
+  await page.locator('#exploreAdvanced > summary').click();
   await page.locator('.catalog-audit-panel summary').click();
   await expect(page.locator('#catalogQualitySummary')).toContainText('Ninguna está certificada');
   const download = page.waitForEvent('download');
@@ -44,6 +46,8 @@ test('opening plain lyrics does not manufacture chords, score, BPM or extra save
   expect(stored.data).toBeFalsy();
   expect(stored.versionId).toBe('repository-sheet');
   await page.locator('#btnPlaySingToggle').click();
+  await expect(page.locator('#btnSingPlayPause')).toBeDisabled();
+  await useGeneratedGuide(page);
   await expect(page.locator('#karaokeSourceNote')).toContainText('sin acordes disponibles');
 });
 

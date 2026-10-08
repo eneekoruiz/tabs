@@ -1,10 +1,11 @@
 /**
  * @file ChordAudioSynthesizer.js
- * @description Síntesis acústica de acordes Web Audio de alta fidelidad con modelado físico Karplus-Strong y resonancia.
+ * @description Síntesis de acordes Web Audio con osciladores, transitorios y reverberación.
  */
 
-import { GUITAR_CHORDS, UKULELE_CHORDS, PIANO_VOICINGS, NOTE_FREQ } from './ChordDefinitions.js';
+import { NOTE_FREQ } from './ChordDefinitions.js';
 import { ChordSvgRenderer } from './ChordSvgRenderer.js';
+import { notePitchClass } from './ChordTheory.js';
 
 export class ChordAudioSynthesizer {
   static audition(ctx, chordName, instrument = 'guitar', voicingIndex = 0) {
@@ -28,33 +29,12 @@ export class ChordAudioSynthesizer {
     let notes = [];
 
     if (isPiano) {
-      const cleanName = ChordSvgRenderer.simplifyChord(chordName);
-      let voicing = PIANO_VOICINGS[chordName] || PIANO_VOICINGS[cleanName]
-        || [{ key: 'C', oct: 4 }, { key: 'E', oct: 4 }, { key: 'G', oct: 4 }];
-
-      // Inversiones armónicas en teclado
-      if (voicingIndex === 1 && voicing.length >= 3) {
-        // 1ª inversión: la nota más baja sube 1 octava
-        voicing = [voicing[1], voicing[2], { key: voicing[0].key, oct: voicing[0].oct + 1 }];
-      } else if (voicingIndex === 2 && voicing.length >= 3) {
-        // 2ª inversión: las 2 notas más bajas suben 1 octava
-        voicing = [voicing[2], { key: voicing[0].key, oct: voicing[0].oct + 1 }, { key: voicing[1].key, oct: voicing[1].oct + 1 }];
-      }
-
-      // Fundamental grave de mano izquierda: extraer la raíz armónica canónica del acorde
-      const rootMatch = (chordName || '').match(/^([A-G][#b]?)/);
-      const rootKey = rootMatch ? rootMatch[1] : (voicing[0]?.key || 'C');
-      const bassNote = {
-        freq: (NOTE_FREQ[rootKey] || 261.63) * 0.5,
-        delay: 0,
-        isLow: true
-      };
-
-      notes = [bassNote, ...voicing.map((v, i) => ({
-        freq: (NOTE_FREQ[v.key] || 261.63) * Math.pow(2, (v.oct || 4) - 4),
-        delay: (i + 1) * 0.020,
-        isLow: (v.oct || 4) <= 3,
-      }))];
+      const voicing = ChordSvgRenderer.getPianoChord(chordName, voicingIndex);
+      if (!voicing) return;
+      notes = voicing.map((v, i) => ({
+        freq: NOTE_FREQ[v.key] * Math.pow(2, v.oct - 4),
+        delay: i * 0.020, isLow: v.oct <= 3,
+      }));
     } else {
       const chordData = isUkulele
         ? ChordSvgRenderer.getUkuleleChord(chordName, voicingIndex)
@@ -75,23 +55,6 @@ export class ChordAudioSynthesizer {
             });
           }
         });
-      }
-
-      // Failsafe garantizado: si ningún traste es válido, sintetizar tríada básica
-      if (notes.length === 0) {
-        const fallback = ChordSvgRenderer.getGuitarChord(ChordSvgRenderer.simplifyChord(chordName));
-        if (fallback && Array.isArray(fallback.frets)) {
-          fallback.frets.forEach((fret, idx) => {
-            const numFret = Number(fret);
-            if (Number.isFinite(numFret) && numFret >= 0) {
-              notes.push({
-                freq: baseFreqs[idx] * Math.pow(2, numFret / 12),
-                delay: idx * strumGap,
-                isLow: idx < 2,
-              });
-            }
-          });
-        }
       }
     }
 
@@ -128,31 +91,12 @@ export class ChordAudioSynthesizer {
     let notes = [];
 
     if (isPiano) {
-      const cleanName = ChordSvgRenderer.simplifyChord(chordName);
-      let voicing = PIANO_VOICINGS[chordName] || PIANO_VOICINGS[cleanName]
-        || [{ key: 'C', oct: 4 }, { key: 'E', oct: 4 }, { key: 'G', oct: 4 }];
-
-      if (voicingIndex === 1 && voicing.length >= 3) {
-        voicing = [voicing[1], voicing[2], { key: voicing[0].key, oct: voicing[0].oct + 1 }];
-      } else if (voicingIndex === 2 && voicing.length >= 3) {
-        voicing = [voicing[2], { key: voicing[0].key, oct: voicing[0].oct + 1 }, { key: voicing[1].key, oct: voicing[1].oct + 1 }];
-      }
-
-      const rootMatch = (chordName || '').match(/^([A-G][#b]?)/);
-      const rootKey = rootMatch ? rootMatch[1] : (voicing[0]?.key || 'C');
-      const bassNote = {
-        key: rootKey,
-        oct: 3,
-        freq: (NOTE_FREQ[rootKey] || 261.63) * 0.5,
-        isLow: true
-      };
-
-      const allNotes = [bassNote, ...voicing.map(v => ({
-        key: v.key,
-        oct: v.oct || 4,
-        freq: (NOTE_FREQ[v.key] || 261.63) * Math.pow(2, (v.oct || 4) - 4),
-        isLow: (v.oct || 4) <= 3
-      }))];
+      const voicing = ChordSvgRenderer.getPianoChord(chordName, voicingIndex);
+      if (!voicing) return [];
+      const allNotes = voicing.map(v => ({
+        key: v.key, oct: v.oct,
+        freq: NOTE_FREQ[v.key] * Math.pow(2, v.oct - 4), isLow: v.oct <= 3
+      }));
 
       allNotes.sort((a, b) => a.freq - b.freq);
 
@@ -439,7 +383,7 @@ export class ChordAudioSynthesizer {
   static pluckString(ctx, stringIndex, chordName, instrument = 'guitar', voicingIndex = 0) {
     if (!ctx) return null;
     const isUkulele = instrument === 'ukulele';
-    if (instrument === 'piano') return null;
+    if (instrument === 'piano' || !Number.isInteger(stringIndex) || stringIndex < 0 || stringIndex >= (isUkulele ? 4 : 6)) return null;
 
     const chordData = isUkulele
       ? ChordSvgRenderer.getUkuleleChord(chordName, voicingIndex)
@@ -495,8 +439,10 @@ export class ChordAudioSynthesizer {
   static playPianoNote(ctx, noteName, octave = 4) {
     if (!ctx) return null;
     if (ctx.state === 'suspended') ctx.resume();
-    const cleanNote = (noteName || 'C').replace(/[0-9]/g, '');
-    const freq = (NOTE_FREQ[cleanNote] || 261.63) * Math.pow(2, octave - 4);
+    const pc = notePitchClass(noteName);
+    if (pc === null || !Number.isInteger(octave) || octave < 0 || octave > 8) return null;
+    const freq = 440 * Math.pow(2, ((octave + 1) * 12 + pc - 69) / 12);
+    const cleanNote = noteName;
 
     const reverbDelay = ctx.createDelay(0.08);
     reverbDelay.delayTime.value = 0.045;

@@ -30,6 +30,7 @@ export class PitchLaneCanvas {
     this.ctx     = canvas.getContext('2d');
     this.options = { showNoteLabels: true, trailWidth: 4, ...options };
 
+    this.midiMin = MIDI_MIN; this.midiMax = MIDI_MAX;
     this.isRunning   = false;
     this.animFrameId = null;
     this._dpr        = 1;
@@ -73,12 +74,13 @@ export class PitchLaneCanvas {
     if (Array.isArray(songMeta.vocalMelody)) {
       this.targetBlocks = songMeta.vocalMelody.filter(c =>
         c && Number.isFinite(c.startTime) && c.startTime >= 0 && Number.isFinite(c.duration) && c.duration > 0 &&
-        Number.isFinite(c.midi) && c.midi >= 36 && c.midi <= 96
+        Number.isFinite(c.midi) && c.midi >= 24 && c.midi <= 108
       ).map(c => ({ ...c, originalMidi: c.midi, text: c.text || '' }))
         .sort((a, b) => a.startTime - b.startTime);
     }
     this._hasCompleted = false;
     this.setTranspose(this.transposeSemitones || 0, true);
+    vocalCoachEngine.referenceMode = this.targetBlocks.some(block => !block.isInterlude);
     vocalCoachEngine.setTargetNote(null);
   }
 
@@ -89,6 +91,11 @@ export class PitchLaneCanvas {
       block.midi = block.originalMidi + semitones;
       block.noteName = NOTE_NAMES[Math.round(block.midi) % 12];
     });
+    const pitches = this.targetBlocks.filter(block => !block.isInterlude).map(block => block.midi);
+    if (pitches.length) {
+      const low = Math.min(...pitches)-3, high = Math.max(...pitches)+3, center = (low+high)/2, span = Math.max(24,high-low);
+      this.midiMin = Math.floor(center-span/2); this.midiMax = Math.ceil(center+span/2);
+    } else { this.midiMin = MIDI_MIN; this.midiMax = MIDI_MAX; }
     this._lastAccompBlock = null;
     vocalCoachEngine.setTargetNote(null);
   }
@@ -118,6 +125,15 @@ export class PitchLaneCanvas {
   start() {
     if (this.isRunning) return;
     this.isRunning = true;
+    this._targetProvider = latencyMs => {
+      if (!this.isPlaying) return null;
+      const analysisMs = 1024 / (vocalCoachEngine.audioContext?.sampleRate || 44100) * 1000;
+      const time = (this.options.clock ? this.options.clock() : this.currentTime) - (analysisMs + latencyMs) * (this.options.rate?.() || 1);
+      const block = this.targetBlocks.find(b => b.startTime <= time && time < b.startTime + b.duration);
+      return block && !block.isInterlude ? block.midi : null;
+    };
+    vocalCoachEngine.targetProvider = this._targetProvider;
+    vocalCoachEngine.referenceMode = this.targetBlocks.some(block => !block.isInterlude);
     this.isPlaying = false;
     this.currentTime = 0;
     this.lastTimestamp = performance.now();
@@ -127,7 +143,7 @@ export class PitchLaneCanvas {
       if (!this.isPlaying) return;
       const now = this.currentTime;
       const abs = Math.abs(pitch.centsOffset ?? 0);
-      const acc = abs <= 15 ? 'in-tune' : abs <= 40 ? 'near-tune' : 'out-tune';
+      const acc = abs <= vocalCoachEngine.centsTolerance ? 'in-tune' : abs <= Math.max(40, vocalCoachEngine.centsTolerance + 15) ? 'near-tune' : 'out-tune';
       this.trail.push({
         time: now,
         midi: pitch.midi + (pitch.cents || 0) / 100,
@@ -178,6 +194,10 @@ export class PitchLaneCanvas {
     this._pitchUnsub?.();
     this._silenceUnsub?.();
     this._resizeObs?.disconnect();
+    if (vocalCoachEngine.targetProvider === this._targetProvider) {
+      vocalCoachEngine.targetProvider = null;
+      vocalCoachEngine.referenceMode = false;
+    }
     vocalCoachEngine.setTargetNote(null);
   }
 
@@ -207,7 +227,7 @@ export class PitchLaneCanvas {
       // Actualizar nota objetivo para el evaluador de afinación vocal (sin interferir con acordes sintéticos)
       if (this.targetBlocks.length > 0) {
         const activeBlock = this.targetBlocks.find(
-          b => b.startTime <= this.currentTime && (b.startTime + b.duration) >= this.currentTime
+          b => b.startTime <= this.currentTime && (b.startTime + b.duration) > this.currentTime
         );
         if (activeBlock !== this._lastAccompBlock) {
           this._lastAccompBlock = activeBlock;
@@ -247,7 +267,7 @@ export class PitchLaneCanvas {
     // Izquierda (LABEL) = now - HISTORY_MS/2
     // Centro (LABEL + DRAW_W/2) = now
     // Derecha (W) = now + HISTORY_MS/2
-    const midiToY = (midi) => (1 - (midi - MIDI_MIN) / MIDI_RANGE) * H;
+    const midiToY = (midi) => (1 - (midi - this.midiMin) / (this.midiMax-this.midiMin)) * H;
     const timeToX = (t)    => {
       const msOffset = t - now; // Negativo=pasado, Positivo=futuro
       // Mapear offset de [-2000, +2000] a [LABEL, W]
@@ -255,7 +275,7 @@ export class PitchLaneCanvas {
     };
 
     // ── Grid de notas ──
-    for (let m = MIDI_MIN; m <= MIDI_MAX; m++) {
+    for (let m = this.midiMin; m <= this.midiMax; m++) {
       const noteName = NOTE_NAMES[m % 12];
       const isC      = noteName === 'C';
       const isSharp  = noteName.includes('#');
@@ -308,18 +328,19 @@ export class PitchLaneCanvas {
       if (endX < 0 || startX > W) continue;
       
       const y = midiToY(block.midi);
-      const blockHeight = 36;
+      const blockHeight = Math.max(5, Math.min(18, H/(this.midiMax-this.midiMin)*.9));
       
       // Hit Detection: ¿El usuario está cantando esta nota correctamente AHORA MISMO?
       let hitSuccess = false;
-      let isCurrentBlock = (startX <= cursorX && endX >= cursorX);
+      let isCurrentBlock = (startX <= cursorX && endX > cursorX);
       
       if (this.isPlaying && isCurrentBlock && !block.isInterlude && this.trail.length > 0) {
         const lastPt = this.trail[this.trail.length - 1];
         if (!lastPt.silence) {
           // Evaluar afinación considerando octavas naturales (ej. voz masculina octava 3 vs objetivo octava 4)
-          const absDiff = Math.abs(lastPt.midi - block.midi);
-          const isNoteMatch = absDiff <= 0.35 && this.currentTime - lastPt.time < 150;
+          const difference = lastPt.midi - block.midi;
+          const absDiff = Math.abs(difference - Math.round(difference / 12) * 12);
+          const isNoteMatch = absDiff * 100 <= vocalCoachEngine.centsTolerance && this.currentTime - lastPt.time < 150;
           if (isNoteMatch) {
             hitSuccess = true;
             block.hitFrames = (block.hitFrames || 0) + 1;
@@ -409,7 +430,9 @@ export class PitchLaneCanvas {
         continue;
       }
 
-      const y = midiToY(pt.midi);
+      const activeTarget = this.targetBlocks.find(block => !block.isInterlude && block.startTime <= now && now < block.startTime + block.duration);
+      const displayMidi = activeTarget ? pt.midi + 12 * Math.round((activeTarget.midi-pt.midi)/12) : pt.midi;
+      const y = midiToY(displayMidi);
       const c = pt.accuracyStatus === 'in-tune'
         ? COLOR_IN_TUNE
         : pt.accuracyStatus === 'near-tune'

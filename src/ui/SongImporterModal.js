@@ -9,6 +9,9 @@ import { events } from '../core/EventBus.js';
 import { db } from '../data/Database.js';
 import { searchEngine } from '../data/SearchEngine.js';
 import { toast } from './Toast.js';
+import { escapeHTML as escapeHtml } from '../utils/sanitize.js';
+import { foldControls } from './ProgressiveDisclosure.js';
+import { trapModalFocus } from './ModalFocus.js';
 
 export class SongImporterModal extends Component {
   constructor(container) {
@@ -33,6 +36,7 @@ export class SongImporterModal extends Component {
 
   close() {
     this.isOpen = false;
+    this._focusCleanup?.(); this._focusCleanup = null;
     if (this.container) this.container.innerHTML = '';
   }
 
@@ -43,19 +47,19 @@ export class SongImporterModal extends Component {
       <div class="importer-backdrop" role="dialog" aria-modal="true" aria-label="Añadir nueva canción con letra y acordes">
         <div class="importer-modal-card">
           <div class="importer-header">
-            <h2 class="importer-title">✨ Añadir / Importar Cualquier Canción</h2>
+            <h2 class="importer-title">Añadir canción</h2>
             <button class="btn-close-importer" id="btnCloseImporter" aria-label="Cerrar ventana">✕</button>
           </div>
 
           <p class="importer-description">
-            Escribe el título, artista y pega la letra con los acordes (ej. <code>[G] [D] [Em] [C]</code> o letra con acordes encima). ¡Se guardará y estará lista para tocar con Auto-Scroll y diagramas!
+            Escribe el título, artista y pega la letra con los acordes (ej. <code>[G] [D] [Em] [C]</code> o letra con acordes encima). Guárdala para practicar aquí.
           </p>
 
           <form id="songImporterForm" class="importer-form">
             <div class="importer-row">
               <div class="importer-field">
                 <label for="importTitle">Título de la Canción *</label>
-                <input type="text" id="importTitle" required placeholder="Ej. Despacito, Creep, La Flaca..." value="${initialTitle}">
+                <input type="text" id="importTitle" required placeholder="Ej. Despacito, Creep, La Flaca..." value="${escapeHtml(initialTitle)}">
               </div>
               <div class="importer-field">
                 <label for="importArtist">Artista / Grupo *</label>
@@ -98,7 +102,9 @@ export class SongImporterModal extends Component {
       </div>
     `;
 
+    foldControls(this.container, [this.container.querySelector('#importGenre')?.closest('.importer-row')], { id: 'importerAdvanced', label: 'Género y tempo', parent: this.container.querySelector('#songImporterForm'), before: this.container.querySelector('.importer-actions') });
     this.bindEvents();
+    this._focusCleanup = trapModalFocus(this.container.querySelector('.importer-backdrop'), { onClose: () => this.close() });
   }
 
   bindEvents() {

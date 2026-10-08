@@ -9,6 +9,7 @@
  */
 
 import { events } from '../core/EventBus.js';
+import { ChordSvgRenderer } from '../tools/chord/ChordSvgRenderer.js';
 
 export class AudioTranscriptionEngine {
   constructor(audioContextGetter = null) {
@@ -125,6 +126,8 @@ export class AudioTranscriptionEngine {
       throw new Error('La grabación de audio no está disponible en este navegador.');
     }
     const audioCtx = this.getAudioContext();
+    await audioCtx.resume();
+    if (requestId !== this.requestId) return false;
 
     const stream = await navigator.mediaDevices.getUserMedia({
       audio: {
@@ -145,11 +148,13 @@ export class AudioTranscriptionEngine {
     this.analyserNode.smoothingTimeConstant = 0.3;
     this.sourceNode.connect(this.analyserNode);
 
-    this.audioChunks = [];
+    const chunks = [];
+    this.audioChunks = chunks;
+    this.recordedBlob = null;
       this.mediaRecorder = new MediaRecorder(this.mediaStream);
       this.mediaRecorder.ondataavailable = (e) => {
         if (e.data && e.data.size > 0) {
-          this.audioChunks.push(e.data);
+          chunks.push(e.data);
         }
       };
       this.mediaRecorder.onerror = (event) => {
@@ -179,18 +184,21 @@ export class AudioTranscriptionEngine {
     this.isRecording = false;
 
     const requestId = this.requestId;
+    const recorder = this.mediaRecorder;
+    const chunks = this.audioChunks;
     try {
-    if (this.mediaRecorder && this.mediaRecorder.state !== 'inactive') {
+    if (recorder && recorder.state !== 'inactive') {
       await new Promise((resolve, reject) => {
-        this.mediaRecorder.onstop = resolve;
-        this.mediaRecorder.onerror = (event) => reject(event.error || new Error('La grabación se interrumpió.'));
-        this.mediaRecorder.stop();
+        const timer = setTimeout(() => reject(new Error('La grabación no respondió. Graba una nueva toma.')), 10000);
+        recorder.onstop = () => { clearTimeout(timer); resolve(); };
+        recorder.onerror = event => { clearTimeout(timer); reject(event.error || new Error('La grabación se interrumpió.')); };
+        try { recorder.stop(); } catch (error) { clearTimeout(timer); reject(error); }
       });
     }
 
     if (requestId !== this.requestId) return null;
-    const mimeType = this.audioChunks.length > 0 && this.audioChunks[0].type ? this.audioChunks[0].type : 'audio/webm';
-    this.recordedBlob = new Blob(this.audioChunks, { type: mimeType });
+    const mimeType = chunks[0]?.type || 'audio/webm';
+    this.recordedBlob = new Blob(chunks, { type: mimeType });
     this.releaseCapture();
 
     events.emit('transcriber:recordingStopped', { blob: this.recordedBlob });
@@ -252,19 +260,6 @@ export class AudioTranscriptionEngine {
       if (error.name !== 'AbortError') events.emit('transcriber:error', { error });
       throw error;
     }
-  }
-
-  /**
-   * Genera un AudioBuffer sintético en caso de decodificación vacía.
-   */
-  _createFallbackBuffer(audioCtx, durationSec = 4.0) {
-    const sr = audioCtx.sampleRate || 44100;
-    const buffer = audioCtx.createBuffer(1, Math.floor(sr * durationSec), sr);
-    const channel = buffer.getChannelData(0);
-    for (let i = 0; i < channel.length; i++) {
-      channel[i] = Math.sin(2 * Math.PI * 440 * (i / sr)) * 0.2;
-    }
-    return buffer;
   }
 
   /**
@@ -493,7 +488,7 @@ export class AudioTranscriptionEngine {
    * Genera el texto en formato ChordPro estructurado.
    */
   _generateChordPro(segments) {
-    let out = '{\\title: Transcripción Automática}\n{\\artist: Idea Grabada}\n\n';
+    let out = '{title: Transcripción Automática}\n{artist: Idea Grabada}\n\n';
     let lineChords = [];
 
     segments.forEach((seg, idx) => {
@@ -511,19 +506,14 @@ export class AudioTranscriptionEngine {
    * Genera la partitura AlphaTex para renderizar en AlphaTab.
    */
   _generateAlphaTex(segments) {
-    const alphaChords = segments.map(s => {
-      switch (s.chord) {
-        case 'C': return '(0.5.2 1.4.2 0.3.0 2.2.1 0.1.0)1';
-        case 'G': return '(3.6.3 2.5.2 0.4.0 0.3.0 3.2.3 3.1.3)1';
-        case 'Am': return '(0.5.0 2.4.2 2.3.2 1.2.1 0.1.0)1';
-        case 'F': return '(1.6.1 3.5.3 3.4.3 2.3.2 1.2.1 1.1.1)1';
-        case 'D': return '(0.4.0 2.3.2 3.2.3 2.1.2)1';
-        case 'Em': return '(0.6.0 2.5.2 2.4.2 0.3.0 0.2.0 0.1.0)1';
-        default: return '(0.5.0 2.4.2 2.3.2 0.2.0)1';
-      }
+    const bars = segments.map(({ chord }) => {
+      const shape = ChordSvgRenderer.getGuitarChord(chord);
+      const notes = shape?.frets.flatMap((fret, string) => fret < 0 ? [] : [fret + '.' + (6 - string)]) || [];
+      // Unsupported harmony stays silent; a generic shape would change the chord.
+      return notes.length ? ':1 (' + notes.join(' ') + ')' : ':1 r';
     });
-
-    return `\\tempo 120\n\\instrument acousticguitar\n\n. ${alphaChords.join(' | ')} |`;
+    return '\\title \"Transcripción de audio\" \\subtitle \"Acompañamiento aproximado de práctica\" \\tempo 120 .\n' +
+      '\\track \"Guitarra\" \\tuning E4 B3 G3 D3 A2 E2 \\instrument acousticguitar .\n' + bars.join(' | ') + ' |';
   }
 }
 

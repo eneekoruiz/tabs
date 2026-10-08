@@ -14,7 +14,7 @@ const MAX_VERSIONS = 24;
 const sanitizeCues = (cues, melody = false) => Array.isArray(cues) ? cues.slice(0, 10000)
   .filter(c => c && Number.isFinite(c.startTime) && c.startTime >= 0 &&
     Number.isFinite(c.duration) && c.duration > 0 &&
-    (!melody || (Number.isFinite(c.midi) && c.midi >= 36 && c.midi <= 96)))
+    (!melody || (Number.isFinite(c.midi) && c.midi >= 24 && c.midi <= 108)))
   .map(c => ({ startTime: c.startTime, duration: c.duration, text: boundedString(c.text, 2000),
     ...(melody ? { midi: c.midi, isInterlude: Boolean(c.isInterlude) } : {}) })) : undefined;
 
@@ -171,6 +171,8 @@ const sanitizeSong = (song) => {
     id: song.id ?? null,
     versionId: song.versionId ?? song.selectedVersionId ?? null,
     recordingId: boundedString(song.recordingId, 240),
+    practicePackId: boundedString(song.practicePackId, 80),
+    referenceInfo: song.referenceInfo ? { title: boundedString(song.referenceInfo.title,240), artist: boundedString(song.referenceInfo.artist,240), sourceType: boundedString(song.referenceInfo.sourceType,80), sourceUrl: /^https:\/\//.test(song.referenceInfo.sourceUrl || '') ? boundedString(song.referenceInfo.sourceUrl,2000) : '', license: boundedString(song.referenceInfo.license,80), verification: boundedString(song.referenceInfo.verification,80) } : undefined,
     versionIndex: Math.max(0, Math.min(MAX_VERSIONS - 1, finiteNumber(song.versionIndex, 0))),
     versionName: boundedString(song.versionName || song.versionLabel || song.arrangement, 120),
     title,
@@ -245,6 +247,9 @@ export class SessionRecovery {
       hideChordsMode: Boolean(snapshot.hideChordsMode),
       isSimplified: Boolean(snapshot.isSimplified),
       viewMode: snapshot.viewMode === 'score' ? 'score' : 'lyrics',
+      performanceMode: snapshot.performanceMode === 'sing' ? 'sing' : 'play',
+      karaokeMode: snapshot.karaokeMode === 'synth' ? 'synth' : 'local',
+      karaokePositionMs: Math.max(0, finiteNumber(snapshot.karaokePositionMs, 0)),
       activeSectionId: boundedString(snapshot.activeSectionId, 120),
       autoScroll: {
         isRunning: Boolean(snapshot.autoScroll?.isRunning),

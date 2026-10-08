@@ -1,0 +1,1 @@
+Pitchy 4.1.0 (0BSD) and fft.js 4.0.4 (MIT). Browser ESM conversion, rebuilt with node scripts/vendor-pitch.mjs. Sources: https://github.com/ianprime0509/pitchy and https://github.com/indutny/fft.js . FFT license is included at the end of fft.README.md. No CDN or microphone uploads.

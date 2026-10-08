@@ -1,0 +1,207 @@
+/* Essentials first; secondary controls remain available without changing screens. */
+.app-disclosure { margin: 12px 0; border: 1px solid var(--border-subtle); border-radius: 10px; background: var(--bg-surface); min-width: 0; }
+.app-disclosure > summary { padding: 12px 14px; min-height: 44px; color: var(--text-primary); font-weight: 650; cursor: pointer; }
+.app-disclosure-body { padding: 4px 14px 14px; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.app-disclosure:not([open]) > :not(summary) { display: none; }
+.app-disclosure summary:focus-visible, button:focus-visible, select:focus-visible, input:focus-visible, a:focus-visible { outline: 3px solid var(--accent-primary); outline-offset: 3px; }
+#exploreAdvanced { width: 100%; max-width: 980px; margin: 8px auto 14px; }
+#exploreAdvanced .explore-search-filters-inline, #exploreAdvanced .explore-secondary-bars { margin: 0; width: 100%; }
+#exploreAdvanced .explore-genre-dropdown { position: relative; inset: auto; width: 100%; }
+.explore-view .explore-header { padding-block: 16px; margin-bottom: 12px; }
+.explore-view .practice-hub { padding: 14px 18px; margin-bottom: 12px; }
+.explore-view .practice-hub h2 { font-size: 1.15rem; }
+.explore-view .practice-hub-empty { min-height: 0; }
+.explore-view .practice-hub-kicker { display: none; }
+.explore-view .practice-hub-copy p { margin-bottom: 0; }
+.tools-surface .view-header { margin-bottom: 16px; padding: 0; text-align: left; }
+.tools-surface .view-header h1 { font-size: clamp(1.35rem, 3vw, 1.85rem); margin-bottom: 4px; }
+.tools-surface .tools-command-bar { margin-bottom: 14px; }
+.tools-surface .tools-premium-list { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px; }
+.tools-surface .premium-list-item { padding: 14px; min-height: 0; gap: 12px; border-radius: 10px; box-shadow: none; transform: none; background: var(--bg-surface); }
+.tools-surface .premium-icon { width: 38px; height: 38px; flex: 0 0 38px; font-size: 1.5rem; background: none; }
+.tools-surface .premium-content { min-width: 0; width: 100%; }
+.tools-surface .premium-content h3 { font-size: 1rem; margin: 0 0 4px; }
+.tools-surface .premium-content p { font-size: .82rem; margin: 0 0 10px; line-height: 1.45; }
+.tools-surface .tool-preview-action { min-height: 44px; padding: 8px 16px; }
+#toolModalHost.inline-tool-host > .tool-modal-overlay, #toolModalHost.inline-tool-host > .vocal-coach-modal-overlay { position: static; display: block; width: 100%; height: auto; padding: 0; background: none; backdrop-filter: none; animation: none; }
+#toolModalHost.inline-tool-host .tool-modal-dialog, #toolModalHost.inline-tool-host .vocal-coach-container-card { max-width: none; max-height: none; box-shadow: none; animation: none; }
+#toolModalHost.inline-tool-host .tool-panoramic-layout { grid-template-columns: 1fr; overflow: visible; }
+#toolModalHost.inline-tool-host:has(> *) + .tools-catalog-section { display: none; }
+#toolModalHost.inline-tool-host .tool-panoramic-main { padding: 18px; gap: 16px; }
+#toolModalHost.inline-tool-host .tool-panoramic-side { border-left: 0; padding: 12px 0; background: none; }
+#toolModalHost.inline-tool-host .metronome-bpm-big { font-size: 4.5rem; }
+#toolModalHost.inline-tool-host .metronome-visual-bpm-box { padding: 0; }
+#toolModalHost.inline-tool-host .app-disclosure { margin-inline: 18px; }
+#toolModalHost.inline-tool-host .vocal-coach-container-card .app-disclosure { margin-inline: 0; }
+#lyricsToolsBottomSheetOverlay { position: static !important; padding: 0; background: none !important; backdrop-filter: none !important; animation: none !important; margin: 8px 0 14px; }
+#lyricsToolsBottomSheetOverlay .bottom-sheet-content { width: 100%; max-width: none; max-height: none; padding: 16px; border: 1px solid var(--border-subtle); border-radius: 10px; box-shadow: none; animation: none; }
+#lyricsToolsBottomSheetOverlay .bottom-sheet-content > div:first-child { display: none; }
+#songReadingOptions .app-disclosure-body { flex-direction: row; flex-wrap: wrap; align-items: center; }
+#songReadingOptions .desktop-header-tool { display: inline-flex !important; }
+.lyrics-header-main { padding-block: 12px; }
+.lyrics-hero-row { gap: 12px; }
+.hero-sing-indicator { display: none !important; }
+.karaoke-audio-companion-panel { padding: 12px; }
+.karaoke-drawer-summary { min-height: 44px; }
+.karaoke-card-group { min-width: 0; }
+.karaoke-mixer { flex-wrap: wrap; }
+.karaoke-mixer label { min-width: 0; }
+.settings-group:empty { display: none; }
+@media (min-width: 1100px) { .tools-surface .essential-tools { grid-template-columns: repeat(4,minmax(0,1fr)); } }
+@media (max-width: 600px) {
+  .tools-surface .tools-premium-list { grid-template-columns: 1fr; }
+  .tools-surface .premium-list-item { padding: 12px; }
+  .tools-surface .premium-content { display: grid; grid-template-columns: minmax(0,1fr) auto; column-gap: 10px; }
+  .tools-surface .premium-content h3 { grid-column: 1; }
+  .tools-surface .premium-content p { grid-column: 1; margin: 0; }
+  .tools-surface .tool-preview-action { grid-column: 2; grid-row: 1 / 3; align-self: center; margin: 0; }
+  .tools-surface .tools-search-summary { display: none; }
+  .tools-surface .view-header p { margin: 0; }
+  #toolModalHost.inline-tool-host .tool-modal-header { padding: 12px 14px; }
+  #toolModalHost.inline-tool-host .vocal-coach-container-card { padding: 14px; }
+  .lyrics-hero-row { flex-direction: column; align-items: flex-start; }
+  .lyrics-header-main .lyrics-song-title { font-size: 1.45rem; }
+  .lyrics-hero-title-group { padding-block: 0; }
+  .hero-right-controls, .hero-mode-cluster { width: 100%; }
+  .hero-instrument-extension.is-expanded { gap: 6px; }
+  .hero-suboption-bridge { display: none; }
+  .karaoke-primary-bar { gap: 8px; }
+  .karaoke-mic-row { flex-wrap: wrap; }
+  .karaoke-drawer-sub { display: none; }
+  .app-disclosure-body { padding-inline: 10px; }
+}
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; } }
+
+.hero-instrument-extension.is-collapsed { display: none !important; }
+.hero-mode-cluster:has(.ui-toggle-switch.is-sing) { padding: 0 !important; min-height: 0 !important; height: auto !important; }
+.public-reference-options p { margin: 8px 0; color: var(--text-secondary); font-size: .82rem; }
+.public-reference-options button { min-height: 44px; }
+@media(max-width:600px) {
+ .lyrics-header-main .lyrics-nav-tools-row { flex-direction: row; align-items: center; flex-wrap: nowrap; }
+ .lyrics-header-main .lyrics-header-tools-group { width: auto; gap: 6px; }
+ .lyrics-header-main .lyrics-hero-row { padding-top: 10px; margin-top: 0; }
+ .sing-stage-workspace { padding: 0 !important; gap: 10px; }
+ .sing-stage-workspace .karaoke-lyrics { padding: 10px 0; }
+ .sing-stage-workspace .singer-pitch-lane-wrapper { height: 180px !important; box-shadow: none !important; }
+ .sing-stage-workspace .singer-vocal-ribbon { padding: 12px; min-height: 0; }
+
+}
+
+.dict-essential-selects { display: flex; flex-wrap: wrap; gap: 12px; }
+.dict-essential-selects label { display: flex; flex-direction: column; gap: 5px; min-width: 0; flex: 1; }
+.dict-essential-selects select { min-height: 44px; padding: 8px; border: 1px solid var(--border-strong); border-radius: 6px; background: var(--bg-surface); color: var(--text-primary); }
+#toolModalHost.inline-tool-host .dict-preview-card { padding: 16px; }
+#toolModalHost.inline-tool-host .dict-svg-viewport { min-height: 180px; }
+#toolModalHost.inline-tool-host .tool-panoramic-layout:has(.dict-essential-selects) > .tool-panoramic-side { padding: 0 18px 18px; }
+
+#publicVocalResults { display: flex; flex-direction: column; gap: 6px; }
+#publicVocalResults button { text-align: left; min-height: 44px; padding: 8px 10px; }
+#publicVocalSearch { width: 100%; min-height: 44px; }
+#btnTryReadyKaraoke { min-height: 44px; margin-top: 8px; padding: 8px 12px; border: 1px solid var(--border-strong); background: var(--bg-surface); color: var(--text-primary); border-radius: 8px; }
+
+.btn-metronome-main { background: var(--accent-primary); color: var(--text-inverse, #fff); }
+
+#toolModalHost.inline-tool-host .tool-panoramic-main { min-width: 0; }
+#toolModalHost.inline-tool-host .metronome-stepper-row { display: grid; grid-template-columns: 40px 40px minmax(40px,1fr) 40px 40px; gap: 6px; width: 100%; }
+#toolModalHost.inline-tool-host .bpm-slider-full { min-width: 0; width: 100%; }
+#toolModalHost.inline-tool-host .metronome-action-cluster { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); width: 100%; gap: 10px; }
+#toolModalHost.inline-tool-host .btn-metronome-main, #toolModalHost.inline-tool-host .btn-tap-tempo { min-width: 0; padding: 12px 8px; font-size: 1rem; min-height: 54px; }
+
+.ui-toggle-switch .toggle-label:not(.active), .suboption-bridge-text { color: var(--text-secondary) !important; }
+
+.lyrics-section-header { color: var(--accent-primary); }
+
+.karaoke-mic-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.karaoke-mic-row #btnSingPlayPause { width: 48px; height: 48px; min-height: 48px; border-radius: 50%; flex: 0 0 48px; background: var(--accent-primary); color: var(--text-inverse); font-size: 1.4rem; border: 0; }
+#karaokeMicStatus { flex-basis: 100%; font-size: .82rem; }
+.karaoke-backing-status-text { overflow-wrap: anywhere; margin-block: 4px; }
+.sing-stage-workspace .karaoke-lyrics { margin: 0; padding: 8px 0; }
+.sing-stage-workspace .singer-vocal-ribbon { box-shadow: none; padding: 10px; margin-top: 0; }
+.karaoke-drawer-content > #btnToggleSmartPause, .karaoke-drawer-content > #btnSingRestart { min-width: 44px; min-height: 44px; }
+@media (max-width:600px) { .karaoke-audio-companion-panel { padding: 10px !important; } .karaoke-primary-bar { gap: 8px; } .karaoke-secondary-drawer { margin-top: 8px; } }
+
+#btnToggleScoreView { display: inline-flex !important; min-width: 44px; min-height: 44px; }
+@media(max-width:600px) { .bottom-player-bar .nav-player-metro-controls, .bottom-player-bar .nav-player-scroll-controls { display: none !important; } .bottom-player-bar { justify-content: space-between; gap: 4px; padding-inline: 8px; } .bottom-player-bar .nav-player-autoscroll-cluster, .bottom-player-bar .nav-player-metronome-cluster { flex: 0 0 auto; min-width: 0; } }
+
+/* Shared surfaces for practice tools, including the light theme. */
+#toolModalHost.inline-tool-host [class*="backdrop"] { position: static !important; display: block !important; width: 100%; height: auto !important; padding: 0 !important; background: transparent !important; backdrop-filter: none !important; }
+#toolModalHost.inline-tool-host [class^="modal-"][class$="-card"], #toolModalHost.inline-tool-host .tool-modal-dialog { width: 100%; max-width: none; max-height: none !important; overflow: visible; box-shadow: none; }
+#tunerDetectedCents { color: var(--accent-primary); }
+.in-tune-mark { color: var(--status-success) !important; }
+.ear-stat-row span, .ear-score-pill { color: var(--text-primary); }
+.looper-badge, .analytics-badge, .transcriber-badge, .stems-badge-ai, .smartband-badge, .pedalboard-badge, .bandroom-badge, .stage-badge { color: var(--accent-primary) !important; background: var(--bg-surface-raised) !important; }
+.looper-section-card, .stage-section-card, .smartband-section-card, .section-card, .setup-box, .looper-live-status, .smart-tone-panel, .pedalboard-input-meter { background: var(--bg-surface-raised) !important; color: var(--text-primary); }
+.section-card-title, .section-title, .setup-box h3, .style-info strong, .chord-name { color: var(--text-primary) !important; }
+.quick-bars-label, .quick-lbl, .chord-sub, .style-info span, .setup-box p, .meter-label, .stage-section-card label, .looper-section-card label, #lblLooperLiveStatus { color: var(--text-primary) !important; }
+#looperStartBar, #looperEndBar, #btnJoinRoom, .chord-block, .btn-band-style, .song-ref-badge { background: var(--bg-surface) !important; color: var(--text-primary) !important; }
+.smart-tone-text strong { color: var(--accent-primary) !important; }
+
+#toolModalHost.inline-tool-host .analytics-modal-overlay, #toolModalHost.inline-tool-host .transcriber-modal-overlay { position:static !important; display:block; width:100%; height:auto; padding:0; background:none; backdrop-filter:none; }
+#toolModalHost.inline-tool-host .analytics-modal-card, #toolModalHost.inline-tool-host .transcriber-modal-card { width:100%; max-width:none; max-height:none; overflow:visible; box-shadow:none; }
+
+#toolModalHost.inline-tool-host .looper-modal-body, #toolModalHost.inline-tool-host .smartband-modal-body, #toolModalHost.inline-tool-host .stems-modal-body, #toolModalHost.inline-tool-host .stage-body { padding:16px; gap:16px; }
+#toolModalHost.inline-tool-host .looper-section-card, #toolModalHost.inline-tool-host .smartband-section-card, #toolModalHost.inline-tool-host .stage-section-card { padding:14px; }
+#toolModalHost.inline-tool-host .looper-badge, #toolModalHost.inline-tool-host .stems-badge-ai, #toolModalHost.inline-tool-host .smartband-badge, #toolModalHost.inline-tool-host .pedalboard-badge, #toolModalHost.inline-tool-host .stage-badge, #toolModalHost.inline-tool-host .analytics-badge { display:none; }
+#toolModalHost.inline-tool-host h2 { font-size:1.35rem; }
+#toolModalHost.inline-tool-host .smartband-modal-body .dict-essential-selects { flex-direction:column; gap:6px; }
+#toolModalHost.inline-tool-host .smartband-modal-body .dict-essential-selects select { min-height:44px; background:var(--bg-surface); color:var(--text-primary); padding:8px; border:1px solid var(--border-strong); border-radius:6px; }
+
+.ready-karaoke-choice { display:flex; flex-direction:column; gap:5px; margin-top:8px; font-size:.85rem; }
+.ready-karaoke-choice select { min-height:44px; padding:8px; border:1px solid var(--border-strong); border-radius:6px; background:var(--bg-surface); color:var(--text-primary); width:100%; }
+
+/* Keep the complete singing transport in the first mobile view. */
+.sing-stage-workspace { gap:10px !important; }
+.sing-stage-workspace .karaoke-audio-companion-panel { margin:0; }
+.sing-stage-workspace .singer-pitch-lane-wrapper { margin-top:0 !important; }
+.sing-stage-workspace .singer-vocal-ribbon { min-height:44px; gap:8px; padding:8px 10px; }
+.sing-stage-workspace .ribbon-status-label { font-size:.85rem; }
+.sing-stage-workspace .ribbon-freq-badge { white-space:nowrap; }
+@media(max-width:600px) {
+ .sing-stage-workspace .singer-pitch-lane-wrapper { height:140px !important; }
+ .sing-stage-workspace .ribbon-note-big { font-size:1.5rem; }
+ .sing-stage-workspace .karaoke-backing-status-text { font-size:.8rem; line-height:1.35; }
+ .lyrics-chords-container:has(#singStageWorkspace) .lyrics-header-main { padding:12px; }
+}
+
+/* Legible tool fields and status badges in the paper theme. */
+.ear-audio-status > span { color:var(--text-primary) !important; }
+#toolModalHost.inline-tool-host .tempo-info-row, #toolModalHost.inline-tool-host .smart-tone-panel { background:var(--bg-surface) !important; }
+#toolModalHost.inline-tool-host .tempo-name, #toolModalHost.inline-tool-host #lblSmartBandBpm { color:var(--text-primary) !important; }
+#toolModalHost.inline-tool-host #txtRoomCodeInput, #toolModalHost.inline-tool-host .stage-body input, #toolModalHost.inline-tool-host .stage-body select { background:var(--bg-surface) !important; color:var(--text-primary) !important; }
+#toolModalHost.inline-tool-host #btnToggleStageAuto { color:var(--text-primary) !important; }
+
+#toolModalHost.inline-tool-host .band-tempo-box { background:var(--bg-surface) !important; }
+#toolModalHost.inline-tool-host input:not([type="range"]):not([type="checkbox"]):not([type="radio"]), #toolModalHost.inline-tool-host select { background:var(--bg-surface) !important; color:var(--text-primary) !important; }
+
+/* Speed controls expand in document flow; sibling score canvases cannot cover them. */
+#autoScrollSpeedPanel { width: 100%; min-width: 0 !important; background: var(--bg-surface) !important; color: var(--text-primary); }
+.lyrics-scroll-cluster:has(#autoScrollSpeedPanel[style*="flex"]) { flex-wrap: wrap; }
+.smart-tone-text strong { color: var(--text-primary) !important; }
+
+.online-karaoke-player { width:100%; padding:12px; border:1px solid var(--border-subtle); border-radius:16px; background:var(--bg-surface); color:var(--text-primary); }
+.online-karaoke-heading { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
+.online-karaoke-heading button { width:40px; height:40px; }
+.online-karaoke-player iframe { width:100%; min-height:200px; border:0; border-radius:8px; display:block; }
+.online-karaoke-player p, .online-karaoke-credit { font-size:.85rem; margin:8px 0; }
+.online-karaoke-credit { display:block; color:var(--text-secondary); }
+.karaoke-online-actions { display:flex; flex-wrap:wrap; gap:12px; align-items:center; margin:10px 0; }
+.uses-online-karaoke .karaoke-lyrics, .uses-online-karaoke .singer-pitch-lane-wrapper,
+.uses-online-karaoke .karaoke-timeline, .uses-online-karaoke .karaoke-status-block,
+.uses-online-karaoke #btnSingPlayPause, .uses-online-karaoke #btnFinishVocalSession,
+.uses-online-karaoke .karaoke-online-actions, .uses-online-karaoke #karaokeTimingNote,
+.uses-online-karaoke #publicReferenceOptions { display:none !important; }
+.uses-online-karaoke { display:grid !important; }
+.uses-online-karaoke .karaoke-audio-companion-panel { display:contents; }
+.uses-online-karaoke .karaoke-primary-bar { grid-row:1; }
+.uses-online-karaoke .online-karaoke-player { grid-row:2; }
+.uses-online-karaoke .singer-vocal-ribbon { grid-row:3; }
+.uses-online-karaoke .karaoke-actions-inline { grid-row:4; }
+.uses-online-karaoke .karaoke-secondary-drawer { grid-row:5; }
+
+/* Locked ear answers keep legible labels while their disabled state prevents input. */
+#toolModalHost .btn-ear-answer, #toolModalHost .btn-ear-answer strong, #toolModalHost .btn-ear-answer small { opacity:1 !important; color:var(--text-primary) !important; }
+#toolModalHost .btn-ear-answer.ear-locked { border-style:dashed; cursor:not-allowed; }
+
+#btnToggleScoreView[hidden] { display:none !important; }
+
+@media(max-width:600px) { .sing-stage-workspace .karaoke-online-actions { margin:6px 0; } }

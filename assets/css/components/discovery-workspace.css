@@ -12,8 +12,91 @@
 }
 
 .discovery-search-row .explore-search-box {
+  position: relative;
+  display: flex;
+  align-items: center;
   min-width: 0;
   margin-top: 0;
+}
+
+.discovery-search-row .explore-search-input { padding-right: 108px; }
+.explore-search-actions {
+  position: absolute;
+  right: 8px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.explore-search-actions button {
+  position: static;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-secondary);
+  transform: none;
+  cursor: pointer;
+}
+.explore-search-actions button:hover { background: var(--bg-surface-hover); }
+
+.artist-directory-view { width: 100%; min-width: 0; }
+.artist-directory-heading { margin-bottom: 18px; }
+.artist-directory-heading h3 { margin: 0 0 4px; font-size: 1.15rem; }
+.artist-directory-heading p { margin: 0; font-size: .84rem; color: var(--text-secondary); }
+.artist-directory-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(260px, 100%), 1fr));
+  gap: 14px;
+}
+.artist-card-item {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 14px;
+  min-width: 0;
+  padding: 16px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  background: var(--bg-surface-solid);
+  color: var(--text-primary);
+  text-align: left;
+  cursor: pointer;
+  transition: background-color var(--transition-fast), border-color var(--transition-fast);
+}
+.artist-card-item:hover { background: var(--bg-surface-raised); border-color: var(--accent-primary); }
+.artist-card-header { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.artist-card-monogram {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--bg-surface-hover);
+  color: var(--accent-primary);
+  font-size: 1.25rem;
+  font-weight: 800;
+}
+.artist-card-meta { min-width: 0; }
+.artist-card-name { display: block; font-size: 1.05rem; overflow-wrap: anywhere; }
+.artist-card-genre { color: var(--accent-primary); font-size: .74rem; font-weight: 700; }
+.artist-card-songs { font-size: .78rem; color: var(--text-secondary); line-height: 1.5; overflow-wrap: anywhere; }
+.artist-card-kicker { display: block; margin-bottom: 2px; color: var(--text-muted); font-size: .7rem; }
+.artist-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 10px;
+  border-top: 1px solid var(--border-subtle);
+  color: var(--accent-primary);
+  font-size: .8rem;
+  font-weight: 700;
 }
 
 .discovery-search-row .btn-genre-filter-toggle {

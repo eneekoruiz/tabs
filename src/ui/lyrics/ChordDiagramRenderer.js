@@ -41,9 +41,10 @@ export class ChordDiagramRenderer {
     return `
       <div class="song-meta-rhythm-strip" role="region" aria-label="Ritmo y acordes de la canción">
         <!-- 1. Patrón de Rasgueo Principal (Horizontal, Limpio y Elegante) -->
-        <div class="strumming-pattern-card" role="region" aria-label="Patrón de rasgueo">
+        <details class="app-disclosure practice-strumming"><summary>Patrón de práctica sugerido</summary>
+        <div class="strumming-pattern-card" role="region" aria-label="Patrón de rasgueo sugerido">
           <div class="strum-left-group">
-            <span class="strum-badge">PATRÓN DE RASGUEO</span>
+            <span class="strum-badge">EJERCICIO DE RASGUEO</span>
             <div class="strum-pattern-arrows" aria-label="Secuencia de rasgueo: abajo abajo arriba, arriba abajo arriba">
               <span class="strum-arrow down" title="Golpe abajo">↓</span>
               <span class="strum-arrow down" title="Golpe abajo">↓</span>
@@ -67,6 +68,8 @@ export class ChordDiagramRenderer {
             </button>
           </div>
         </div>
+
+        </details>
 
         <!-- 2. Acordes Utilizados (Fila compacta e interactiva con selector de diagramas) -->
         <div class="song-used-chords-bar">

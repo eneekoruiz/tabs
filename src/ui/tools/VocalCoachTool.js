@@ -86,10 +86,10 @@ export class VocalCoachTool {
             </button>
 
             <!-- Selector de Modo de Ejercicio -->
-            <div class="vocal-mode-pills" role="tablist" aria-label="Modos de entrenamiento">
-              <button class="vocal-pill-btn ${this.activeExercise === 'free' ? 'active' : ''}" data-exercise="free">Libre / Canción</button>
-              <button class="vocal-pill-btn ${this.activeExercise === 'sustain' ? 'active' : ''}" data-exercise="sustain">Sostener Tono (5s)</button>
-              <button class="vocal-pill-btn ${this.activeExercise === 'scale5' ? 'active' : ''}" data-exercise="scale5">Escala 5 Tonos</button>
+            <div class="vocal-mode-pills" role="group" aria-label="Modos de entrenamiento">
+              <button class="vocal-pill-btn ${this.activeExercise === 'free' ? 'active' : ''}" data-exercise="free" aria-pressed="${this.activeExercise === 'free'}">Libre / Canción</button>
+              <button class="vocal-pill-btn ${this.activeExercise === 'sustain' ? 'active' : ''}" data-exercise="sustain" aria-pressed="${this.activeExercise === 'sustain'}">Sostener Tono (5s)</button>
+              <button class="vocal-pill-btn ${this.activeExercise === 'scale5' ? 'active' : ''}" data-exercise="scale5" aria-pressed="${this.activeExercise === 'scale5'}">Escala 5 Tonos</button>
             </div>
 
             <!-- Diapasón Tono de Referencia -->
@@ -142,18 +142,18 @@ export class VocalCoachTool {
             <!-- 3. Medidores de Salud Vocal & Estabilidad -->
             <div class="vocal-hud-card metrics-card">
               <div class="metric-row">
-                <span class="metric-name">🌬️ Apoyo Diafragma:</span>
+                <span class="metric-name">Nivel de señal:</span>
                 <div class="metric-bar-wrap">
-                  <div class="metric-bar-fill breath" id="barBreathSupport" style="width: 90%;"></div>
+                  <div class="metric-bar-fill breath" id="barBreathSupport" style="width: 0%;"></div>
                 </div>
-                <span class="metric-val" id="lblBreathVal">90%</span>
+                <span class="metric-val" id="lblBreathVal">—</span>
               </div>
               <div class="metric-row">
                 <span class="metric-name">✨ Estabilidad:</span>
                 <div class="metric-bar-wrap">
-                  <div class="metric-bar-fill stability" id="barStability" style="width: 95%;"></div>
+                  <div class="metric-bar-fill stability" id="barStability" style="width: 0%;"></div>
                 </div>
-                <span class="metric-val" id="lblStabilityVal">95%</span>
+                <span class="metric-val" id="lblStabilityVal">—</span>
               </div>
               <div class="metric-row tessitura-row">
                 <span class="metric-name">🎼 Rango Sesión:</span>
@@ -415,11 +415,11 @@ export class VocalCoachTool {
 
     // Métricas
     if (barBreath && lblBreath) {
-      barBreath.style.width = `${pitch.breathSupport}%`;
+      barBreath.style.width = `${Number.isFinite(pitch.breathSupport) ? pitch.breathSupport : 0}%`;
       lblBreath.textContent = `${pitch.breathSupport}%`;
     }
     if (barStab && lblStab) {
-      barStab.style.width = `${pitch.stability}%`;
+      barStab.style.width = `${Number.isFinite(pitch.stability) ? pitch.stability : 0}%`;
       lblStab.textContent = `${pitch.stability}%`;
     }
     if (lblTess && pitch.sessionStats) {

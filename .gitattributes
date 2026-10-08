@@ -1,0 +1,4 @@
+# Preserve exact downloaded source bytes and audio fixtures.
+assets/practice/** -text
+assets/data/vocal-references/** -text
+tests/fixtures/real-audio/** -text

@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { waitForSong } from './helpers/journeys.js';
 
 test.describe('🎤 Validación de Precisión Vocal y Resumen de Ensayo (Anti-Datos Inventados)', () => {
   test.use({
@@ -26,9 +27,11 @@ test.describe('🎤 Validación de Precisión Vocal y Resumen de Ensayo (Anti-Da
   });
 
   test('1. Sin cantar: sessionStats permanece en 0 y el scorecard muestra "Sin Canto Detectado"', async ({ page }) => {
+    test.setTimeout(60_000); // Includes catalog and score initialization on the shared CI/browser host.
     // Abrir una canción
     const card = page.locator('.discovery-song-card').first();
     await card.click();
+    await waitForSong(page);
     await page.waitForSelector('#btnPlaySingToggle', { timeout: 10000 });
 
     // Cambiar a modo cantar
@@ -45,7 +48,7 @@ test.describe('🎤 Validación de Precisión Vocal y Resumen de Ensayo (Anti-Da
       const initialInTune = vocalCoachEngine.sessionStats.inTuneFrames;
       const isPlaybackActiveInitial = vocalCoachEngine.isPlaybackActive;
 
-      // Simular ruido ambiental suave (RMS bajo = 0.008, no debe pasar)
+      // Señal constante sin periodicidad musical; debe descartarse
       const mockNoiseBuffer = new Float32Array(1024).fill(0.005);
       const noiseDetection = vocalCoachEngine.detectVocalPitch(mockNoiseBuffer, 44100);
 
@@ -118,14 +121,14 @@ test.describe('🎤 Validación de Precisión Vocal y Resumen de Ensayo (Anti-Da
     await expect(modal).toBeHidden();
   });
 
-  test('2. Canto real con afinación genuina: Calcula métricas proporcionales y reales', async ({ page }) => {
+  test('2. Controlled frequency frames: proportional tuning metrics', async ({ page }) => {
     const calculation = await page.evaluate(async () => {
       const { vocalCoachEngine } = await import('./src/audio/VocalCoachEngine.js');
       vocalCoachEngine.resetSessionStats();
       vocalCoachEngine.setPlaybackActive(true);
       vocalCoachEngine.setTargetNote('A4'); // 440 Hz
 
-      // Simular frames de canto real sostenido
+      // Inyectar frecuencias controladas para verificar aritmética; no son voces humanas
       // Los 2 primeros confirman el inicio de voz (filtro anti-ruido transitorio)
       // 26 frames in-tune (440 Hz) y 6 frames desafinados (465 Hz) -> 24 confirmados in-tune de 30 confirmados = 80%
       for (let i = 0; i < 26; i++) {
@@ -158,7 +161,7 @@ test.describe('🎤 Validación de Precisión Vocal y Resumen de Ensayo (Anti-Da
 
     expect(calculation.total).toBe(30); // 32 frames procesados - 2 de confirmación inicial = 30
     expect(calculation.inTune).toBe(24);
-    expect(calculation.calculatedPct).toBe(80); // 80% real y auténtico
+    expect(calculation.calculatedPct).toBe(80); // 80% esperado de estos frames controlados
     expect(calculation.stability).toBeGreaterThan(0);
     expect(calculation.breath).toBeGreaterThan(0);
   });

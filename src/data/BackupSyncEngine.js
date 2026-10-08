@@ -1,10 +1,7 @@
 /**
  * @file BackupSyncEngine.js
- * @description Motor de Respaldo Completo, Cifrado Militar y Sincronización Local / Offline:
- * - Empaqueta el 100% del estado del usuario: canciones, tablaturas, repertorios, ajustes y analíticas.
- * - Cifrado estándar de grado militar AES-GCM de 256 bits con derivación PBKDF2 (100.000 iteraciones SHA-256).
- * - Generador de archivos de copia de seguridad blindados (.agytab / .tabsbackup).
- * - Restauración instantánea y validación de integridad criptográfica.
+ * @description Copias locales de canciones, analíticas y los ajustes incluidos.
+ * Conserva los bytes de las partituras. El cifrado AES-GCM es opcional y requiere contraseña.
  */
 
 import { db } from './Database.js';
@@ -13,7 +10,85 @@ import { events } from '../core/EventBus.js';
 import { toast } from '../ui/Toast.js';
 
 const BACKUP_SIGNATURE = 'AGY_TABS_SECURE_V2';
-const DEFAULT_SALT = 'antigravity-secure-studio-salt-2026';
+const BINARY_ENCODING = 'tabs-score-base64-v1';
+const VIEW_TYPES = new Set(['Int8Array', 'Uint8Array', 'Uint8ClampedArray', 'Int16Array',
+  'Uint16Array', 'Int32Array', 'Uint32Array', 'Float32Array', 'Float64Array', 'BigInt64Array', 'BigUint64Array']);
+
+function encodeBytes(bytes) {
+  let text = '';
+  for (let start = 0; start < bytes.length; start += 0x8000) {
+    text += String.fromCharCode(...bytes.subarray(start, start + 0x8000));
+  }
+  return btoa(text);
+}
+
+async function serializeScore(data) {
+  if (data == null || typeof data === 'string') return data;
+  if (data instanceof Blob) {
+    return { encoding: BINARY_ENCODING, type: 'Blob', mimeType: data.type,
+      value: encodeBytes(new Uint8Array(await data.arrayBuffer())) };
+  }
+  if (data instanceof ArrayBuffer || ArrayBuffer.isView(data)) {
+    const bytes = data instanceof ArrayBuffer ? new Uint8Array(data)
+      : new Uint8Array(data.buffer, data.byteOffset, data.byteLength);
+    return { encoding: BINARY_ENCODING, type: data instanceof ArrayBuffer ? 'ArrayBuffer' : data.constructor.name,
+      value: encodeBytes(bytes) };
+  }
+  if (Array.isArray(data) && data.every(value => Number.isInteger(value) && value >= 0 && value <= 255)) {
+    return { encoding: BINARY_ENCODING, type: 'Uint8Array', value: encodeBytes(new Uint8Array(data)) };
+  }
+  throw new Error('La partitura contiene datos no compatibles con una copia de seguridad.');
+}
+
+function restoreScore(data) {
+  if (data == null || typeof data === 'string') return data;
+  if (Array.isArray(data) && data.every(value => Number.isInteger(value) && value >= 0 && value <= 255)) {
+    return new Uint8Array(data);
+  }
+  if (data?.encoding !== BINARY_ENCODING || typeof data.value !== 'string' ||
+      !/^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(data.value)) {
+    throw new Error('La copia contiene una partitura sin bytes recuperables o con formato no compatible.');
+  }
+  const binary = atob(data.value);
+  const bytes = Uint8Array.from(binary, value => value.charCodeAt(0));
+  if (data.type === 'ArrayBuffer') return bytes.buffer;
+  if (data.type === 'Blob') return new Blob([bytes], { type: typeof data.mimeType === 'string' ? data.mimeType : '' });
+  if (data.type === 'DataView') return new DataView(bytes.buffer);
+  if (VIEW_TYPES.has(data.type) && typeof globalThis[data.type] === 'function') return new globalThis[data.type](bytes.buffer);
+  throw new Error('La copia contiene un tipo de partitura no compatible.');
+}
+
+async function serializeSong(song) {
+  if (!song || typeof song !== 'object' || Array.isArray(song) || typeof song.title !== 'string' || !song.title.trim()) {
+    throw new Error('La copia contiene una canción sin título válido.');
+  }
+  return { ...song, data: await serializeScore(song.data),
+    ...(Array.isArray(song.versions) ? { versions: await Promise.all(song.versions.map(serializeSongVersion)) } : {}),
+    ...(Array.isArray(song.versionGroup?.versions) ? { versionGroup: { ...song.versionGroup,
+      versions: await Promise.all(song.versionGroup.versions.map(serializeSongVersion)) } } : {}) };
+}
+
+async function serializeSongVersion(version) {
+  if (!version || typeof version !== 'object' || Array.isArray(version)) return version;
+  return { ...version, data: await serializeScore(version.data) };
+}
+
+function restoreSongVersion(version) {
+  if (!version || typeof version !== 'object' || Array.isArray(version)) return version;
+  return { ...version, data: restoreScore(version.data) };
+}
+
+function restoreSong(song) {
+  if (!song || typeof song !== 'object' || Array.isArray(song) || typeof song.title !== 'string' || !song.title.trim() ||
+      (song.id != null && typeof song.id !== 'string' && typeof song.id !== 'number') ||
+      (typeof song.id === 'number' && !Number.isFinite(song.id))) {
+    throw new Error('La copia contiene una canción no válida.');
+  }
+  return { ...song, data: restoreScore(song.data),
+    ...(Array.isArray(song.versions) ? { versions: song.versions.map(restoreSongVersion) } : {}),
+    ...(Array.isArray(song.versionGroup?.versions) ? { versionGroup: { ...song.versionGroup,
+      versions: song.versionGroup.versions.map(restoreSongVersion) } } : {}) };
+}
 
 export class BackupSyncEngine {
   constructor() {
@@ -26,10 +101,11 @@ export class BackupSyncEngine {
    */
   async exportFullBackup(password = null) {
     try {
-      toast.show('Generando copia de seguridad cifrada...', 'info');
+      toast.show(password ? 'Generando copia de seguridad cifrada...' : 'Generando copia de seguridad...', 'info');
+      if (password && !this.crypto) throw new Error('El cifrado no está disponible en este navegador.');
 
       // 1. Recopilar todas las canciones de IndexedDB
-      const songs = await db.getAllSongs();
+      const songs = await Promise.all((await db.getAllSongs()).map(serializeSong));
 
       // 2. Recopilar analíticas de práctica
       const analytics = practiceTrackerService.exportData();
@@ -47,7 +123,7 @@ export class BackupSyncEngine {
       // 4. Construir payload consolidado
       const payload = {
         signature: BACKUP_SIGNATURE,
-        version: 2.0,
+        version: 3,
         createdAt: new Date().toISOString(),
         device: navigator.userAgent,
         data: {
@@ -110,21 +186,27 @@ export class BackupSyncEngine {
         parsed = JSON.parse(decryptedJson);
       }
 
-      // Validar firma
-      if (!parsed.signature || !parsed.signature.startsWith('AGY_TABS')) {
+      // This identifies the file format; authentication is supplied only by AES-GCM.
+      if (parsed.signature !== BACKUP_SIGNATURE || ![2, 3].includes(parsed.version)) {
         throw new Error('Formato de copia de seguridad no válido o corrupto.');
       }
 
       const { songs, analytics, settings } = parsed.data || {};
+      if (!Array.isArray(songs) || (analytics != null && (typeof analytics !== 'object' || Array.isArray(analytics))) ||
+          (settings != null && (typeof settings !== 'object' || Array.isArray(settings)))) {
+        throw new Error('La estructura de la copia de seguridad no es válida.');
+      }
+      if (analytics && ((analytics.stats != null && (typeof analytics.stats !== 'object' || Array.isArray(analytics.stats))) ||
+          (analytics.sessions != null && !Array.isArray(analytics.sessions)) ||
+          (analytics.milestones != null && !Array.isArray(analytics.milestones)))) {
+        throw new Error('Las analíticas de la copia no son válidas.');
+      }
+      // Validate every score before opening the write transaction. A malformed later
+      // record must not leave earlier songs overwritten by an incomplete restore.
+      const restoredSongs = songs.map(restoreSong);
 
       // 1. Restaurar canciones en IndexedDB
-      let restoredCount = 0;
-      if (Array.isArray(songs) && songs.length > 0) {
-        for (const s of songs) {
-          await db.saveSong(s);
-          restoredCount++;
-        }
-      }
+      const restoredCount = restoredSongs.length ? await db.saveSongsBatch(restoredSongs) : 0;
 
       // 2. Restaurar analíticas de práctica
       if (analytics) {

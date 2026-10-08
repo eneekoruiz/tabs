@@ -1,0 +1,214 @@
+{
+  "datasets": {
+    "vocadito": {
+      "license": "CC-BY-4.0",
+      "source": "https://zenodo.org/records/5578807",
+      "authors": [
+        "Rachel Bittner",
+        "Katherine Pasalo",
+        "Juan José Bosch",
+        "Gabriel Meseguer Brocal",
+        "David Rubinstein"
+      ],
+      "year": 2021
+    },
+    "vocobox": {
+      "license": "MIT",
+      "source": "https://github.com/vocobox/human-voice-dataset"
+    },
+    "fishin": {
+      "license": "CC-BY-3.0",
+      "artist": "Karissa Hobbs",
+      "source": "https://github.com/librosa/data"
+    }
+  },
+  "files": [
+    {
+      "path": "Audio/vocadito_1.wav",
+      "url": "https://raw.githubusercontent.com/mir-dataset-loaders/mirdata/master/tests/resources/mir_datasets/vocadito/Audio/vocadito_1.wav",
+      "size": 2929364,
+      "sha256": "b509768315efad8120183b48e01d6090f1649d5bcc691241940dc7a100274ab8",
+      "name": "vocadito_1.wav"
+    },
+    {
+      "path": "Annotations/F0/vocadito_1_f0.csv",
+      "url": "https://raw.githubusercontent.com/mir-dataset-loaders/mirdata/master/tests/resources/mir_datasets/vocadito/Annotations/F0/vocadito_1_f0.csv",
+      "size": 148647,
+      "sha256": "dd10beba57b94d37b1d3263f5deca3b780adc7ec90f1d43bb00099b02c2878e5",
+      "name": "vocadito_1_f0.csv"
+    },
+    {
+      "path": "Annotations/Notes/vocadito_1_notesA1.csv",
+      "url": "https://raw.githubusercontent.com/mir-dataset-loaders/mirdata/master/tests/resources/mir_datasets/vocadito/Annotations/Notes/vocadito_1_notesA1.csv",
+      "size": 1982,
+      "sha256": "974fdcddce8db5c7bca52e2752d70f6f60efac105a46a6536a11c6f02d33c7b3",
+      "name": "vocadito_1_notesA1.csv"
+    },
+    {
+      "path": "Annotations/Notes/vocadito_1_notesA2.csv",
+      "url": "https://raw.githubusercontent.com/mir-dataset-loaders/mirdata/master/tests/resources/mir_datasets/vocadito/Annotations/Notes/vocadito_1_notesA2.csv",
+      "size": 2087,
+      "sha256": "726bc1527d766e85a9cfbb013c5393be7f93814fdd4ab3bb77f0783232484786",
+      "name": "vocadito_1_notesA2.csv"
+    },
+    {
+      "path": "Annotations/Lyrics/vocadito_1_lyrics.txt",
+      "url": "https://raw.githubusercontent.com/mir-dataset-loaders/mirdata/master/tests/resources/mir_datasets/vocadito/Annotations/Lyrics/vocadito_1_lyrics.txt",
+      "size": 174,
+      "sha256": "d8c942d3daed12a891be8eec899e553783c052c4d73a6470bec9b4a30a8ae274",
+      "name": "vocadito_1_lyrics.txt"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/librosa/data/main/audio/Karissa_Hobbs_-_Lets_Go_Fishin.txt",
+      "size": 254,
+      "sha256": "199bf3408b98916cd9d28a22b2b43c1935ab70072b46fa05c0b9f40e7882802e",
+      "name": "Karissa_Hobbs_-_Lets_Go_Fishin.txt"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/librosa/data/main/audio/Karissa_Hobbs_-_Lets_Go_Fishin.ogg",
+      "size": 734402,
+      "sha256": "27b3667c396c1831511aa3c415fcf582b6e8be560cafb844c5b67b76b72c1cb3",
+      "name": "Karissa_Hobbs_-_Lets_Go_Fishin.ogg"
+    },
+    {
+      "path": "data/voices/martin/notes/exports/mono/A#3.wav",
+      "url": "https://raw.githubusercontent.com/vocobox/human-voice-dataset/master/data/voices/martin/notes/exports/mono/A%233.wav",
+      "size": 89554,
+      "sha256": "ca0404cf34d57e1b7cffe2a269111aef1c10e9dfac995e9407f2601161b86afd",
+      "name": "martin-A#3.wav"
+    },
+    {
+      "path": "data/voices/martin/notes/exports/mono/A#4.wav",
+      "url": "https://raw.githubusercontent.com/vocobox/human-voice-dataset/master/data/voices/martin/notes/exports/mono/A%234.wav",
+      "size": 91912,
+      "sha256": "c41e5411fef3110f8b1680a5d35830932526d9a224a1eded648f8a053edcc127",
+      "name": "martin-A#4.wav"
+    },
+    {
+      "path": "data/voices/martin/notes/exports/mono/A3.wav",
+      "url": "https://raw.githubusercontent.com/vocobox/human-voice-dataset/master/data/voices/martin/notes/exports/mono/A3.wav",
+      "size": 104168,
+      "sha256": "015bd7c8e36f62301886faed572073bff0aae3330ad92471b168bc9b70d076e1",
+      "name": "martin-A3.wav"
+    },
+    {
+      "path": "data/voices/martin/notes/exports/mono/A4.wav",
+      "url": "https://raw.githubusercontent.com/vocobox/human-voice-dataset/master/data/voices/martin/notes/exports/mono/A4.wav",
+      "size": 98196,
+      "sha256": "2564e8fa563ce0578c636304657a482c30de538c09bb851013a162ac59489bde",
+      "name": "martin-A4.wav"
+    },
+    {
+      "path": "data/voices/martin/notes/exports/mono/B3.wav",
+      "url": "https://raw.githubusercontent.com/vocobox/human-voice-dataset/master/data/voices/martin/notes/exports/mono/B3.wav",
+      "size": 97568,
+      "sha256": "2a94fe05d1918f2f83dc3d70bec2a06f32241be4aafb047a9131d7bf03f09cc3",
+      "name": "martin-B3.wav"
+    },
+    {
+      "path": "data/voices/martin/notes/exports/mono/C#3.wav",
+      "url": "https://raw.githubusercontent.com/vocobox/human-voice-dataset/master/data/voices/martin/notes/exports/mono/C%233.wav",
+      "size": 90968,
+      "sha256": "84bcaff56557259e29e593bd65fb7a3b7029c63f12f70836288f32d282baf60a",
+      "name": "martin-C#3.wav"
+    },
+    {
+      "path": "data/voices/martin/notes/exports/mono/C3.wav",
+      "url": "https://raw.githubusercontent.com/vocobox/human-voice-dataset/master/data/voices/martin/notes/exports/mono/C3.wav",
+      "size": 92224,
+      "sha256": "03b4a7cfbd00235b54e118fed5588ab264f7e3af48375dc0bf9d21b17be1e28b",
+      "name": "martin-C3.wav"
+    },
+    {
+      "path": "data/voices/martin/notes/exports/mono/D#2.wav",
+      "url": "https://raw.githubusercontent.com/vocobox/human-voice-dataset/master/data/voices/martin/notes/exports/mono/D%232.wav",
+      "size": 105898,
+      "sha256": "dfe561d2f0d9a1bc753ff65193210b43d597b736841f1474771b1b412ba6ceb1",
+      "name": "martin-D#2.wav"
+    },
+    {
+      "path": "data/voices/martin/notes/exports/mono/D#3.wav",
+      "url": "https://raw.githubusercontent.com/vocobox/human-voice-dataset/master/data/voices/martin/notes/exports/mono/D%233.wav",
+      "size": 105742,
+      "sha256": "5d493f361e9d01cc37971ee65054967f3cf89b0c3bfd21b655c2f73572fd6ab7",
+      "name": "martin-D#3.wav"
+    },
+    {
+      "path": "data/voices/martin/notes/exports/mono/D2.wav",
+      "url": "https://raw.githubusercontent.com/vocobox/human-voice-dataset/master/data/voices/martin/notes/exports/mono/D2.wav",
+      "size": 108256,
+      "sha256": "aeb5d751a9e6d27f10a1f134984da13c59adc291b36458697d630a55f5834836",
+      "name": "martin-D2.wav"
+    },
+    {
+      "path": "data/voices/martin/notes/exports/mono/D3.wav",
+      "url": "https://raw.githubusercontent.com/vocobox/human-voice-dataset/master/data/voices/martin/notes/exports/mono/D3.wav",
+      "size": 110142,
+      "sha256": "8ff6fb8a44e380ca9cbd7e342a6dda93719b03e0106bb8deeb6dc44f34c8758f",
+      "name": "martin-D3.wav"
+    },
+    {
+      "path": "data/voices/martin/notes/exports/mono/E2.wav",
+      "url": "https://raw.githubusercontent.com/vocobox/human-voice-dataset/master/data/voices/martin/notes/exports/mono/E2.wav",
+      "size": 107152,
+      "sha256": "5e16133682408c7ede20930c8ff785b3f8b890b339256a483345628612f6e2d8",
+      "name": "martin-E2.wav"
+    },
+    {
+      "path": "data/voices/martin/notes/exports/mono/E3.wav",
+      "url": "https://raw.githubusercontent.com/vocobox/human-voice-dataset/master/data/voices/martin/notes/exports/mono/E3.wav",
+      "size": 95680,
+      "sha256": "1ffad60e509debb9ebe6037ce1a45f798afac1ffa88401b646d9a2de2d9f4d24",
+      "name": "martin-E3.wav"
+    },
+    {
+      "path": "data/voices/martin/notes/exports/mono/F#2.wav",
+      "url": "https://raw.githubusercontent.com/vocobox/human-voice-dataset/master/data/voices/martin/notes/exports/mono/F%232.wav",
+      "size": 112814,
+      "sha256": "b5c1fffb1e4fb342e58ec24da73d1a317403242614bde0bd2450d6c58863a630",
+      "name": "martin-F#2.wav"
+    },
+    {
+      "path": "data/voices/martin/notes/exports/mono/F#3.wav",
+      "url": "https://raw.githubusercontent.com/vocobox/human-voice-dataset/master/data/voices/martin/notes/exports/mono/F%233.wav",
+      "size": 100712,
+      "sha256": "30cc1147e77db521ce07db05f6c9967fc23db59be321657234497d73f6d1d006",
+      "name": "martin-F#3.wav"
+    },
+    {
+      "path": "data/voices/martin/notes/exports/mono/F2.wav",
+      "url": "https://raw.githubusercontent.com/vocobox/human-voice-dataset/master/data/voices/martin/notes/exports/mono/F2.wav",
+      "size": 123654,
+      "sha256": "a9e89a471461b6448615c1e15c4d07f0bbd41e49c8ee3dde563d78160c886f96",
+      "name": "martin-F2.wav"
+    },
+    {
+      "path": "data/voices/martin/notes/exports/mono/F3.wav",
+      "url": "https://raw.githubusercontent.com/vocobox/human-voice-dataset/master/data/voices/martin/notes/exports/mono/F3.wav",
+      "size": 100710,
+      "sha256": "f74a8af91c43727c172a5728f04a779ad6f4335e3443b6742773d0498343f40d",
+      "name": "martin-F3.wav"
+    },
+    {
+      "path": "data/voices/martin/notes/exports/mono/G#2.wav",
+      "url": "https://raw.githubusercontent.com/vocobox/human-voice-dataset/master/data/voices/martin/notes/exports/mono/G%232.wav",
+      "size": 102442,
+      "sha256": "60e7148c2a798e1539eefd36f1b97e3407ff35dfaaa1671d3b3d547681bf9869",
+      "name": "martin-G#2.wav"
+    },
+    {
+      "path": "data/voices/martin/notes/exports/mono/G#3.wav",
+      "url": "https://raw.githubusercontent.com/vocobox/human-voice-dataset/master/data/voices/martin/notes/exports/mono/G%233.wav",
+      "size": 104484,
+      "sha256": "75b3a3a4a3f610cfc14a4e95c5a796eed1f16e5f139b0fac421ab4a09fa9a6c1",
+      "name": "martin-G#3.wav"
+    },
+    {
+      "path": "data/voices/martin/notes/exports/mono/G3.wav",
+      "url": "https://raw.githubusercontent.com/vocobox/human-voice-dataset/master/data/voices/martin/notes/exports/mono/G3.wav",
+      "size": 103226,
+      "sha256": "1ef52b32672620eab95b18ee21a2cddd8adbf6e38ebba1200ce03b0948dbc39a",
+      "name": "martin-G3.wav"
+    }
+  ]
+}

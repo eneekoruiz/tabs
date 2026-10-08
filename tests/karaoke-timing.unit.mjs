@@ -49,7 +49,7 @@ test('slash bass, extensions, capo and Latin spelling remain musically consisten
   const chord = buildChordBacking({ ...song(), lyricsChords: '[C/E]One' })[0];
   assert.equal(chord.chord, 'C/E');
   assert.ok(chord.frequencies[0] < Math.min(...chord.frequencies.slice(1)));
-  assert.equal(chord.frequencies[0], 329.63 / 2);
+  assert.equal(chord.frequencies[0], 329.63); // Exact piano inversion: E4 below G4 and C5.
 });
 
 test('imported lyric text and section headers are escaped, not interpreted as HTML', () => {
@@ -63,6 +63,7 @@ test('imported lyric text and section headers are escaped, not interpreted as HT
 test('transpose retunes synth voices without moving the clock, but never shifts imported audio', async () => {
   const engine = new KaraokeBackingEngine({ store: memoryStore() });
   await engine.loadSong(song());
+  engine.setMode('synth');
   engine.context = stubContext(); engine.master = engine.context.createGain();
   await engine.play();
   const voice = [...engine.voices][0];
@@ -115,6 +116,7 @@ test('LRC preserves decimal precision, repeated timestamps, gaps and literal tex
 test('synth transport keeps musical position across tempo changes, pause and seek', async () => {
   const engine = new KaraokeBackingEngine({ store: memoryStore() });
   await engine.loadSong(song());
+  engine.setMode('synth');
   engine.context = stubContext(); engine.master = engine.context.createGain();
   await engine.play();
   engine.context.currentTime = 0.75;
@@ -141,6 +143,7 @@ test('synth transport keeps musical position across tempo changes, pause and see
 test('backing beat scheduling follows tempo, without a burst of missed beats', async () => {
   const engine = new KaraokeBackingEngine({ store: memoryStore() });
   await engine.loadSong({ ...song(), lyricsChords: Array(20).fill('[C]One two three four').join('\n') });
+  engine.setMode('synth');
   engine.context = stubContext(); engine.master = engine.context.createGain();
   engine.setTempoBpm(60);
   await engine.play();
@@ -180,6 +183,9 @@ test('duplicate song loads share one pending retrieval', async () => {
   assert.equal(first, second);
   assert.equal(reads, 1);
   finish(undefined); await second;
+  assert.equal(engine.ready, false);
+  assert.equal(engine.mode, 'local');
+  engine.setMode('synth');
   assert.equal(engine.ready, true);
   engine.destroy();
 });
@@ -234,4 +240,13 @@ test('6/8 count-in shares quarter-note BPM convention and preserves mute', () =>
   assert.equal(metronome.getBeatsPerMeasure() * metronome.getBeatSeconds(), 1.5);
   assert.equal(metronome.volume, 0);
   metronome.destroy();
+});
+
+test('a song without a recording never starts generated music implicitly',async()=>{
+ const engine=new KaraokeBackingEngine({store:memoryStore()});
+ await engine.loadSong(song());
+ assert.equal(engine.mode,'local');assert.equal(engine.ready,false);
+ await engine.removeFile();assert.equal(engine.mode,'local');assert.equal(engine.ready,false);
+ engine.setMode('synth');assert.equal(engine.ready,true);
+ engine.destroy();
 });

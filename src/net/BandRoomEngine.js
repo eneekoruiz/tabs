@@ -1,7 +1,8 @@
 /**
  * @file BandRoomEngine.js
  * @description Motor de Ensayos Multijugador y Jamming a Distancia (BandRoom).
- * Implementa WebRTC P2P para streaming de audio de ultrabaja latencia, sincronización
+ * Sincroniza controles entre pestañas del mismo navegador. No transporta audio.
+ * Futuro: sincronización
  * de reproductor vía WebSockets / DataChannels y cursores colaborativos estilo Figma.
  */
 
@@ -92,14 +93,7 @@ export class BandRoomEngine {
       this.channel.onmessage = (msg) => this._handleNetworkMessage(msg.data);
     }
 
-    // Preparar Stream de Audio de Micrófono/Guitarra para WebRTC P2P
-    try {
-      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-        this.localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
-      }
-    } catch (e) {
-      console.warn('[BandRoom] Micrófono WebRTC no accesible o mockeado:', e);
-    }
+    // This local control channel carries no audio and needs no microphone.
   }
 
   _handleNetworkMessage(data) {

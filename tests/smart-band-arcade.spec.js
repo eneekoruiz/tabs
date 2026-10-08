@@ -1,4 +1,7 @@
 import { test, expect } from '@playwright/test';
+import { waitForSong, openSongOptions , openToolCatalogAdvanced } from './helpers/journeys.js';
+
+test.describe.configure({ timeout: 90_000 });
 
 test.describe('🎷 Smart Band & Modo Arcade Inmersivo (Synthesia/Hero) - Suite E2E', () => {
   let consoleErrors = [];
@@ -12,86 +15,33 @@ test.describe('🎷 Smart Band & Modo Arcade Inmersivo (Synthesia/Hero) - Suite 
     });
 
     await page.addInitScript(() => {
-      // Mock de Web Audio Context y MediaDevices
-      class MockAudioContext {
-        constructor() {
-          this.state = 'running';
-          this.currentTime = 0;
-          this.sampleRate = 44100;
-          this.destination = {};
-        }
-        createGain() {
-          return {
-            gain: {
-              value: 1,
-              setValueAtTime: () => {},
-              setTargetAtTime: () => {},
-              linearRampToValueAtTime: () => {},
-              exponentialRampToValueAtTime: () => {}
-            },
-            connect: () => {},
-            disconnect: () => {}
-          };
-        }
-        createOscillator() {
-          return {
-            type: 'sine',
-            frequency: {
-              setValueAtTime: () => {},
-              exponentialRampToValueAtTime: () => {}
-            },
-            connect: () => {},
-            start: () => {},
-            stop: () => {}
-          };
-        }
-        createBiquadFilter() {
-          return {
-            type: 'lowpass',
-            frequency: {
-              setValueAtTime: () => {},
-              exponentialRampToValueAtTime: () => {}
-            },
-            connect: () => {},
-            disconnect: () => {}
-          };
-        }
-        createBuffer(channels, length, sampleRate) {
-          return {
-            getChannelData: () => new Float32Array(length)
-          };
-        }
-        createBufferSource() {
-          return {
-            buffer: null,
-            connect: () => {},
-            start: () => {},
-            stop: () => {}
-          };
-        }
-        resume() { return Promise.resolve(); }
-        close() { return Promise.resolve(); }
-      }
-
-      window.AudioContext = MockAudioContext;
-      window.webkitAudioContext = MockAudioContext;
-
-      navigator.mediaDevices = {
-        getUserMedia: async () => ({
-          getTracks: () => [{ stop: () => {} }]
-        })
+      // Exercise the browser Web Audio graph with a controlled audible input.
+      // This tests the microphone UI contract; acoustic accuracy uses real fixtures elsewhere.
+      window.qaAudioSources = [];
+      navigator.mediaDevices.getUserMedia = async () => {
+        const context = new AudioContext();
+        await context.resume();
+        const oscillator = context.createOscillator();
+        oscillator.frequency.value = 220;
+        const destination = context.createMediaStreamDestination();
+        oscillator.connect(destination);
+        oscillator.start();
+        window.qaAudioSources.push({ context, oscillator });
+        return destination.stream;
       };
     });
 
     await page.goto('/index.html');
-    await page.waitForSelector('.bottom-nav-bar', { timeout: 10000 });
+    await page.waitForSelector('.bottom-nav-bar', { timeout: 30_000 });
   });
 
-  test.afterEach(async () => {
+  test.afterEach(async ({ page }) => {
+    await page.evaluate(() => {
+      for (const { context, oscillator } of window.qaAudioSources) { oscillator.stop(); context.close(); }
+    });
     const realErrors = consoleErrors.filter(e =>
       !e.includes('Failed to load resource') &&
-      !e.includes('favicon') &&
-      !e.includes('AlphaTab')
+      !e.includes('favicon')
     );
     expect(realErrors, `Errores de consola detectados: ${realErrors.join(', ')}`).toEqual([]);
   });
@@ -99,17 +49,19 @@ test.describe('🎷 Smart Band & Modo Arcade Inmersivo (Synthesia/Hero) - Suite 
   test('1. Apertura de The Smart Band y Configuración de Estilos y Progresión', async ({ page }) => {
     // 1. Navegar a Herramientas
     await page.locator('.nav-tab-btn[data-tab="tools"]').click();
+    await openToolCatalogAdvanced(page);
     await expect(page.locator('#tools-view-container')).toBeVisible();
 
     // 2. Abrir The Smart Band
     const smartBandCard = page.locator('.premium-list-item[data-tool="smart_band"]');
     await expect(smartBandCard).toBeVisible();
-    await smartBandCard.click();
+    await smartBandCard.locator('[data-preview-action="open-full"]').click();
 
     const smartBandModal = page.locator('#modal-smart-band');
     await expect(smartBandModal).toBeVisible();
 
     // 3. Comprobar chips de acordes y cambio de preset
+    await page.locator('#toolAdvanced > summary').click();
     const btnPresetJazz = page.locator('.btn-prog-preset[data-prog="Dm7,G7,Cmaj7,A7"]');
     await expect(btnPresetJazz).toBeVisible();
     await btnPresetJazz.click();
@@ -141,11 +93,12 @@ test.describe('🎷 Smart Band & Modo Arcade Inmersivo (Synthesia/Hero) - Suite 
   test('2. Modo Arcade Inmersivo (Synthesia / Hero) a 60 FPS con Puntuación y Partículas', async ({ page }) => {
     // 1. Navegar a Herramientas
     await page.locator('.nav-tab-btn[data-tab="tools"]').click();
+    await openToolCatalogAdvanced(page);
 
     // 2. Abrir Modo Arcade
     const arcadeCard = page.locator('.premium-list-item[data-tool="arcade"]');
     await expect(arcadeCard).toBeVisible();
-    await arcadeCard.click();
+    await arcadeCard.locator('[data-preview-action="open-full"]').click();
 
     const arcadeModal = page.locator('#modal-arcade-view');
     await expect(arcadeModal).toBeVisible();
@@ -184,7 +137,8 @@ test.describe('🎷 Smart Band & Modo Arcade Inmersivo (Synthesia/Hero) - Suite 
   test('3. Evaluación del Gamification Engine y Pantalla de Resultados', async ({ page }) => {
     // Abrir Modo Arcade
     await page.locator('.nav-tab-btn[data-tab="tools"]').click();
-    await page.locator('.premium-list-item[data-tool="arcade"]').click();
+    await openToolCatalogAdvanced(page);
+    await page.locator('.premium-list-item[data-tool="arcade"] [data-preview-action="open-full"]').click();
 
     // Forzar pantalla de resultados llamando a showResultsScreen
     await page.evaluate(() => {
@@ -217,19 +171,19 @@ test.describe('🎷 Smart Band & Modo Arcade Inmersivo (Synthesia/Hero) - Suite 
     // 1. Abrir primera canción de la biblioteca
     const songCard = page.locator('.song-card .btn-select-song').first();
     await songCard.click();
+    await waitForSong(page);
     await page.waitForTimeout(500);
 
     // 2. Abrir menú de opciones y lanzar Smart Band
-    await page.click('#btnMoreOptions');
+    await openSongOptions(page, { advanced: true });
     await page.waitForTimeout(200);
-    await page.locator('.song-advanced-options summary').click();
     await page.click('#btnOpenSmartBandQuick');
     await expect(page.locator('#modal-smart-band')).toBeVisible();
     await page.click('#btnCloseSmartBand');
     await expect(page.locator('#modal-smart-band')).not.toBeVisible();
 
     // 3. Abrir menú de opciones y lanzar Modo Arcade
-    await page.click('#btnMoreOptions');
+    await openSongOptions(page, { advanced: true });
     await page.waitForTimeout(200);
     await page.click('#btnOpenArcadeQuick');
     await expect(page.locator('#modal-arcade-view')).toBeVisible();

@@ -71,7 +71,7 @@ export class SmartBandTool extends Component {
                 <h3 class="section-title">1. Progresión de Acordes de la Canción</h3>
                 <span class="song-ref-badge">${escapeHTML(currentSong?.title || 'Jam Libre')}</span>
               </div>
-              <div class="chords-chips-row" id="smartBandChordsRow">
+              <div class="chords-chips-row" id="smartBandChordsRow" tabindex="0" role="group" aria-label="Progresión de acompañamiento">
                 ${chords.map((chord, idx) => `
                   <div class="chord-chip ${idx === this.engine.currentChordIndex ? 'active' : ''}" data-index="${idx}">
                     <span class="chord-name">${escapeHTML(chord)}</span>

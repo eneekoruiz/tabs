@@ -13,9 +13,13 @@ import { audioEngine } from '../core/AudioEngineV2.js';
 import { searchEngine } from '../data/SearchEngine.js';
 import { onlineSongProvider } from '../data/OnlineSongProvider.js';
 import { toast } from './Toast.js';
-import { VersionPickerModal } from './lyrics/VersionPickerModal.js';
 import { SessionRecovery } from '../data/SessionRecovery.js';
 import { assessSong } from '../data/catalog/CatalogQuality.js';
+import { foldControls } from './ProgressiveDisclosure.js';
+import { getPublicVocalReferences, loadPublicVocalReference } from '../data/PublicVocalReferences.js';
+import { parseVocalReference } from '../audio/VocalReference.js';
+import { getOnlineKaraokeCatalog, loadOnlineKaraoke } from '../data/OnlineKaraokeCatalog.js';
+import { loadReadyKaraoke, getReadyKaraokes } from '../data/ReadyKaraokePractice.js';
 
 export class HomeViewV2 extends Component {
   constructor(container) {
@@ -38,12 +42,14 @@ export class HomeViewV2 extends Component {
     this.exploreMode = 'songs'; // 'songs' | 'artists'
     this.activeArtistFilter = null;
     this.debounceTimer = null;
+    this.loadMoreObserver = null;
     this.documentClickHandler = this.handleDocumentClick.bind(this);
 
     this.ensureStylesheet();
     document.addEventListener('click', this.documentClickHandler);
     this.registerUnsub(() => document.removeEventListener('click', this.documentClickHandler));
     this.registerUnsub(() => clearTimeout(this.debounceTimer));
+    this.registerUnsub(() => this.loadMoreObserver?.disconnect());
     this.initEvents();
   }
 
@@ -263,6 +269,7 @@ export class HomeViewV2 extends Component {
     const next = searches.filter((entry) => searchEngine.normalize(entry.query) !== normalizedQuery);
     next.unshift({ query: cleanQuery, count: (previous?.count || 0) + 1, lastUsed: Date.now() });
     this.saveRecentSearches(next);
+    this.refreshRecentsDropdown();
   }
 
   removeRecentSearch(query) {
@@ -300,19 +307,16 @@ export class HomeViewV2 extends Component {
           </div>
 
           <div class="explore-search-container-row discovery-search-row">
-            <div class="explore-search-box" id="exploreSearchBoxWrapper" style="position: relative; display: flex; align-items: center;">
+            <div class="explore-search-box" id="exploreSearchBoxWrapper">
               <svg class="search-svg-icon" viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true">
                 <path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0-2.27 6.23l.27.28v.79l5 4.99L20.49 19l-4.99-5ZM9.5 14A4.5 4.5 0 1 1 14 9.5 4.51 4.51 0 0 1 9.5 14Z"/>
               </svg>
-              <input type="search" id="exploreSearchInput" class="explore-search-input" placeholder="Buscar canción o artista" value="${this.escapeHTML(this.searchQuery)}" aria-label="Buscar en el catálogo" aria-controls="discoveryResults" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" style="padding-right: 80px;">
+              <input type="search" id="exploreSearchInput" class="explore-search-input" placeholder="Buscar canción o artista" value="${this.escapeHTML(this.searchQuery)}" aria-label="Buscar en el catálogo" aria-controls="discoveryResults" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
               
-              <div style="position: absolute; right: 12px; display: flex; align-items: center; gap: 4px;">
-                <button class="btn-clear-search" id="btnClearExploreSearch" type="button" aria-label="Limpiar búsqueda" style="position: static;" ${this.searchQuery ? '' : 'hidden'}>×</button>
-                <button class="btn-icon-minimal" id="btnImportYouTubeAI" type="button" aria-label="Añadir canción" title="Añadir canción" style="background: transparent; border: none; color: var(--text-secondary); cursor: pointer; display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 50%; transition: all 0.2s;">
+              <div class="explore-search-actions">
+                <button class="btn-clear-search" id="btnClearExploreSearch" type="button" aria-label="Limpiar búsqueda" ${this.searchQuery ? '' : 'hidden'}>×</button>
+                <button class="btn-icon-minimal" id="btnImportYouTubeAI" type="button" aria-label="Añadir canción" title="Añadir canción">
                   ${icon('Plus', 20)}
-                </button>
-              </div>
-
                 </button>
               </div>
 
@@ -353,6 +357,13 @@ export class HomeViewV2 extends Component {
         ${this.renderPracticeHub()}
 
         <div class="explore-secondary-bars">
+          <details class="app-disclosure" id="publicVocalCatalog"><summary>Melodías disponibles para cantar</summary><div class="app-disclosure-body">
+            <label class="ready-karaoke-choice">Canciones con audio real <select id="readyKaraokeChoiceAdvanced" aria-label="Elegir una canción con audio real"></select></label><button type="button" id="btnTryReadyKaraokeAdvanced">Cantar con pista instrumental</button>
+            <p>Referencias comunitarias de notas y tiempos. Importa el audio de la versión correspondiente; la afinación admite otras octavas.</p>
+            <label>Buscar melodía <input id="publicVocalSearch" type="search" placeholder="Canción o artista"></label>
+            <div id="publicVocalResults" role="group" aria-label="Referencias disponibles"></div>
+            <a href="https://github.com/rakuri255/UltraSinger" target="_blank" rel="noopener noreferrer">Crear más referencias desde tus grabaciones con UltraSinger</a>
+          </div></details>
           <details class="catalog-audit-panel">
             <summary>Estado del catálogo <span>Contenido disponible ≠ canción verificada</span></summary>
             <div id="catalogQualitySummary">${this.renderQualitySummary()}</div>
@@ -393,6 +404,10 @@ export class HomeViewV2 extends Component {
         </section>
       </div>
     `;
+    const view = this.container.querySelector('.explore-view');
+    foldControls(this.container, [this.container.querySelector('.explore-search-filters-inline'), this.container.querySelector('#exploreGenreDropdownFilter'), this.container.querySelector('.catalog-quality-filter'), this.container.querySelector('.explore-secondary-bars')], {
+      id: 'exploreAdvanced', label: 'Filtros y más opciones', owner: this, parent: view, before: view.querySelector('.explore-songs-section')
+    });
     this.bindEvents();
   }
 
@@ -425,12 +440,10 @@ export class HomeViewV2 extends Component {
       return `
         <section class="practice-hub practice-hub-empty" aria-labelledby="practiceHubTitle">
           <div class="practice-hub-copy">
-            <span class="practice-hub-kicker">EMPIEZA EN 5 SEGUNDOS</span>
-            <h2 id="practiceHubTitle">Busca una canción y empieza a tocar.</h2>
+            <span class="practice-hub-kicker">ELIGE TU CANCIÓN</span>
+            <h2 id="practiceHubTitle">Busca, abre y practica.</h2>
             <p>Tu biblioteca, preferencias y progreso se guardan automáticamente en este dispositivo.</p>
-          </div>
-          <div class="practice-hub-steps" aria-label="Cómo empezar">
-            <span><b>1</b> Busca</span><span><b>2</b> Abre</span><span><b>3</b> Practica</span>
+            <label class="ready-karaoke-choice">Canciones con audio real <select id="readyKaraokeChoice" aria-label="Elegir una canción con audio real"><option value="shearer-stay-with-me">Stay with me · Shearer</option></select></label><button type="button" id="btnTryReadyKaraoke">Cantar con pista instrumental</button>
           </div>
         </section>
       `;
@@ -442,6 +455,7 @@ export class HomeViewV2 extends Component {
           <div><span class="practice-hub-kicker">TU SESIÓN</span><h2 id="practiceHubTitle">Continúa practicando</h2></div>
           <span class="practice-hub-save">Guardado local automático</span>
         </div>
+        <label class="ready-karaoke-choice">Cantar ahora <select id="readyKaraokeChoice" aria-label="Elegir una canción con audio real"><option value="shearer-stay-with-me">Stay with me · Shearer</option></select></label><button type="button" id="btnTryReadyKaraoke">Cantar con pista instrumental</button>
         <div class="practice-hub-grid">
           ${recentSongs.map((song, index) => `
             <button class="practice-song-card btn-load-recent-song" type="button" ${index === 0 && this.savedPractice ? 'data-resume-snapshot="true"' : ''} data-id="${this.escapeHTML(song.id || '')}" data-title="${this.encodeData(song.title)}" data-artist="${this.encodeData(song.artist)}">
@@ -561,13 +575,14 @@ export class HomeViewV2 extends Component {
     `;
   }
 
-  selectArtist(artistName) {
+  async selectArtist(artistName) {
     this.activeArtistFilter = artistName;
     this.searchQuery = artistName;
     this.exploreMode = 'songs';
     const input = this.container.querySelector('#exploreSearchInput');
     if (input) input.value = artistName;
-    this.loadExploreData({ showSkeleton: true });
+    await this.loadExploreData({ showSkeleton: true });
+    this.container.querySelector('#btnClearArtistFilter')?.focus({ preventScroll: true });
   }
 
   renderArtistDirectory() {
@@ -617,37 +632,32 @@ export class HomeViewV2 extends Component {
     const allArtists = [...curatedList, ...remainingList];
 
     return `
-      <div class="artist-directory-view" style="width: 100%;">
-        <div style="margin-bottom: 18px;">
-          <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--text-primary); margin: 0 0 4px 0;">Artistas y Grupos Legendarios</h3>
-          <p style="font-size: 0.84rem; color: var(--text-secondary); margin: 0;">Elige un artista para ver sus canciones y acordes disponibles:</p>
+      <div class="artist-directory-view">
+        <div class="artist-directory-heading">
+          <h3>Artistas y grupos</h3>
+          <p>Elige un artista para ver su repertorio disponible.</p>
         </div>
-        <div class="artist-directory-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px;">
+        <div class="artist-directory-grid">
           ${allArtists.slice(0, 50).map((artist) => {
             const hits = artist.songs.slice(0, 3).map(s => this.escapeHTML(s)).join(' · ');
             const cleanGenre = this.normalizeGenre(artist.genre);
             return `
-              <article class="artist-card-item" data-artist="${this.encodeData(artist.name)}" style="background: var(--bg-surface-solid); border: 1px solid var(--border-subtle); border-radius: 14px; padding: 16px; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s; display: flex; flex-direction: column; justify-content: space-between; gap: 10px;">
-                <div style="display: flex; align-items: center; gap: 12px;">
-                  <div style="width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, rgba(255,87,34,0.18), rgba(0,229,255,0.18)); border: 1px solid rgba(255,87,34,0.3); display: flex; align-items: center; justify-content: center; font-size: 1.3rem; flex-shrink: 0;">
-                    🎙️
-                  </div>
-                  <div style="min-width: 0;">
-                    <h4 style="margin: 0; font-size: 1.05rem; font-weight: 800; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${this.escapeHTML(artist.name)}</h4>
-                    <span style="font-size: 0.74rem; font-weight: 700; color: var(--accent-primary); text-transform: uppercase;">${this.escapeHTML(cleanGenre)}</span>
-                  </div>
-                </div>
+              <button type="button" class="artist-card-item" data-artist="${this.encodeData(artist.name)}" aria-label="Explorar ${this.escapeHTML(artist.name)}">
+                <span class="artist-card-header">
+                  <span class="artist-card-monogram" aria-hidden="true">${this.escapeHTML(Array.from(artist.name)[0])}</span>
+                  <span class="artist-card-meta">
+                    <strong class="artist-card-name">${this.escapeHTML(artist.name)}</strong>
+                    <span class="artist-card-genre">${this.escapeHTML(cleanGenre)}</span>
+                  </span>
+                </span>
                 ${hits ? `
-                  <div style="font-size: 0.78rem; color: var(--text-secondary); line-height: 1.35;">
-                    <span style="color: var(--text-muted); font-size: 0.7rem; text-transform: uppercase; font-weight: 700; display: block; margin-bottom: 2px;">Éxitos:</span>
+                  <span class="artist-card-songs">
+                    <span class="artist-card-kicker">En el catálogo</span>
                     ${hits}
-                  </div>
+                  </span>
                 ` : ''}
-                <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 8px; border-top: 1px solid var(--border-subtle);">
-                  <span style="font-size: 0.76rem; font-weight: 700; color: var(--text-secondary);">Ver repertorio</span>
-                  <span style="font-size: 0.8rem; font-weight: 800; color: var(--accent-primary);">Explorar →</span>
-                </div>
-              </article>
+                <span class="artist-card-footer"><span>Ver repertorio</span><span aria-hidden="true">→</span></span>
+              </button>
             `;
           }).join('')}
         </div>
@@ -777,6 +787,48 @@ export class HomeViewV2 extends Component {
   }
 
   bindEvents() {
+    void Promise.all([getReadyKaraokes(),getOnlineKaraokeCatalog().catch(()=>({matches:[]}))]).then(([packs,online])=>{
+      this.container.querySelectorAll('#readyKaraokeChoice, #readyKaraokeChoiceAdvanced').forEach(select=>{
+        const groups=[true,false].map(instrumental=>{
+          const group=document.createElement('optgroup');group.label=instrumental?'Pistas instrumentales · karaoke':'Grabaciones con voz · cantar acompañado';
+          for(const pack of packs.filter(pack=>Boolean(pack.files.instrumental)===instrumental)) {const option=document.createElement('option');option.value=pack.id;option.textContent=pack.title+' · '+pack.artist;option.selected=pack.id==='shearer-stay-with-me';group.append(option);}return group;
+        });
+        const onlineGroup=document.createElement('optgroup'); onlineGroup.label='Karaoke online · requiere internet';
+        for(const track of online.matches) {const option=document.createElement('option');option.value='online:'+track.videoId;option.textContent=track.title+' · '+track.artist;onlineGroup.append(option);}
+        select.replaceChildren(...groups,...(online.matches.length?[onlineGroup]:[]));
+        const button=this.container.querySelector(select.id==='readyKaraokeChoice'?'#btnTryReadyKaraoke':'#btnTryReadyKaraokeAdvanced');
+        select.addEventListener('change',()=>{if(button)button.textContent=select.value.startsWith('online:')?'Abrir karaoke online':packs.find(pack=>pack.id===select.value)?.files.instrumental?'Cantar con pista instrumental':'Cantar con voz original';});
+      });
+    }).catch(()=>{});
+    this.container.querySelectorAll('#btnTryReadyKaraoke, #btnTryReadyKaraokeAdvanced').forEach(button => button.addEventListener('click', async event => {
+      const button=event.currentTarget; button.disabled=true;
+      try { const choice=this.container.querySelector(button.id==='btnTryReadyKaraoke'?'#readyKaraokeChoice':'#readyKaraokeChoiceAdvanced'); const song=choice?.value.startsWith('online:')?await loadOnlineKaraoke(choice.value.slice(7)):await loadReadyKaraoke({packId:choice?.value || 'shearer-stay-with-me'}); state.set('activeSong',song); events.emit('ui:switchTab','player'); events.emit('ui:loadLyricsSong',song); }
+      catch(error){ toast.show(error.message,'error',3000); }
+      finally { if(button.isConnected)button.disabled=false; }
+    }));
+    const publicCatalog=this.container.querySelector('#publicVocalCatalog');
+    const referenceSearch=this.container.querySelector('#publicVocalSearch');
+    let references;
+    const showReferences=async()=>{
+      try {
+        references ||= await getPublicVocalReferences();
+        const query=String(referenceSearch?.value||'').toLocaleLowerCase('es');
+        const found=references.filter(r=>(r.title+' '+r.artist).toLocaleLowerCase('es').includes(query));
+        const host=this.container.querySelector('#publicVocalResults'); if(!host)return;
+        host.innerHTML='<p>'+found.length+' referencias · se muestran hasta 12</p>'+found.slice(0,12).map(ref=>'<button type="button" data-open-vocal="'+ref.id+'">'+this.escapeHTML(ref.title)+' · '+this.escapeHTML(ref.artist)+'</button>').join('');
+        host.querySelectorAll('[data-open-vocal]').forEach(button=>button.addEventListener('click',async()=>{
+          button.disabled=true;
+          try {
+            const ref=references.find(r=>r.id===button.dataset.openVocal), file=await loadPublicVocalReference(ref), parsed=parseVocalReference(await file.text());
+            const song={id:'vocal-'+ref.id,versionId:ref.id,title:ref.title,artist:ref.artist,vocalMelody:parsed.vocalMelody,referenceInfo:parsed.referenceInfo,
+              lyricsChords:onlineSongProvider.getKnownSongLyrics(ref.title,ref.artist)||'{comment:Referencia de notas sin letra. Importa un LRC para añadir palabras.}',contentSource:'community_vocal_reference',_practiceRecovery:{performanceMode:'sing',karaokePositionMs:0}};
+            state.set('activeSong',song);events.emit('ui:switchTab','player');events.emit('ui:loadLyricsSong',song);
+          } catch(error){toast.show(error.message,'error',3000);} finally{if(button.isConnected)button.disabled=false;}
+        }));
+      }catch(error){toast.show(error.message,'error',3000);}
+    };
+    publicCatalog?.addEventListener('toggle',()=>{if(publicCatalog.open)void showReferences();});
+    referenceSearch?.addEventListener('input',()=>void showReferences());
     this.container.querySelector('#catalogQualityFilter')?.addEventListener('change', event => {
       this.qualityFilter = event.target.value;
       this.exploreMode = 'songs';
@@ -820,6 +872,18 @@ export class HomeViewV2 extends Component {
       } else if (event.key === 'Escape') {
         recents.hidden = true;
       }
+    });
+    const searchBox = this.container.querySelector('#exploreSearchBoxWrapper');
+    searchBox?.addEventListener('keydown', event => {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        event.stopPropagation();
+        input.focus();
+        recents.hidden = true;
+      }
+    });
+    searchBox?.addEventListener('focusout', event => {
+      if (!searchBox.contains(event.relatedTarget)) recents.hidden = true;
     });
 
     this.container.querySelector('#btnClearExploreSearch')?.addEventListener('click', () => {
@@ -877,6 +941,7 @@ export class HomeViewV2 extends Component {
       });
     });
     const btnLoadMore = this.container.querySelector('#btnLoadMoreSongs');
+    this.loadMoreObserver?.disconnect();
     if (btnLoadMore) {
       btnLoadMore.addEventListener('click', () => {
         this.visibleLimit += 60;
@@ -885,14 +950,14 @@ export class HomeViewV2 extends Component {
 
       // Paginación infinita fluida
       if ('IntersectionObserver' in window) {
-        const observer = new IntersectionObserver((entries) => {
-          if (entries[0].isIntersecting && !btnLoadMore.hidden) {
+        this.loadMoreObserver = new IntersectionObserver((entries) => {
+          if (entries[0].isIntersecting && !btnLoadMore.hidden && !this.isSearching && this.exploreMode === 'songs') {
             this.visibleLimit += 60;
             // Quitamos showSkeleton para que sea invisible al usuario
             this.loadExploreData(); 
           }
         }, { rootMargin: '400px' }); // Cargar antes de que el usuario llegue al final
-        observer.observe(btnLoadMore);
+        this.loadMoreObserver.observe(btnLoadMore);
       }
     }
     this.container.querySelector('#btnOpenSongImporterHero')?.addEventListener('click', () => events.emit('ui:openSongImporter', this.searchQuery));
@@ -950,13 +1015,16 @@ export class HomeViewV2 extends Component {
 
   bindDynamicEvents() {
     this.container.querySelector('#btnCreateMissingSong')?.addEventListener('click', () => events.emit('ui:openSongImporter', this.searchQuery));
-    this.container.querySelector('#btnClearArtistFilter')?.addEventListener('click', () => {
+    this.container.querySelector('#btnClearArtistFilter')?.addEventListener('click', async () => {
+      const previousArtist = this.activeArtistFilter;
       this.activeArtistFilter = null;
       this.searchQuery = '';
       const input = this.container.querySelector('#exploreSearchInput');
       if (input) input.value = '';
       this.exploreMode = 'artists';
-      this.loadExploreData();
+      await this.loadExploreData();
+      [...this.container.querySelectorAll('.artist-card-item')]
+        .find(card => this.decodeData(card.dataset.artist) === previousArtist)?.focus({ preventScroll: true });
     });
     this.container.querySelectorAll('.artist-card-item').forEach((card) => {
       card.addEventListener('click', () => {
@@ -995,7 +1063,10 @@ export class HomeViewV2 extends Component {
 
     this.container.querySelectorAll('.discovery-song-card').forEach((card) => {
       const groupKey = this.decodeData(card.dataset.groupKey);
-      card.addEventListener('focusin', () => this.selectGroup(groupKey, false));
+      card.addEventListener('focusin', event => {
+        // Updating the detail pane during a pointer press can move the open button.
+        if (event.target.matches(':focus-visible')) this.selectGroup(groupKey, false);
+      });
       card.addEventListener('click', (event) => {
         if (event.target.closest('.btn-load-explore-song, .catalog-version-select')) return;
         const isMobile = window.innerWidth <= 900 || ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
@@ -1009,7 +1080,7 @@ export class HomeViewV2 extends Component {
         this.openGroupVersion(groupKey, undefined, true);
       });
     });
-    // Botón "Abrir" de las tarjetas del catálogo: sin índice forzado → activa el picker si hay >1 versiones
+    // Abrir uses the selected/default version; details and song options expose alternatives.
     this.container.querySelectorAll('.btn-load-explore-song').forEach((button) => {
       button.addEventListener('click', () => this.openGroupVersion(this.decodeData(button.dataset.groupKey)));
     });
@@ -1128,24 +1199,11 @@ export class HomeViewV2 extends Component {
     };
   }
 
-  async openGroupVersion(groupKey, requestedIndex, forceDirect = false) {
+  async openGroupVersion(groupKey, requestedIndex) {
     const group = this.songGroups.find((item) => item.groupKey === groupKey);
     if (!group) return;
 
-    const isAutomatedTest = typeof window !== 'undefined' && Boolean(window.__IS_TESTING__ || navigator.webdriver);
-    if (group.versions.length > 1 && !forceDirect && requestedIndex === undefined && !isAutomatedTest) {
-      const fullContext = await this.getVersionContext(group, 0);
-      VersionPickerModal.open({
-        title: group.title,
-        artist: group.artist,
-        versions: fullContext.versions,
-        onSelect: (selectedVer, idx) => {
-          this.openGroupVersion(groupKey, idx, true);
-        }
-      });
-      return;
-    }
-
+    // Open the selected/default arrangement in one step; other versions stay in the song options.
     const versionIndex = Number.isFinite(requestedIndex)
       ? Math.min(Math.max(0, requestedIndex), group.versions.length - 1)
       : this.getSelectedVersionIndex(group);

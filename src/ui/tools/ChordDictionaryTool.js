@@ -10,7 +10,7 @@ import { toast } from '../Toast.js';
 export class ChordDictionaryTool {
   constructor() {
     this.root = 'C';
-    this.quality = 'maj7';
+    this.quality = 'maj';
     this.instrument = 'guitar';
   }
 
@@ -47,7 +47,7 @@ export class ChordDictionaryTool {
                 <h2>Diccionario Visual de Acordes</h2>
               </div>
             </div>
-            <button class="btn-close-tool-modal" id="btnCloseToolModal">✕</button>
+            <button class="btn-close-tool-modal" id="btnCloseToolModal" aria-label="Cerrar diccionario">✕</button>
           </div>
 
           <div class="tool-panoramic-layout">
@@ -59,12 +59,16 @@ export class ChordDictionaryTool {
                   <button class="dict-inst-btn ${this.instrument === 'ukulele' ? 'active' : ''}" data-inst="ukulele">🏝️ Ukelele</button>
                 </div>
 
+                <div class="dict-essential-selects">
+                  <label>Nota <select id="selDictRoot">${roots.map(root => '<option value="' + root + '" ' + (root===this.root?'selected':'') + '>' + root + '</option>').join('')}</select></label>
+                  <label>Tipo <select id="selDictQuality">${qualities.map(q => '<option value="' + q.id + '" ' + (q.id===this.quality?'selected':'') + '>' + q.label + '</option>').join('')}</select></label>
+                </div>
                 <div class="dict-group">
                   <div class="dict-group-header-row" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
                     <label class="metro-param-label" style="margin: 0;">Tónica / Fundamental</label>
                     <div class="accidental-segmented-control" style="display: inline-flex; background: rgba(255,255,255,0.06); border-radius: 8px; padding: 2px; border: 1px solid var(--border-subtle, rgba(255,255,255,0.12));">
-                      <button class="btn-dict-accidental ${pref === 'sharps' ? 'active' : ''}" data-accidental="sharps" type="button" style="padding: 2px 8px; font-size: 11px; font-weight: 700; border: none; border-radius: 6px; cursor: pointer; background: ${pref === 'sharps' ? 'var(--accent-primary, #ff5722)' : 'transparent'}; color: #fff;">♯ Sostenidos</button>
-                      <button class="btn-dict-accidental ${pref === 'flats' ? 'active' : ''}" data-accidental="flats" type="button" style="padding: 2px 8px; font-size: 11px; font-weight: 700; border: none; border-radius: 6px; cursor: pointer; background: ${pref === 'flats' ? 'var(--accent-primary, #ff5722)' : 'transparent'}; color: #fff;">♭ Bemoles</button>
+                      <button class="btn-dict-accidental ${pref === 'sharps' ? 'active' : ''}" data-accidental="sharps" type="button" style="padding: 2px 8px; font-size: 11px; font-weight: 700; border: none; border-radius: 6px; cursor: pointer; background: ${pref === 'sharps' ? 'var(--accent-primary, #ff5722)' : 'transparent'}; color: ${pref === 'sharps' ? 'var(--text-inverse)' : 'var(--text-primary)'};">♯ Sostenidos</button>
+                      <button class="btn-dict-accidental ${pref === 'flats' ? 'active' : ''}" data-accidental="flats" type="button" style="padding: 2px 8px; font-size: 11px; font-weight: 700; border: none; border-radius: 6px; cursor: pointer; background: ${pref === 'flats' ? 'var(--accent-primary, #ff5722)' : 'transparent'}; color: ${pref === 'flats' ? 'var(--text-inverse)' : 'var(--text-primary)'};">♭ Bemoles</button>
                     </div>
                   </div>
                   <div class="dict-pill-grid">

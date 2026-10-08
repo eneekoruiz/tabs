@@ -111,7 +111,7 @@ export class CircleOfFifthsTool {
     });
 
     return `
-      <svg width="320" height="320" viewBox="0 0 320 320" class="circle-of-fifths-svg" role="img" aria-label="Círculo de quintas">
+      <svg width="320" height="320" viewBox="0 0 320 320" class="circle-of-fifths-svg" role="group" aria-label="Círculo de quintas">
         <circle cx="${cx}" cy="${cy}" r="${minorR}" fill="rgba(18,18,24,0.95)" stroke="rgba(255,255,255,0.1)"/>
         <text x="${cx}" y="${cy - 8}" text-anchor="middle" fill="#ff5722" font-size="16" font-weight="bold">${ChordProParser.formatChordDisplay(selectedKey)} M</text>
         <text x="${cx}" y="${cy + 12}" text-anchor="middle" fill="rgba(0,229,255,0.9)" font-size="11">Rel: ${ChordProParser.formatChordDisplay(minorKeys[keysOrder.indexOf(selectedKey)])}</text>

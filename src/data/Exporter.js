@@ -6,9 +6,10 @@
  * - Archivos estándar MusicXML (.musicxml / .xml).
  */
 
-import { audioEngine } from '../core/AudioEngine.js';
+import { audioEngine } from '../core/AudioEngineV2.js';
 import { state } from '../core/State.js';
 import { toast } from '../ui/Toast.js';
+import { escapeHTML } from '../utils/sanitize.js';
 
 class Exporter {
   /**
@@ -49,7 +50,7 @@ class Exporter {
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>${title} — Tabs & Chords PRO</title>
+  <title>${escapeHTML(title)} — Tabs & Chords PRO</title>
   <style>
     @page {
       size: A4 portrait;
@@ -218,7 +219,7 @@ class Exporter {
   <!-- 1. PORTADA -->
   <div class="songbook-cover page-break">
     <div class="cover-app-tag">Tabs & Chords PRO · Edición Impresa</div>
-    <h1 class="cover-title">${title}</h1>
+    <h1 class="cover-title">${escapeHTML(title)}</h1>
     <div class="cover-subtitle">Colección de canciones con letras, acordes y cifrado armonizado</div>
     <div class="cover-meta">
       <p><strong>${songs.length}</strong> Canciones preparadas para directo</p>
@@ -245,11 +246,11 @@ class Exporter {
         ${songs.map((s, i) => `
           <tr>
             <td class="index-num">${i + 1}</td>
-            <td class="index-song-title">${s.title || 'Sin título'}</td>
-            <td class="index-song-artist">${s.artist || '—'}</td>
-            <td>${s.key || 'C'}</td>
-            <td>${s.tempo ? `${s.tempo} BPM` : '120 BPM'}</td>
-            <td>${s.capo ? `Traste ${s.capo}` : 'Sin Capo'}</td>
+            <td class="index-song-title">${escapeHTML(s.title || 'Sin título')}</td>
+            <td class="index-song-artist">${escapeHTML(s.artist || '—')}</td>
+            <td>${escapeHTML(s.key || 'C')}</td>
+            <td>${s.tempo ? `${escapeHTML(s.tempo)} BPM` : '120 BPM'}</td>
+            <td>${s.capo ? `Traste ${escapeHTML(s.capo)}` : 'Sin Capo'}</td>
           </tr>
         `).join('')}
       </tbody>
@@ -264,24 +265,24 @@ class Exporter {
       <div class="song-sheet ${i < songs.length - 1 ? 'page-break' : ''}">
         <div class="song-header">
           <div class="song-title-group">
-            <h2>${i + 1}. ${s.title || 'Canción'}</h2>
-            <div class="song-artist-name">${s.artist || 'Artista desconocido'}</div>
+            <h2>${i + 1}. ${escapeHTML(s.title || 'Canción')}</h2>
+            <div class="song-artist-name">${escapeHTML(s.artist || 'Artista desconocido')}</div>
           </div>
           <div class="song-badges">
-            <span class="song-badge">Tono: ${s.key || 'C'}</span>
-            <span class="song-badge">${s.tempo ? `${s.tempo} BPM` : '120 BPM'}</span>
-            ${s.capo ? `<span class="song-badge">Capo: ${s.capo}</span>` : ''}
+            <span class="song-badge">Tono: ${escapeHTML(s.key || 'C')}</span>
+            <span class="song-badge">${s.tempo ? `${escapeHTML(s.tempo)} BPM` : '120 BPM'}</span>
+            ${s.capo ? `<span class="song-badge">Capo: ${escapeHTML(s.capo)}</span>` : ''}
           </div>
         </div>
 
         ${chordsList.length > 0 ? `
           <div class="song-chords-summary">
             <span style="font-size: 11px; font-weight: 800; color: #6b7280; text-transform: uppercase;">Acordes:</span>
-            ${chordsList.map(c => `<span class="song-chord-chip">[${c}]</span>`).join(' ')}
+            ${chordsList.map(c => `<span class="song-chord-chip">[${escapeHTML(c)}]</span>`).join(' ')}
           </div>
         ` : ''}
 
-        <div class="song-lyrics-body">${lyrics}</div>
+        <div class="song-lyrics-body">${escapeHTML(lyrics)}</div>
       </div>
     `;
   }).join('')}
@@ -307,43 +308,24 @@ class Exporter {
    */
   exportMIDI() {
     try {
-      const activeSong = state.get('activeSong') || {};
-      const fileName = `${activeSong.title || 'partitura'}.mid`.replace(/[^a-z0-9_\-\.]/gi, '_');
-
-      // Generar cabecera MIDI estándar Tipo 0
-      const tempo = activeSong.tempo || 120;
-      const microsecondsPerBeat = Math.round(60000000 / tempo);
-
-      const headerChunk = [
-        0x4d, 0x54, 0x68, 0x64, // 'MThd'
-        0x00, 0x00, 0x00, 0x06, // Chunk size = 6
-        0x00, 0x00,             // Formato 0 (pista única)
-        0x00, 0x01,             // 1 pista
-        0x01, 0xe0              // 480 ticks por negra
-      ];
-
-      // Track chunk con evento de tempo y fin de pista
-      const trackData = [
-        0x00, 0xff, 0x51, 0x03, // Set Tempo
-        (microsecondsPerBeat >> 16) & 0xff,
-        (microsecondsPerBeat >> 8) & 0xff,
-        microsecondsPerBeat & 0xff,
-        0x00, 0xff, 0x2f, 0x00  // End of Track
-      ];
-
-      const trackChunkHeader = [
-        0x4d, 0x54, 0x72, 0x6b, // 'MTrk'
-        (trackData.length >> 24) & 0xff,
-        (trackData.length >> 16) & 0xff,
-        (trackData.length >> 8) & 0xff,
-        trackData.length & 0xff
-      ];
-
-      const midiBytes = new Uint8Array([...headerChunk, ...trackChunkHeader, ...trackData]);
-      const blob = new Blob([midiBytes], { type: 'audio/midi' });
-      this._downloadBlob(blob, fileName);
-
-      toast.show(`Archivo MIDI "${fileName}" exportado`, 'success');
+      const api = audioEngine.api;
+      if (!api?.score || state.get('activeSong')?.isDemo) {
+        toast.show('Carga una partitura con notas para exportar MIDI.', 'warning');
+        return false;
+      }
+      const midi = globalThis.alphaTab?.midi;
+      if (!midi?.MidiFile || !midi?.MidiFileGenerator || !midi?.AlphaSynthMidiFileHandler) {
+        toast.show('La exportación MIDI no está disponible en este reproductor.', 'warning');
+        return false;
+      }
+      // AlphaTab generates the MIDI from the loaded score, including its notes,
+      // tracks, tempo changes and durations. Never substitute an empty MIDI file.
+      const file = new midi.MidiFile();
+      file.format = midi.MidiFileFormat.SingleTrackMultiChannel;
+      new midi.MidiFileGenerator(api.score, api.settings, new midi.AlphaSynthMidiFileHandler(file, true)).generate();
+      const fileName = `${api.score.title || 'partitura'}.mid`.replace(/[^a-z0-9_\-\.]/gi, '_');
+      this._downloadBlob(new Blob([file.toBinary()], { type: 'audio/midi' }), fileName);
+      toast.show('Archivo MIDI de la partitura exportado', 'success');
       return true;
     } catch (err) {
       console.warn('[Exporter] Error exportando MIDI:', err);
@@ -352,59 +334,10 @@ class Exporter {
     }
   }
 
-  /**
-   * Exporta la partitura a formato estándar MusicXML.
-   */
+  /** AlphaTab 1.8.4 imports MusicXML but does not provide a MusicXML exporter. */
   exportMusicXML() {
-    try {
-      const activeSong = state.get('activeSong') || {};
-      const fileName = `${activeSong.title || 'partitura'}.musicxml`.replace(/[^a-z0-9_\-\.]/gi, '_');
-
-      const xmlContent = `<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE score-partwise PUBLIC "-//Recordare//DTD MusicXML 3.1 Partwise//EN" "http://www.musicxml.org/dtds/partwise.dtd">
-<score-partwise version="3.1">
-  <work>
-    <work-title>${activeSong.title || 'Sin Título'}</work-title>
-  </work>
-  <identification>
-    <creator type="composer">${activeSong.artist || 'Desconocido'}</creator>
-    <encoding>
-      <software>Tabs &amp; Chords PRO</software>
-    </encoding>
-  </identification>
-  <part-list>
-    <score-part id="P1">
-      <part-name>Guitarra</part-name>
-    </score-part>
-  </part-list>
-  <part id="P1">
-    <measure number="1">
-      <attributes>
-        <divisions>4</divisions>
-        <key><fifths>0</fifths></key>
-        <time><beats>4</beats><beat-type>4</beat-type></time>
-        <clef><sign>TAB</sign><line>5</line></clef>
-      </attributes>
-      <note>
-        <rest/>
-        <duration>16</duration>
-        <voice>1</voice>
-        <type>whole</type>
-      </note>
-    </measure>
-  </part>
-</score-partwise>`;
-
-      const blob = new Blob([xmlContent], { type: 'application/vnd.recordare.musicxml+xml' });
-      this._downloadBlob(blob, fileName);
-
-      toast.show(`Archivo MusicXML "${fileName}" exportado`, 'success');
-      return true;
-    } catch (err) {
-      console.warn('[Exporter] Error exportando MusicXML:', err);
-      toast.show('Error al generar MusicXML', 'error');
-      return false;
-    }
+    toast.show('La exportación MusicXML todavía no está disponible.', 'warning');
+    return false;
   }
 
   _downloadBlob(blob, fileName) {

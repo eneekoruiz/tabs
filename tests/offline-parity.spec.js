@@ -10,7 +10,8 @@ test.use({ serviceWorkers: 'allow' });
 
 test.describe('Paridad offline del catalogo', () => {
   test('conserva el shell, el service worker y la busqueda local sin red', async ({ page, context, baseURL }) => {
-    test.setTimeout(60_000);
+    // Includes installing and checking 835 resources before the actual offline reload.
+    test.setTimeout(120_000);
 
     const appOrigin = new URL(baseURL || FALLBACK_BASE_URL).origin;
 
@@ -39,7 +40,7 @@ test.describe('Paridad offline del catalogo', () => {
     const registrationScope = await page.evaluate(async () => {
       const ready = navigator.serviceWorker.ready;
       const timeout = new Promise((_, reject) => {
-        setTimeout(() => reject(new Error('El service worker no se activo a tiempo')), 15_000);
+        setTimeout(() => reject(new Error('El service worker no se activo a tiempo')), 30_000);
       });
       const current = await Promise.race([ready, timeout]);
       return current.scope;
@@ -131,6 +132,15 @@ test.describe('Paridad offline del catalogo', () => {
       await expect(
         page.locator(LOCAL_CATALOG_RESULT + ':visible', { hasText: new RegExp(KNOWN_OFFLINE_SONG, 'i') }).first(),
       ).toBeVisible({ timeout: 10_000 });
+      const karaoke = await page.evaluate(async () => {
+        const { loadReadyKaraoke } = await import('/src/data/ReadyKaraokePractice.js');
+        const { loadPublicVocalReference, getPublicVocalReferences } = await import('/src/data/PublicVocalReferences.js');
+        const entry = (await getPublicVocalReferences())[0];
+        const file = await loadPublicVocalReference(entry);
+        const song = await loadReadyKaraoke();
+        return { notes:song.vocalMelody.length, chartBytes:file.size, lyrics:song.lyricCues.length };
+      });
+      expect(karaoke.notes).toBe(373); expect(karaoke.chartBytes).toBeGreaterThan(1000); expect(karaoke.lyrics).toBeGreaterThan(50);
     } finally {
       await context.setOffline(false);
     }

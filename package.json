@@ -13,7 +13,19 @@
     "tauri": "tauri",
     "test:selenium": "node tests/selenium-visual-audit.mjs",
     "build:web": "node scripts/build-static.mjs",
-    "verify:offline": "node scripts/verify-offline-assets.mjs"
+    "verify:offline": "node scripts/verify-offline-assets.mjs",
+    "vendor:pitch": "node scripts/vendor-pitch.mjs",
+    "test:real-audio": "playwright test tests/real-audio-karaoke.spec.js tests/transcription-real-audio.spec.js tests/recording-lifecycle.spec.js",
+    "test:exhaustive": "playwright test tests/catalog-exhaustive.spec.js tests/chord-exhaustive.spec.js",
+    "test:references": "node --test tests/vocal-reference.unit.mjs",
+    "test:screens": "playwright test tests/progressive-workspace.spec.js tests/tools-accessibility.spec.js tests/discovery-accessibility.spec.js",
+    "import:public-melodies": "node scripts/import-public-vocal-references.mjs",
+    "fetch:audio-fixtures": "node scripts/fetch-audio-fixtures.mjs",
+    "fetch:ready-karaoke": "node scripts/fetch-ready-karaoke.mjs",
+    "import:online-karaoke": "node scripts/import-online-karaoke.mjs",
+    "test:ready-karaoke": "playwright test tests/ready-karaoke-catalog.spec.js",
+    "test:online-karaoke": "playwright test tests/online-karaoke.spec.js",
+    "test:transcription": "node --test tests/transcription-musical.unit.mjs"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.10.1",
@@ -24,5 +36,11 @@
     "lucide": "0.468.0",
     "selenium-webdriver": "^4.47.0",
     "serve": "^14.2.4"
+  },
+  "dependencies": {
+    "pitchy": "4.1.0"
+  },
+  "overrides": {
+    "compression": "^1.8.2"
   }
 }

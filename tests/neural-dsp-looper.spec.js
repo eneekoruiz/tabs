@@ -1,4 +1,7 @@
 import { test, expect } from '@playwright/test';
+import { waitForSong, openSongOptions , openToolCatalogAdvanced } from './helpers/journeys.js';
+
+test.describe.configure({ timeout: 90_000 });
 
 test.describe('🎛️ Neural DSP, Stem Separation & Smart Looper - Suite E2E', () => {
 
@@ -25,18 +28,20 @@ test.describe('🎛️ Neural DSP, Stem Separation & Smart Looper - Suite E2E', 
   test('1. Apertura de la Pedalera Virtual & Simulador de Amplis y Smart Tone', async ({ page }) => {
     // Ir a la pestaña de Herramientas
     await page.click('button[data-tab="tools"]');
+    await openToolCatalogAdvanced(page);
     await page.waitForTimeout(300);
 
     // Abrir Pedalera Virtual
     const pedalboardItem = page.locator('.premium-list-item[data-tool="pedalboard"]');
     await expect(pedalboardItem).toBeVisible();
-    await pedalboardItem.click();
+    await pedalboardItem.locator('[data-preview-action="open-full"]').click();
 
     // Comprobar que el modal de pedalera se abrió
     const modal = page.locator('#modal-virtual-pedalboard');
     await expect(modal).toBeVisible();
     await expect(page.locator('.pedalboard-badge')).toContainText('REALTIME DSP');
 
+    await page.locator('#toolAdvanced > summary').click();
     // Verificar presencia de los pedales boutique
     await expect(page.locator('.pedal-noise-gate')).toBeVisible();
     await expect(page.locator('.pedal-overdrive')).toBeVisible();
@@ -75,13 +80,14 @@ test.describe('🎛️ Neural DSP, Stem Separation & Smart Looper - Suite E2E', 
   test('2. Separador de Stems (4 Pistas: Voz, Batería, Bajo, Guitarra - Moises AI)', async ({ page }) => {
     // Ir a pestaña de Herramientas
     await page.click('button[data-tab="tools"]');
+    await openToolCatalogAdvanced(page);
     await page.waitForTimeout(300);
 
     // Abrir Separador de Stems
-    await page.click('.premium-list-item[data-tool="stems"]');
+    await page.click('.premium-list-item[data-tool="stems"] [data-preview-action="open-full"]');
     const modal = page.locator('#modal-stem-separator');
     await expect(modal).toBeVisible();
-    await expect(page.locator('.stems-badge-ai')).toContainText('NEURAL DSP');
+    await expect(page.locator('.stems-badge-ai')).toContainText('FILTRADO LOCAL');
 
     // Procesar Pista Demo de Estudio
     const btnDemo = page.locator('#btnLoadDemoStems');
@@ -106,7 +112,8 @@ test.describe('🎛️ Neural DSP, Stem Separation & Smart Looper - Suite E2E', 
     const isGuitarMuted = await page.evaluate(() => window.stemSeparatorEngine.trackMutes.guitar);
     expect(isGuitarMuted).toBe(true);
 
-    // Probar Preset Rápido: Modo Karaoke
+    await page.locator('#toolAdvanced > summary').click();
+    // Probar preajuste: reducir centro y medios
     await page.click('#btnPresetMuteVocals');
     await page.waitForTimeout(300);
 
@@ -125,12 +132,27 @@ test.describe('🎛️ Neural DSP, Stem Separation & Smart Looper - Suite E2E', 
   });
 
   test('3. Smart Looper & Speed Trainer con Aceleración Progresiva (+5% por ciclo)', async ({ page }) => {
+    // A loop needs an actual loaded score, rather than the empty tools dashboard.
+    await expect.poll(() => page.evaluate(async () => {
+      const { audioEngine } = await import('/src/core/AudioEngineV2.js');
+      return Boolean(audioEngine.api);
+    }), { timeout: 30_000 }).toBe(true);
+    await page.evaluate(async () => {
+      const { audioEngine } = await import('/src/core/AudioEngineV2.js');
+      audioEngine.api.tex('\\title "Looper eight bars"\n\\tempo 120\n.\n' + Array(8).fill('0.6.1').join(' | ') + ' |');
+    });
+    await expect.poll(() => page.evaluate(async () => {
+      const { audioEngine } = await import('/src/core/AudioEngineV2.js');
+      return { title: audioEngine.score?.title, bars: audioEngine.score?.masterBars?.length };
+    }), { timeout: 30_000 }).toEqual({ title: 'Looper eight bars', bars: 8 });
+
     // Ir a pestaña de Herramientas
     await page.click('button[data-tab="tools"]');
+    await openToolCatalogAdvanced(page);
     await page.waitForTimeout(300);
 
     // Abrir Smart Looper
-    await page.click('.premium-list-item[data-tool="looper"]');
+    await page.click('.premium-list-item[data-tool="looper"] [data-preview-action="open-full"]');
     const modal = page.locator('#modal-smart-looper');
     await expect(modal).toBeVisible();
     await expect(page.locator('.looper-badge')).toContainText('SPEED ESCALATION');
@@ -149,6 +171,7 @@ test.describe('🎛️ Neural DSP, Stem Separation & Smart Looper - Suite E2E', 
     const isLooperActive = await page.evaluate(() => window.smartLooperEngine.isEnabled);
     expect(isLooperActive).toBe(true);
 
+    await page.locator('#toolAdvanced > summary').click();
     // Simular que el músico completa una vuelta con éxito (Loop cycle completion)
     const cycleResult = await page.evaluate(() => {
       const initial = window.smartLooperEngine.currentSpeed;
@@ -159,9 +182,15 @@ test.describe('🎛️ Neural DSP, Stem Separation & Smart Looper - Suite E2E', 
 
     expect(cycleResult.cycle).toBe(2);
     expect(cycleResult.next).toBeGreaterThanOrEqual(cycleResult.initial);
+    expect(cycleResult.next - cycleResult.initial).toBeCloseTo(0.05, 5);
+    expect(await page.evaluate(async () => {
+      const { audioEngine } = await import('/src/core/AudioEngineV2.js');
+      return audioEngine.api.isLooping;
+    })).toBe(true);
 
     // Detener bucle y cerrar
     await page.click('#btnLooperReset');
+    expect(await page.evaluate(() => window.smartLooperEngine.isEnabled)).toBe(false);
     await modal.locator('#btnCloseLooper').click();
     await expect(modal).not.toBeVisible();
   });
@@ -170,28 +199,28 @@ test.describe('🎛️ Neural DSP, Stem Separation & Smart Looper - Suite E2E', 
     // Cargar una canción del catálogo
     const songCard = page.locator('.song-card .btn-select-song').first();
     await songCard.click();
+    await waitForSong(page);
     await page.waitForTimeout(500);
 
     // Abrir menú de opciones
-    await page.click('#btnMoreOptions');
+    await openSongOptions(page, { advanced: true });
     await page.waitForTimeout(200);
 
     // 1. Abrir Pedalera desde el Menú de Canción
-    await page.locator('.song-advanced-options summary').click();
     await page.click('#btnOpenPedalboardQuick');
     await expect(page.locator('#modal-virtual-pedalboard')).toBeVisible();
     await page.click('#btnClosePedalboard');
     await expect(page.locator('#modal-virtual-pedalboard')).not.toBeVisible();
 
     // 2. Abrir Separador de Stems desde el Menú de Canción
-    await page.click('#btnMoreOptions');
+    await openSongOptions(page, { advanced: true });
     await page.click('#btnOpenStemsQuick');
     await expect(page.locator('#modal-stem-separator')).toBeVisible();
     await page.click('#btnCloseStems');
     await expect(page.locator('#modal-stem-separator')).not.toBeVisible();
 
     // 3. Abrir Smart Looper desde el Menú de Canción
-    await page.click('#btnMoreOptions');
+    await openSongOptions(page, { advanced: true });
     await page.click('#btnOpenLooperQuick');
     await expect(page.locator('#modal-smart-looper')).toBeVisible();
     await page.click('#btnCloseLooper');

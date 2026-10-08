@@ -30,8 +30,6 @@ export const KNOWN_SONG_YOUTUBE_VIDEOS = {
   'queenwearethechampions': '04854XqcfCY',
   'somebodytolove': 'kijpcUv-b8M',
   'queensomebodytolove': 'kijpcUv-b8M',
-  'iwanttobreakfree': 'f4Mc-NY53H8',
-  'queeniwanttobreakfree': 'f4Mc-NY53H8',
   'underpressure': 'a01QQZyl-_I',
   'queenunderpressure': 'a01QQZyl-_I',
   'theshowmustgoon': 't99KH0TR-J4',
@@ -70,8 +68,6 @@ export const KNOWN_SONG_YOUTUBE_VIDEOS = {
   // Imagine Dragons
   'believer': '7wtfhZwyrcc',
   'imaginedragonsbeliever': '7wtfhZwyrcc',
-  'radioactive': 'ktvTqvkSCRU',
-  'imaginedragonsradioactive': 'ktvTqvkSCRU',
   'demons': 'mWRsgZuwf_8',
   'imaginedragonsdemons': 'mWRsgZuwf_8',
   'thunder': 'fKopy74weus',
@@ -86,30 +82,14 @@ export const KNOWN_SONG_YOUTUBE_VIDEOS = {
   'imaginedragonswhateverittakes': 'gOsM-DYAEhY',
   'badliar': 'I-QfPUz1es8',
   'imaginedragonsbadliar': 'I-QfPUz1es8',
-  'itstime': 'sENM2wA_NGo',
-  'imaginedragonsitstime': 'sENM2wA_NGo',
-  'sharks': 'Te3_VlimRw4',
-  'imagineddragonssharks': 'Te3_VlimRw4',
-  'walkingthewire': '1nv9br7Sm7E',
-  'imagineddragonswalkingthewire': '1nv9br7Sm7E',
 
   // Olivia Rodrigo
   'driverslicense': 'ZmDBbnmKpqQ',
   'oliviarodrigodriverslicense': 'ZmDBbnmKpqQ',
-  'vampire': 'RlPNh_wAKEc',
-  'oliviarodrigovampire': 'RlPNh_wAKEc',
   'good4u': 'gNi_6U5Pm_o',
   'oliviarodrigogood4u': 'gNi_6U5Pm_o',
-  'dejavu': 'cii6ruuycKA',
-  'oliviarodrigodejavu': 'cii6ruuycKA',
   'traitor': 'CRrf3h9vhp8',
   'oliviarodrigotraitor': 'CRrf3h9vhp8',
-  'badidearight': 'Dj9q84UPp60',
-  'oliviarodrigobadidearight': 'Dj9q84UPp60',
-  'gethimback': 'ZsJ-BHpHXi8',
-  'oliviarodrigogethimback': 'ZsJ-BHpHXi8',
-  'happier': 'Z-9gQjUZMm0',
-  'oliviarodrigohappier': 'Z-9gQjUZMm0',
 
   // Ariana Grande
   '7rings': 'QYh6mYIJG2Y',
@@ -147,8 +127,6 @@ export const KNOWN_SONG_YOUTUBE_VIDEOS = {
   'theweekndsaveyourtears': 'XXYlFuWEuKI',
   'thehills': 'yzTuBuRdAyA',
   'theweekndthehills': 'yzTuBuRdAyA',
-  'dieforyou': 'u9n7Cw-4_PE',
-  'theweeknddieforyou': 'u9n7Cw-4_PE',
   'cantfeelmyface': 'KEI4qSrkPAs',
   'theweekndcantfeelmyface': 'KEI4qSrkPAs',
 
@@ -191,8 +169,6 @@ export const KNOWN_SONG_YOUTUBE_VIDEOS = {
   'coldplayvivalavida': 'dvgZkm1xWPE',
   'thescientist': 'RB-RcX5DS5A',
   'coldplaythescientist': 'RB-RcX5DS5A',
-  'fixyou': 'k4V3Ui687Gw',
-  'coldplayfixyou': 'k4V3Ui687Gw',
   'askyfullofstars': 'VPRjCeoBqrI',
   'coldplayaskyfullofstars': 'VPRjCeoBqrI',
 
@@ -247,34 +223,14 @@ export const KNOWN_SONG_YOUTUBE_VIDEOS = {
   'whatwasimadefor': 'cW8VLC9nnTo',
 
   // Spanish / Latin Classics
-  'soldaditomarinero': 'Gq-3y1f5s0Y',
-  'fitofitipaldissoldaditomarinero': 'Gq-3y1f5s0Y',
-  'laflaca': 'r2g0p13Xl3Y',
-  'jarabedepalolaflaca': 'r2g0p13Xl3Y',
-  'clavadoenunbar': 'g_qHwgFqP9U',
-  'manaclavadoenunbar': 'g_qHwgFqP9U',
   'demusicaligera': 'T_FkEw27XJ0',
   'sodastereodemusicaligera': 'T_FkEw27XJ0',
-  'dejame': '8d9sN_dK4mI',
-  'lossecretosdejame': '8d9sN_dK4mI',
-  'standby': 'jS2E6rGqP-Q',
-  'extremodurostandby': 'jS2E6rGqP-Q',
-  'antologia': 'xL1Fk4_yP9A',
-  'shakiraantologia': 'xL1Fk4_yP9A',
-  'entredostierras': '1U_f0l-1Z3A',
-  'heroesdelsilencioentredostierras': '1U_f0l-1Z3A',
-  'corazonpartio': '1P9k-J_7VvQ',
-  'alejandrosanzcorazonpartio': '1P9k-J_7VvQ',
-  'flaca': '1e9W-tKx_2w',
-  'andrescalamaroflaca': '1e9W-tKx_2w',
 
   // Harry Styles, Bruno Mars, Dua Lipa
   'asitwas': 'H5v3kku4y6Q',
   'harrystylesasitwas': 'H5v3kku4y6Q',
   'watermelonsugar': 'E07s5ZYygMg',
   'signofthetimes': 'qN4ooNx77u0',
-  'wheniwasyourman': 'ekzHIWGv8b0',
-  'brunomarswheniwasyourman': 'ekzHIWGv8b0',
   'justthewayyouare': 'LjhCEhWiKXk',
   'lockedoutofheaven': 'e-fA-gBCkj0',
   'levitating': 'TUVcZfQe-Kw',
@@ -283,40 +239,10 @@ export const KNOWN_SONG_YOUTUBE_VIDEOS = {
   'dancethenight': 'OiC1rgCPmUQ',
   'riptide': 'uJ_1HMAGb4k',
   'vancejoyriptide': 'uJ_1HMAGb4k',
-  'hallelujah': 'ttEMYvpoHA8',
-  'leonardcohenhallelujah': 'ttEMYvpoHA8',
-  'shallow': 'bo_efYhAK2A',
-  'ladygagashallow': 'bo_efYhAK2A'
 };
 
+// Prior guesses were removed after checking YouTube's published metadata.
 export const KNOWN_KARAOKE_VIDEOS = {
-  // Queen
-  'bohemianrhapsody': '1G4isv_Fylg',
-  'queenbohemianrhapsody': '1G4isv_Fylg',
-  'killerqueen': 'mUeL1Z_05gM',
-  'queenkillerqueen': 'mUeL1Z_05gM',
-  'dontstopmenow': 'Z3e1z4zJ91g',
-  'queendontstopmenow': 'Z3e1z4zJ91g',
-  'wearethechampions': 'Tz2FhXbXkQk',
-  'queenwearethechampions': 'Tz2FhXbXkQk',
-  'wewillrockyou': 'Bpn4e7J05Wc',
-  'queenwewillrockyou': 'Bpn4e7J05Wc',
-
-  // The Beatles
-  'blackbird': '8M1s2rL2l68',
-  'thebeatlesblackbird': '8M1s2rL2l68',
-  'yesterday': '_Xv3lK4mK8E',
-  'thebeatlesyesterday': '_Xv3lK4mK8E',
-  'letitbe': 'uE2M1T5Q1u8',
-  'thebeatlesletitbe': 'uE2M1T5Q1u8',
-
-  // Imagine Dragons / Rock
-  'believer': 'sCg7nJ26yM4',
-  'imaginedragonsbeliever': 'sCg7nJ26yM4',
-  'wonderwall': 'O3kU2L4z3wA',
-  'oasiswonderwall': 'O3kU2L4z3wA',
-  'yellow': 'yP9V2lqV8zQ',
-  'coldplayyellow': 'yP9V2lqV8zQ'
 };
 
 export function findKnownKaraokeVideoId(title, artist) {
@@ -326,14 +252,14 @@ export function findKnownKaraokeVideoId(title, artist) {
 
   return KNOWN_KARAOKE_VIDEOS[normArtist + normTitle]
     || KNOWN_KARAOKE_VIDEOS[normTitle + normArtist]
-    || KNOWN_KARAOKE_VIDEOS[normTitle]
     || '';
 }
 
 export function getSongKaraokeVideoId(song, storage = globalThis.localStorage) {
   const specific = findKnownKaraokeVideoId(song?.title, song?.artist);
-  if (specific) return specific;
-  return getSongYouTubeVideoId(song, storage);
+  const explicit=extractYouTubeVideoId(song?.karaokeVideoId || song?.backingTrackVideoId || '');
+  return explicit || specific || '';
+
 }
 
 export function findKnownYouTubeVideoId(title, artist) {
@@ -343,7 +269,6 @@ export function findKnownYouTubeVideoId(title, artist) {
 
   return KNOWN_SONG_YOUTUBE_VIDEOS[normArtist + normTitle]
     || KNOWN_SONG_YOUTUBE_VIDEOS[normTitle + normArtist]
-    || KNOWN_SONG_YOUTUBE_VIDEOS[normTitle]
     || '';
 }
 

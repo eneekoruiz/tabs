@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { openToolCatalogAdvanced } from './helpers/journeys.js';
 
 test.describe('🛠️ Suite Completa de Herramientas Musicales — E2E & Responsividad Móvil', () => {
   test.use({
@@ -17,11 +18,12 @@ test.describe('🛠️ Suite Completa de Herramientas Musicales — E2E & Respon
     page.on('pageerror', err => consoleErrors.push(err.message));
 
     await page.goto('/', { waitUntil: 'domcontentloaded' });
-    await page.waitForSelector('.bottom-nav-bar', { timeout: 10000 });
+    await page.waitForSelector('.bottom-nav-bar', { timeout: 30_000 });
 
     // Navegar a pestaña Herramientas
     const navTools = page.locator('.nav-tab-btn[data-tab="tools"]');
     await navTools.click();
+    await openToolCatalogAdvanced(page);
     await page.waitForSelector('.tools-view-wrapper', { timeout: 10000 });
   });
 
@@ -33,7 +35,7 @@ test.describe('🛠️ Suite Completa de Herramientas Musicales — E2E & Respon
   test('1. Metrónomo: Apertura, renderizado táctil y cambio de BPM', async ({ page }) => {
     const metronomeCard = page.locator('.premium-list-item[data-tool="metronome"]');
     await expect(metronomeCard).toBeVisible();
-    await metronomeCard.click();
+    await metronomeCard.locator('[data-preview-action="open-full"]').click();
 
     // Modal del metrónomo
     const modal = page.locator('#toolModalOverlay');
@@ -53,7 +55,7 @@ test.describe('🛠️ Suite Completa de Herramientas Musicales — E2E & Respon
   test('2. Afinador Cromático: Apertura y visualizador de aguja', async ({ page }) => {
     const tunerCard = page.locator('.premium-list-item[data-tool="tuner"]');
     await expect(tunerCard).toBeVisible();
-    await tunerCard.click();
+    await tunerCard.locator('[data-preview-action="open-full"]').click();
 
     const modal = page.locator('#toolModalOverlay');
     await expect(modal).toBeVisible();
@@ -71,12 +73,13 @@ test.describe('🛠️ Suite Completa de Herramientas Musicales — E2E & Respon
   test('3. Diccionario de Acordes: Búsqueda y renderizado de diagrama SVG', async ({ page }) => {
     const dictCard = page.locator('.premium-list-item[data-tool="dictionary"]');
     await expect(dictCard).toBeVisible();
-    await dictCard.click();
+    await dictCard.locator('[data-preview-action="open-full"]').click();
 
     const modal = page.locator('#toolModalOverlay');
     await expect(modal).toBeVisible();
 
     // Botones de tónicas
+    await page.locator('#toolAdvanced > summary').click();
     const rootButtons = page.locator('.dict-pill-btn[data-type="root"]');
     await expect(rootButtons.first()).toBeVisible();
 
@@ -92,7 +95,7 @@ test.describe('🛠️ Suite Completa de Herramientas Musicales — E2E & Respon
   test('4. Entrenador de Oído: Inicio de test auditivo y botones de respuesta', async ({ page }) => {
     const earCard = page.locator('.premium-list-item[data-tool="ear"]');
     await expect(earCard).toBeVisible();
-    await earCard.click();
+    await earCard.locator('[data-preview-action="open-full"]').click();
 
     const modal = page.locator('#toolModalOverlay');
     await expect(modal).toBeVisible();
@@ -109,11 +112,12 @@ test.describe('🛠️ Suite Completa de Herramientas Musicales — E2E & Respon
   test('5. Calculadora de Capotraste: Apertura y tabla de transposición', async ({ page }) => {
     const capoCard = page.locator('.premium-list-item[data-tool="capo"]');
     await expect(capoCard).toBeVisible();
-    await capoCard.click();
+    await capoCard.locator('[data-preview-action="open-full"]').click();
 
     const modal = page.locator('#modal-capo');
     await expect(modal).toBeVisible();
 
+    await page.locator('#toolAdvanced > summary').click();
     // Tabla de transposición
     const results = page.locator('.capo-table-result');
     await expect(results.first()).toBeVisible();
@@ -126,7 +130,7 @@ test.describe('🛠️ Suite Completa de Herramientas Musicales — E2E & Respon
   test('6. Círculo de Quintas: Apertura y sectores armónicos', async ({ page }) => {
     const circleCard = page.locator('.premium-list-item[data-tool="circle"]');
     await expect(circleCard).toBeVisible();
-    await circleCard.click();
+    await circleCard.locator('[data-preview-action="open-full"]').click();
 
     const modal = page.locator('#modal-circle');
     await expect(modal).toBeVisible();
@@ -143,7 +147,7 @@ test.describe('🛠️ Suite Completa de Herramientas Musicales — E2E & Respon
   test('7. Vocal Coach Tool: Apertura y panel de entrenamiento vocal', async ({ page }) => {
     const vocalCard = page.locator('.premium-list-item[data-tool="vocal"]');
     await expect(vocalCard).toBeVisible();
-    await vocalCard.click();
+    await vocalCard.locator('[data-preview-action="open-full"]').click();
 
     const modal = page.locator('#modal-vocal-coach');
     await expect(modal).toBeVisible();

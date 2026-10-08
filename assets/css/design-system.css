@@ -287,6 +287,19 @@ button:active:not(:disabled),
 
 .explore-hero-title span { color: var(--accent-secondary); }
 
+/* Status labels retain contrast on every studio surface. */
+.song-badge-diff.diff-easy { --difficulty-color: var(--status-success); }
+.song-badge-diff.diff-med { --difficulty-color: var(--status-warning); }
+.song-badge-diff.diff-hard { --difficulty-color: var(--status-danger); }
+:is(body.theme-ivory, body.theme-charcoal, body.theme-amber) .song-badge-diff:is(.diff-easy, .diff-med, .diff-hard) {
+  background: color-mix(in srgb, var(--difficulty-color) 12%, var(--bg-surface-solid));
+  color: var(--difficulty-color);
+}
+.btn-import:focus-within {
+  outline: 3px solid var(--accent-primary);
+  outline-offset: 3px;
+}
+
 .catalog-status {
   display: inline-flex;
   align-items: center;
@@ -1136,4 +1149,27 @@ select:disabled { filter: saturate(.55); }
 @media (max-width: 680px) {
   .catalog-audit-panel summary span { display: block; margin: 4px 0 0; }
   .catalog-quality-filter { width: 100%; }
+}
+
+/* Reserve the navigation's actual height so its hit area never covers song cards.
+   Hidden navigation in Sing and stage modes releases the space automatically. */
+#bottom-nav-container {
+  flex: 0 0 auto;
+}
+#bottom-nav-container > .bottom-nav-bar {
+  position: relative;
+  inset: auto;
+  transform: none;
+  width: 100%;
+}
+@media (min-width: 800px) {
+  #bottom-nav-container { padding: 8px 16px 24px; }
+  #bottom-nav-container > .bottom-nav-bar {
+    width: max-content;
+    max-width: 100%;
+    margin-inline: auto;
+  }
+}
+@media print {
+  #bottom-nav-container { display: none !important; }
 }

@@ -1,12 +1,13 @@
 import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
+import { openSongOptions, openKaraokeOptions, seekKaraoke, useGeneratedGuide } from './helpers/journeys.js';
 
 test.use({ serviceWorkers: 'block' });
-test.setTimeout(60000);
+test.setTimeout(120000);
 
 async function loadPractice(page) {
   await page.goto('/', { waitUntil: 'domcontentloaded' });
-  await page.locator('.song-card').first().waitFor();
+  await page.locator('.discovery-song-card').first().waitFor();
   await page.evaluate(async () => {
     const { events } = await import('/src/core/EventBus.js');
     events.emit('ui:loadLyricsSong', { id: 'studio-fixture', title: 'Ensayo de sincronización', artist: 'Estudio', tempo: 120,
@@ -36,11 +37,12 @@ test('karaoke: real audio clock, LRC import, tempo, seek, pause and persisted re
   await page.locator('#karaokeLyricsFile').setInputFiles({ name: 'ensayo.lrc', mimeType: 'text/plain', buffer: Buffer.from('[00:01.25]Primera frase\n[00:04.00]Segunda frase\n[00:09.50]Final') });
   await expect(page.locator('#karaokeTimingNote')).toContainText('tiempos aportados');
   await expect(page.locator('#karaokeTimingNote')).toContainText('sin evaluación de la melodía original');
+  await openKaraokeOptions(page);
   await page.locator('#karaokeTempo').fill('60');
   await page.locator('#karaokeTempo').press('Tab');
   await page.locator('#karaokeOffset').fill('0.5');
   await page.locator('#karaokeOffset').press('Tab');
-  await page.locator('#karaokeSeek').fill('5');
+  await seekKaraoke(page,5);
   await expect(page.locator('#karaokeCurrentLine')).toHaveText('Segunda frase');
   await page.locator('#btnSingPlayPause').click();
   await expect.poll(() => page.evaluate(() => window.__ACTIVE_LYRICS_VIEW__.backing.currentTimeMs)).toBeGreaterThan(5100);
@@ -56,23 +58,33 @@ test('karaoke: real audio clock, LRC import, tempo, seek, pause and persisted re
   await page.waitForTimeout(300);
   expect(await page.evaluate(() => window.__ACTIVE_LYRICS_VIEW__.backing.currentTimeMs)).toBeCloseTo(paused, 0);
   // An unrelated render must not reset the transport or the supplied cues.
+  await openSongOptions(page);
   await page.locator('#btnFontIncr').click();
   expect(Math.abs(await page.evaluate(() => window.__PITCH_LANE_INSTANCE__.currentTime) - (paused - 500))).toBeLessThan(34);
   await loadPractice(page);
   await page.locator('#btnPlaySingToggle').click();
   await expect(page.locator('#karaokeBackingStatus')).toContainText('ensayo.wav');
+  await openKaraokeOptions(page);
   await expect(page.locator('#karaokeTempo')).toHaveValue('60');
   await expect(page.locator('#karaokeOffset')).toHaveValue('0.5');
   await expect(page.locator('#karaokeTimingNote')).toContainText('tiempos aportados');
-  await page.locator('#karaokeSeek').fill('5');
+  await seekKaraoke(page,5);
   await page.locator('#btnFinishVocalSession').click();
+  await page.evaluate(() => {
+    const backing = window.__ACTIVE_LYRICS_VIEW__.backing;
+    const seek = backing.seek.bind(backing);
+    window.retryPositions = [];
+    backing.seek = position => { window.retryPositions.push(position); return seek(position); };
+  });
   await page.locator('#btnScorecardRetry').click();
-  expect(await page.evaluate(() => window.__ACTIVE_LYRICS_VIEW__.backing.currentTimeMs)).toBeLessThan(1000);
+  // Verify the actual restart command before elapsed playback changes the clock.
+  expect(await page.evaluate(() => window.retryPositions)).toContain(0);
   await expect.poll(() => page.evaluate(() => window.__ACTIVE_LYRICS_VIEW__.backing.playing)).toBe(true);
 });
 
 test('dialogs trap focus, close with Escape and return to their trigger', async ({ page }) => {
   await loadPractice(page);
+  await openSongOptions(page);
   await page.locator('#btnSongTopMetronome').click();
   await expect(page.locator('#btnCloseSongMetronome')).toBeFocused();
   await page.keyboard.press('Shift+Tab');
@@ -99,15 +111,17 @@ test('transpose follows synth and supplied melody; exact practice session resume
   });
   await expect(page.locator('.lyrics-word').filter({ hasText: 'acústica' }).first()).toBeVisible();
   await page.locator('#btnPlaySingToggle').click();
+  await useGeneratedGuide(page);
   await page.locator('#btnSingPlayPause').click();
   await expect.poll(() => page.evaluate(() => window.__ACTIVE_LYRICS_VIEW__.backing.playing)).toBe(true);
   await page.locator('#btnMoreOptions').click();
   await page.locator('#btnSongTransposeUp').click();
   await page.locator('#btnSongTransposeUp').press('Enter');
+  await expect.poll(()=>page.evaluate(()=>[...window.__ACTIVE_LYRICS_VIEW__.backing.voices].filter(o=>Number.isFinite(o.baseFrequency)).every(o=>Math.abs(o.frequency.value/o.baseFrequency - 2**(2/12))<.005))).toBe(true);
   const music = await page.evaluate(() => {
     const v = window.__ACTIVE_LYRICS_VIEW__;
     return { transpose: v.backing.transposeSemitones, playing: v.backing.playing,
-      midi: v.pitchLane.targetBlocks[0].midi, frequencies: [...v.backing.voices].map(o => o.frequency.value / o.baseFrequency) };
+      midi: v.pitchLane.targetBlocks[0].midi, frequencies: [...v.backing.voices].filter(o=>Number.isFinite(o.baseFrequency)).map(o => o.frequency.value / o.baseFrequency) };
   });
   expect(music.transpose).toBe(2);
   expect(music.playing).toBe(true);
@@ -123,8 +137,8 @@ test('transpose follows synth and supplied melody; exact practice session resume
   expect(await page.evaluate(() => window.__ACTIVE_LYRICS_VIEW__.pitchLane.targetBlocks[0].midi)).toBe(62);
   await page.reload({ waitUntil: 'domcontentloaded' });
   await page.locator('[data-resume-snapshot="true"]').click();
-  await expect(page.locator('.lyrics-word').filter({ hasText: 'acústica' }).first()).toBeVisible();
-  await page.locator('#btnPlaySingToggle').click();
+  await expect(page.locator('#pitchLaneCanvas')).toBeVisible();
+  expect(await page.evaluate(()=>window.__ACTIVE_LYRICS_VIEW__.currentSong.lyricsChords)).toContain('Versión acústica guardada');
   await expect.poll(() => page.evaluate(() => window.__ACTIVE_LYRICS_VIEW__.backing.ready)).toBe(true);
   const recovered = await page.evaluate(() => {
     const v = window.__ACTIVE_LYRICS_VIEW__;
@@ -136,11 +150,12 @@ test('transpose follows synth and supplied melody; exact practice session resume
   await page.locator('#karaokeBackingFile').setInputFiles({ name: 'original.wav', mimeType: 'audio/wav', buffer: silentWav() });
   await expect(page.locator('#karaokeSourceNote')).toContainText('no se transponen');
   expect(await page.evaluate(() => window.__ACTIVE_LYRICS_VIEW__.pitchLane.targetBlocks[0].midi)).toBe(60);
+  await openKaraokeOptions(page);
   await page.locator('[name="karaokeSource"][value="synth"]').check();
   expect(await page.evaluate(() => window.__ACTIVE_LYRICS_VIEW__.pitchLane.targetBlocks[0].midi)).toBe(62);
 });
 
-for (const width of [375, 834, 1440]) {
+for (const width of [375, 768, 834, 1440]) {
   test(`studio layout ${width}px: no clipped controls and readable themes`, async ({ page }, testInfo) => {
     // Multiple contrast audits, screenshots and theme changes need their own budget.
     testInfo.setTimeout(120000);
@@ -155,18 +170,21 @@ for (const width of [375, 834, 1440]) {
     await page.screenshot({ path: testInfo.outputPath('player.png') });
     await page.locator('#btnPlaySingToggle').click();
     await expect(page.locator('#karaokeTimingNote')).toContainText('avance estimado');
-    const transportBounds = await page.locator('.sing-floating-hud').boundingBox();
+    const transportBounds = await page.locator('.karaoke-mic-row').boundingBox();
     expect(transportBounds.x).toBeGreaterThanOrEqual(0);
     expect(transportBounds.x + transportBounds.width).toBeLessThanOrEqual(width);
-    const audit = await new AxeBuilder({ page }).include('#karaokeAudioCompanion').include('.sing-floating-hud').withTags(['wcag2a', 'wcag2aa']).analyze();
+    const audit = await new AxeBuilder({ page }).include('#karaokeAudioCompanion').include('.karaoke-mic-row').withTags(['wcag2a', 'wcag2aa']).analyze();
     expect(audit.violations).toEqual([]);
     await page.screenshot({ path: testInfo.outputPath('karaoke.png') });
     await page.locator('#btnMoreOptions').click();
     await expect(page.locator('#btnCloseToolsSheet')).toBeFocused();
-    await page.keyboard.press('Shift+Tab');
-    await expect(page.locator('#btnToggleHideChords')).toBeFocused();
+    await expect(page.locator('#lyricsToolsBottomSheetOverlay')).toHaveAttribute('role','region');
     await page.keyboard.press('Tab');
-    await expect(page.locator('#btnCloseToolsSheet')).toBeFocused();
+    await expect(page.locator('#btnGuiderPlay')).toBeFocused();
+    await page.keyboard.press('Tab');
+    await expect(page.locator('#btnGuiderSing')).toBeFocused();
+    await page.keyboard.press('Tab');
+    await expect(page.locator('#songReadingOptions > summary')).toBeFocused();
     const optionsAudit = await new AxeBuilder({ page }).include('#lyricsToolsBottomSheetOverlay').withTags(['wcag2a', 'wcag2aa']).analyze();
     expect(optionsAudit.violations).toEqual([]);
     await page.screenshot({ path: testInfo.outputPath('options.png') });
@@ -176,7 +194,7 @@ for (const width of [375, 834, 1440]) {
       for (const theme of ['theme-charcoal', 'theme-amber']) {
         await page.evaluate(theme => { document.body.className = theme; }, theme);
         await page.waitForTimeout(250);
-        const darkAudit = await new AxeBuilder({ page }).include('#karaokeAudioCompanion').include('.sing-floating-hud').withTags(['wcag2a', 'wcag2aa']).analyze();
+        const darkAudit = await new AxeBuilder({ page }).include('#karaokeAudioCompanion').include('.karaoke-mic-row').withTags(['wcag2a', 'wcag2aa']).analyze();
         expect(darkAudit.violations, theme).toEqual([]);
         await page.screenshot({ path: testInfo.outputPath(`${theme}.png`) });
       }
@@ -197,3 +215,34 @@ test('tool catalogue has accessible buttons and keyboard-operated dialogs', asyn
   await expect(page.locator('#toolModalOverlay')).toHaveCount(0);
   await expect(open).toBeFocused();
 });
+
+for (const [width, height] of [[375,667], [390,844], [412,915]]) {
+  test('local karaoke essentials fit the first view at ' + width + 'px', async ({ page }, info) => {
+    await page.setViewportSize({ width, height });
+    await loadPractice(page);
+    await page.locator('#btnPlaySingToggle').click();
+    await expect.poll(() => page.evaluate(() => window.__ACTIVE_LYRICS_VIEW__.backing.loading)).toBe(false);
+    const geometry = await page.evaluate(() => {
+      const ids = ['btnSingPlayPause','btnKaraokeMic','btnFinishVocalSession','btnImportKaraokeBacking'];
+      return {
+        controls: ids.map(id => { const r=document.getElementById(id).getBoundingClientRect(); return { id, top:r.top, bottom:r.bottom }; }),
+        sourceLink:document.querySelector('.karaoke-online-actions a').getBoundingClientRect().bottom,
+        pitchTop:document.querySelector('.singer-pitch-lane-wrapper').getBoundingClientRect().top,
+        scroll:document.getElementById('score-viewport').scrollTop,
+      };
+    });
+    await info.attach('first-view-controls.json',{body:JSON.stringify(geometry,null,2),contentType:'application/json'});
+    expect(geometry.scroll).toBe(0);
+    for (const control of geometry.controls) {
+      expect(control.top, control.id).toBeGreaterThanOrEqual(0);
+      expect(control.bottom, control.id).toBeLessThanOrEqual(height);
+    }
+    expect(geometry.sourceLink).toBeLessThanOrEqual(height);
+    expect(geometry.pitchTop).toBeGreaterThan(geometry.controls.find(control=>control.id==='btnImportKaraokeBacking').bottom);
+    await expect(page.locator('#btnSingPlayPause')).toBeDisabled();
+    await expect(page.locator('#btnImportKaraokeBacking')).toBeEnabled();
+    await page.locator('#btnKaraokeMic').focus();
+    await page.keyboard.press('Tab');
+    await expect(page.locator('#btnFinishVocalSession')).toBeFocused();
+  });
+}

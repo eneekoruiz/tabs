@@ -1,19 +1,18 @@
 /**
  * @file ChordEngine.js
  * @description Motor integral de acordes multi-instrumento (Guitarra, Ukelele, Piano).
- * Arquitectura modular SRP desacoplada: definiciones, renderizado SVG y síntesis de audio Karplus-Strong.
+ * Definiciones de acordes, renderizado SVG y síntesis Web Audio.
  */
 
 import { events } from '../core/EventBus.js';
 import {
   GUITAR_CHORDS,
   UKULELE_CHORDS,
-  PIANO_VOICINGS,
-  CHROMATIC_SCALE_SHARPS,
-  CHROMATIC_SCALE_FLATS
+  PIANO_VOICINGS
 } from './chord/ChordDefinitions.js';
 import { ChordSvgRenderer } from './chord/ChordSvgRenderer.js';
 import { ChordAudioSynthesizer } from './chord/ChordAudioSynthesizer.js';
+import { transposeChordName } from './chord/ChordTheory.js';
 
 export { GUITAR_CHORDS, UKULELE_CHORDS, PIANO_VOICINGS };
 
@@ -42,11 +41,12 @@ class ChordEngine {
     }
   }
 
-  getChord(chordName, instrument = this.currentInstrument) {
+  getChord(chordName, instrument = this.currentInstrument, voicingIndex = 0) {
+    if (instrument === 'piano') return ChordSvgRenderer.getPianoChord(chordName, voicingIndex);
     if (instrument === 'ukulele') {
-      return ChordSvgRenderer.getUkuleleChord(chordName);
+      return ChordSvgRenderer.getUkuleleChord(chordName, voicingIndex);
     }
-    return ChordSvgRenderer.getGuitarChord(chordName);
+    return instrument === 'guitar' ? ChordSvgRenderer.getGuitarChord(chordName, voicingIndex) : null;
   }
 
   simplifyChord(chord) {
@@ -55,24 +55,7 @@ class ChordEngine {
 
   transposeChord(chord, semitones) {
     if (!chord || semitones === 0) return chord;
-    const match = chord.trim().match(/^([A-G][#b]?)(.*)$/);
-    if (!match) return chord;
-
-    const [, root, suffix] = match;
-    let index = CHROMATIC_SCALE_SHARPS.indexOf(root);
-    let scale = CHROMATIC_SCALE_SHARPS;
-
-    if (index === -1) {
-      index = CHROMATIC_SCALE_FLATS.indexOf(root);
-      scale = CHROMATIC_SCALE_FLATS;
-    }
-    if (index === -1) return chord;
-
-    let newIndex = (index + semitones) % 12;
-    if (newIndex < 0) newIndex += 12;
-
-    const newRoot = scale[newIndex];
-    return `${newRoot}${suffix}`;
+    return transposeChordName(chord, semitones);
   }
 
   getVoicings(chordName, instrument = this.currentInstrument) {
@@ -84,6 +67,7 @@ class ChordEngine {
   }
 
   renderChordSVG(chordName, { instrument = this.currentInstrument, isLeftHanded = this.isLeftHanded, voicingIndex = 0, displayName = null } = {}) {
+    if (!['guitar', 'ukulele', 'piano'].includes(instrument)) return '<div class="chord-not-found">Instrumento no disponible</div>';
     if (instrument === 'piano') {
       return ChordSvgRenderer.renderPiano(chordName, voicingIndex, displayName);
     } else if (instrument === 'ukulele') {

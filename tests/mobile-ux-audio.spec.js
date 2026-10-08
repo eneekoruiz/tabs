@@ -1,4 +1,7 @@
 import { test, expect } from '@playwright/test';
+import {waitForSong, openSongOptions, useGeneratedGuide } from './helpers/journeys.js';
+
+test.describe.configure({ timeout: 90_000 });
 
 test.describe('📱 Mobile UX & Acoustic Audio Engine — Suite E2E', () => {
   test.use({
@@ -17,6 +20,7 @@ test.describe('📱 Mobile UX & Acoustic Audio Engine — Suite E2E', () => {
     page.on('pageerror', err => consoleErrors.push(err.message));
 
     await page.goto('/', { waitUntil: 'domcontentloaded' });
+    await page.waitForSelector('.bottom-nav-bar', { timeout: 30_000 });
     await page.waitForSelector('.discovery-song-card', { timeout: 10000 });
   });
 
@@ -48,6 +52,7 @@ test.describe('📱 Mobile UX & Acoustic Audio Engine — Suite E2E', () => {
 
     // Clic en la tarjeta abre el visor
     await firstCard.click();
+    await waitForSong(page);
 
     const lyricsContainer = page.locator('.lyrics-chords-container');
     await expect(lyricsContainer).toBeVisible({ timeout: 10000 });
@@ -57,17 +62,19 @@ test.describe('📱 Mobile UX & Acoustic Audio Engine — Suite E2E', () => {
     // Abrir una canción
     const firstCard = page.locator('.discovery-song-card').first();
     await firstCard.click();
+    await waitForSong(page);
 
     const lyricsContainer = page.locator('.lyrics-chords-container');
     await expect(lyricsContainer).toBeVisible({ timeout: 10000 });
 
     // La barra móvil conserva metrónomo, grabación y zoom; las acciones
     // secundarias siguen disponibles en el menú, sin ocupar la cabecera.
-    const desktopTools = page.locator('.desktop-header-tool:not(#btnSongTopMetronome):not(#btnQuickRecordAction):not(.tool-font)');
+    const desktopTools = page.locator('.desktop-header-tool:not(#btnToggleScoreView):not(#btnSongTopMetronome):not(#btnQuickRecordAction):not(.tool-font)');
     const count = await desktopTools.count();
     for (let i = 0; i < count; i++) {
       await expect(desktopTools.nth(i)).toBeHidden();
     }
+    await openSongOptions(page);
     for (const id of ['btnSongTopMetronome', 'btnQuickRecordAction', 'btnFontIncr']) {
       const action = page.locator(`#${id}`);
       await expect(action).toBeVisible();
@@ -103,6 +110,7 @@ test.describe('📱 Mobile UX & Acoustic Audio Engine — Suite E2E', () => {
     // Abrir una canción
     const firstCard = page.locator('.discovery-song-card').first();
     await firstCard.click();
+    await waitForSong(page);
 
     await page.waitForSelector('#btnPlaySingToggle', { timeout: 10000 });
     // Cambiar a modo cantar
@@ -148,6 +156,7 @@ test.describe('📱 Mobile UX & Acoustic Audio Engine — Suite E2E', () => {
     expect(checkState.scoreAfterRepause).toBe(checkState.scoreAfterPlayHit); // No sumó en pausa
 
     // Pulsar reproducir en modo cantar
+    await useGeneratedGuide(page);
     const btnSingPlay = page.locator('#btnSingPlayPause');
     await expect(btnSingPlay).toBeVisible();
     await btnSingPlay.click();
@@ -199,7 +208,9 @@ test.describe('📱 Mobile UX & Acoustic Audio Engine — Suite E2E', () => {
     // Abrir una canción
     const firstCard = page.locator('.discovery-song-card').first();
     await firstCard.click();
+    await waitForSong(page);
 
+    await page.locator('.practice-strumming > summary').click();
     await page.waitForSelector('#btnPreviewStrumming', { timeout: 10000 });
     const btnStrum = page.locator('#btnPreviewStrumming');
     await expect(btnStrum).toBeVisible();

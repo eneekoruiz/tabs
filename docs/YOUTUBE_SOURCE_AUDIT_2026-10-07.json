@@ -1,0 +1,2175 @@
+{
+  "checkedAt": "2026-10-07T08:18:50.433Z",
+  "method": "YouTube oEmbed metadata; availability does not certify melody alignment or regional playback.",
+  "records": [
+    {
+      "id": "2ZBtPf7FOoM",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "killerqueen"
+        },
+        {
+          "kind": "original",
+          "key": "queenkillerqueen"
+        }
+      ],
+      "status": 200,
+      "title": "Queen - Killer Queen (Top Of The Pops, 1974)",
+      "author": "Queen Official"
+    },
+    {
+      "id": "fJ9rUzIMcZQ",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "bohemianrhapsody"
+        },
+        {
+          "kind": "original",
+          "key": "queenbohemianrhapsody"
+        }
+      ],
+      "status": 200,
+      "title": "Queen – Bohemian Rhapsody (Official Video Remastered)",
+      "author": "Queen Official"
+    },
+    {
+      "id": "HgzGwKwLmgM",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "dontstopmenow"
+        },
+        {
+          "kind": "original",
+          "key": "queendontstopmenow"
+        }
+      ],
+      "status": 200,
+      "title": "Queen - Don't Stop Me Now (Official Video Remastered 4K)",
+      "author": "Queen Official"
+    },
+    {
+      "id": "-tJYN-eG1zk",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "wewillrockyou"
+        },
+        {
+          "kind": "original",
+          "key": "queenwewillrockyou"
+        }
+      ],
+      "status": 200,
+      "title": "Queen - We Will Rock You (Official Video)",
+      "author": "Queen Official"
+    },
+    {
+      "id": "04854XqcfCY",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "wearethechampions"
+        },
+        {
+          "kind": "original",
+          "key": "queenwearethechampions"
+        }
+      ],
+      "status": 200,
+      "title": "Queen - We Are The Champions (Official Video Remastered)",
+      "author": "Queen Official"
+    },
+    {
+      "id": "kijpcUv-b8M",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "somebodytolove"
+        },
+        {
+          "kind": "original",
+          "key": "queensomebodytolove"
+        }
+      ],
+      "status": 200,
+      "title": "Queen - Somebody To Love (Official Video)",
+      "author": "Queen Official"
+    },
+    {
+      "id": "f4Mc-NY53H8",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "iwanttobreakfree"
+        },
+        {
+          "kind": "original",
+          "key": "queeniwanttobreakfree"
+        }
+      ],
+      "status": 404
+    },
+    {
+      "id": "a01QQZyl-_I",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "underpressure"
+        },
+        {
+          "kind": "original",
+          "key": "queenunderpressure"
+        }
+      ],
+      "status": 200,
+      "title": "Queen and David Bowie - Under Pressure (Official Video)",
+      "author": "Queen Official"
+    },
+    {
+      "id": "t99KH0TR-J4",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "theshowmustgoon"
+        },
+        {
+          "kind": "original",
+          "key": "queentheshowmustgoon"
+        }
+      ],
+      "status": 200,
+      "title": "Queen - The Show Must Go On (Official Video)",
+      "author": "Queen Official"
+    },
+    {
+      "id": "rY0WxgSXdEE",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "anotheronebitesthedust"
+        },
+        {
+          "kind": "original",
+          "key": "queenanotheronebitesthedust"
+        }
+      ],
+      "status": 200,
+      "title": "Queen - Another One Bites the Dust (Official Video Remastered)",
+      "author": "Queen Official"
+    },
+    {
+      "id": "azdwsXLmrHE",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "radiogaga"
+        },
+        {
+          "kind": "original",
+          "key": "queenradiogaga"
+        }
+      ],
+      "status": 200,
+      "title": "Queen - Radio Ga Ga (Official Video)",
+      "author": "Queen Official"
+    },
+    {
+      "id": "Man4Xw8Xypo",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "blackbird"
+        },
+        {
+          "kind": "original",
+          "key": "thebeatlesblackbird"
+        }
+      ],
+      "status": 200,
+      "title": "Blackbird (Remastered 2009)",
+      "author": "The Beatles - Topic"
+    },
+    {
+      "id": "QDYfEBY9NM4",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "letitbe"
+        },
+        {
+          "kind": "original",
+          "key": "thebeatlesletitbe"
+        }
+      ],
+      "status": 200,
+      "title": "Let It Be (Remastered 2009)",
+      "author": "The Beatles - Topic"
+    },
+    {
+      "id": "NrgmdOz227I",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "yesterday"
+        },
+        {
+          "kind": "original",
+          "key": "thebeatlesyesterday"
+        }
+      ],
+      "status": 200,
+      "title": "Yesterday (Remastered 2009)",
+      "author": "The Beatles - Topic"
+    },
+    {
+      "id": "A_MjCqQoLLA",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "heyjude"
+        },
+        {
+          "kind": "original",
+          "key": "thebeatlesheyjude"
+        }
+      ],
+      "status": 200,
+      "title": "The Beatles - The Beatles - Hey Jude (Official Music Video) [Remastered 2015]",
+      "author": "TheBeatlesVEVO"
+    },
+    {
+      "id": "KQetemT1sWc",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "herecomesthesun"
+        },
+        {
+          "kind": "original",
+          "key": "thebeatlesherecomesthesun"
+        }
+      ],
+      "status": 200,
+      "title": "The Beatles - Here Comes The Sun (2019 Mix)",
+      "author": "TheBeatlesVEVO"
+    },
+    {
+      "id": "45cYwDMibGo",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "cometogether"
+        },
+        {
+          "kind": "original",
+          "key": "thebeatlescometogether"
+        }
+      ],
+      "status": 200,
+      "title": "The Beatles - Come Together",
+      "author": "TheBeatlesVEVO"
+    },
+    {
+      "id": "UelDrZ1aFeY",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "something"
+        },
+        {
+          "kind": "original",
+          "key": "thebeatlessomething"
+        }
+      ],
+      "status": 200,
+      "title": "The Beatles - Something",
+      "author": "TheBeatlesVEVO"
+    },
+    {
+      "id": "YBcdt6DsLQA",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "inmylife"
+        },
+        {
+          "kind": "original",
+          "key": "thebeatlesinmylife"
+        }
+      ],
+      "status": 200,
+      "title": "In My Life (Remastered 2009)",
+      "author": "The Beatles - Topic"
+    },
+    {
+      "id": "2RicaUqd9Hg",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "twistandshout"
+        },
+        {
+          "kind": "original",
+          "key": "thebeatlestwistandshout"
+        }
+      ],
+      "status": 200,
+      "title": "Twist And Shout (Remastered 2009)",
+      "author": "The Beatles - Topic"
+    },
+    {
+      "id": "2Q_ZzBGPdqE",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "help"
+        },
+        {
+          "kind": "original",
+          "key": "thebeatleshelp"
+        }
+      ],
+      "status": 200,
+      "title": "The Beatles - Help!",
+      "author": "TheBeatlesVEVO"
+    },
+    {
+      "id": "m2uTFF_3MaA",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "yellowsubmarine"
+        },
+        {
+          "kind": "original",
+          "key": "thebeatlesyellowsubmarine"
+        }
+      ],
+      "status": 200,
+      "title": "The Beatles - Yellow Submarine",
+      "author": "TheBeatlesVEVO"
+    },
+    {
+      "id": "_7xMfIp-irg",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "allyouneedislove"
+        },
+        {
+          "kind": "original",
+          "key": "thebeatlesallyouneedislove"
+        }
+      ],
+      "status": 200,
+      "title": "All You Need Is Love (Remastered 2009)",
+      "author": "The Beatles - Topic"
+    },
+    {
+      "id": "7wtfhZwyrcc",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "believer"
+        },
+        {
+          "kind": "original",
+          "key": "imaginedragonsbeliever"
+        }
+      ],
+      "status": 200,
+      "title": "Imagine Dragons - Believer (Official Music Video)",
+      "author": "ImagineDragonsVEVO"
+    },
+    {
+      "id": "ktvTqvkSCRU",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "radioactive"
+        },
+        {
+          "kind": "original",
+          "key": "imaginedragonsradioactive"
+        }
+      ],
+      "status": 404
+    },
+    {
+      "id": "mWRsgZuwf_8",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "demons"
+        },
+        {
+          "kind": "original",
+          "key": "imaginedragonsdemons"
+        }
+      ],
+      "status": 200,
+      "title": "Imagine Dragons - Demons (Official Music Video)",
+      "author": "ImagineDragonsVEVO"
+    },
+    {
+      "id": "fKopy74weus",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "thunder"
+        },
+        {
+          "kind": "original",
+          "key": "imaginedragonsthunder"
+        }
+      ],
+      "status": 200,
+      "title": "Imagine Dragons - Thunder",
+      "author": "ImagineDragonsVEVO"
+    },
+    {
+      "id": "TO-_3tck2tg",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "bones"
+        },
+        {
+          "kind": "original",
+          "key": "imaginedragonsbones"
+        }
+      ],
+      "status": 200,
+      "title": "Imagine Dragons - Bones (Official Music Video)",
+      "author": "ImagineDragonsVEVO"
+    },
+    {
+      "id": "D9G1VOjN_84",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "enemy"
+        },
+        {
+          "kind": "original",
+          "key": "imaginedragonsenemy"
+        }
+      ],
+      "status": 200,
+      "title": "Imagine Dragons x J.I.D - Enemy (from the series Arcane League of Legends)",
+      "author": "ImagineDragonsVEVO"
+    },
+    {
+      "id": "0I647GU3Jsc",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "natural"
+        },
+        {
+          "kind": "original",
+          "key": "imaginedragonsnatural"
+        }
+      ],
+      "status": 200,
+      "title": "Imagine Dragons - Natural",
+      "author": "ImagineDragonsVEVO"
+    },
+    {
+      "id": "gOsM-DYAEhY",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "whateverittakes"
+        },
+        {
+          "kind": "original",
+          "key": "imaginedragonswhateverittakes"
+        }
+      ],
+      "status": 200,
+      "title": "Imagine Dragons - Whatever It Takes (Official Music Video)",
+      "author": "ImagineDragonsVEVO"
+    },
+    {
+      "id": "I-QfPUz1es8",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "badliar"
+        },
+        {
+          "kind": "original",
+          "key": "imaginedragonsbadliar"
+        }
+      ],
+      "status": 200,
+      "title": "Imagine Dragons - Bad Liar",
+      "author": "ImagineDragonsVEVO"
+    },
+    {
+      "id": "sENM2wA_NGo",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "itstime"
+        },
+        {
+          "kind": "original",
+          "key": "imaginedragonsitstime"
+        }
+      ],
+      "status": 404
+    },
+    {
+      "id": "Te3_VlimRw4",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "sharks"
+        },
+        {
+          "kind": "original",
+          "key": "imagineddragonssharks"
+        }
+      ],
+      "status": 404
+    },
+    {
+      "id": "1nv9br7Sm7E",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "walkingthewire"
+        },
+        {
+          "kind": "original",
+          "key": "imagineddragonswalkingthewire"
+        }
+      ],
+      "status": 404
+    },
+    {
+      "id": "ZmDBbnmKpqQ",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "driverslicense"
+        },
+        {
+          "kind": "original",
+          "key": "oliviarodrigodriverslicense"
+        }
+      ],
+      "status": 200,
+      "title": "Olivia Rodrigo - drivers license (Official Video)",
+      "author": "OliviaRodrigoVEVO"
+    },
+    {
+      "id": "RlPNh_wAKEc",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "vampire"
+        },
+        {
+          "kind": "original",
+          "key": "oliviarodrigovampire"
+        }
+      ],
+      "status": 404
+    },
+    {
+      "id": "gNi_6U5Pm_o",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "good4u"
+        },
+        {
+          "kind": "original",
+          "key": "oliviarodrigogood4u"
+        }
+      ],
+      "status": 200,
+      "title": "Olivia Rodrigo - good 4 u (Official Video)",
+      "author": "OliviaRodrigoVEVO"
+    },
+    {
+      "id": "cii6ruuycKA",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "dejavu"
+        },
+        {
+          "kind": "original",
+          "key": "oliviarodrigodejavu"
+        }
+      ],
+      "status": 404
+    },
+    {
+      "id": "CRrf3h9vhp8",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "traitor"
+        },
+        {
+          "kind": "original",
+          "key": "oliviarodrigotraitor"
+        }
+      ],
+      "status": 200,
+      "title": "Olivia Rodrigo - traitor (Official Video)",
+      "author": "OliviaRodrigoVEVO"
+    },
+    {
+      "id": "Dj9q84UPp60",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "badidearight"
+        },
+        {
+          "kind": "original",
+          "key": "oliviarodrigobadidearight"
+        }
+      ],
+      "status": 404
+    },
+    {
+      "id": "ZsJ-BHpHXi8",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "gethimback"
+        },
+        {
+          "kind": "original",
+          "key": "oliviarodrigogethimback"
+        }
+      ],
+      "status": 404
+    },
+    {
+      "id": "Z-9gQjUZMm0",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "happier"
+        },
+        {
+          "kind": "original",
+          "key": "oliviarodrigohappier"
+        }
+      ],
+      "status": 200,
+      "title": "Olivia Rodrigo - jealousy, jealousy (Lyric Video)",
+      "author": "OliviaRodrigoVEVO"
+    },
+    {
+      "id": "QYh6mYIJG2Y",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "7rings"
+        },
+        {
+          "kind": "original",
+          "key": "arianagrande7rings"
+        }
+      ],
+      "status": 200,
+      "title": "Ariana Grande - 7 rings (Official Video)",
+      "author": "ArianaGrandeVevo"
+    },
+    {
+      "id": "gl1aHhXnN1k",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "thankunext"
+        },
+        {
+          "kind": "original",
+          "key": "arianagrandethankunext"
+        }
+      ],
+      "status": 200,
+      "title": "Ariana Grande - thank u, next (Official Video)",
+      "author": "ArianaGrandeVevo"
+    },
+    {
+      "id": "tcYodQoapMg",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "positions"
+        },
+        {
+          "kind": "original",
+          "key": "arianagrandepositions"
+        }
+      ],
+      "status": 200,
+      "title": "Ariana Grande - positions (official video)",
+      "author": "ArianaGrandeVevo"
+    },
+    {
+      "id": "ffxKSjUwKdU",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "notearslefttocry"
+        },
+        {
+          "kind": "original",
+          "key": "arianagrandenotearslefttocry"
+        }
+      ],
+      "status": 200,
+      "title": "Ariana Grande - no tears left to cry (Official Video)",
+      "author": "ArianaGrandeVevo"
+    },
+    {
+      "id": "SXiSVQZLje8",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "sidetoside"
+        },
+        {
+          "kind": "original",
+          "key": "arianagrandesidetoside"
+        }
+      ],
+      "status": 200,
+      "title": "Ariana Grande ft. Nicki Minaj - Side To Side (Official Video) ft. Nicki Minaj",
+      "author": "ArianaGrandeVevo"
+    },
+    {
+      "id": "KNtJGQkC-WI",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "wecantbefriends"
+        },
+        {
+          "kind": "original",
+          "key": "wecantbefriendswaitforyourlove"
+        },
+        {
+          "kind": "original",
+          "key": "arianagrandewecantbefriends"
+        }
+      ],
+      "status": 200,
+      "title": "Ariana Grande - we can't be friends (wait for your love) (official music video)",
+      "author": "ArianaGrandeVevo"
+    },
+    {
+      "id": "1ekZEVeXwek",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "intoyou"
+        },
+        {
+          "kind": "original",
+          "key": "arianagrandeintoyou"
+        }
+      ],
+      "status": 200,
+      "title": "Ariana Grande - Into You (Official Video)",
+      "author": "ArianaGrandeVevo"
+    },
+    {
+      "id": "9WbCfHutDSE",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "dangerouswoman"
+        },
+        {
+          "kind": "original",
+          "key": "arianagrandedangerouswoman"
+        }
+      ],
+      "status": 200,
+      "title": "Ariana Grande - Dangerous Woman (Official Video)",
+      "author": "ArianaGrandeVevo"
+    },
+    {
+      "id": "kHLHSlExFis",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "godisawoman"
+        },
+        {
+          "kind": "original",
+          "key": "arianagrandegodisawoman"
+        }
+      ],
+      "status": 200,
+      "title": "Ariana Grande - God is a woman (Official Video)",
+      "author": "ArianaGrandeVevo"
+    },
+    {
+      "id": "BPgEgaPk62M",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "onelasttime"
+        },
+        {
+          "kind": "original",
+          "key": "arianagrandeonelasttime"
+        }
+      ],
+      "status": 200,
+      "title": "Ariana Grande - One Last Time (Official Video)",
+      "author": "ArianaGrandeVevo"
+    },
+    {
+      "id": "L8eRzOYhLuw",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "breakfree"
+        },
+        {
+          "kind": "original",
+          "key": "arianagrandebreakfree"
+        }
+      ],
+      "status": 200,
+      "title": "Ariana Grande - Break Free (Official Video) ft. Zedd",
+      "author": "ArianaGrandeVevo"
+    },
+    {
+      "id": "nlR0MkrRklg",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "santatellme"
+        },
+        {
+          "kind": "original",
+          "key": "arianagrandesantatellme"
+        }
+      ],
+      "status": 200,
+      "title": "Ariana Grande - Santa Tell Me (Official Video)",
+      "author": "ArianaGrandeVevo"
+    },
+    {
+      "id": "4NRXx6U8ABQ",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "blindinglights"
+        },
+        {
+          "kind": "original",
+          "key": "theweekndblindinglights"
+        }
+      ],
+      "status": 200,
+      "title": "The Weeknd - Blinding Lights (Official Video)",
+      "author": "TheWeekndVEVO"
+    },
+    {
+      "id": "34Na4j8AVgA",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "starboy"
+        },
+        {
+          "kind": "original",
+          "key": "theweekndstarboy"
+        }
+      ],
+      "status": 200,
+      "title": "The Weeknd - Starboy ft. Daft Punk (Official Video) ft. Daft Punk",
+      "author": "TheWeekndVEVO"
+    },
+    {
+      "id": "XXYlFuWEuKI",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "saveyourtears"
+        },
+        {
+          "kind": "original",
+          "key": "theweekndsaveyourtears"
+        }
+      ],
+      "status": 200,
+      "title": "The Weeknd - Save Your Tears (Official Music Video)",
+      "author": "TheWeekndVEVO"
+    },
+    {
+      "id": "yzTuBuRdAyA",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "thehills"
+        },
+        {
+          "kind": "original",
+          "key": "theweekndthehills"
+        }
+      ],
+      "status": 200,
+      "title": "The Weeknd - The Hills",
+      "author": "TheWeekndVEVO"
+    },
+    {
+      "id": "u9n7Cw-4_PE",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "dieforyou"
+        },
+        {
+          "kind": "original",
+          "key": "theweeknddieforyou"
+        }
+      ],
+      "status": 404
+    },
+    {
+      "id": "KEI4qSrkPAs",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "cantfeelmyface"
+        },
+        {
+          "kind": "original",
+          "key": "theweekndcantfeelmyface"
+        }
+      ],
+      "status": 200,
+      "title": "The Weeknd - Can't Feel My Face (Official Video)",
+      "author": "TheWeekndVEVO"
+    },
+    {
+      "id": "6hzrDeceEKc",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "wonderwall"
+        },
+        {
+          "kind": "original",
+          "key": "oasiswonderwall"
+        }
+      ],
+      "status": 200,
+      "title": "Oasis - Wonderwall (Official Video)",
+      "author": "Oasis"
+    },
+    {
+      "id": "r8OipmKFDeM",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "dontlookbackinanger"
+        },
+        {
+          "kind": "original",
+          "key": "oasisdontlookbackinanger"
+        }
+      ],
+      "status": 200,
+      "title": "Oasis - Don't Look Back In Anger (Official Video)",
+      "author": "Oasis"
+    },
+    {
+      "id": "tI-5uv4wryI",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "champagnesupernova"
+        },
+        {
+          "kind": "original",
+          "key": "oasischampagnesupernova"
+        }
+      ],
+      "status": 200,
+      "title": "Oasis - Champagne Supernova (Official Video)",
+      "author": "OasisVEVO"
+    },
+    {
+      "id": "maTP315XZCQ",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "standbyme"
+        },
+        {
+          "kind": "original",
+          "key": "oasisstandbyme"
+        }
+      ],
+      "status": 200,
+      "title": "Oasis - Stand By Me (Official Video)",
+      "author": "OasisVEVO"
+    },
+    {
+      "id": "0KSOMA3QBU0",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "darkhorse"
+        },
+        {
+          "kind": "original",
+          "key": "katyperrydarkhorse"
+        }
+      ],
+      "status": 200,
+      "title": "Katy Perry - Dark Horse ft. Juicy J",
+      "author": "KatyPerryVEVO"
+    },
+    {
+      "id": "CevxZvSJLk8",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "roar"
+        },
+        {
+          "kind": "original",
+          "key": "katyperryroar"
+        }
+      ],
+      "status": 200,
+      "title": "Katy Perry - Roar",
+      "author": "KatyPerryVEVO"
+    },
+    {
+      "id": "QGJuMBdaqIw",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "firework"
+        },
+        {
+          "kind": "original",
+          "key": "katyperryfirework"
+        }
+      ],
+      "status": 200,
+      "title": "Katy Perry - Firework (Official Music Video)",
+      "author": "KatyPerryVEVO"
+    },
+    {
+      "id": "2Vv-BfVoq4g",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "perfect"
+        },
+        {
+          "kind": "original",
+          "key": "edsheeranperfect"
+        }
+      ],
+      "status": 200,
+      "title": "Ed Sheeran - Perfect (Official Music Video)",
+      "author": "Ed Sheeran"
+    },
+    {
+      "id": "JGwWNGJdvx8",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "shapeofyou"
+        },
+        {
+          "kind": "original",
+          "key": "edsheeranshapeofyou"
+        }
+      ],
+      "status": 200,
+      "title": "Ed Sheeran - Shape of You (Official Music Video)",
+      "author": "Ed Sheeran"
+    },
+    {
+      "id": "lp-EO5I60KA",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "thinkingoutloud"
+        },
+        {
+          "kind": "original",
+          "key": "edsheeranthinkingoutloud"
+        }
+      ],
+      "status": 200,
+      "title": "Ed Sheeran - Thinking Out Loud (Official Music Video)",
+      "author": "Ed Sheeran"
+    },
+    {
+      "id": "nSDgHBxUbVQ",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "photograph"
+        },
+        {
+          "kind": "original",
+          "key": "edsheeranphotograph"
+        }
+      ],
+      "status": 200,
+      "title": "Ed Sheeran - Photograph (Official Music Video)",
+      "author": "Ed Sheeran"
+    },
+    {
+      "id": "orJSJGHjBLI",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "badhabits"
+        },
+        {
+          "kind": "original",
+          "key": "edsheeranbadhabits"
+        }
+      ],
+      "status": 200,
+      "title": "Ed Sheeran - Bad Habits [Official Video]",
+      "author": "Ed Sheeran"
+    },
+    {
+      "id": "Il0S8BoucSA",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "shivers"
+        },
+        {
+          "kind": "original",
+          "key": "edsheeranshivers"
+        }
+      ],
+      "status": 200,
+      "title": "Ed Sheeran - Shivers [Official Video]",
+      "author": "Ed Sheeran"
+    },
+    {
+      "id": "yKNxeF4KMsY",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "yellow"
+        },
+        {
+          "kind": "original",
+          "key": "coldplayyellow"
+        }
+      ],
+      "status": 200,
+      "title": "Coldplay - Yellow (Official Video)",
+      "author": "Coldplay"
+    },
+    {
+      "id": "dvgZkm1xWPE",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "vivalavida"
+        },
+        {
+          "kind": "original",
+          "key": "coldplayvivalavida"
+        }
+      ],
+      "status": 200,
+      "title": "Coldplay - Viva La Vida (Official Video)",
+      "author": "Coldplay"
+    },
+    {
+      "id": "RB-RcX5DS5A",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "thescientist"
+        },
+        {
+          "kind": "original",
+          "key": "coldplaythescientist"
+        }
+      ],
+      "status": 200,
+      "title": "Coldplay - The Scientist (Official 4K Video)",
+      "author": "Coldplay"
+    },
+    {
+      "id": "k4V3Ui687Gw",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "fixyou"
+        },
+        {
+          "kind": "original",
+          "key": "coldplayfixyou"
+        }
+      ],
+      "status": 404
+    },
+    {
+      "id": "VPRjCeoBqrI",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "askyfullofstars"
+        },
+        {
+          "kind": "original",
+          "key": "coldplayaskyfullofstars"
+        }
+      ],
+      "status": 200,
+      "title": "Coldplay - A Sky Full Of Stars (Official Video)",
+      "author": "Coldplay"
+    },
+    {
+      "id": "hTWKbfoikeg",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "smellsliketeenspirit"
+        },
+        {
+          "kind": "original",
+          "key": "nirvanasmellsliketeenspirit"
+        }
+      ],
+      "status": 200,
+      "title": "Nirvana - Smells Like Teen Spirit (Official Music Video)",
+      "author": "NirvanaVEVO"
+    },
+    {
+      "id": "vabnZ9-ex7o",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "comeasyouare"
+        },
+        {
+          "kind": "original",
+          "key": "nirvanacomeasyouare"
+        }
+      ],
+      "status": 200,
+      "title": "Nirvana - Come As You Are (Official Music Video)",
+      "author": "NirvanaVEVO"
+    },
+    {
+      "id": "n6P0SitRwy8",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "heartshapedbox"
+        }
+      ],
+      "status": 200,
+      "title": "Nirvana - Heart-Shaped Box",
+      "author": "NirvanaVEVO"
+    },
+    {
+      "id": "pkcJEvMcnEg",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "lithium"
+        }
+      ],
+      "status": 200,
+      "title": "Nirvana - Lithium (Official Music Video)",
+      "author": "NirvanaVEVO"
+    },
+    {
+      "id": "tAGnKpE4NCI",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "nothingelsematters"
+        },
+        {
+          "kind": "original",
+          "key": "metallicanothingelsematters"
+        }
+      ],
+      "status": 200,
+      "title": "Metallica: Nothing Else Matters (Official Music Video)",
+      "author": "Metallica"
+    },
+    {
+      "id": "CD-E-LDc384",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "entersandman"
+        },
+        {
+          "kind": "original",
+          "key": "metallicaentersandman"
+        }
+      ],
+      "status": 200,
+      "title": "Metallica: Enter Sandman (Official Music Video)",
+      "author": "Metallica"
+    },
+    {
+      "id": "E0ozmU9cJDg",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "masterofpuppets"
+        }
+      ],
+      "status": 200,
+      "title": "Master of Puppets (Remastered)",
+      "author": "Metallica - Topic"
+    },
+    {
+      "id": "Ckom3gf57Yw",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "theunforgiven"
+        }
+      ],
+      "status": 200,
+      "title": "Metallica - The Unforgiven (Official Music Video)",
+      "author": "Warner Records Vault"
+    },
+    {
+      "id": "09839DpTctU",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "hotelcalifornia"
+        },
+        {
+          "kind": "original",
+          "key": "eagleshotelcalifornia"
+        }
+      ],
+      "status": 200,
+      "title": "Eagles - Hotel California (Live 1977) (Official Video) [HD]",
+      "author": "Eagles"
+    },
+    {
+      "id": "XFkzRNyygfk",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "creep"
+        },
+        {
+          "kind": "original",
+          "key": "radioheadcreep"
+        }
+      ],
+      "status": 200,
+      "title": "Radiohead - Creep",
+      "author": "Radiohead"
+    },
+    {
+      "id": "1uYWYWPc9HU",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "karmapolice"
+        }
+      ],
+      "status": 200,
+      "title": "Radiohead - Karma Police",
+      "author": "Radiohead"
+    },
+    {
+      "id": "u5CVsCnxyXg",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "nosurprises"
+        }
+      ],
+      "status": 200,
+      "title": "Radiohead - No Surprises",
+      "author": "Radiohead"
+    },
+    {
+      "id": "pAgnJDJN4VA",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "backinblack"
+        },
+        {
+          "kind": "original",
+          "key": "acdcbackinblack"
+        }
+      ],
+      "status": 200,
+      "title": "AC/DC - Back In Black (Official 4K Video)",
+      "author": "acdcVEVO"
+    },
+    {
+      "id": "gEPmA3USJdI",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "highwaytohell"
+        }
+      ],
+      "status": 200,
+      "title": "AC/DC - Highway to Hell (Live At River Plate, December 2009)",
+      "author": "acdcVEVO"
+    },
+    {
+      "id": "v2AC41dglnM",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "thunderstruck"
+        }
+      ],
+      "status": 200,
+      "title": "AC/DC - Thunderstruck (Official Video)",
+      "author": "acdcVEVO"
+    },
+    {
+      "id": "6Ejga4kJUts",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "zombie"
+        },
+        {
+          "kind": "original",
+          "key": "thecranberrieszombie"
+        }
+      ],
+      "status": 200,
+      "title": "The Cranberries - Zombie (Official Music Video)",
+      "author": "TheCranberriesVEVO"
+    },
+    {
+      "id": "hjpF8ukSrvk",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "wishyouwerehere"
+        },
+        {
+          "kind": "original",
+          "key": "pinkfloydwishyouwerehere"
+        }
+      ],
+      "status": 200,
+      "title": "Wish You Were Here",
+      "author": "PINK FLOYD - Topic"
+    },
+    {
+      "id": "tH2w6Oxx0kQ",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "dustinthewind"
+        },
+        {
+          "kind": "original",
+          "key": "kansasdustinthewind"
+        }
+      ],
+      "status": 200,
+      "title": "Kansas - Dust in the Wind (Official Video)",
+      "author": "kansasVEVO"
+    },
+    {
+      "id": "JxPj3GAYYZ0",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "tearsinheaven"
+        },
+        {
+          "kind": "original",
+          "key": "ericclaptontearsinheaven"
+        }
+      ],
+      "status": 200,
+      "title": "Eric Clapton - Tears In Heaven (Official Video)",
+      "author": "Epitaph"
+    },
+    {
+      "id": "ic8j13piAhQ",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "cruelsummer"
+        },
+        {
+          "kind": "original",
+          "key": "taylorswiftcruelsummer"
+        }
+      ],
+      "status": 200,
+      "title": "Taylor Swift - Cruel Summer (Official Audio)",
+      "author": "Taylor Swift"
+    },
+    {
+      "id": "b1kbLwvqugk",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "antihero"
+        },
+        {
+          "kind": "original",
+          "key": "taylorswiftantihero"
+        }
+      ],
+      "status": 200,
+      "title": "Taylor Swift - Anti-Hero (Official Music Video)",
+      "author": "Taylor Swift"
+    },
+    {
+      "id": "e-ORhEE9VVg",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "blankspace"
+        }
+      ],
+      "status": 200,
+      "title": "Taylor Swift - Blank Space",
+      "author": "Taylor Swift"
+    },
+    {
+      "id": "nfWlot6h_JM",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "shakeitoff"
+        }
+      ],
+      "status": 200,
+      "title": "Taylor Swift - Shake It Off",
+      "author": "Taylor Swift"
+    },
+    {
+      "id": "8xg3vE8Ie_E",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "lovestory"
+        }
+      ],
+      "status": 200,
+      "title": "Taylor Swift - Love Story",
+      "author": "Taylor Swift"
+    },
+    {
+      "id": "tollGa3S0o8",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "alltoowell"
+        }
+      ],
+      "status": 200,
+      "title": "Taylor Swift - All Too Well: The Short Film",
+      "author": "Taylor Swift"
+    },
+    {
+      "id": "DyDfgMOUjCI",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "badguy"
+        },
+        {
+          "kind": "original",
+          "key": "billieeilishbadguy"
+        }
+      ],
+      "status": 200,
+      "title": "Billie Eilish - bad guy",
+      "author": "BillieEilishVEVO"
+    },
+    {
+      "id": "viimfQi_pUw",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "oceaneyes"
+        }
+      ],
+      "status": 200,
+      "title": "Billie Eilish - ocean eyes (Official Music Video)",
+      "author": "Billie Eilish"
+    },
+    {
+      "id": "pbMwTqkKSps",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "whenthepartysover"
+        }
+      ],
+      "status": 200,
+      "title": "Billie Eilish - when the party's over",
+      "author": "BillieEilishVEVO"
+    },
+    {
+      "id": "EgBJmlPo8Xw",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "everythingiwanted"
+        }
+      ],
+      "status": 200,
+      "title": "Billie Eilish - everything i wanted",
+      "author": "BillieEilishVEVO"
+    },
+    {
+      "id": "5GJWxDKyk3A",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "happierthanever"
+        }
+      ],
+      "status": 200,
+      "title": "Billie Eilish - Happier Than Ever (Official Music Video)",
+      "author": "BillieEilishVEVO"
+    },
+    {
+      "id": "d5gf9dXbPi0",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "birdsofafeather"
+        }
+      ],
+      "status": 200,
+      "title": "Billie Eilish - BIRDS OF A FEATHER (Official Lyric Video)",
+      "author": "BillieEilishVEVO"
+    },
+    {
+      "id": "cW8VLC9nnTo",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "whatwasimadefor"
+        }
+      ],
+      "status": 200,
+      "title": "Billie Eilish - What Was I Made For? (Official Music Video)",
+      "author": "BillieEilishVEVO"
+    },
+    {
+      "id": "Gq-3y1f5s0Y",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "soldaditomarinero"
+        },
+        {
+          "kind": "original",
+          "key": "fitofitipaldissoldaditomarinero"
+        }
+      ],
+      "status": 404
+    },
+    {
+      "id": "r2g0p13Xl3Y",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "laflaca"
+        },
+        {
+          "kind": "original",
+          "key": "jarabedepalolaflaca"
+        }
+      ],
+      "status": 404
+    },
+    {
+      "id": "g_qHwgFqP9U",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "clavadoenunbar"
+        },
+        {
+          "kind": "original",
+          "key": "manaclavadoenunbar"
+        }
+      ],
+      "status": 404
+    },
+    {
+      "id": "T_FkEw27XJ0",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "demusicaligera"
+        },
+        {
+          "kind": "original",
+          "key": "sodastereodemusicaligera"
+        }
+      ],
+      "status": 200,
+      "title": "Soda Stereo - De Música Ligera (Official Video)",
+      "author": "SodaStereoVEVO"
+    },
+    {
+      "id": "8d9sN_dK4mI",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "dejame"
+        },
+        {
+          "kind": "original",
+          "key": "lossecretosdejame"
+        }
+      ],
+      "status": 404
+    },
+    {
+      "id": "jS2E6rGqP-Q",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "standby"
+        },
+        {
+          "kind": "original",
+          "key": "extremodurostandby"
+        }
+      ],
+      "status": 404
+    },
+    {
+      "id": "xL1Fk4_yP9A",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "antologia"
+        },
+        {
+          "kind": "original",
+          "key": "shakiraantologia"
+        }
+      ],
+      "status": 404
+    },
+    {
+      "id": "1U_f0l-1Z3A",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "entredostierras"
+        },
+        {
+          "kind": "original",
+          "key": "heroesdelsilencioentredostierras"
+        }
+      ],
+      "status": 404
+    },
+    {
+      "id": "1P9k-J_7VvQ",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "corazonpartio"
+        },
+        {
+          "kind": "original",
+          "key": "alejandrosanzcorazonpartio"
+        }
+      ],
+      "status": 404
+    },
+    {
+      "id": "1e9W-tKx_2w",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "flaca"
+        },
+        {
+          "kind": "original",
+          "key": "andrescalamaroflaca"
+        }
+      ],
+      "status": 404
+    },
+    {
+      "id": "H5v3kku4y6Q",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "asitwas"
+        },
+        {
+          "kind": "original",
+          "key": "harrystylesasitwas"
+        }
+      ],
+      "status": 200,
+      "title": "Harry Styles - As It Was (Official Video)",
+      "author": "HarryStylesVEVO"
+    },
+    {
+      "id": "E07s5ZYygMg",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "watermelonsugar"
+        }
+      ],
+      "status": 200,
+      "title": "Harry Styles - Watermelon Sugar (Official Video)",
+      "author": "HarryStylesVEVO"
+    },
+    {
+      "id": "qN4ooNx77u0",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "signofthetimes"
+        }
+      ],
+      "status": 200,
+      "title": "Harry Styles - Sign of the Times (Official Video)",
+      "author": "HarryStylesVEVO"
+    },
+    {
+      "id": "ekzHIWGv8b0",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "wheniwasyourman"
+        },
+        {
+          "kind": "original",
+          "key": "brunomarswheniwasyourman"
+        }
+      ],
+      "status": 404
+    },
+    {
+      "id": "LjhCEhWiKXk",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "justthewayyouare"
+        }
+      ],
+      "status": 200,
+      "title": "Bruno Mars - Just The Way You Are (Official Music Video)",
+      "author": "Bruno Mars"
+    },
+    {
+      "id": "e-fA-gBCkj0",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "lockedoutofheaven"
+        }
+      ],
+      "status": 200,
+      "title": "Bruno Mars - Locked Out Of Heaven (Official Music Video)",
+      "author": "Bruno Mars"
+    },
+    {
+      "id": "TUVcZfQe-Kw",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "levitating"
+        },
+        {
+          "kind": "original",
+          "key": "dualipalevitating"
+        }
+      ],
+      "status": 200,
+      "title": "Dua Lipa - Levitating Featuring DaBaby (Official Music Video)",
+      "author": "Dua Lipa"
+    },
+    {
+      "id": "oygrmJFKYZY",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "dontstartnow"
+        }
+      ],
+      "status": 200,
+      "title": "Dua Lipa - Don't Start Now (Official Music Video)",
+      "author": "Dua Lipa"
+    },
+    {
+      "id": "OiC1rgCPmUQ",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "dancethenight"
+        }
+      ],
+      "status": 200,
+      "title": "Dua Lipa - Dance The Night (From Barbie The Album) [Official Music Video]",
+      "author": "Dua Lipa"
+    },
+    {
+      "id": "uJ_1HMAGb4k",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "riptide"
+        },
+        {
+          "kind": "original",
+          "key": "vancejoyriptide"
+        }
+      ],
+      "status": 200,
+      "title": "Vance Joy - 'Riptide' Official Video",
+      "author": "Mushroom"
+    },
+    {
+      "id": "ttEMYvpoHA8",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "hallelujah"
+        },
+        {
+          "kind": "original",
+          "key": "leonardcohenhallelujah"
+        }
+      ],
+      "status": 404
+    },
+    {
+      "id": "bo_efYhAK2A",
+      "keys": [
+        {
+          "kind": "original",
+          "key": "shallow"
+        },
+        {
+          "kind": "original",
+          "key": "ladygagashallow"
+        }
+      ],
+      "status": 404
+    },
+    {
+      "id": "1G4isv_Fylg",
+      "keys": [
+        {
+          "kind": "karaoke",
+          "key": "bohemianrhapsody"
+        },
+        {
+          "kind": "karaoke",
+          "key": "queenbohemianrhapsody"
+        }
+      ],
+      "status": 200,
+      "title": "Coldplay - Paradise (Official Video)",
+      "author": "Coldplay"
+    },
+    {
+      "id": "mUeL1Z_05gM",
+      "keys": [
+        {
+          "kind": "karaoke",
+          "key": "killerqueen"
+        },
+        {
+          "kind": "karaoke",
+          "key": "queenkillerqueen"
+        }
+      ],
+      "status": 404
+    },
+    {
+      "id": "Z3e1z4zJ91g",
+      "keys": [
+        {
+          "kind": "karaoke",
+          "key": "dontstopmenow"
+        },
+        {
+          "kind": "karaoke",
+          "key": "queendontstopmenow"
+        }
+      ],
+      "status": 404
+    },
+    {
+      "id": "Tz2FhXbXkQk",
+      "keys": [
+        {
+          "kind": "karaoke",
+          "key": "wearethechampions"
+        },
+        {
+          "kind": "karaoke",
+          "key": "queenwearethechampions"
+        }
+      ],
+      "status": 404
+    },
+    {
+      "id": "Bpn4e7J05Wc",
+      "keys": [
+        {
+          "kind": "karaoke",
+          "key": "wewillrockyou"
+        },
+        {
+          "kind": "karaoke",
+          "key": "queenwewillrockyou"
+        }
+      ],
+      "status": 404
+    },
+    {
+      "id": "8M1s2rL2l68",
+      "keys": [
+        {
+          "kind": "karaoke",
+          "key": "blackbird"
+        },
+        {
+          "kind": "karaoke",
+          "key": "thebeatlesblackbird"
+        }
+      ],
+      "status": 404
+    },
+    {
+      "id": "_Xv3lK4mK8E",
+      "keys": [
+        {
+          "kind": "karaoke",
+          "key": "yesterday"
+        },
+        {
+          "kind": "karaoke",
+          "key": "thebeatlesyesterday"
+        }
+      ],
+      "status": 404
+    },
+    {
+      "id": "uE2M1T5Q1u8",
+      "keys": [
+        {
+          "kind": "karaoke",
+          "key": "letitbe"
+        },
+        {
+          "kind": "karaoke",
+          "key": "thebeatlesletitbe"
+        }
+      ],
+      "status": 404
+    },
+    {
+      "id": "sCg7nJ26yM4",
+      "keys": [
+        {
+          "kind": "karaoke",
+          "key": "believer"
+        },
+        {
+          "kind": "karaoke",
+          "key": "imaginedragonsbeliever"
+        }
+      ],
+      "status": 404
+    },
+    {
+      "id": "O3kU2L4z3wA",
+      "keys": [
+        {
+          "kind": "karaoke",
+          "key": "wonderwall"
+        },
+        {
+          "kind": "karaoke",
+          "key": "oasiswonderwall"
+        }
+      ],
+      "status": 404
+    },
+    {
+      "id": "yP9V2lqV8zQ",
+      "keys": [
+        {
+          "kind": "karaoke",
+          "key": "yellow"
+        },
+        {
+          "kind": "karaoke",
+          "key": "coldplayyellow"
+        }
+      ],
+      "status": 404
+    }
+  ],
+  "removedUnavailable": 34,
+  "newKaraokeVideos": [
+    "9Lxm0iSnKNc",
+    "keoUdoKu8Is",
+    "G962z-4OL9E",
+    "KUiPFviDAvg",
+    "sfbCZw_c2Zs"
+  ],
+  "onlineCatalog": {
+    "listedSongs": 1819,
+    "metadataChecked": 195,
+    "playbackConfirmed": 0,
+    "artistQueriesLimited": true,
+    "metadataQueriesLimited": true,
+    "embedSmoke": {
+      "ids": [
+        "I5mHTcJ5GfY",
+        "oSppTWQq-Ac",
+        "fJ9rUzIMcZQ"
+      ],
+      "result": "YouTube mostró vídeo no disponible en Chromium en este entorno"
+    }
+  }
+}

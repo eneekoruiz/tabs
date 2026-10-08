@@ -56,6 +56,14 @@ for (const file of vendorFiles) {
   if (['.js', '.mjs', '.woff2', '.sf2'].includes(extname(file))) required.add(toWebPath(file));
 }
 
+const vocalIndex = JSON.parse(await readFile(join(root,'assets/data/vocal-references/index.json'),'utf8'));
+required.add('./assets/data/vocal-references/index.json');
+for(const reference of vocalIndex.references) required.add('./'+reference.path);
+const readyIndex=JSON.parse(await readFile(join(root,'assets/practice/index.json'),'utf8'));
+required.add('./assets/practice/index.json');
+required.add('./assets/data/online-karaoke.json');
+for(const pack of readyIndex.packs)for(const name of new Set([pack.chart,pack.instrumentalChart,...(pack.id==='shearer-stay-with-me'?[pack.files.original,pack.files.instrumental]:[]),'license.txt'].filter(Boolean))) required.add('./assets/practice/'+pack.id+'/'+name);
+
 const missing = [...required].filter((asset) => !cached.has(asset)).sort();
 const stale = [...cached].filter((asset) => {
   if (asset === './' || asset === './index.html') return false;

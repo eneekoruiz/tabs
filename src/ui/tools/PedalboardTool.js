@@ -65,7 +65,7 @@ export class PedalboardTool extends Component {
           <!-- Cabecera de la Pedalera -->
           <div class="pedalboard-modal-header">
             <div class="pedalboard-title-group">
-              <div class="pedalboard-badge">REALTIME DSP · <10MS ULTRA-LOW LATENCY</div>
+              <div class="pedalboard-badge">REALTIME DSP · EFECTOS LOCALES</div>
               <h2 id="pedalboardTitle" class="pedalboard-modal-title">🎸 Virtual Pedalboard & Amp Simulator</h2>
               <p class="pedalboard-modal-subtitle">Conecta tu guitarra o canta por el micrófono con procesamiento analógico en tiempo real.</p>
             </div>

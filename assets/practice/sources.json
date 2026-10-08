@@ -1,0 +1,744 @@
+{
+  "schemaVersion": 1,
+  "revision": "c9246c799050acec96a03183df4b85493d283d51",
+  "files": [
+    {
+      "path": "fairy-bot-orchestra-heaven-can-t-wait/reference.txt",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Fairy%20Bot%20Orchestra%20-%20Heaven%20can't%20wait/song.txt",
+      "gitBlob": "bafc0f0c4b632011fb70154bdf40fbf5bda0b4dc",
+      "bytes": 4273
+    },
+    {
+      "path": "fairy-bot-orchestra-heaven-can-t-wait/license.txt",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Fairy%20Bot%20Orchestra%20-%20Heaven%20can't%20wait/license.txt",
+      "gitBlob": "072be6c4e561ca4506f68e21c9fa0543c8f5b481",
+      "bytes": 873
+    },
+    {
+      "path": "fairy-bot-orchestra-heaven-can-t-wait/original.ogg",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Fairy%20Bot%20Orchestra%20-%20Heaven%20can't%20wait/audio.ogg",
+      "gitBlob": "c021ad1a19885ff25e5127ef3d5faa2e1b29a813",
+      "bytes": 4166565
+    },
+    {
+      "path": "jonathan-coulton-a-talk-with-george/reference.txt",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Jonathan%20Coulton%20-%20A%20Talk%20with%20George/song.txt",
+      "gitBlob": "362c8bc9be6370467e6906e6c5e15a8409fdddb6",
+      "bytes": 6574
+    },
+    {
+      "path": "jonathan-coulton-a-talk-with-george/license.txt",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Jonathan%20Coulton%20-%20A%20Talk%20with%20George/license.txt",
+      "gitBlob": "520b1677b58b2c840010bf0769379b48fbf343ed",
+      "bytes": 1587
+    },
+    {
+      "path": "jonathan-coulton-a-talk-with-george/original.mp3",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Jonathan%20Coulton%20-%20A%20Talk%20with%20George/audio.mp3",
+      "gitBlob": "c114d49b54d5a3b080180d1e0e44ab674b9e5616",
+      "bytes": 3684182
+    },
+    {
+      "path": "jonathan-coulton-better/reference.txt",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Jonathan%20Coulton%20-%20Better/song.txt",
+      "gitBlob": "b8e5a68359781ccd4f3f1a419efca58b626287ea",
+      "bytes": 6988
+    },
+    {
+      "path": "jonathan-coulton-better/license.txt",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Jonathan%20Coulton%20-%20Better/license.txt",
+      "gitBlob": "26109ad13c09d5bb093e467b84608187b65263c6",
+      "bytes": 1678
+    },
+    {
+      "path": "jonathan-coulton-better/original.mp3",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Jonathan%20Coulton%20-%20Better/audio.mp3",
+      "gitBlob": "519f1b9ee48e462d2c8c540ea5d52cbac0e2042b",
+      "bytes": 3894514
+    },
+    {
+      "path": "jonathan-coulton-big-bad-world-one/reference.txt",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Jonathan%20Coulton%20-%20Big%20Bad%20World%20One/song.txt",
+      "gitBlob": "74a7e790a552ca4f553481d13417f9cce4dadc89",
+      "bytes": 5946
+    },
+    {
+      "path": "jonathan-coulton-big-bad-world-one/license.txt",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Jonathan%20Coulton%20-%20Big%20Bad%20World%20One/license.txt",
+      "gitBlob": "4f2a4da13bf4a0c7f482e17ce1b9276e3a9fd30a",
+      "bytes": 1585
+    },
+    {
+      "path": "jonathan-coulton-big-bad-world-one/original.mp3",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Jonathan%20Coulton%20-%20Big%20Bad%20World%20One/audio.mp3",
+      "gitBlob": "e0ac8dfa7876d20488f29958bf2f4458ae23faec",
+      "bytes": 4093635
+    },
+    {
+      "path": "jonathan-coulton-chiron-beta-prime/reference.txt",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Jonathan%20Coulton%20-%20Chiron%20Beta%20Prime/song.txt",
+      "gitBlob": "a795a7296ac15a466aeebc85b288ccfa4b8c005c",
+      "bytes": 6575
+    },
+    {
+      "path": "jonathan-coulton-chiron-beta-prime/license.txt",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Jonathan%20Coulton%20-%20Chiron%20Beta%20Prime/license.txt",
+      "gitBlob": "723a4978b5b8e1adc19e7aa816a1fda20edd253c",
+      "bytes": 1786
+    },
+    {
+      "path": "jonathan-coulton-chiron-beta-prime/original.mp3",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Jonathan%20Coulton%20-%20Chiron%20Beta%20Prime/audio.mp3",
+      "gitBlob": "736dfcaa437940ab4bba4f320c63da09571255e9",
+      "bytes": 4098651
+    },
+    {
+      "path": "jonathan-coulton-code-monkey/reference.txt",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Jonathan%20Coulton%20-%20Code%20Monkey/song.txt",
+      "gitBlob": "4df932959bdec1b7b92c4c9477516f5fbcda91bc",
+      "bytes": 7850
+    },
+    {
+      "path": "jonathan-coulton-code-monkey/license.txt",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Jonathan%20Coulton%20-%20Code%20Monkey/license.txt",
+      "gitBlob": "7abb1b8363cadca7dc34aaa62d814138ecaafa85",
+      "bytes": 1778
+    },
+    {
+      "path": "jonathan-coulton-code-monkey/original.mp3",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Jonathan%20Coulton%20-%20Code%20Monkey/audio.mp3",
+      "gitBlob": "04609b28cf93d96d50a3f5d83e0e2ef816c82af9",
+      "bytes": 4546294
+    },
+    {
+      "path": "jonathan-coulton-creepy-doll/reference.txt",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Jonathan%20Coulton%20-%20Creepy%20Doll/song.txt",
+      "gitBlob": "659604351b756932702cfd5937bc9a54eb968c3f",
+      "bytes": 8945
+    },
+    {
+      "path": "jonathan-coulton-creepy-doll/license.txt",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Jonathan%20Coulton%20-%20Creepy%20Doll/license.txt",
+      "gitBlob": "1dd3b13d4b5ccf5867526043f769c8b94b47f62d",
+      "bytes": 1774
+    },
+    {
+      "path": "jonathan-coulton-creepy-doll/original.mp3",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Jonathan%20Coulton%20-%20Creepy%20Doll/audio.mp3",
+      "gitBlob": "9fbd33fa825666fc0f0410843c49e4f3213c4ef5",
+      "bytes": 5765675
+    },
+    {
+      "path": "jonathan-coulton-dance-soterios-johnson-dance/reference.txt",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Jonathan%20Coulton%20-%20Dance%2C%20Soterios%20Johnson%2C%20Dance/song.txt",
+      "gitBlob": "e25d2b4b67f8daf6e0307e72df97bf95a4e164f1",
+      "bytes": 9072
+    },
+    {
+      "path": "jonathan-coulton-dance-soterios-johnson-dance/license.txt",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Jonathan%20Coulton%20-%20Dance%2C%20Soterios%20Johnson%2C%20Dance/license.txt",
+      "gitBlob": "d7fb36de16d59027957b543b19f6e9fe7ce6c2f5",
+      "bytes": 1887
+    },
+    {
+      "path": "jonathan-coulton-dance-soterios-johnson-dance/original.mp3",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Jonathan%20Coulton%20-%20Dance%2C%20Soterios%20Johnson%2C%20Dance/audio.mp3",
+      "gitBlob": "ffdfae514fae8e3aacb06f16c56fea1705451697",
+      "bytes": 5555043
+    },
+    {
+      "path": "jonathan-coulton-first-of-may/reference.txt",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Jonathan%20Coulton%20-%20First%20of%20May/song.txt",
+      "gitBlob": "d09af3a37dd5eb2fd626954129cf431f19aa40ae",
+      "bytes": 10288
+    },
+    {
+      "path": "jonathan-coulton-first-of-may/license.txt",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Jonathan%20Coulton%20-%20First%20of%20May/license.txt",
+      "gitBlob": "880099ba44f3bc616ccc7614318571de70fdbeac",
+      "bytes": 1569
+    },
+    {
+      "path": "jonathan-coulton-first-of-may/original.mp3",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Jonathan%20Coulton%20-%20First%20of%20May/audio.mp3",
+      "gitBlob": "3f846816272abad9d66053406883848e29106633",
+      "bytes": 6013996
+    },
+    {
+      "path": "jonathan-coulton-flickr/reference.txt",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Jonathan%20Coulton%20-%20Flickr/song.txt",
+      "gitBlob": "689a5f14f6d8190384a2966a56378b35bfcee5f5",
+      "bytes": 4844
+    },
+    {
+      "path": "jonathan-coulton-flickr/license.txt",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Jonathan%20Coulton%20-%20Flickr/license.txt",
+      "gitBlob": "827a11ca25db25fc52962de249315653b3138c71",
+      "bytes": 1548
+    },
+    {
+      "path": "jonathan-coulton-flickr/original.mp3",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Jonathan%20Coulton%20-%20Flickr/audio.mp3",
+      "gitBlob": "7057a5e378dd0d0a3d38e2b70753c005c2592c0d",
+      "bytes": 4033439
+    },
+    {
+      "path": "jonathan-coulton-furry-old-lobster/reference.txt",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Jonathan%20Coulton%20-%20Furry%20Old%20Lobster/song.txt",
+      "gitBlob": "ecac42f54ba9d92d909fdd87f11c75dca3c0de02",
+      "bytes": 4634
+    },
+    {
+      "path": "jonathan-coulton-furry-old-lobster/license.txt",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Jonathan%20Coulton%20-%20Furry%20Old%20Lobster/license.txt",
+      "gitBlob": "a835a633e432749f37f209e7e4dabeff44bee1f4",
+      "bytes": 1585
+    },
+    {
+      "path": "jonathan-coulton-furry-old-lobster/original.mp3",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Jonathan%20Coulton%20-%20Furry%20Old%20Lobster/audio.mp3",
+      "gitBlob": "3c5e30703eec6bdad2d46c59eafef2c0b0831a48",
+      "bytes": 2933185
+    },
+    {
+      "path": "jonathan-coulton-i-crush-everything/reference.txt",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Jonathan%20Coulton%20-%20I%20Crush%20Everything/song.txt",
+      "gitBlob": "013dec33b368a62e9738c8c95554b8cf961ecd2a",
+      "bytes": 6864
+    },
+    {
+      "path": "jonathan-coulton-i-crush-everything/license.txt",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Jonathan%20Coulton%20-%20I%20Crush%20Everything/license.txt",
+      "gitBlob": "ec882db05010c1b8ad95792b617511d9d0cb78b7",
+      "bytes": 1888
+    },
+    {
+      "path": "jonathan-coulton-i-crush-everything/original.mp3",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Jonathan%20Coulton%20-%20I%20Crush%20Everything/audio.mp3",
+      "gitBlob": "b61fe2db088fb2288575606069378033b4b9eb08",
+      "bytes": 6791370
+    },
+    {
+      "path": "jonathan-coulton-i-feel-fantastic/reference.txt",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Jonathan%20Coulton%20-%20I%20Feel%20Fantastic/song.txt",
+      "gitBlob": "9155e58ea7e47af4d921cb9a45f512a126c73b98",
+      "bytes": 11406
+    },
+    {
+      "path": "jonathan-coulton-i-feel-fantastic/license.txt",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Jonathan%20Coulton%20-%20I%20Feel%20Fantastic/license.txt",
+      "gitBlob": "b2671dfcb7529f5f19fb38ead057a60fde8fb8a0",
+      "bytes": 1616
+    },
+    {
+      "path": "jonathan-coulton-i-feel-fantastic/original.mp3",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Jonathan%20Coulton%20-%20I%20Feel%20Fantastic/audio.mp3",
+      "gitBlob": "1efdd8d3635b44d59d55cea36205fc0065a46845",
+      "bytes": 3663601
+    },
+    {
+      "path": "jonathan-coulton-i-m-your-moon/reference.txt",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Jonathan%20Coulton%20-%20I'm%20Your%20Moon/song.txt",
+      "gitBlob": "c690d61c413cd36b16a7b38d53f7a5ec494e748a",
+      "bytes": 5157
+    },
+    {
+      "path": "jonathan-coulton-i-m-your-moon/license.txt",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Jonathan%20Coulton%20-%20I'm%20Your%20Moon/license.txt",
+      "gitBlob": "601d5561d7f01dd8197b502e4019073e4260850d",
+      "bytes": 1573
+    },
+    {
+      "path": "jonathan-coulton-i-m-your-moon/original.mp3",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Jonathan%20Coulton%20-%20I'm%20Your%20Moon/audio.mp3",
+      "gitBlob": "af5f8db55b6eea71ac8c9b0c8664e38a8531d904",
+      "bytes": 4625902
+    },
+    {
+      "path": "jonathan-coulton-ikea/reference.txt",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Jonathan%20Coulton%20-%20Ikea/song.txt",
+      "gitBlob": "ea1cd070f68e0c9ac9e27b04a8cfea122c953a30",
+      "bytes": 6734
+    },
+    {
+      "path": "jonathan-coulton-ikea/license.txt",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Jonathan%20Coulton%20-%20Ikea/license.txt",
+      "gitBlob": "4e096e527ed48ff02321f96549408e4bec3a50fc",
+      "bytes": 1412
+    },
+    {
+      "path": "jonathan-coulton-ikea/original.mp3",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Jonathan%20Coulton%20-%20Ikea/audio.mp3",
+      "gitBlob": "d2e6f1fda062ea33ff1b424ccc5edc86057f509b",
+      "bytes": 4408398
+    },
+    {
+      "path": "jonathan-coulton-monkey-shines/reference.txt",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Jonathan%20Coulton%20-%20Monkey%20Shines/song.txt",
+      "gitBlob": "7717ef322c4e0f61d53a005b3a0ea65f6cbae119",
+      "bytes": 1747
+    },
+    {
+      "path": "jonathan-coulton-monkey-shines/license.txt",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Jonathan%20Coulton%20-%20Monkey%20Shines/license.txt",
+      "gitBlob": "72df7af87732e175b62fb4408c52055924ae00d2",
+      "bytes": 1602
+    },
+    {
+      "path": "jonathan-coulton-monkey-shines/original.mp3",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Jonathan%20Coulton%20-%20Monkey%20Shines/audio.mp3",
+      "gitBlob": "3ad64d63170e9948886c930a4ca3f1239c9501f5",
+      "bytes": 1227839
+    },
+    {
+      "path": "jonathan-coulton-mr-fancy-pants/reference.txt",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Jonathan%20Coulton%20-%20Mr.%20Fancy%20Pants/song.txt",
+      "gitBlob": "5cbf537913583d99531b9f0529af0098818500e7",
+      "bytes": 4571
+    },
+    {
+      "path": "jonathan-coulton-mr-fancy-pants/license.txt",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Jonathan%20Coulton%20-%20Mr.%20Fancy%20Pants/license.txt",
+      "gitBlob": "55802eafda61406517758402804b8aac44cd1e47",
+      "bytes": 1562
+    },
+    {
+      "path": "jonathan-coulton-mr-fancy-pants/original.mp3",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Jonathan%20Coulton%20-%20Mr.%20Fancy%20Pants/audio.mp3",
+      "gitBlob": "8a4c54558133708dbb5f9c1e3de52e08c8eeb9dd",
+      "bytes": 1910632
+    },
+    {
+      "path": "jonathan-coulton-my-beige-bear/reference.txt",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Jonathan%20Coulton%20-%20My%20Beige%20Bear/song.txt",
+      "gitBlob": "cf90586795d27f9e7d1bd5b88addc8fb9e9e3c3e",
+      "bytes": 5427
+    },
+    {
+      "path": "jonathan-coulton-my-beige-bear/license.txt",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Jonathan%20Coulton%20-%20My%20Beige%20Bear/license.txt",
+      "gitBlob": "b8d719b866c438957ccbd7bab02c6516630144bf",
+      "bytes": 1722
+    },
+    {
+      "path": "jonathan-coulton-my-beige-bear/original.mp3",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Jonathan%20Coulton%20-%20My%20Beige%20Bear/audio.mp3",
+      "gitBlob": "c761214c0e885d6c0acc536d4563b5d6a2a8800f",
+      "bytes": 4748736
+    },
+    {
+      "path": "jonathan-coulton-not-about-you/reference.txt",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Jonathan%20Coulton%20-%20Not%20About%20You/song.txt",
+      "gitBlob": "9ebb2fed11c71e1f7ece63d831dbf3155832a13e",
+      "bytes": 5492
+    },
+    {
+      "path": "jonathan-coulton-not-about-you/license.txt",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Jonathan%20Coulton%20-%20Not%20About%20You/license.txt",
+      "gitBlob": "a28846b786a223e81dc67dcf05b6589321561cbc",
+      "bytes": 1557
+    },
+    {
+      "path": "jonathan-coulton-not-about-you/original.mp3",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Jonathan%20Coulton%20-%20Not%20About%20You/audio.mp3",
+      "gitBlob": "7d1ec71ce6a6b2d6931ec63b758c23a844140ce9",
+      "bytes": 3181451
+    },
+    {
+      "path": "jonathan-coulton-re-your-brains/reference.txt",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Jonathan%20Coulton%20-%20Re-%20Your%20Brains/song.txt",
+      "gitBlob": "1747e0a4d8ee35de1d650cfa1f542aedee9a7c83",
+      "bytes": 9032
+    },
+    {
+      "path": "jonathan-coulton-re-your-brains/license.txt",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Jonathan%20Coulton%20-%20Re-%20Your%20Brains/license.txt",
+      "gitBlob": "5b1803197dae09ff14ac8087470b1734e8adaead",
+      "bytes": 1569
+    },
+    {
+      "path": "jonathan-coulton-re-your-brains/original.mp3",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Jonathan%20Coulton%20-%20Re-%20Your%20Brains/audio.mp3",
+      "gitBlob": "6d0e8e7bab32e6ce19465329b87fb474d54f47cf",
+      "bytes": 6549981
+    },
+    {
+      "path": "jonathan-coulton-shop-vac/reference.txt",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Jonathan%20Coulton%20-%20Shop%20Vac/song.txt",
+      "gitBlob": "4c9f36e5db256c99e2dfb4a487648d634f944b87",
+      "bytes": 8715
+    },
+    {
+      "path": "jonathan-coulton-shop-vac/license.txt",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Jonathan%20Coulton%20-%20Shop%20Vac/license.txt",
+      "gitBlob": "42d4909d41bbbcd54a8f63ecc7cfc9c4e0dabb04",
+      "bytes": 1568
+    },
+    {
+      "path": "jonathan-coulton-shop-vac/original.mp3",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Jonathan%20Coulton%20-%20Shop%20Vac/audio.mp3",
+      "gitBlob": "376cef00fbb9df96f847a3512fbd5b3cc4e8d490",
+      "bytes": 5076052
+    },
+    {
+      "path": "jonathan-coulton-skullcrusher-mountain/reference.txt",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Jonathan%20Coulton%20-%20Skullcrusher%20Mountain/song.txt",
+      "gitBlob": "e9a268db598afa05a000691a4db1b6508dc8e75c",
+      "bytes": 9510
+    },
+    {
+      "path": "jonathan-coulton-skullcrusher-mountain/license.txt",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Jonathan%20Coulton%20-%20Skullcrusher%20Mountain/license.txt",
+      "gitBlob": "4d39e110682d4961227c92f9a01da9e30c5529d4",
+      "bytes": 1497
+    },
+    {
+      "path": "jonathan-coulton-skullcrusher-mountain/original.mp3",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Jonathan%20Coulton%20-%20Skullcrusher%20Mountain/audio.mp3",
+      "gitBlob": "78dad871e92c6a1887112c18868c63401e11c43c",
+      "bytes": 6156910
+    },
+    {
+      "path": "jonathan-coulton-that-spells-dna/reference.txt",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Jonathan%20Coulton%20-%20That%20Spells%20DNA/song.txt",
+      "gitBlob": "cd0c8e35db5583037c89c8b98c8a5a93ab7596d9",
+      "bytes": 8124
+    },
+    {
+      "path": "jonathan-coulton-that-spells-dna/license.txt",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Jonathan%20Coulton%20-%20That%20Spells%20DNA/license.txt",
+      "gitBlob": "fa867caeb51c621fe2a4f56e116ff9a3635914d7",
+      "bytes": 2044
+    },
+    {
+      "path": "jonathan-coulton-that-spells-dna/original.mp3",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Jonathan%20Coulton%20-%20That%20Spells%20DNA/audio.mp3",
+      "gitBlob": "f2c27a5961d74ae596764db7b50fcf8cec397f71",
+      "bytes": 3823657
+    },
+    {
+      "path": "jonathan-coulton-the-future-soon/reference.txt",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Jonathan%20Coulton%20-%20The%20Future%20Soon/song.txt",
+      "gitBlob": "14fcec3aeb676972160035d4dfec4d879997e8ac",
+      "bytes": 9129
+    },
+    {
+      "path": "jonathan-coulton-the-future-soon/license.txt",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Jonathan%20Coulton%20-%20The%20Future%20Soon/license.txt",
+      "gitBlob": "334d58dd019e32295e1591a58327a4a1ba8b0ad0",
+      "bytes": 1517
+    },
+    {
+      "path": "jonathan-coulton-the-future-soon/original.mp3",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Jonathan%20Coulton%20-%20The%20Future%20Soon/audio.mp3",
+      "gitBlob": "1c1aadb3da87c344d25eb583564c03efd8461663",
+      "bytes": 5495484
+    },
+    {
+      "path": "jonathan-coulton-when-you-go/reference.txt",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Jonathan%20Coulton%20-%20When%20You%20Go/song.txt",
+      "gitBlob": "777fd06afa7d703cdca017fada017fcadc685040",
+      "bytes": 4540
+    },
+    {
+      "path": "jonathan-coulton-when-you-go/license.txt",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Jonathan%20Coulton%20-%20When%20You%20Go/license.txt",
+      "gitBlob": "725343d575b19b8026dcce8ddd36d2e0b03b8428",
+      "bytes": 1581
+    },
+    {
+      "path": "jonathan-coulton-when-you-go/original.mp3",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Jonathan%20Coulton%20-%20When%20You%20Go/audio.mp3",
+      "gitBlob": "01bf1923f250ec6f6c89723fb18b4642f358a708",
+      "bytes": 5600178
+    },
+    {
+      "path": "joshua-morin-on-the-run/reference.txt",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Joshua%20Morin%20-%20On%20the%20run/song.txt",
+      "gitBlob": "71e42571b252ee3eefbfcd53d34ecd3e57b34666",
+      "bytes": 6068
+    },
+    {
+      "path": "joshua-morin-on-the-run/license.txt",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Joshua%20Morin%20-%20On%20the%20run/license.txt",
+      "gitBlob": "3a78083bf40bc42149ca96a23eb0b40b8e5992c0",
+      "bytes": 1794
+    },
+    {
+      "path": "joshua-morin-on-the-run/original.ogg",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Joshua%20Morin%20-%20On%20the%20run/audio.ogg",
+      "gitBlob": "22791e117cc867aa3c2ca006ecab068cf79d3742",
+      "bytes": 3769247
+    },
+    {
+      "path": "shearer-69/reference.txt",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Shearer%20-%2069/song.txt",
+      "gitBlob": "d8ec754a416633d0e615c86b0ae28373ce8a3534",
+      "bytes": 3554
+    },
+    {
+      "path": "shearer-69/license.txt",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Shearer%20-%2069/license.txt",
+      "gitBlob": "afdd301ab58cb87143c3c59a5e6733da590c4efa",
+      "bytes": 1508
+    },
+    {
+      "path": "shearer-69/original.mp3",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Shearer%20-%2069/audio.mp3",
+      "gitBlob": "a7b9925315718532336b20caa13cb35fb30947ec",
+      "bytes": 4458686
+    },
+    {
+      "path": "shearer-69/instrumental-reference.txt",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Shearer%20-%2069/instrumental.txt",
+      "gitBlob": "4a7e93578aa3e619db9194c01c4e8ba45ba3430b",
+      "bytes": 3567
+    },
+    {
+      "path": "shearer-69/instrumental.ogg",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Shearer%20-%2069/instrumental.ogg",
+      "gitBlob": "993162dcc5ed3efe95c0d4fbdeb29a1f76af74fc",
+      "bytes": 4679457
+    },
+    {
+      "path": "shearer-can-t-stop-it/reference.txt",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Shearer%20-%20Can't%20stop%20it/song.txt",
+      "gitBlob": "d6fd02bf1b6bd9d1be5386e1871162f9499a47de",
+      "bytes": 4369
+    },
+    {
+      "path": "shearer-can-t-stop-it/license.txt",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Shearer%20-%20Can't%20stop%20it/license.txt",
+      "gitBlob": "9531ffd36e09acfe697a7e32d13d4d2df9a10571",
+      "bytes": 1484
+    },
+    {
+      "path": "shearer-can-t-stop-it/original.mp3",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Shearer%20-%20Can't%20stop%20it/audio.mp3",
+      "gitBlob": "22037a304c425e675d0211013cf8a401798e5532",
+      "bytes": 5424607
+    },
+    {
+      "path": "shearer-can-t-stop-it/instrumental-reference.txt",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Shearer%20-%20Can't%20stop%20it/instrumental.txt",
+      "gitBlob": "983980786b64ca1c9f3c748911a6a86f08da26b2",
+      "bytes": 4382
+    },
+    {
+      "path": "shearer-can-t-stop-it/instrumental.mp3",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Shearer%20-%20Can't%20stop%20it/instrumental.mp3",
+      "gitBlob": "59e2d8d6f4db4d87040f871c1c4baa74e1fc0812",
+      "bytes": 4062320
+    },
+    {
+      "path": "shearer-consequence-of-dawn/reference.txt",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Shearer%20-%20Consequence%20of%20Dawn/song.txt",
+      "gitBlob": "50dfa3297c0294dedbb49b6ee314a5e84f79b5f0",
+      "bytes": 3281
+    },
+    {
+      "path": "shearer-consequence-of-dawn/license.txt",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Shearer%20-%20Consequence%20of%20Dawn/license.txt",
+      "gitBlob": "996093195a9dd92f6377b18075fceb7d284ebcba",
+      "bytes": 1490
+    },
+    {
+      "path": "shearer-consequence-of-dawn/original.mp3",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Shearer%20-%20Consequence%20of%20Dawn/audio.mp3",
+      "gitBlob": "b778f554e90adefb734d669478ca0488a16989d7",
+      "bytes": 6458869
+    },
+    {
+      "path": "shearer-in-my-hand/reference.txt",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Shearer%20-%20In%20My%20Hand/song.txt",
+      "gitBlob": "a847112054930f44f53539cbd5b990650ed9c9fa",
+      "bytes": 6567
+    },
+    {
+      "path": "shearer-in-my-hand/license.txt",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Shearer%20-%20In%20My%20Hand/license.txt",
+      "gitBlob": "074a638050266b1741fbd2b195f6f712386b649f",
+      "bytes": 1236
+    },
+    {
+      "path": "shearer-in-my-hand/original.mp3",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Shearer%20-%20In%20My%20Hand/audio.mp3",
+      "gitBlob": "660d774ef9ad0ac7933593aa1b80b77978e5461d",
+      "bytes": 5711830
+    },
+    {
+      "path": "shearer-man-song/reference.txt",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Shearer%20-%20Man%20Song/song.txt",
+      "gitBlob": "3e21af5d1439de2fc6501a714ca06b0c337c2118",
+      "bytes": 4552
+    },
+    {
+      "path": "shearer-man-song/license.txt",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Shearer%20-%20Man%20Song/license.txt",
+      "gitBlob": "9531ffd36e09acfe697a7e32d13d4d2df9a10571",
+      "bytes": 1484
+    },
+    {
+      "path": "shearer-man-song/original.mp3",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Shearer%20-%20Man%20Song/audio.mp3",
+      "gitBlob": "eed873d51f5fd88f0995b490bc5b272cae2a8722",
+      "bytes": 7230821
+    },
+    {
+      "path": "shearer-man-song/instrumental-reference.txt",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Shearer%20-%20Man%20Song/instrumental.txt",
+      "gitBlob": "778e68e3b4c5ea43582e6e8dafd254af1a01c21e",
+      "bytes": 4565
+    },
+    {
+      "path": "shearer-man-song/instrumental.ogg",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Shearer%20-%20Man%20Song/instrumental.ogg",
+      "gitBlob": "780da3fb04ebdc668deff4dd47677af8666aed74",
+      "bytes": 5734925
+    },
+    {
+      "path": "shearer-stay-with-me/reference.txt",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Shearer%20-%20Stay%20with%20me/song.txt",
+      "gitBlob": "138ba8dd19bda5667c3aa8d06e0e326364410484",
+      "bytes": 6501
+    },
+    {
+      "path": "shearer-stay-with-me/license.txt",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Shearer%20-%20Stay%20with%20me/license.txt",
+      "gitBlob": "c43cb189229d9bd6ea13b142e1f22e5be2f7beb5",
+      "bytes": 1224
+    },
+    {
+      "path": "shearer-stay-with-me/original.ogg",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Shearer%20-%20Stay%20with%20me/audio.ogg",
+      "gitBlob": "e9398b42c485bae842a2f26093ec4d6c18022518",
+      "bytes": 6346083
+    },
+    {
+      "path": "shearer-stay-with-me/instrumental-reference.txt",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Shearer%20-%20Stay%20with%20me/instrumental.txt",
+      "gitBlob": "375ddcc2c6b31e61d65077eb6229b3075cb42168",
+      "bytes": 6514
+    },
+    {
+      "path": "shearer-stay-with-me/instrumental.ogg",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Shearer%20-%20Stay%20with%20me/instrumental.ogg",
+      "gitBlob": "a95e7f81a61cb26db838721399b337e29eccbb59",
+      "bytes": 5343612
+    },
+    {
+      "path": "silver-note-chasing-marks/reference.txt",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Silver%20Note%20-%20Chasing%20Marks/song.txt",
+      "gitBlob": "9c0f2b025ce02965b9e556977b5079d316f2bb20",
+      "bytes": 4308
+    },
+    {
+      "path": "silver-note-chasing-marks/license.txt",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Silver%20Note%20-%20Chasing%20Marks/license.txt",
+      "gitBlob": "dfab3351971fcbab5e089ccd9d87dd25c44f2368",
+      "bytes": 2942
+    },
+    {
+      "path": "silver-note-chasing-marks/original.ogg",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Silver%20Note%20-%20Chasing%20Marks/audio.ogg",
+      "gitBlob": "92c555d2f97405925c454271e05155474f5df328",
+      "bytes": 5358936
+    },
+    {
+      "path": "silver-note-chasing-marks/instrumental-reference.txt",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Silver%20Note%20-%20Chasing%20Marks/instrumental.txt",
+      "gitBlob": "df777b3408f450ef1194049417cc9e825215313c",
+      "bytes": 4331
+    },
+    {
+      "path": "silver-note-chasing-marks/instrumental.mp3",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Silver%20Note%20-%20Chasing%20Marks/instrumental.mp3",
+      "gitBlob": "4bd9791cc6131751e36c42dc8def6971f7da31f5",
+      "bytes": 4679369
+    },
+    {
+      "path": "silver-note-sonic-rainboom-vip/reference.txt",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Silver%20Note%20-%20Sonic%20Rainboom%20VIP/song.txt",
+      "gitBlob": "e4100af745103333ab2c02759c743ef811b3d481",
+      "bytes": 5053
+    },
+    {
+      "path": "silver-note-sonic-rainboom-vip/license.txt",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Silver%20Note%20-%20Sonic%20Rainboom%20VIP/license.txt",
+      "gitBlob": "af515c4010ab6ad1791c43585787d716a4de9382",
+      "bytes": 2223
+    },
+    {
+      "path": "silver-note-sonic-rainboom-vip/original.ogg",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Silver%20Note%20-%20Sonic%20Rainboom%20VIP/audio.ogg",
+      "gitBlob": "0bf757f3b6246da21e1b440141d77dce8d5e2dde",
+      "bytes": 5168956
+    },
+    {
+      "path": "silver-note-sonic-rainboom-vip/instrumental-reference.txt",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Silver%20Note%20-%20Sonic%20Rainboom%20VIP/instrumental.txt",
+      "gitBlob": "7526c128f6f21f42276d5939d1140a1c02a092b1",
+      "bytes": 5076
+    },
+    {
+      "path": "silver-note-sonic-rainboom-vip/instrumental.mp3",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Silver%20Note%20-%20Sonic%20Rainboom%20VIP/instrumental.mp3",
+      "gitBlob": "6717f99778c1de3f632b0b04806a90003474e4d1",
+      "bytes": 5044874
+    },
+    {
+      "path": "steven-dunston-northern-star/reference.txt",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Steven%20Dunston%20-%20Northern%20Star/song.txt",
+      "gitBlob": "c42d103645f25ae96fdbb61b29788cef542fb862",
+      "bytes": 4280
+    },
+    {
+      "path": "steven-dunston-northern-star/license.txt",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Steven%20Dunston%20-%20Northern%20Star/license.txt",
+      "gitBlob": "f218562c9dfabbdf7a8875e798f89af4b5f2d9e7",
+      "bytes": 1159
+    },
+    {
+      "path": "steven-dunston-northern-star/original.ogg",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Steven%20Dunston%20-%20Northern%20Star/audio.ogg",
+      "gitBlob": "d705be72c590571f5531615e8ed2746c0cb82152",
+      "bytes": 2241910
+    },
+    {
+      "path": "systemabsturz-verdachtig/reference.txt",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Systemabsturz%20-%20Verd%C3%A4chtig/song.txt",
+      "gitBlob": "bb0ce6ca79af86a6d3a16e43dd718b290a4178bf",
+      "bytes": 9788
+    },
+    {
+      "path": "systemabsturz-verdachtig/license.txt",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Systemabsturz%20-%20Verd%C3%A4chtig/license.txt",
+      "gitBlob": "f8028706bd3d9879007601b516284973e631f93d",
+      "bytes": 520
+    },
+    {
+      "path": "systemabsturz-verdachtig/original.ogg",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/Systemabsturz%20-%20Verd%C3%A4chtig/audio.ogg",
+      "gitBlob": "63e52a0d779a6c466953d0b030d5c9ac41ed1de3",
+      "bytes": 4533856
+    },
+    {
+      "path": "the-wasteland-wailers-dare-master/reference.txt",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/The%20Wasteland%20Wailers%20-%20Dare%20Master/song.txt",
+      "gitBlob": "c6422c90d99c33df43cc7f823d7c6478737a0c85",
+      "bytes": 9629
+    },
+    {
+      "path": "the-wasteland-wailers-dare-master/license.txt",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/The%20Wasteland%20Wailers%20-%20Dare%20Master/license.txt",
+      "gitBlob": "6110b674e4bb5470f684806349c634d6dcde61b6",
+      "bytes": 455
+    },
+    {
+      "path": "the-wasteland-wailers-dare-master/original.mp3",
+      "url": "https://raw.githubusercontent.com/UltraStar-Deluxe/songs/c9246c799050acec96a03183df4b85493d283d51/Creative%20Commons/The%20Wasteland%20Wailers%20-%20Dare%20Master/audio.mp3",
+      "gitBlob": "6272a08cf93fcbf098db3b4f7434aa3f5ca4db6f",
+      "bytes": 7153504
+    }
+  ]
+}

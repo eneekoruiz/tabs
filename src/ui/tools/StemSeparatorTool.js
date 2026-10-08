@@ -22,7 +22,7 @@ export class StemSeparatorTool extends Component {
   }
 
   initEvents() {
-    events.on('stems:open', () => this.open('#stems-modal-container'));
+    this.registerUnsub(events.on('stems:open', () => this.open('#stems-modal-container')));
   }
 
   open(targetContainerSelector = '#stems-modal-container') {
@@ -37,6 +37,10 @@ export class StemSeparatorTool extends Component {
   }
 
   close(host) {
+    this._processGeneration = (this._processGeneration || 0) + 1;
+    this.isProcessing = false;
+    this._meterUnsub?.(); this._meterUnsub = null;
+    this._playbackUnsub?.(); this._playbackUnsub = null;
     this.engine.stopPlayback();
     if (host) host.innerHTML = '';
   }
@@ -50,9 +54,9 @@ export class StemSeparatorTool extends Component {
           <!-- Cabecera Studio -->
           <div class="stems-modal-header">
             <div class="stems-header-title-group">
-              <div class="stems-badge-ai">NEURAL DSP · 4-TRACK ISOLATION</div>
-              <h2 id="stemsTitle" class="stems-modal-title">🎛️ Stem Separator Pro (Moises AI Style)</h2>
-              <p class="stems-modal-subtitle">Aísla o silencia la Voz, Batería, Bajo y Guitarras en cualquier archivo de audio de forma 100% offline.</p>
+              <div class="stems-badge-ai">FILTRADO LOCAL · CUATRO BANDAS</div>
+              <h2 id="stemsTitle" class="stems-modal-title">🎛️ Mezcla por bandas</h2>
+              <p class="stems-modal-subtitle">Ajusta graves, transitorios, centro y resto estéreo. Las bandas comparten voces e instrumentos; para karaoke limpio usa una pista instrumental.</p>
             </div>
             <button class="btn-close-stems" id="btnCloseStems" aria-label="Cerrar separador">✕</button>
           </div>
@@ -77,8 +81,8 @@ export class StemSeparatorTool extends Component {
               <!-- Barra de Progreso de Separación -->
               <div class="stems-processing-view">
                 <div class="stems-spinner-ring"></div>
-                <h3 class="stems-proc-title">Procesando Separación Espectral...</h3>
-                <p class="stems-proc-step" id="lblStemsProcStep">${this.progressText || 'Iniciando descomposición armónico-percusiva...'}</p>
+                <h3 class="stems-proc-title">Aplicando filtros de audio...</h3>
+                <p class="stems-proc-step" id="lblStemsProcStep">${this.progressText || 'Preparando las bandas...'}</p>
                 <div class="stems-progress-track">
                   <div class="stems-progress-fill" id="stemsProgressFill" style="width: ${this.progressPercent}%;"></div>
                 </div>
@@ -96,7 +100,7 @@ export class StemSeparatorTool extends Component {
                   </button>
                   <div class="stems-timeline-container">
                     <span class="stems-time-label" id="lblStemsCurrentTime">00:00</span>
-                    <input type="range" id="stemsTimelineScrubber" min="0" max="${Math.round(this.engine.duration || 100)}" value="0" step="0.1" class="stems-timeline-slider">
+                    <input type="range" aria-label="Posición del audio" id="stemsTimelineScrubber" min="0" max="${Math.round(this.engine.duration || 100)}" value="0" step="0.1" class="stems-timeline-slider">
                     <span class="stems-time-label" id="lblStemsTotalTime">${this._formatTime(this.engine.duration)}</span>
                   </div>
                 </div>
@@ -107,18 +111,18 @@ export class StemSeparatorTool extends Component {
                   <div class="stem-channel-strip stem-channel-vocals" data-stem="vocals">
                     <div class="stem-channel-header">
                       <span class="stem-icon">🎤</span>
-                      <strong class="stem-name">Voz</strong>
+                      <strong class="stem-name">Centro y medios</strong>
                     </div>
                     <div class="stem-meter-slot">
                       <div class="stem-vu-meter" id="meter-vocals" style="height: 0%;"></div>
                     </div>
                     <div class="stem-fader-slot">
-                      <input type="range" class="stem-volume-fader" data-stem="vocals" min="0" max="1.5" step="0.05" value="${this.engine.trackVolumes.vocals}">
+                      <input type="range" aria-label="Volumen de la banda" class="stem-volume-fader" data-stem="vocals" min="0" max="1.5" step="0.05" value="${this.engine.trackVolumes.vocals}">
                       <span class="stem-vol-text" id="volText-vocals">${Math.round(this.engine.trackVolumes.vocals * 100)}%</span>
                     </div>
                     <div class="stem-channel-buttons">
-                      <button class="btn-stem-mute ${this.engine.trackMutes.vocals ? 'active' : ''}" data-stem="vocals" aria-label="Silenciar Voz">M</button>
-                      <button class="btn-stem-solo ${this.engine.trackSolos.vocals ? 'active' : ''}" data-stem="vocals" aria-label="Solo Voz">S</button>
+                      <button class="btn-stem-mute ${this.engine.trackMutes.vocals ? 'active' : ''}" data-stem="vocals" aria-label="Silenciar centro y medios">M</button>
+                      <button class="btn-stem-solo ${this.engine.trackSolos.vocals ? 'active' : ''}" data-stem="vocals" aria-label="Solo centro y medios">S</button>
                     </div>
                   </div>
 
@@ -126,18 +130,18 @@ export class StemSeparatorTool extends Component {
                   <div class="stem-channel-strip stem-channel-drums" data-stem="drums">
                     <div class="stem-channel-header">
                       <span class="stem-icon">🥁</span>
-                      <strong class="stem-name">Batería</strong>
+                      <strong class="stem-name">Transitorios</strong>
                     </div>
                     <div class="stem-meter-slot">
                       <div class="stem-vu-meter" id="meter-drums" style="height: 0%;"></div>
                     </div>
                     <div class="stem-fader-slot">
-                      <input type="range" class="stem-volume-fader" data-stem="drums" min="0" max="1.5" step="0.05" value="${this.engine.trackVolumes.drums}">
+                      <input type="range" aria-label="Volumen de la banda" class="stem-volume-fader" data-stem="drums" min="0" max="1.5" step="0.05" value="${this.engine.trackVolumes.drums}">
                       <span class="stem-vol-text" id="volText-drums">${Math.round(this.engine.trackVolumes.drums * 100)}%</span>
                     </div>
                     <div class="stem-channel-buttons">
-                      <button class="btn-stem-mute ${this.engine.trackMutes.drums ? 'active' : ''}" data-stem="drums" aria-label="Silenciar Batería">M</button>
-                      <button class="btn-stem-solo ${this.engine.trackSolos.drums ? 'active' : ''}" data-stem="drums" aria-label="Solo Batería">S</button>
+                      <button class="btn-stem-mute ${this.engine.trackMutes.drums ? 'active' : ''}" data-stem="drums" aria-label="Silenciar transitorios">M</button>
+                      <button class="btn-stem-solo ${this.engine.trackSolos.drums ? 'active' : ''}" data-stem="drums" aria-label="Solo transitorios">S</button>
                     </div>
                   </div>
 
@@ -145,18 +149,18 @@ export class StemSeparatorTool extends Component {
                   <div class="stem-channel-strip stem-channel-bass" data-stem="bass">
                     <div class="stem-channel-header">
                       <span class="stem-icon">🎸</span>
-                      <strong class="stem-name">Bajo</strong>
+                      <strong class="stem-name">Graves</strong>
                     </div>
                     <div class="stem-meter-slot">
                       <div class="stem-vu-meter" id="meter-bass" style="height: 0%;"></div>
                     </div>
                     <div class="stem-fader-slot">
-                      <input type="range" class="stem-volume-fader" data-stem="bass" min="0" max="1.5" step="0.05" value="${this.engine.trackVolumes.bass}">
+                      <input type="range" aria-label="Volumen de la banda" class="stem-volume-fader" data-stem="bass" min="0" max="1.5" step="0.05" value="${this.engine.trackVolumes.bass}">
                       <span class="stem-vol-text" id="volText-bass">${Math.round(this.engine.trackVolumes.bass * 100)}%</span>
                     </div>
                     <div class="stem-channel-buttons">
-                      <button class="btn-stem-mute ${this.engine.trackMutes.bass ? 'active' : ''}" data-stem="bass" aria-label="Silenciar Bajo">M</button>
-                      <button class="btn-stem-solo ${this.engine.trackSolos.bass ? 'active' : ''}" data-stem="bass" aria-label="Solo Bajo">S</button>
+                      <button class="btn-stem-mute ${this.engine.trackMutes.bass ? 'active' : ''}" data-stem="bass" aria-label="Silenciar graves">M</button>
+                      <button class="btn-stem-solo ${this.engine.trackSolos.bass ? 'active' : ''}" data-stem="bass" aria-label="Solo graves">S</button>
                     </div>
                   </div>
 
@@ -164,18 +168,18 @@ export class StemSeparatorTool extends Component {
                   <div class="stem-channel-strip stem-channel-guitar" data-stem="guitar">
                     <div class="stem-channel-header">
                       <span class="stem-icon">⚡</span>
-                      <strong class="stem-name">Guitarra / Otros</strong>
+                      <strong class="stem-name">Resto estéreo</strong>
                     </div>
                     <div class="stem-meter-slot">
                       <div class="stem-vu-meter" id="meter-guitar" style="height: 0%;"></div>
                     </div>
                     <div class="stem-fader-slot">
-                      <input type="range" class="stem-volume-fader" data-stem="guitar" min="0" max="1.5" step="0.05" value="${this.engine.trackVolumes.guitar}">
+                      <input type="range" aria-label="Volumen de la banda" class="stem-volume-fader" data-stem="guitar" min="0" max="1.5" step="0.05" value="${this.engine.trackVolumes.guitar}">
                       <span class="stem-vol-text" id="volText-guitar">${Math.round(this.engine.trackVolumes.guitar * 100)}%</span>
                     </div>
                     <div class="stem-channel-buttons">
-                      <button class="btn-stem-mute ${this.engine.trackMutes.guitar ? 'active' : ''}" data-stem="guitar" aria-label="Silenciar Guitarra">M</button>
-                      <button class="btn-stem-solo ${this.engine.trackSolos.guitar ? 'active' : ''}" data-stem="guitar" aria-label="Solo Guitarra">S</button>
+                      <button class="btn-stem-mute ${this.engine.trackMutes.guitar ? 'active' : ''}" data-stem="guitar" aria-label="Silenciar resto estéreo">M</button>
+                      <button class="btn-stem-solo ${this.engine.trackSolos.guitar ? 'active' : ''}" data-stem="guitar" aria-label="Solo resto estéreo">S</button>
                     </div>
                   </div>
                 </div>
@@ -183,9 +187,9 @@ export class StemSeparatorTool extends Component {
                 <!-- Acciones Rápidas de Músico -->
                 <div class="stems-quick-presets">
                   <span class="preset-label">Preajustes Rápidos de Jam:</span>
-                  <button class="btn-stem-preset" id="btnPresetMuteGuitar">🎸 Mute Guitarra (Toca tú el Solo)</button>
-                  <button class="btn-stem-preset" id="btnPresetMuteVocals">🎤 Modo Karaoke (Solo Instrumental)</button>
-                  <button class="btn-stem-preset" id="btnPresetSoloBassDrums">🥁 Solo Base Rítmica (Bajo + Batería)</button>
+                  <button class="btn-stem-preset" id="btnPresetMuteGuitar">Reducir resto estéreo</button>
+                  <button class="btn-stem-preset" id="btnPresetMuteVocals">Reducir centro y medios</button>
+                  <button class="btn-stem-preset" id="btnPresetSoloBassDrums">Graves y transitorios</button>
                   <button class="btn-stem-preset" id="btnPresetResetAll">🔄 Restablecer Todo</button>
                 </div>
               </div>
@@ -304,7 +308,7 @@ export class StemSeparatorTool extends Component {
       this.engine.setStemMute('drums', false);
       this.engine.setStemMute('bass', false);
       this.open('#stems-modal-container');
-      toast.show('Guitarra silenciada: ¡Toca tú el Solo!', 'info');
+      toast.show('Resto estéreo silenciado', 'info');
     });
 
     card.querySelector('#btnPresetMuteVocals')?.addEventListener('click', () => {
@@ -313,7 +317,7 @@ export class StemSeparatorTool extends Component {
       this.engine.setStemMute('drums', false);
       this.engine.setStemMute('bass', false);
       this.open('#stems-modal-container');
-      toast.show('Voz silenciada: Modo Backing Track / Karaoke activo', 'info');
+      toast.show('Centro y medios reducidos; puede quedar voz audible', 'info');
     });
 
     card.querySelector('#btnPresetSoloBassDrums')?.addEventListener('click', () => {
@@ -322,7 +326,7 @@ export class StemSeparatorTool extends Component {
       this.engine.setStemMute('drums', false);
       this.engine.setStemMute('bass', false);
       this.open('#stems-modal-container');
-      toast.show('Base rítmica aislada (Batería + Bajo)', 'info');
+      toast.show('Graves y transitorios activos', 'info');
     });
 
     card.querySelector('#btnPresetResetAll')?.addEventListener('click', () => {
@@ -363,8 +367,13 @@ export class StemSeparatorTool extends Component {
       toast.show('Pista de acompañamiento lista para ensayar', 'success');
     });
 
-    // Escuchar medidores y tiempo en tiempo real
-    events.on('stems:timeUpdate', ({ currentTime, duration, levels }) => {
+    // Replace subscriptions when the panel is rendered again.
+    this._meterUnsub?.(); this._playbackUnsub?.();
+    this._playbackUnsub = events.on('stems:playbackState', ({isPlaying}) => {
+      const button = card.querySelector('#btnStemsPlayPause');
+      if (button) { button.textContent = isPlaying ? '⏸️ Pausa' : '▶️ Reproducir'; button.setAttribute('aria-label', isPlaying ? 'Pausar' : 'Reproducir'); }
+    });
+    this._meterUnsub = events.on('stems:timeUpdate', ({ currentTime, duration, levels }) => {
       const curTimeEl = card.querySelector('#lblStemsCurrentTime');
       const scrub = card.querySelector('#stemsTimelineScrubber');
       if (curTimeEl) curTimeEl.textContent = this._formatTime(currentTime);
@@ -380,12 +389,14 @@ export class StemSeparatorTool extends Component {
   }
 
   async _processFile(file, container) {
+    const generation = this._processGeneration = (this._processGeneration || 0) + 1;
     this.isProcessing = true;
     this.hasStems = false;
     this.open('#stems-modal-container');
 
     try {
       await this.engine.separateStems(file, (percent, text) => {
+        if (generation !== this._processGeneration) return;
         this.progressPercent = percent;
         this.progressText = text;
         const fill = document.querySelector('#stemsProgressFill');
@@ -396,11 +407,13 @@ export class StemSeparatorTool extends Component {
         if (sText) sText.textContent = text;
       });
 
+      if (generation !== this._processGeneration) return;
       this.isProcessing = false;
       this.hasStems = true;
       this.open('#stems-modal-container');
-      toast.show('Pistas separadas en 4 canales con éxito', 'success');
+      toast.show('Cuatro bandas de audio preparadas', 'success');
     } catch (err) {
+      if (generation !== this._processGeneration) return;
       this.isProcessing = false;
       this.open('#stems-modal-container');
       toast.show('Error al procesar el archivo: ' + err.message, 'error');
@@ -456,6 +469,7 @@ export class StemSeparatorTool extends Component {
     }
 
     const wavBlob = this.engine._audioBufferToWav(buffer);
+    await ctx.close();
     await this._processFile(wavBlob, container);
   }
 

@@ -19,6 +19,8 @@ export class PitchDetector {
     this.sourceNode = null;
     this.buffer = null;
     this.isRunning = false;
+    this.starting = false;
+    this.captureGeneration = 0;
     this.scoreFollowingActive = false;
     this.animationFrameId = null;
 
@@ -34,19 +36,33 @@ export class PitchDetector {
    */
   async start(mockStream = null) {
     if (this.isRunning) return true;
+    if (this.starting) return this.startPromise;
+    const generation = ++this.captureGeneration;
+    this.starting = true;
+    this.startPromise = this._startCapture(mockStream, generation);
+    return this.startPromise;
+  }
+
+  async _startCapture(mockStream, generation) {
+    let context, stream, source, oscillator;
+    let attached = false;
+    const current = () => generation === this.captureGeneration;
 
     try {
       const AudioCtx = window.AudioContext || window.webkitAudioContext;
-      this.audioContext = new AudioCtx({ sampleRate: 44100 });
+      context = new AudioCtx({ sampleRate: 44100 });
+      this.pendingContext = context;
 
-      if (this.audioContext.state === 'suspended') {
-        await this.audioContext.resume();
+      if (context.state === 'suspended') {
+        await context.resume();
       }
+      if (!current()) return false;
 
       if (mockStream) {
-        this.mediaStream = mockStream;
+        stream = mockStream;
+        source = context.createMediaStreamSource(stream);
       } else {
-        this.mediaStream = await navigator.mediaDevices.getUserMedia({
+        stream = await navigator.mediaDevices.getUserMedia({
           audio: {
             echoCancellation: false,
             autoGainControl: false,
@@ -54,27 +70,45 @@ export class PitchDetector {
             latency: 0,
           },
         });
+        if (!current()) return false;
+        source = context.createMediaStreamSource(stream);
       }
 
-      this.sourceNode = this.audioContext.createMediaStreamSource(this.mediaStream);
-      this.analyser = this.audioContext.createAnalyser();
+      this.analyser = context.createAnalyser();
       this.analyser.fftSize = 2048;
-      this.analyser.smoothingTimeConstant = 0.2;
+      this.analyser.smoothingTimeConstant = 0.25;
 
-      this.sourceNode.connect(this.analyser);
+      source.connect(this.analyser);
+      this.audioContext = context;
+      this.mediaStream = stream || null;
+      this.sourceNode = source;
+      this.testOscillator = oscillator || null;
       this.buffer = new Float32Array(this.analyser.fftSize);
+      attached = true;
       this.isRunning = true;
+      this.starting = false;
 
       events.emit('pitch:started');
       this.loop();
       return true;
     } catch (err) {
-      this.isRunning = false;
-      events.emit('pitch:error', err);
-      if (err.name !== 'NotAllowedError') {
-        console.warn('[PitchDetector] Captura de audio no disponible:', err);
+      if (current()) {
+        this.isRunning = false;
+        events.emit('pitch:error', err);
+        console.warn('[PitchDetector] Error al iniciar captura:', err);
       }
       return false;
+    } finally {
+      if (!attached) {
+        stream?.getTracks().forEach(track => track.stop());
+        try { oscillator?.stop(); source?.disconnect(); } catch (_) {}
+        if (context && context.state !== 'closed') await context.close().catch(() => {});
+      }
+      if (current()) {
+        this.starting = false;
+        this.startPromise = null;
+        this.pendingContext = null;
+      }
     }
   }
 
@@ -82,6 +116,11 @@ export class PitchDetector {
    * Detiene el micrófono y libera los recursos de audio.
    */
   stop() {
+    ++this.captureGeneration;
+    this.starting = false;
+    this.startPromise = null;
+    if (this.pendingContext && this.pendingContext !== this.audioContext && this.pendingContext.state !== 'closed') this.pendingContext.close().catch(() => {});
+    this.pendingContext = null;
     this.isRunning = false;
     if (this.animationFrameId) {
       cancelAnimationFrame(this.animationFrameId);
@@ -99,7 +138,7 @@ export class PitchDetector {
     }
 
     if (this.audioContext && this.audioContext.state !== 'closed') {
-      this.audioContext.close();
+      this.audioContext.close().catch(() => {});
       this.audioContext = null;
     }
 

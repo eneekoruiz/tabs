@@ -400,6 +400,12 @@ export class AudioTranscriberTool extends Component {
       genre: 'Acústico / Creación',
       difficulty: 'Fácil',
       tuning: 'Standard E',
+      contentSource: 'generated_chord_guide',
+      isGenerated: true,
+      tempo: 120,
+      contentSource: 'generated_chord_guide',
+      isGenerated: true,
+      tempo: 120,
       lyricsChords: this.lastTranscription.chordPro,
       data: this.lastTranscription.alphaTex,
       addedAt: Date.now()

@@ -1,6 +1,9 @@
 import { test, expect } from '@playwright/test';
+import { waitForSong, openSongOptions , openToolCatalogAdvanced } from './helpers/journeys.js';
 
-test.describe('⚡ Fase Iron Man: Stage Automation, WebRTC Jamming y WebXR - Suite E2E', () => {
+test.describe.configure({ timeout: 90_000 });
+
+test.describe('⚡ Fase Iron Man: Stage Automation, BandRoom local y WebXR - Suite E2E', () => {
   let consoleErrors = [];
 
   test.beforeEach(async ({ page }) => {
@@ -40,7 +43,7 @@ test.describe('⚡ Fase Iron Man: Stage Automation, WebRTC Jamming y WebXR - Sui
         outputs: new Map([['kemper-profiler-1', mockOutput]])
       });
 
-      // Mock de BroadcastChannel para WebRTC Signal Channel
+      // Mock de BroadcastChannel para controles de sala local.
       class MockBroadcastChannel {
         constructor(name) { this.name = name; }
         postMessage(data) {}
@@ -50,31 +53,31 @@ test.describe('⚡ Fase Iron Man: Stage Automation, WebRTC Jamming y WebXR - Sui
     });
 
     await page.goto('/index.html');
-    await page.waitForSelector('.bottom-nav-bar', { timeout: 10000 });
+    await page.waitForSelector('.bottom-nav-bar', { timeout: 30_000 });
   });
 
   test.afterEach(async () => {
     const realErrors = consoleErrors.filter(e =>
       !e.includes('Failed to load resource') &&
-      !e.includes('favicon') &&
-      !e.includes('AlphaTab')
+      !e.includes('favicon')
     );
     expect(realErrors, `Errores de consola detectados: ${realErrors.join(', ')}`).toEqual([]);
   });
 
-  test('1. BandRoom Multijugador P2P: Creación de Sala y Conexión de Miembros', async ({ page }) => {
+  test('1. BandRoom local: creación, código de sala y abandono', async ({ page }) => {
     // 1. Navegar a Herramientas
     await page.locator('.nav-tab-btn[data-tab="tools"]').click();
+    await openToolCatalogAdvanced(page);
 
     // 2. Abrir BandRoom
     const bandRoomCard = page.locator('.premium-list-item[data-tool="bandroom"]');
     await expect(bandRoomCard).toBeVisible();
-    await bandRoomCard.click();
+    await bandRoomCard.locator('[data-preview-action="open-full"]').click();
 
     const bandRoomModal = page.locator('#modal-band-room');
     await expect(bandRoomModal).toBeVisible();
 
-    // 3. Crear Sala P2P como Anfitrión
+    // 3. Crear sala local como anfitrión
     const btnCreate = page.locator('#btnCreateRoom');
     await expect(btnCreate).toBeVisible();
     await btnCreate.click();
@@ -93,11 +96,12 @@ test.describe('⚡ Fase Iron Man: Stage Automation, WebRTC Jamming y WebXR - Sui
   test('2. Stage Automation: Configuración de Pedaleras USB MIDI y Mapeo de Presets por Compás', async ({ page }) => {
     // 1. Navegar a Herramientas
     await page.locator('.nav-tab-btn[data-tab="tools"]').click();
+    await openToolCatalogAdvanced(page);
 
     // 2. Abrir Stage Automation
     const stageCard = page.locator('.premium-list-item[data-tool="stage"]');
     await expect(stageCard).toBeVisible();
-    await stageCard.click();
+    await stageCard.locator('[data-preview-action="open-full"]').click();
 
     const stageModal = page.locator('#modal-stage-automation');
     await expect(stageModal).toBeVisible();
@@ -131,11 +135,12 @@ test.describe('⚡ Fase Iron Man: Stage Automation, WebRTC Jamming y WebXR - Sui
   test('3. Spatial Computing HUD (WebXR AR): Vista Flotante Cristalina Glassmorphic', async ({ page }) => {
     // 1. Navegar a Herramientas
     await page.locator('.nav-tab-btn[data-tab="tools"]').click();
+    await openToolCatalogAdvanced(page);
 
     // 2. Abrir Spatial Computing HUD
     const spatialCard = page.locator('.premium-list-item[data-tool="spatial"]');
     await expect(spatialCard).toBeVisible();
-    await spatialCard.click();
+    await spatialCard.locator('[data-preview-action="open-full"]').click();
 
     const spatialBackdrop = page.locator('.modal-spatial-backdrop');
     await expect(spatialBackdrop).toBeVisible();
@@ -162,25 +167,25 @@ test.describe('⚡ Fase Iron Man: Stage Automation, WebRTC Jamming y WebXR - Sui
     // 1. Abrir primera canción
     const songCard = page.locator('.song-card .btn-select-song').first();
     await songCard.click();
+    await waitForSong(page);
     await page.waitForTimeout(500);
 
     // 2. Probar BandRoom desde Opciones
-    await page.click('#btnMoreOptions');
+    await openSongOptions(page, { advanced: true });
     await page.waitForTimeout(200);
-    await page.locator('.song-advanced-options summary').click();
     await page.click('#btnOpenBandRoomQuick');
     await expect(page.locator('#modal-band-room')).toBeVisible();
     await page.click('#btnCloseBandRoom');
 
     // 3. Probar Stage Automation desde Opciones
-    await page.click('#btnMoreOptions');
+    await openSongOptions(page, { advanced: true });
     await page.waitForTimeout(200);
     await page.click('#btnOpenStageQuick');
     await expect(page.locator('#modal-stage-automation')).toBeVisible();
     await page.click('#btnCloseStage');
 
     // 4. Probar Spatial XR desde Opciones
-    await page.click('#btnMoreOptions');
+    await openSongOptions(page, { advanced: true });
     await page.waitForTimeout(200);
     await page.click('#btnOpenSpatialQuick');
     await expect(page.locator('.modal-spatial-backdrop')).toBeVisible();

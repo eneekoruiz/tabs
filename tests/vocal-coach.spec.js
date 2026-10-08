@@ -1,6 +1,8 @@
 import { test, expect } from '@playwright/test';
+import {waitForSong, useGeneratedGuide } from './helpers/journeys.js';
 
 test.describe('Vocal Coach QA Extremo', () => {
+  test.setTimeout(60000);
   test.beforeEach(async ({ page }) => {
     // Inject __IS_TESTING__ before the app loads
     await page.addInitScript(() => {
@@ -14,7 +16,7 @@ test.describe('Vocal Coach QA Extremo', () => {
 
   test('Mocking de Audio y Validación de Estado (Canvas)', async ({ page }) => {
     // 1. Abrir la primera canción en el explorador
-    const loadBtn = page.locator('.btn-select-song').first();
+    const loadBtn = page.locator('.discovery-song-card').first();
     await expect(loadBtn).toBeVisible({ timeout: 10000 });
     await loadBtn.click();
 
@@ -25,14 +27,21 @@ test.describe('Vocal Coach QA Extremo', () => {
     }
 
     // Esperar a que cargue el visor de canciones y activar Modo Cantar
-    const singBtn = page.locator('#btnPlaySingToggle, .opt-sing, #btnGuiderSing').first();
+    await waitForSong(page);
+    const singBtn = page.locator('#btnPlaySingToggle');
     await expect(singBtn).toBeVisible({ timeout: 10000 });
     await singBtn.click();
+    await expect(page.locator('#pitchLaneCanvas')).toBeVisible();
+    await page.locator('#btnKaraokeMic').click();
+    await expect(page.locator('#btnSingPlayPause')).toBeDisabled();
+    await useGeneratedGuide(page);
+    await expect(page.locator('#btnSingPlayPause')).toBeEnabled();
+    await page.locator('#btnSingPlayPause').click();
 
     // 3. El engine de VocalCoach y PitchLane arrancan, el mock de Oscillator también.
     // 4. El oscillator mock empieza en 440Hz (A4) y a los 2 segundos cambia a 523.25Hz (C5).
     // Esperamos 500ms para que se inicialice.
-    await page.waitForTimeout(500);
+    await expect.poll(() => page.evaluate(() => window.__VOCAL_STATE__?.trailLength || 0)).toBeGreaterThan(0);
 
     // En los primeros 2 segundos, debe detectar in-tune o near-tune (dependiendo del target)
     // Extraemos el estado interno de __VOCAL_STATE__
@@ -54,10 +63,10 @@ test.describe('Vocal Coach QA Extremo', () => {
     // Se confirma que el estado interno se expone y reacciona correctamente
   });
 
-  test('Memory Leak & FPS Check (Test de estrés de larga duración)', async ({ page }) => {
+  test('Controlled audio: bounded trail and heap after 15 seconds', async ({ page }) => {
     test.setTimeout(120000); // Dar 2 minutos de timeout
 
-    const loadBtn = page.locator('.btn-select-song').first();
+    const loadBtn = page.locator('.discovery-song-card').first();
     await expect(loadBtn).toBeVisible({ timeout: 10000 });
     await loadBtn.click();
 
@@ -66,16 +75,23 @@ test.describe('Vocal Coach QA Extremo', () => {
       await versionItem.click();
     }
 
-    const singBtn = page.locator('#btnPlaySingToggle, .opt-sing, #btnGuiderSing').first();
+    await waitForSong(page);
+    const singBtn = page.locator('#btnPlaySingToggle');
     await expect(singBtn).toBeVisible({ timeout: 10000 });
     await singBtn.click();
+    await expect(page.locator('#pitchLaneCanvas')).toBeVisible();
+    await page.locator('#btnKaraokeMic').click();
+    await expect(page.locator('#btnSingPlayPause')).toBeDisabled();
+    await useGeneratedGuide(page);
+    await expect(page.locator('#btnSingPlayPause')).toBeEnabled();
+    await page.locator('#btnSingPlayPause').click();
 
     // Monitorizar la RAM usada (JS heap size si está disponible, o asertar FPS)
     const getPerformanceInfo = async () => {
       return page.evaluate(() => {
         return {
           heap: window.performance?.memory?.usedJSHeapSize || 0,
-          fps: window.__CURRENT_FPS || 60
+          trail: window.__PITCH_LANE_INSTANCE__?.trail.length || 0
         };
       });
     };
@@ -86,6 +102,8 @@ test.describe('Vocal Coach QA Extremo', () => {
     await page.waitForTimeout(15000);
 
     const finalStats = await getPerformanceInfo();
+    expect(finalStats.trail).toBeGreaterThan(30);
+    expect(finalStats.trail).toBeLessThanOrEqual(400);
 
     // El heap memory no debería inflarse masivamente (ej. +50MB) 
     // por culpa del bucle del Pitch Lane, ya que limitamos trail a 400 elementos y object pooling.

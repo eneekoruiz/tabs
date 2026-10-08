@@ -1,8 +1,8 @@
+import { escapeHTML } from '../../utils/sanitize.js';
 /**
  * @file BandRoomTool.js
- * @description Interfaz de Ensayo Multijugador (BandRoom).
- * Permite crear/unirse a salas P2P con código de invitación, ver compañeros de banda activos,
- * controlar micrófono y ver cursores colaborativos estilo Figma.
+ * @description Demo local de controles y cursores compartidos entre pestañas.
+ * Usa BroadcastChannel en el mismo navegador y origen; no transmite audio.
  */
 
 import { Component } from '../Component.js';
@@ -49,9 +49,9 @@ export class BandRoomTool extends Component {
           <!-- Header -->
           <div class="bandroom-header">
             <div class="bandroom-title-group">
-              <span class="bandroom-badge">WEBRTC P2P JAMMING · FIGMA SYNC</span>
-              <h2 id="bandRoomTitle" class="bandroom-title">👥 BandRoom Multijugador</h2>
-              <p class="bandroom-subtitle">Ensaya a distancia con tu banda con transmisión de audio en tiempo real y cursores sincronizados.</p>
+              <span class="bandroom-badge">DEMO LOCAL · PESTAÑAS DEL MISMO NAVEGADOR</span>
+              <h2 id="bandRoomTitle" class="bandroom-title">👥 BandRoom entre pestañas</h2>
+              <p class="bandroom-subtitle">Comparte controles de reproducción y cursores entre pestañas de esta aplicación en el mismo navegador. No conecta equipos remotos ni transmite audio.</p>
             </div>
             <button class="btn-close-bandroom" id="btnCloseBandRoom" aria-label="Cerrar BandRoom">✕</button>
           </div>
@@ -62,16 +62,16 @@ export class BandRoomTool extends Component {
               <!-- Pantalla de Conexión a Sala -->
               <div class="bandroom-setup-grid">
                 <div class="setup-box">
-                  <h3>👑 Crear Sala de Ensayo (Anfitrión)</h3>
-                  <p>Inicia una sala virtual. La partitura avanzará para todos cuando des al Play.</p>
-                  <button class="btn-bandroom-action primary" id="btnCreateRoom">Crear Nueva Sala P2P</button>
+                  <h3>👑 Crear Sala Local (Anfitrión)</h3>
+                  <p>Abre otra pestaña de esta aplicación y usa el código para probar los controles y cursores compartidos.</p>
+                  <button class="btn-bandroom-action primary" id="btnCreateRoom">Crear Sala Local</button>
                 </div>
 
                 <div class="setup-box">
                   <h3>🎸 Unirme a una Sala Existente</h3>
-                  <p>Introduce el código de 4 dígitos proporcionado por tu anfitrión.</p>
+                  <p>Introduce el código de la sala abierta en otra pestaña de este navegador.</p>
                   <div class="join-input-row">
-                    <input type="text" class="room-code-input" id="txtRoomCodeInput" placeholder="Ej: BAND-4821" maxlength="10">
+                    <input type="text" class="room-code-input" id="txtRoomCodeInput" aria-label="Código de sala local" placeholder="Ej: BAND-4821" maxlength="10">
                     <button class="btn-bandroom-action secondary" id="btnJoinRoom">Unirse</button>
                   </div>
                 </div>
@@ -93,9 +93,9 @@ export class BandRoomTool extends Component {
                   <div class="peers-grid">
                     <!-- Tu propio avatar -->
                     <div class="peer-avatar-card self">
-                      <div class="avatar-circle" style="background: ${this.engine.userColor};">${this.engine.userName.slice(0, 2)}</div>
+                      <div class="avatar-circle" style="background: ${this.engine.userColor};">${escapeHTML(this.engine.userName.slice(0, 2))}</div>
                       <div class="peer-meta">
-                        <strong>${this.engine.userName} (Tú)</strong>
+                        <strong>${escapeHTML(this.engine.userName)} (Tú)</strong>
                         <span>Compás Actual: <em class="peer-bar-num">1</em></span>
                       </div>
                     </div>
@@ -103,9 +103,9 @@ export class BandRoomTool extends Component {
                     <!-- Avatares de compañeros -->
                     ${peers.map(p => `
                       <div class="peer-avatar-card">
-                        <div class="avatar-circle" style="background: ${p.color};">${p.name.slice(0, 2)}</div>
+                        <div class="avatar-circle" style="background: ${/^#[0-9a-f]{6}$/i.test(p.color) ? p.color : '#555555'};">${escapeHTML(p.name.slice(0, 2))}</div>
                         <div class="peer-meta">
-                          <strong>${p.name}</strong>
+                          <strong>${escapeHTML(p.name)}</strong>
                           <span>Compás Actual: <em class="peer-bar-num">${p.currentBar || 1}</em></span>
                         </div>
                       </div>
@@ -130,7 +130,7 @@ export class BandRoomTool extends Component {
     card.querySelector('#btnCreateRoom')?.addEventListener('click', async () => {
       try {
         const id = await this.engine.createRoom();
-        toast.show(`¡Sala creada! Comparte el código ${id}`, 'success');
+        toast.show(`Sala local creada: usa ${id} en otra pestaña`, 'success');
         this.open(this.currentHost || '#bandroom-modal-container');
       } catch (e) {
         toast.show('Error al crear sala: ' + e.message, 'error');

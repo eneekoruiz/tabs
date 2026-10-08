@@ -225,7 +225,7 @@ export class LibraryExplorerV2 extends Component {
             ` : `
               <label class="btn btn-import" title="Importar archivos Guitar Pro" aria-label="Importar partitura">
                 <span aria-hidden="true">+</span> Importar partitura
-                <input type="file" id="libFileInput" accept=".gp,.gp3,.gp4,.gp5,.gpx,.xml,.mxl" multiple hidden>
+                <input type="file" id="libFileInput" class="sr-only" accept=".gp,.gp3,.gp4,.gp5,.gpx,.xml,.mxl" multiple>
               </label>
             `}
           </div>
@@ -841,12 +841,13 @@ export class LibraryExplorerV2 extends Component {
   async loadSongById(id, { showToast = true, switchToPlayer = true } = {}) {
     try {
       const song = await db.getSong(id);
-      if (!song?.data) {
+      if (!song || (!song.data && !song.lyricsChords?.trim())) {
         toast.show('No se pudieron leer los datos de la partitura', 'error');
         return false;
       }
       if (showToast) toast.show(`Cargando "${song.title}"...`, 'info');
       state.set('activeSong', {
+        ...song,
         id: song.id,
         title: song.title,
         artist: song.artist,
