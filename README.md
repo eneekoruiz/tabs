@@ -1,5 +1,9 @@
 # Tabs & Chords PRO
 
+[![Quality](https://github.com/eneekoruiz/tabs/actions/workflows/quality.yml/badge.svg)](https://github.com/eneekoruiz/tabs/actions/workflows/quality.yml)
+
+[Demo web](https://tabsandchords.vercel.app) · [Repositorio](https://github.com/eneekoruiz/tabs)
+
 Estudio musical local para explorar un catálogo, guardar canciones y repertorios, leer letras con acordes y practicar con herramientas de audio. La interfaz web usa módulos JavaScript y Web Audio; el proyecto incluye una configuración de escritorio con Tauri v2.
 
 ## Ejecutar

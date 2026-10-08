@@ -61,3 +61,11 @@ No hay una pista original y una melodía sincronizada certificadas para todas la
 ## Distribución final
 
 El paquete estático `dist/` se recompiló con el service worker v6.7. Diez archivos críticos del paquete coinciden byte a byte con la fuente; sus SHA-256 se guardan en `reports/helen/verified-source-revision.json`. La revisión del paquete abrió Blackbird y reprodujo/pausó Stay with me en 375 × 667, 768 × 1024 y 1440 × 900. Las seis comprobaciones pasaron: 373 notas, reloj real por encima de dos segundos, micrófono visible, navegación liberada en canto y ausencia de desbordamiento horizontal. Se revisaron nueve capturas de inicio, canción y canto. El registro está en `reports/helen/final-built-verification.json`; las imágenes se guardan como `reports/helen/final-built-*.png`. La visibilidad de importar se exige en la prueba sin audio; en el paquete preparado ya hay una pista seleccionada y cambiarla es una opción adicional.
+
+## Validación de la integración con GitHub
+
+Se integraron los 12 commits remotos hasta `c883353` conservando las mejoras de la app, las actualizaciones de dependencias y las pruebas de CI sin ocultar fallos. El código de ejecución de la app no cambió durante esta integración. El lock fija Playwright 1.64.0; la comprobación final usó Chromium 156.0.8078.4.
+
+Las ocho pruebas de integración pasaron sin reintentos: uso offline, las dos grabaciones de Stay with me, afinación frente a anotaciones F0 independientes, captura de voz humana grabada y controles esenciales visibles en 375, 390 y 412 px. El informe local está en `reports/helen/publish-integration.json`. Las 28 pruebas musicales y los 835 recursos offline también pasaron; npm audit devolvió cero vulnerabilidades. El paquete estático se reconstruyó y diez archivos principales coinciden byte a byte con la fuente.
+
+Los 123 archivos originales coinciden también con sus hashes de Git. Se añadieron atributos para conservar exactamente los bytes de las fuentes y se corrigió la capitalización de `license.txt` de Stay with me para que su ruta funcione en Linux. Las grabaciones, referencias, atribuciones y licencias quedan incluidas en el repositorio; los informes generados y las dependencias locales siguen excluidos.
